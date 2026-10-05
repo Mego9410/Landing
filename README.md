@@ -18,6 +18,8 @@ designs/
 docs/
   development.md  Setup, commands and how the pieces fit
   deployment.md   Vercel, domains, EAS and branch rules
+  plan-movement-food-shopping.md  Plan for strength sessions, easy meals and supermarket baskets
+  research/       The research behind it: movement, food, supermarkets
 .github/        CI, pull request template, Dependabot
 ```
 

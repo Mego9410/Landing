@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
 import { Lockup } from "./lockup";
+import { PrototypeLink } from "./prototype-link";
 import { WaitlistForm } from "./waitlist-form";
 
 const PHASES = [
@@ -146,6 +147,7 @@ export default function Home() {
           <p className={styles.footerLinks}><Link href="/privacy">Privacy</Link><span>© {new Date().getFullYear()} [YOUR COMPANY NAME]</span></p>
         </div>
       </footer>
+      <PrototypeLink />
     </>
   );
 }

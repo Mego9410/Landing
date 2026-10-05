@@ -4,8 +4,8 @@
   "private": true,
   "description": "The Landing waitlist site.",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/copy-prototype.mjs && next dev",
+    "build": "node scripts/copy-prototype.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit"
@@ -17,6 +17,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@landing/prototype": "workspace:*",
     "@types/node": "^22",
     "@types/react": "~19.2.2",
     "@types/react-dom": "~19.2.2",

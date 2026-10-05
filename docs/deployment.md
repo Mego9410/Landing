@@ -29,7 +29,20 @@ Two Vercel projects deploy from this one repository, and the iPhone app ships th
 example a Supabase table or a Resend audience), add its keys as Vercel environment variables (server-only, never
 `NEXT_PUBLIC_`), and fill in the bracketed details in `app/privacy/page.tsx`.
 
-## 2. The prototype on Vercel
+## Before going live
+
+- [ ] In `apps/web/prelaunch.json`, set `showPrototype` to `false`. This removes the floating **Preview the app**
+      button and stops the prototype being published at `/prototype`. Commit and redeploy.
+- [ ] Connect a real waitlist provider in `app/api/waitlist/route.ts` (see above).
+- [ ] Fill in the bracketed details on the privacy notice and in the footer.
+- [ ] Set `NEXT_PUBLIC_SITE_URL` to the live domain.
+
+## 2. The prototype on Vercel (optional)
+
+While `apps/web/prelaunch.json` has `showPrototype: true`, the waitlist site already serves the prototype at
+`/prototype`, behind a **Preview the app** button. A separate project is only needed if you want the prototype on
+its own address, for example to keep it after launch behind Vercel's password protection.
+
 
 1. **Add New → Project**, import the same repository again.
 2. Set **Root Directory** to `apps/prototype` and **Framework Preset** to Other. `apps/prototype/vercel.json` sets the

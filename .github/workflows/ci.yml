@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, typecheck and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Generated tokens are up to date
+        run: pnpm --filter @landing/design-system check
+
+      - name: Lint, typecheck and build every app
+        run: pnpm turbo run lint typecheck build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Bundle the Expo app for web
+        run: pnpm --filter @landing/mobile exec expo export --platform web --output-dir dist
+        env:
+          CI: 1
+          EXPO_NO_TELEMETRY: 1

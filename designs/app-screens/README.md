@@ -2,14 +2,14 @@
 
 55 screen designs for the Landing iPhone app, imported from the
 [Landing App Screens canvas](https://claude.ai/artifact/7QFUpd1hnCxoRoH7HG12V2). They use the
-[design system](../../design-system/) and are the visual reference for building the app.
+[design system](../../packages/design-system/) and are the visual reference for building the app.
 
 Open [`index.html`](index.html) in a browser to see them all, grouped by flow.
 
 - `renders/`: a 2x PNG of each screen (390 px wide, iPhone size).
 - `screens/`: the source of each screen (`.dc.html`), plus `screens.css` (shared screen layout
   classes) and `canvas.json` (the canvas layout and screen titles). Paths to the design system's
-  bundle and logos point at `design-system/` in this repo. The sources only render inside the
+  bundle and logos point at `packages/design-system/` in this repo. The sources only render inside the
   design canvas, which supplies the `support.js` runtime, so use the PNGs for reference.
 
 Screens link to each other the way the app flows. Each screen's links are the `href`s in its source.

@@ -1,16 +1,17 @@
 # Landing prototype
 
 A clickable HTML version of the whole Landing app, built from the [app screen designs](../designs/app-screens/)
-with the [design system](../design-system/). Use it to get the brand and the flows right before building in Expo.
+with the [design system](../../packages/design-system/). Use it to get the brand and the flows right before building in Expo.
 It uses dummy data: Hannah, who stopped her jab on 31 August, is in week 6 of her plan and today is Monday 5 October 2026.
 
 ## Open it
 
-- **In this repo:** open `prototype/index.html` in a browser. If your browser blocks local files, serve the repo root
-  (for example `npx serve .`) and go to `/prototype/`.
-- **As one file:** run `node prototype/build.mjs`, then open `prototype/dist/landing-prototype.html`. It has everything
-  inlined, so you can send it to someone or open it offline. `dist/artifact.html` is the same page for publishing as a
-  claude.ai artifact.
+- **In this repo:** open `apps/prototype/index.html` in a browser, or run `pnpm dev:prototype` from the repo root and
+  go to http://localhost:3001/apps/prototype/.
+- **As one file:** run `pnpm --filter @landing/prototype build`, then open `apps/prototype/dist/index.html`. It has
+  everything inlined, so you can send it to someone or open it offline. Vercel serves this file
+  ([docs/deployment.md](../../docs/deployment.md)). `dist-artifact.html` is the same page for publishing as a claude.ai
+  artifact.
 
 On a desktop the app sits in a phone frame with the test panel beside it. On a phone it fills the screen and the
 test panel opens from the dashed **Test panel** button.
@@ -45,14 +46,14 @@ A link ending in a screen name opens that screen, for example `index.html#progre
 
 ## How it's built
 
-No build step and no npm: React 18 (the copy in `design-system/components/lib`), the design system's components
+No build step and no npm: React 18 (the copy in `packages/design-system/components/lib`), the design system's components
 (`window.Landing`) and [htm](https://github.com/developit/htm) (`vendor/`, Apache 2.0) for JSX-like templates.
 
 - `src/core.js`: state, dummy data, dates, navigation and shared UI pieces
 - `src/screens-*.js`: the screens, grouped as in the designs
 - `src/app.js`: the phone frame, routing, tab bar, sheets and the test panel
 - `app.css`: the screen layout classes from the designs, the frame and the panel. Colours, type and spacing all come
-  from `design-system/tokens.css`, so changing a token changes the prototype.
+  from `packages/design-system/tokens.css`, so changing a token changes the prototype.
 
 Screen copy follows the designs. Where the designs leave something open, the prototype keeps their placeholders
 (screening questions 1, 3, 4 and 5, `[YOUR DOMAIN]`, `[YOUR COMPANY NAME]`) and invents nothing medical. Lesson text and

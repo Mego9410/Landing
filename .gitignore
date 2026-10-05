@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+
+# builds
+.next/
+out/
+dist/
+dist-artifact.html
+web-build/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+
+# Expo
+.expo/
+expo-env.d.ts
+apps/mobile/ios/
+apps/mobile/android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# env files: commit .env.example only
+.env
+.env*.local
+
+# Vercel
+.vercel
+
+# editors and OS
+.DS_Store
+.idea/
+*.log

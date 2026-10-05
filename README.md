@@ -1,28 +1,50 @@
 # Landing
 
-## Design system
+**Keep what you've worked for.** Landing helps people keep weight off in the year after they stop a GLP-1 jab:
+a 12-month habit plan, a weekly landing score, short strength sessions and a coach, built to feel calm and on
+their side. "Landing" is a working name.
 
-The Landing brand lives in [`design-system/`](design-system/), imported from the
-[Landing design system artifact](https://claude.ai/artifact/SEV6vLBwGSNQc7iw6bVPs2).
+## What's in this repository
 
-- [`design-system/README.md`](design-system/README.md): the brand book (voice, colour, type, shape, imagery, logo).
-- `tokens.json`: source of truth for colours (light and dark), type, spacing, radius and shadow.
-- `tokens.css`: CSS custom properties generated from `tokens.json`.
-- `assets/Logos`, `assets/Icons`: the SVG logos and the 24px line icon set.
-- `components/`: the ten v1 React 18 components (`bundle.js` sets `window.Landing`, styled by `bundle.css`, typed by `index.d.ts`), with a README and preview for each.
-- `preview.html`: a gallery of every component. Open it in a browser.
+```
+apps/
+  web/          Waitlist site (Next.js) → Vercel
+  prototype/    Clickable HTML prototype of the whole app, with dummy data and a test panel → Vercel
+  mobile/       The iPhone app (Expo, Expo Router) → EAS Build and the App Store
+packages/
+  design-system/  Brand guidelines, tokens, logos, icons and reference components, shared by all three apps
+designs/
+  app-screens/  The 55 screen designs as PNGs and source files
+docs/
+  development.md  Setup, commands and how the pieces fit
+  deployment.md   Vercel, domains, EAS and branch rules
+.github/        CI, pull request template, Dependabot
+```
 
-After editing `tokens.json` or a component preview, run `node design-system/build.mjs` to regenerate `tokens.css` and `preview.html`.
+## Quick start
 
-## Prototype
+```sh
+corepack enable        # uses the pnpm version pinned in package.json
+pnpm install
+pnpm dev               # waitlist site on http://localhost:3000
+pnpm dev:prototype     # prototype on http://localhost:3001/apps/prototype/
+pnpm dev:mobile        # Expo; press i for the iOS simulator
+pnpm check             # lint, typecheck and build everything, as CI does
+```
 
-[`prototype/`](prototype/) is a clickable HTML version of the whole app with dummy data, the full sign-up flow,
-skip buttons and a test panel, for getting the brand and flows right before the Expo build. Open
-`prototype/index.html`, or see [its README](prototype/README.md).
+Node 22 and pnpm 10. More in [docs/development.md](docs/development.md).
 
-## App screens
+## Deploying
 
-[`designs/app-screens/`](designs/app-screens/) holds the 55 iPhone screen designs (onboarding, paywall,
-Today, workouts, plan, progress, coach, settings and shared states), imported from the
-[Landing App Screens canvas](https://claude.ai/artifact/7QFUpd1hnCxoRoH7HG12V2). Open
-`designs/app-screens/index.html` to browse PNG renders of every screen; each screen's source is in `screens/`.
+The waitlist site and the prototype are two Vercel projects pointing at `apps/web` and `apps/prototype`; the app
+ships through EAS. Step by step in [docs/deployment.md](docs/deployment.md).
+
+## The brand
+
+Start with [packages/design-system/README.md](packages/design-system/README.md): voice and copy rules, colour,
+type, shape, imagery and the logo. Colours, type and spacing live in `packages/design-system/tokens.json`; run
+`pnpm tokens` after changing it, and every app picks the change up. The design system and the screens were imported
+from the [Landing design system](https://claude.ai/artifact/SEV6vLBwGSNQc7iw6bVPs2) and the
+[Landing App Screens canvas](https://claude.ai/artifact/7QFUpd1hnCxoRoH7HG12V2).
+
+Landing is a general wellness app. It never gives advice about medication, doses or stopping treatment.

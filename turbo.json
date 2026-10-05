@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "globalEnv": ["NODE_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "!README.md", "!**/*.md"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "dist-artifact.html", "tokens.css", "tokens.ts", "preview.html"],
+      "env": ["NEXT_PUBLIC_*"]
+    },
+    "lint": {},
+    "typecheck": {},
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

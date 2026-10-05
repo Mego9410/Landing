@@ -1,7 +1,7 @@
 // Bundles the prototype into single self-contained HTML files.
-// Run: node prototype/build.mjs
-//   dist/landing-prototype.html  everything inlined, React included; open it anywhere, even offline
-//   dist/artifact.html           page body for publishing as a claude.ai artifact (React from cdnjs)
+// Run: pnpm --filter @landing/prototype build
+//   dist/index.html      everything inlined, React included. Vercel serves this; it also opens offline.
+//   dist-artifact.html   the page body for publishing as a claude.ai artifact (React from cdnjs)
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,14 +15,14 @@ const scripts = [...index.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m)
 const isReact = (src) => /components\/lib\/react/.test(src);
 
 const svg = (p) => 'data:image/svg+xml;base64,' + Buffer.from(read(p)).toString('base64');
-const assets = `window.LANDING_ASSETS = ${JSON.stringify({ mark: svg('../design-system/assets/Logos/landing-mark.svg'), lockup: svg('../design-system/assets/Logos/landing-lockup.svg') })};`;
+const assets = `window.LANDING_ASSETS = ${JSON.stringify({ mark: svg('../../packages/design-system/assets/Logos/landing-mark.svg'), lockup: svg('../../packages/design-system/assets/Logos/landing-lockup.svg') })};`;
 
 const inline = (code) => {
   if (/<\/script/i.test(code)) throw new Error('A script contains "</script", which would end the inline tag early.');
   return `<script>\n${code}\n</script>`;
 };
 const appScripts = [inline(assets), ...scripts.filter((s) => !isReact(s)).map((s) => inline(read(s)))].join('\n');
-const head = `<title>Landing Prototype</title>\n<style>\n${css}\n</style>`;
+const head = `<title>Landing Prototype</title>\n<meta name="robots" content="noindex">\n<style>\n${css}\n</style>`;
 const body = `<div id="root"></div>`;
 
 mkdirSync(join(dir, 'dist'), { recursive: true });
@@ -41,12 +41,12 @@ ${appScripts}
 </body>
 </html>
 `;
-writeFileSync(join(dir, 'dist/landing-prototype.html'), standalone);
+writeFileSync(join(dir, 'dist/index.html'), standalone);
 
 const cdn = ['react', 'react-dom'].map((n) => `<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/${n}.production.min.js"></script>`)
   .map((tag, i) => (i ? tag.replace('/react/18.3.1/umd/react-dom', '/react-dom/18.3.1/umd/react-dom') : tag));
 const artifact = `${head}\n${body}\n${cdn.join('\n')}\n${appScripts}\n`;
-writeFileSync(join(dir, 'dist/artifact.html'), artifact);
+writeFileSync(join(dir, 'dist-artifact.html'), artifact);
 
 const kb = (s) => Math.round(Buffer.byteLength(s) / 1024) + ' KB';
-console.log(`dist/landing-prototype.html ${kb(standalone)} · dist/artifact.html ${kb(artifact)}`);
+console.log(`dist/index.html ${kb(standalone)} · dist-artifact.html ${kb(artifact)}`);

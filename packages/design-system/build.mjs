@@ -1,5 +1,6 @@
-// Generates tokens.css from tokens.json, and preview.html (a gallery of every
-// components/<Name>/preview.html). Run: node design-system/build.mjs
+// Generates, from tokens.json: tokens.css (CSS custom properties for the web and the prototype),
+// tokens.ts (plain values for the Expo app) and preview.html (a gallery of every
+// components/<Name>/preview.html). Run: pnpm --filter @landing/design-system build
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -58,6 +59,40 @@ const css = [
 ].join('\n\n');
 writeFileSync(join(dir, 'tokens.css'), css + '\n');
 
+// tokens.ts: the same values for React Native, which has no CSS variables. Aliases are resolved per theme,
+// lengths become numbers and letter spacing becomes points.
+const px = (v) => (typeof v === 'number' ? v : parseFloat(v));
+const colorFor = (name, theme, seen = new Set()) => {
+  const t = tokens.color.tokens.find((x) => x.name === name);
+  const v = valueFor(t.value, theme);
+  const alias = /^\{([A-Za-z0-9_.-]+)\}$/.exec(String(v));
+  if (alias && !seen.has(alias[1])) return colorFor(alias[1], theme, seen.add(name));
+  return v;
+};
+const camel = (n) => n.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
+const colors = Object.fromEntries(themes.map((th) => [th, Object.fromEntries(tokens.color.tokens.map((t) => [camel(t.name), colorFor(t.name, th)]))]));
+const scale = (family, strip) => Object.fromEntries((tokens[family]?.tokens || []).map((t) => [t.name.replace(strip, ''), px(t.value)]));
+const fontFamilies = Object.fromEntries(tokens.type.groups.map((g) => [g.family, g.name === 'Display' ? 'Fredoka' : 'Nunito']));
+const text = Object.fromEntries(tokens.type.groups.flatMap((g) => g.styles.map((st) => [camel(st.name), {
+  family: g.family,
+  fontSize: px(st.fontSize),
+  lineHeight: px(st.lineHeight),
+  fontWeight: String(st.fontWeight),
+  letterSpacing: st.letterSpacing ? Math.round(parseFloat(st.letterSpacing) * px(st.fontSize) * 100) / 100 : 0,
+}])));
+const ts = `// Generated from tokens.json by build.mjs. Do not edit by hand.
+export const colors = ${JSON.stringify(colors, null, 2)} as const;
+export type ThemeName = keyof typeof colors;
+export type ColorName = keyof typeof colors.light;
+export const space = ${JSON.stringify(scale('spacing', 'space-'), null, 2)} as const;
+export const radius = ${JSON.stringify(scale('radius', 'radius-'), null, 2)} as const;
+/** Font families by role; the app loads Fredoka and Nunito from @expo-google-fonts. */
+export const fontFamilies = ${JSON.stringify(fontFamilies, null, 2)} as const;
+export const text = ${JSON.stringify(text, null, 2)} as const;
+export type TextStyleName = keyof typeof text;
+`;
+writeFileSync(join(dir, 'tokens.ts'), ts);
+
 // Gallery: each preview runs in an iframe with the same preloads the design
 // system page gave it (tokens, stylesheet, React, the bundle).
 const head = [
@@ -109,4 +144,4 @@ ${cards.join('\n')}
 </html>
 `;
 writeFileSync(join(dir, 'preview.html'), page);
-console.log(`tokens.css: ${themed.length + flat.length} tokens; preview.html: ${names.length} previews`);
+console.log(`tokens.css and tokens.ts: ${themed.length + flat.length} tokens; preview.html: ${names.length} previews`);

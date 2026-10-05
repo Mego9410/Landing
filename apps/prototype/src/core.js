@@ -9,8 +9,8 @@
 
   /* ---------- assets (the build swaps these for data URIs) ---------- */
   var ASSETS = Object.assign({
-    mark: '../design-system/assets/Logos/landing-mark.svg',
-    lockup: '../design-system/assets/Logos/landing-lockup.svg'
+    mark: '../../packages/design-system/assets/Logos/landing-mark.svg',
+    lockup: '../../packages/design-system/assets/Logos/landing-lockup.svg'
   }, window.LANDING_ASSETS || {});
 
   /* ---------- icons: the design system's 2px rounded line set plus the screens' extras ---------- */

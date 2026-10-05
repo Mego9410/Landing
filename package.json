@@ -1,0 +1,22 @@
+{
+  "name": "landing",
+  "private": true,
+  "description": "Landing: keep what you've worked for. Monorepo for the waitlist site, the app prototype, the Expo app and the design system.",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev --filter=@landing/web",
+    "dev:prototype": "pnpm --filter @landing/prototype dev",
+    "dev:mobile": "pnpm --filter @landing/mobile start",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "tokens": "pnpm --filter @landing/design-system build",
+    "check": "turbo run lint typecheck build && pnpm --filter @landing/design-system check"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.7"
+  }
+}

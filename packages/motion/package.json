@@ -1,0 +1,24 @@
+{
+  "name": "@landing/motion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Illustrated exercise loops: the Landing figure, the movement library and renderers for SVG and React Native.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./svg/*": "./svg/*"
+  },
+  "scripts": {
+    "build": "node scripts/build.ts",
+    "check": "node scripts/build.ts && git diff --exit-code -- svg gallery.html",
+    "contact": "node scripts/contact.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "~6.0.3"
+  }
+}

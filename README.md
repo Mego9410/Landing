@@ -13,6 +13,7 @@ apps/
   mobile/       The iPhone app (Expo, Expo Router) → EAS Build and the App Store
 packages/
   design-system/  Brand guidelines, tokens, logos, icons and reference components, shared by all three apps
+  motion/         Illustrated exercise loops (80 so far) for the prototype, the app and the web
 designs/
   app-screens/  The 55 screen designs as PNGs and source files
 docs/

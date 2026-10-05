@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "echo \"The prototype has no dependencies\"",
-  "buildCommand": "node build.mjs",
+  "buildCommand": "node scripts/motion.mjs && node build.mjs",
   "outputDirectory": "dist",
   "cleanUrls": true,
   "headers": [

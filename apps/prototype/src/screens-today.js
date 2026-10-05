@@ -16,6 +16,15 @@
     });
     if (on && navigator.vibrate) { try { navigator.vibrate(10); } catch (e) {} }
   }
+  /* Exercise loops from packages/motion (src/motion.js). Paused, or with reduced motion on, shows the still. */
+  function Demo(props) {
+    var M = window.LANDING_MOTION || { loops: {}, stills: {} };
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var src = (props.still || reduce ? M.stills : M.loops)[props.id];
+    if (!src) return null;
+    return html`<img key=${props.id + (props.still ? '-still' : '')} src=${src} alt=${props.alt || ''} style=${Object.assign({ display: 'block', width: '100%', height: '100%', objectFit: 'contain' }, props.style)} />`;
+  }
+
   function nextSession(s) { return ['A', 'B'].find(function (k) { return !s.workouts.done[k]; }) || null; }
   function untilNext(week) {
     var p = LP.phaseOf(week), nextP = LP.PHASES[LP.PHASES.indexOf(p) + 1];
@@ -261,7 +270,7 @@
       <div class="list">
         ${S.moves.map(function (m, i) {
           return html`<div key=${m.name} class="li">
-            <span style=${{ width: 32, height: 32, borderRadius: 9999, background: 'var(--surface-sunk)', display: 'grid', placeItems: 'center', fontFamily: 'var(--font-display)', fontWeight: 600, flex: 'none' }}>${i + 1}</span>
+            <span style=${{ width: 56, height: 46, borderRadius: 12, background: 'var(--sky)', overflow: 'hidden', flex: 'none' }} aria-hidden="true"><${Demo} id=${m.anim} still /></span>
             <span class="grow strong">${m.name}</span><span class="caption muted">${m.sets} × ${m.reps}</span></div>`;
         })}
       </div>
@@ -278,6 +287,7 @@
     var s = useApp();
     var a = s.workouts.active || { id: 'B', move: 0, set: 1, paused: false };
     var S = LP.SESSIONS[a.id], m = S.moves[a.move];
+    var es = React.useState(false), easy = es[0], setEasy = es[1];
     function finish() {
       set(function (s) {
         var id = s.workouts.active ? s.workouts.active.id : 'B';
@@ -302,13 +312,14 @@
         <div class="steps"><span style=${{ width: ((a.move + 1) / S.moves.length * 100) + '%', background: 'var(--sage-ink)' }}></span></div>
         <span class="caption muted">${a.move + 1} of ${S.moves.length}</span>
       </div>
-      <div style=${{ height: 250, borderRadius: 'var(--radius-lg)', background: 'var(--sky)', display: 'grid', placeItems: 'center', color: 'var(--on-pastel)', position: 'relative', overflow: 'hidden', flex: 'none' }}>
-        <div style=${{ position: 'absolute', left: -30, right: -30, bottom: -40, height: 100, borderRadius: 9999, background: 'var(--surface-raised)', opacity: .5 }}></div>
-        <span class="label" style=${{ position: 'relative' }}>${a.paused ? 'Paused' : '[Exercise demo video]'}</span>
+      <div style=${{ height: 250, borderRadius: 'var(--radius-lg)', background: 'var(--sky)', position: 'relative', overflow: 'hidden', flex: 'none' }}>
+        <${Demo} id=${easy && m.easier ? m.easier : m.anim} still=${a.paused} alt=${'Animation: ' + m.name} />
+        ${a.paused ? html`<span class="label" style=${{ position: 'absolute', top: 12, left: 14, color: 'var(--on-pastel)' }}>Paused</span>` : null}
       </div>
       <div class="stack" style=${{ gap: 4 }}>
-        <h1 class="t-title">${m.name}</h1>
+        <h1 class="t-title">${easy && m.easier ? m.name + ', easier' : m.name}</h1>
         <p class="body muted">${m.cue}</p>
+        ${m.easier ? html`<button type="button" class="linkish" style=${{ alignSelf: 'flex-start', marginTop: 4, fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: 3 }} onClick=${function () { setEasy(!easy); }}>${easy ? 'Show the full version' : 'Show an easier version'}</button>` : null}
       </div>
       <div class="row" style=${{ gap: 10 }}>
         <div class="card" style=${{ flex: 1, alignItems: 'center', padding: 14, gap: 0 }}><span class="t-num-md">${a.set}/${m.sets}</span><span class="caption muted">set</span></div>

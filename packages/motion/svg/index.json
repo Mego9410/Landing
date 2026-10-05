@@ -1,0 +1,967 @@
+{
+  "patterns": [
+    {
+      "id": "squat",
+      "name": "Squat",
+      "seated": "squat-0"
+    },
+    {
+      "id": "hinge",
+      "name": "Hinge",
+      "seated": "hinge-0"
+    },
+    {
+      "id": "push",
+      "name": "Push",
+      "seated": "push-0"
+    },
+    {
+      "id": "press",
+      "name": "Overhead press",
+      "seated": "press-2"
+    },
+    {
+      "id": "row",
+      "name": "Row",
+      "seated": "row-2"
+    },
+    {
+      "id": "pulldown",
+      "name": "Pull down",
+      "seated": "pulldown-2"
+    },
+    {
+      "id": "lunge",
+      "name": "Lunge and step",
+      "seated": "lunge-0"
+    },
+    {
+      "id": "carry",
+      "name": "Carry",
+      "seated": "carry-0"
+    },
+    {
+      "id": "core",
+      "name": "Core",
+      "seated": "core-0"
+    },
+    {
+      "id": "rotation",
+      "name": "Side and rotation",
+      "seated": "rotation-0"
+    },
+    {
+      "id": "balance",
+      "name": "Balance",
+      "seated": "balance-0"
+    },
+    {
+      "id": "calf",
+      "name": "Calf",
+      "seated": "calf-1"
+    }
+  ],
+  "aliases": {
+    "Sit to stand": "squat-2",
+    "Wall press-up": "push-1",
+    "Step-up": "lunge-3",
+    "Band pull-apart": "pulldown-1",
+    "Side plank": "rotation-5",
+    "Goblet squat": "squat-4",
+    "Glute bridge": "hinge-1",
+    "Incline press-up": "push-2",
+    "Bent-over row": "row-4",
+    "Dead bug": "core-2"
+  },
+  "exercises": [
+    {
+      "id": "squat-0",
+      "name": "Seated partial stand",
+      "pattern": "squat",
+      "level": 0,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Lean forward, nose over toes, and lift your hips just off the seat.",
+      "seconds": 4.6
+    },
+    {
+      "id": "squat-1",
+      "name": "Sit to stand, high chair",
+      "pattern": "squat",
+      "level": 1,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Hands on your thighs to help. Stand tall, then sit back slowly.",
+      "seconds": 5.1
+    },
+    {
+      "id": "squat-2",
+      "name": "Sit to stand",
+      "pattern": "squat",
+      "level": 2,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Arms crossed, feet flat. Stand up tall, then lower slowly to the seat.",
+      "seconds": 5.1
+    },
+    {
+      "id": "squat-3",
+      "name": "Box squat",
+      "pattern": "squat",
+      "level": 3,
+      "equipment": [
+        "step"
+      ],
+      "cue": "Sit back until you just touch the box, then drive up through your heels.",
+      "seconds": 3
+    },
+    {
+      "id": "squat-4",
+      "name": "Goblet squat",
+      "pattern": "squat",
+      "level": 4,
+      "equipment": [
+        "dumbbells"
+      ],
+      "cue": "Hold the weight at your chest, elbows down. Sit between your heels.",
+      "seconds": 2.9
+    },
+    {
+      "id": "squat-5",
+      "name": "Slow goblet squat",
+      "pattern": "squat",
+      "level": 5,
+      "equipment": [
+        "dumbbells"
+      ],
+      "cue": "Three seconds down, a short pause, then stand.",
+      "seconds": 5.4
+    },
+    {
+      "id": "squat-6",
+      "name": "Leg press",
+      "pattern": "squat",
+      "level": 6,
+      "equipment": [
+        "machine"
+      ],
+      "cue": "Press the plate away without locking your knees, then let it come back slowly.",
+      "seconds": 3.3
+    },
+    {
+      "id": "hinge-0",
+      "name": "Seated good morning",
+      "pattern": "hinge",
+      "level": 0,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Arms crossed, back long. Tip forward from your hips, then sit tall.",
+      "seconds": 3.2
+    },
+    {
+      "id": "hinge-1",
+      "name": "Glute bridge",
+      "pattern": "hinge",
+      "level": 1,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "Squeeze your bottom and lift your hips until you're in a line from knees to shoulders.",
+      "seconds": 3.2
+    },
+    {
+      "id": "hinge-2",
+      "name": "Broom hinge",
+      "pattern": "hinge",
+      "level": 2,
+      "equipment": [
+        "broom"
+      ],
+      "cue": "Keep the handle touching your head, back and bottom as you hinge forward.",
+      "seconds": 3.3
+    },
+    {
+      "id": "hinge-3",
+      "name": "Backpack Romanian deadlift",
+      "pattern": "hinge",
+      "level": 3,
+      "equipment": [
+        "backpack"
+      ],
+      "cue": "Soft knees. Slide the bag down your thighs, hips back, then stand tall.",
+      "seconds": 3.3
+    },
+    {
+      "id": "hinge-4",
+      "name": "Dumbbell Romanian deadlift",
+      "pattern": "hinge",
+      "level": 4,
+      "equipment": [
+        "dumbbells"
+      ],
+      "cue": "Hips back, weights close to your legs. Stop when you feel the backs of your thighs.",
+      "seconds": 3.3
+    },
+    {
+      "id": "hinge-5",
+      "name": "Kettlebell deadlift",
+      "pattern": "hinge",
+      "level": 5,
+      "equipment": [
+        "kettlebell"
+      ],
+      "cue": "Bell between your feet. Push the floor away and stand up tall.",
+      "seconds": 3.1
+    },
+    {
+      "id": "hinge-6",
+      "name": "Hip thrust",
+      "pattern": "hinge",
+      "level": 6,
+      "equipment": [
+        "bench",
+        "barbell"
+      ],
+      "cue": "Upper back on the bench, chin tucked. Drive your hips up and squeeze.",
+      "seconds": 3.1
+    },
+    {
+      "id": "push-0",
+      "name": "Seated band chest press",
+      "pattern": "push",
+      "level": 0,
+      "equipment": [
+        "chair",
+        "band"
+      ],
+      "cue": "Band round the chair back. Press forward until your arms are long, then slowly return.",
+      "seconds": 2.8
+    },
+    {
+      "id": "push-1",
+      "name": "Wall press-up",
+      "pattern": "push",
+      "level": 1,
+      "equipment": [
+        "wall"
+      ],
+      "cue": "Hands on the wall at shoulder height. Bend your elbows and bring your chest towards it.",
+      "seconds": 2.8
+    },
+    {
+      "id": "push-2",
+      "name": "Counter press-up",
+      "pattern": "push",
+      "level": 2,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "Hands on the edge, body in one line. Lower your chest to the counter.",
+      "seconds": 2.8
+    },
+    {
+      "id": "push-3",
+      "name": "Chair press-up",
+      "pattern": "push",
+      "level": 3,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Chair against a wall. Hands on the seat, lower with control.",
+      "seconds": 2.8
+    },
+    {
+      "id": "push-4",
+      "name": "Knee press-up",
+      "pattern": "push",
+      "level": 4,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "Knees down, hips in line. Lower your chest between your hands.",
+      "seconds": 2.8
+    },
+    {
+      "id": "push-5",
+      "name": "Press-up",
+      "pattern": "push",
+      "level": 5,
+      "equipment": [],
+      "cue": "Body like a plank. Lower until your chest is just above the floor.",
+      "seconds": 2.8
+    },
+    {
+      "id": "push-6",
+      "name": "Dumbbell bench press",
+      "pattern": "push",
+      "level": 6,
+      "equipment": [
+        "bench",
+        "dumbbells"
+      ],
+      "cue": "Feet flat. Lower the weights to the sides of your chest, then press up.",
+      "seconds": 2.7
+    },
+    {
+      "id": "press-1",
+      "name": "Wall slide",
+      "pattern": "press",
+      "level": 1,
+      "equipment": [
+        "wall"
+      ],
+      "cue": "Forearms on the wall. Slide them up as high as is comfortable, then back down.",
+      "seconds": 3.6
+    },
+    {
+      "id": "press-2",
+      "name": "Seated bottle press",
+      "pattern": "press",
+      "level": 2,
+      "equipment": [
+        "chair",
+        "bottles"
+      ],
+      "cue": "Sit tall. Press the bottles overhead, then lower them to your shoulders.",
+      "seconds": 2.8
+    },
+    {
+      "id": "press-3",
+      "name": "Band overhead press",
+      "pattern": "press",
+      "level": 3,
+      "equipment": [
+        "band"
+      ],
+      "cue": "Stand on the band. Press straight up, ribs down, then lower slowly.",
+      "seconds": 2.8
+    },
+    {
+      "id": "press-4",
+      "name": "Half-kneeling dumbbell press",
+      "pattern": "press",
+      "level": 4,
+      "equipment": [
+        "dumbbells",
+        "mat"
+      ],
+      "cue": "One knee down, squeeze that side's bottom. Press up, then lower with control.",
+      "seconds": 2.8
+    },
+    {
+      "id": "press-5",
+      "name": "Standing dumbbell press",
+      "pattern": "press",
+      "level": 5,
+      "equipment": [
+        "dumbbells"
+      ],
+      "cue": "Feet hip-width, ribs down. Press the weights overhead, then lower to your shoulders.",
+      "seconds": 2.8
+    },
+    {
+      "id": "press-6",
+      "name": "Machine shoulder press",
+      "pattern": "press",
+      "level": 6,
+      "equipment": [
+        "machine"
+      ],
+      "cue": "Back against the pad. Press the handles up, then lower slowly.",
+      "seconds": 2.8
+    },
+    {
+      "id": "row-1",
+      "name": "Prone Y raise",
+      "pattern": "row",
+      "level": 1,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "Lying face down, arms in a Y. Lift your arms a little, forehead stays low.",
+      "seconds": 3.1
+    },
+    {
+      "id": "row-2",
+      "name": "Seated band row",
+      "pattern": "row",
+      "level": 2,
+      "equipment": [
+        "chair",
+        "band"
+      ],
+      "cue": "Sit tall. Pull your elbows back and squeeze your shoulder blades.",
+      "seconds": 3
+    },
+    {
+      "id": "row-3",
+      "name": "Standing band row",
+      "pattern": "row",
+      "level": 3,
+      "equipment": [
+        "band"
+      ],
+      "cue": "Soft knees, chest proud. Pull your elbows past your ribs.",
+      "seconds": 3
+    },
+    {
+      "id": "row-4",
+      "name": "One-arm dumbbell row",
+      "pattern": "row",
+      "level": 4,
+      "equipment": [
+        "dumbbells",
+        "bench"
+      ],
+      "cue": "Hand on the bench, back flat. Pull the weight to your hip.",
+      "seconds": 3
+    },
+    {
+      "id": "row-5",
+      "name": "Table row",
+      "pattern": "row",
+      "level": 5,
+      "equipment": [
+        "table"
+      ],
+      "cue": "Under a sturdy table, heels down, body straight. Pull your chest to the edge.",
+      "seconds": 3
+    },
+    {
+      "id": "row-6",
+      "name": "Seated cable row",
+      "pattern": "row",
+      "level": 6,
+      "equipment": [
+        "cable"
+      ],
+      "cue": "Sit tall, knees soft. Pull the handle to your ribs, then let your arms go long.",
+      "seconds": 3
+    },
+    {
+      "id": "pulldown-1",
+      "name": "Overhead band pull-apart",
+      "pattern": "pulldown",
+      "level": 1,
+      "equipment": [
+        "band"
+      ],
+      "cue": "Arms up, band taut. Pull it apart and down behind your head.",
+      "seconds": 3
+    },
+    {
+      "id": "pulldown-2",
+      "name": "Seated band pull-down",
+      "pattern": "pulldown",
+      "level": 2,
+      "equipment": [
+        "chair",
+        "band"
+      ],
+      "cue": "Band over the top of a door. Pull your elbows down to your sides.",
+      "seconds": 3
+    },
+    {
+      "id": "pulldown-3",
+      "name": "Kneeling band pull-down",
+      "pattern": "pulldown",
+      "level": 3,
+      "equipment": [
+        "band",
+        "mat"
+      ],
+      "cue": "Tall kneeling, bottom squeezed. Pull your elbows down and back.",
+      "seconds": 3
+    },
+    {
+      "id": "pulldown-4",
+      "name": "Assisted pull-up",
+      "pattern": "pulldown",
+      "level": 4,
+      "equipment": [
+        "pull-up bar",
+        "chair"
+      ],
+      "cue": "Feet on the chair to take some weight. Pull your chest up towards the bar.",
+      "seconds": 3.1
+    },
+    {
+      "id": "pulldown-5",
+      "name": "Lat pull-down",
+      "pattern": "pulldown",
+      "level": 5,
+      "equipment": [
+        "machine",
+        "cable"
+      ],
+      "cue": "Thighs under the pad. Pull the bar to your upper chest, then let it rise slowly.",
+      "seconds": 3
+    },
+    {
+      "id": "pulldown-6",
+      "name": "Chin-up",
+      "pattern": "pulldown",
+      "level": 6,
+      "equipment": [
+        "pull-up bar"
+      ],
+      "cue": "Hang long, then pull until your chin clears the bar. Lower all the way.",
+      "seconds": 3.3
+    },
+    {
+      "id": "lunge-0",
+      "name": "Seated knee extension",
+      "pattern": "lunge",
+      "level": 0,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Sit tall. Straighten one knee, pause, and lower slowly.",
+      "seconds": 3.2
+    },
+    {
+      "id": "lunge-1",
+      "name": "Supported split stance",
+      "pattern": "lunge",
+      "level": 1,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "One foot forward, hand on the counter. Bend both knees a little and hold.",
+      "seconds": 4.7
+    },
+    {
+      "id": "lunge-2",
+      "name": "Supported split squat",
+      "pattern": "lunge",
+      "level": 2,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "Lower your back knee towards the floor, then push back up.",
+      "seconds": 2.9
+    },
+    {
+      "id": "lunge-3",
+      "name": "Step-up",
+      "pattern": "lunge",
+      "level": 3,
+      "equipment": [
+        "step"
+      ],
+      "cue": "Whole foot on the step. Push through it to stand up, then step down.",
+      "seconds": 3.2
+    },
+    {
+      "id": "lunge-4",
+      "name": "Reverse lunge",
+      "pattern": "lunge",
+      "level": 4,
+      "equipment": [],
+      "cue": "Step back and lower your back knee towards the floor. Push through your front foot to return.",
+      "seconds": 3.1
+    },
+    {
+      "id": "lunge-5",
+      "name": "Dumbbell split squat",
+      "pattern": "lunge",
+      "level": 5,
+      "equipment": [
+        "dumbbells"
+      ],
+      "cue": "Weights by your sides. Drop your back knee straight down, then stand.",
+      "seconds": 2.9
+    },
+    {
+      "id": "lunge-6",
+      "name": "Bulgarian split squat",
+      "pattern": "lunge",
+      "level": 6,
+      "equipment": [
+        "bench",
+        "dumbbells"
+      ],
+      "cue": "Back foot on the bench. Lower until your front thigh is nearly level.",
+      "seconds": 2.9
+    },
+    {
+      "id": "carry-0",
+      "name": "Seated hold",
+      "pattern": "carry",
+      "level": 0,
+      "equipment": [
+        "chair",
+        "bags"
+      ],
+      "cue": "Sit tall with a bag in each hand. Shoulders back and down, breathe and hold.",
+      "seconds": 4.7
+    },
+    {
+      "id": "carry-1",
+      "name": "Bottle walk",
+      "pattern": "carry",
+      "level": 1,
+      "equipment": [
+        "bottles"
+      ],
+      "cue": "A bottle in each hand. Walk tall, slow and steady.",
+      "seconds": 1.7
+    },
+    {
+      "id": "carry-2",
+      "name": "Shopping bag carry",
+      "pattern": "carry",
+      "level": 2,
+      "equipment": [
+        "bags"
+      ],
+      "cue": "A bag in each hand, shoulders down. Walk tall and keep the bags still.",
+      "seconds": 1.7
+    },
+    {
+      "id": "carry-3",
+      "name": "Suitcase carry",
+      "pattern": "carry",
+      "level": 3,
+      "equipment": [
+        "kettlebell"
+      ],
+      "cue": "Weight in one hand. Don't let it pull you sideways.",
+      "seconds": 1.7
+    },
+    {
+      "id": "carry-4",
+      "name": "Farmer's carry",
+      "pattern": "carry",
+      "level": 4,
+      "equipment": [
+        "dumbbells"
+      ],
+      "cue": "Heavy weights, tall posture, small steady steps.",
+      "seconds": 1.7
+    },
+    {
+      "id": "carry-5",
+      "name": "Kettlebell carry",
+      "pattern": "carry",
+      "level": 5,
+      "equipment": [
+        "kettlebell"
+      ],
+      "cue": "Grip hard, shoulders down, walk slowly.",
+      "seconds": 1.7
+    },
+    {
+      "id": "carry-6",
+      "name": "Front-rack carry",
+      "pattern": "carry",
+      "level": 6,
+      "equipment": [
+        "kettlebell"
+      ],
+      "cue": "Bells at your chest, elbows tucked. Breathe and walk.",
+      "seconds": 1.7
+    },
+    {
+      "id": "core-0",
+      "name": "Seated lean-back",
+      "pattern": "core",
+      "level": 0,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Arms crossed, sit tall. Lean back a little, hold, then come forward.",
+      "seconds": 4.2
+    },
+    {
+      "id": "core-1",
+      "name": "Heel slide",
+      "pattern": "core",
+      "level": 1,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "Lower back gently pressed down. Slide one heel away, then back.",
+      "seconds": 3.2
+    },
+    {
+      "id": "core-2",
+      "name": "Dead bug",
+      "pattern": "core",
+      "level": 2,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "Back flat. Reach one arm back and the opposite leg out, then swap.",
+      "seconds": 5.8
+    },
+    {
+      "id": "core-3",
+      "name": "Incline plank",
+      "pattern": "core",
+      "level": 3,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "Hands on the counter, body in one line. Breathe and hold.",
+      "seconds": 3.6
+    },
+    {
+      "id": "core-4",
+      "name": "Knee plank",
+      "pattern": "core",
+      "level": 4,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "Forearms down, knees down, hips in line with your shoulders. Hold.",
+      "seconds": 3.6
+    },
+    {
+      "id": "core-5",
+      "name": "Plank with reach",
+      "pattern": "core",
+      "level": 5,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "Hold the plank and reach one arm forward without letting your hips rock.",
+      "seconds": 3.4
+    },
+    {
+      "id": "core-6",
+      "name": "Ab wheel rollout",
+      "pattern": "core",
+      "level": 6,
+      "equipment": [
+        "ab wheel",
+        "mat"
+      ],
+      "cue": "From your knees, roll out only as far as you can keep your back flat.",
+      "seconds": 3.7
+    },
+    {
+      "id": "rotation-0",
+      "name": "Seated band press-out",
+      "pattern": "rotation",
+      "level": 0,
+      "equipment": [
+        "chair",
+        "band"
+      ],
+      "cue": "Band anchored to one side. Press it out in front and don't let it turn you.",
+      "seconds": 3.9
+    },
+    {
+      "id": "rotation-1",
+      "name": "Seated march",
+      "pattern": "rotation",
+      "level": 1,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Sit tall, tummy braced. Lift one knee, lower, then the other.",
+      "seconds": 3.6
+    },
+    {
+      "id": "rotation-2",
+      "name": "Bird dog",
+      "pattern": "rotation",
+      "level": 2,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "On all fours. Reach one arm forward and the opposite leg back, then swap.",
+      "seconds": 5.6
+    },
+    {
+      "id": "rotation-3",
+      "name": "Knee side plank",
+      "pattern": "rotation",
+      "level": 3,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "On your side, knees bent. Lift your hips and hold.",
+      "seconds": 3.7
+    },
+    {
+      "id": "rotation-4",
+      "name": "Pallof press",
+      "pattern": "rotation",
+      "level": 4,
+      "equipment": [
+        "band"
+      ],
+      "cue": "Band anchored at your side, chest height. Press out and resist the turn.",
+      "seconds": 3.9
+    },
+    {
+      "id": "rotation-5",
+      "name": "Side plank",
+      "pattern": "rotation",
+      "level": 5,
+      "equipment": [
+        "mat"
+      ],
+      "cue": "Elbow under shoulder, feet stacked. Lift your hips into a straight line.",
+      "seconds": 3.7
+    },
+    {
+      "id": "rotation-6",
+      "name": "Half-kneeling chop",
+      "pattern": "rotation",
+      "level": 6,
+      "equipment": [
+        "band",
+        "mat"
+      ],
+      "cue": "Pull the band from high behind you down across your body, hips still.",
+      "seconds": 2.6
+    },
+    {
+      "id": "balance-0",
+      "name": "Seated reach",
+      "pattern": "balance",
+      "level": 0,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Sit tall, feet flat. Reach forward as far as feels steady, then sit back.",
+      "seconds": 3.4
+    },
+    {
+      "id": "balance-1",
+      "name": "Feet together, with support",
+      "pattern": "balance",
+      "level": 1,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "Feet together, a hand near the counter. Stand tall and breathe.",
+      "seconds": 3.6
+    },
+    {
+      "id": "balance-2",
+      "name": "Heel-to-toe stand, with support",
+      "pattern": "balance",
+      "level": 2,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "One foot directly in front of the other. Hold steady.",
+      "seconds": 3.6
+    },
+    {
+      "id": "balance-3",
+      "name": "Single-leg stand, with support",
+      "pattern": "balance",
+      "level": 3,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "Lift one foot, a fingertip on the counter. Hold.",
+      "seconds": 3.6
+    },
+    {
+      "id": "balance-4",
+      "name": "Heel-to-toe walk",
+      "pattern": "balance",
+      "level": 4,
+      "equipment": [],
+      "cue": "Heel touches toe with every step. Eyes ahead, arms out a little.",
+      "seconds": 1.7
+    },
+    {
+      "id": "balance-5",
+      "name": "Single-leg reach",
+      "pattern": "balance",
+      "level": 5,
+      "equipment": [],
+      "cue": "Standing on one leg, tip forward and reach, back leg long. Return to tall.",
+      "seconds": 3.5
+    },
+    {
+      "id": "balance-6",
+      "name": "Single-leg stand on a cushion",
+      "pattern": "balance",
+      "level": 6,
+      "equipment": [
+        "cushion"
+      ],
+      "cue": "One foot on the cushion, arms out a little. Hold steady.",
+      "seconds": 3.2
+    },
+    {
+      "id": "calf-1",
+      "name": "Seated heel raise",
+      "pattern": "calf",
+      "level": 1,
+      "equipment": [
+        "chair"
+      ],
+      "cue": "Feet flat. Lift your heels as high as you can, then lower slowly.",
+      "seconds": 2.6
+    },
+    {
+      "id": "calf-2",
+      "name": "Standing heel raise",
+      "pattern": "calf",
+      "level": 2,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "Fingertips on the counter. Rise onto the balls of your feet, then lower.",
+      "seconds": 2.7
+    },
+    {
+      "id": "calf-3",
+      "name": "Slow heel raise on a step",
+      "pattern": "calf",
+      "level": 3,
+      "equipment": [
+        "step"
+      ],
+      "cue": "Balls of your feet on the edge. Lower your heels slowly below the step, then rise.",
+      "seconds": 5
+    },
+    {
+      "id": "calf-4",
+      "name": "Single-leg heel raise, supported",
+      "pattern": "calf",
+      "level": 4,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "One foot hooked behind. Rise up, then lower with control.",
+      "seconds": 2.8
+    },
+    {
+      "id": "calf-5",
+      "name": "Single-leg heel raise, 3-2-3",
+      "pattern": "calf",
+      "level": 5,
+      "equipment": [
+        "counter"
+      ],
+      "cue": "Three seconds up, hold for two, three seconds down.",
+      "seconds": 8.3
+    },
+    {
+      "id": "calf-6",
+      "name": "Weighted single-leg heel raise",
+      "pattern": "calf",
+      "level": 6,
+      "equipment": [
+        "counter",
+        "dumbbells"
+      ],
+      "cue": "Weight in your free hand. Full range, slow on the way down.",
+      "seconds": 3.8
+    }
+  ]
+}

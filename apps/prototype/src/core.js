@@ -108,18 +108,18 @@
 
   var SESSIONS = {
     A: { name: 'Strength A', moves: [
-      { name: 'Sit to stand', sets: 3, reps: '10', cue: 'Sit back to a chair, stand tall, control the way down.' },
-      { name: 'Wall press-up', sets: 3, reps: '10', cue: 'Hands at shoulder height, body straight, lower slowly.' },
-      { name: 'Step-up', sets: 3, reps: '8 each leg', cue: 'Use a stair, push through the front heel.' },
-      { name: 'Band pull-apart', sets: 3, reps: '12', cue: 'Arms straight, squeeze your shoulder blades together.' },
-      { name: 'Side plank', sets: 2, reps: '20 seconds each side', cue: 'Knees down if you need, hips lifted.' }
+      { name: 'Sit to stand', anim: 'squat-2', sets: 3, reps: '10', cue: 'Sit back to a chair, stand tall, control the way down.' },
+      { name: 'Wall press-up', anim: 'push-1', sets: 3, reps: '10', cue: 'Hands at shoulder height, body straight, lower slowly.' },
+      { name: 'Step-up', anim: 'lunge-3', sets: 3, reps: '8 each leg', cue: 'Use a stair, push through the front heel.' },
+      { name: 'Overhead band pull-apart', anim: 'pulldown-1', sets: 3, reps: '12', cue: 'Arms up, band taut. Pull it apart and down behind your head.' },
+      { name: 'Side plank', anim: 'rotation-5', easier: 'rotation-3', sets: 2, reps: '20 seconds each side', cue: 'Knees down if you need, hips lifted.' }
     ] },
     B: { name: 'Strength B', moves: [
-      { name: 'Goblet squat', sets: 3, reps: '10', cue: 'Hold the weight at your chest, sit between your heels, stand tall.' },
-      { name: 'Glute bridge', sets: 3, reps: '12', cue: 'Feet flat, push through your heels, squeeze at the top for a second.' },
-      { name: 'Incline press-up', sets: 3, reps: '8', cue: 'Hands on a worktop or sofa arm, lower your chest, press away.' },
-      { name: 'Bent-over row', sets: 3, reps: '10', cue: 'Hinge at the hips, flat back, pull elbows towards your hips.' },
-      { name: 'Dead bug', sets: 2, reps: '8 each side', cue: 'Low back pressed down, reach opposite arm and leg away slowly.' }
+      { name: 'Goblet squat', anim: 'squat-4', sets: 3, reps: '10', cue: 'Hold the weight at your chest, sit between your heels, stand tall.' },
+      { name: 'Glute bridge', anim: 'hinge-1', sets: 3, reps: '12', cue: 'Feet flat, push through your heels, squeeze at the top for a second.' },
+      { name: 'Counter press-up', anim: 'push-2', sets: 3, reps: '8', cue: 'Hands on a worktop, body in one line. Lower your chest, press away.' },
+      { name: 'One-arm row', anim: 'row-4', sets: 3, reps: '10 each arm', cue: 'Hand on a chair or bench, back flat. Pull the weight to your hip.' },
+      { name: 'Dead bug', anim: 'core-2', sets: 2, reps: '8 each side', cue: 'Low back pressed down, reach opposite arm and leg away slowly.' }
     ] }
   };
 

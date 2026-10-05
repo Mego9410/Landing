@@ -6,6 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "npx --yes serve ../.. -l 3001",
-    "build": "node build.mjs"
+    "build": "node scripts/motion.mjs && node build.mjs"
+  },
+  "dependencies": {
+    "@landing/motion": "workspace:*"
   }
 }

@@ -22,7 +22,10 @@
         "tokens.css",
         "tokens.ts",
         "preview.html",
-        "public/prototype/**"
+        "public/prototype/**",
+        "svg/**",
+        "gallery.html",
+        "src/motion.js"
       ],
       "env": [
         "NEXT_PUBLIC_*"

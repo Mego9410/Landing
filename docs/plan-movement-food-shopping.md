@@ -1,7 +1,8 @@
 # Plan: movement, food and shopping
 
 How Landing will offer strength sessions that suit everyone, easy meals that beat a takeaway, and a path from "I'll
-have that meal" to a supermarket basket. Written 5 October 2026 from three research briefs:
+have that meal" to a supermarket basket. Written 5 October 2026 from three research briefs, and updated the same day
+with the decisions in section 10:
 
 - [Movement research](research/movement.md): evidence, training settings, exercise library, injuries and conditions, safety and regulation
 - [Food research](research/food.md): nutrition after stopping a GLP-1, easy-meal design, meal library, dietary needs, safe mode, recipe data
@@ -30,12 +31,16 @@ must sign off the content before launch (section 8).
    recipe serves vegans, coeliacs, halal and kosher eaters, people with nut allergies, people with only a microwave and
    so on. A swap is never blocked; if it drops protein, the app offers a one-tap top-up.
 5. **No UK supermarket offers a public API to fill a basket.** At launch we ship the hard, valuable part ourselves (the
-   weekly plan, a merged shopping list with pack sizes, pantry and leftovers) and hand off to each supermarket with
-   search links, a shopping-mode checklist, one-tap Amazon baskets (Morrisons, Iceland and Co-op on Amazon) and list
-   exports. One-tap baskets at Tesco, Sainsbury's, Asda, Morrisons and Waitrose come next, through an aggregator, then
-   through direct deals, Ocado first.
+   weekly plan, a merged shopping list with pack sizes, pantry and leftovers) and hand off to the big five: search
+   links and a shopping-mode checklist for Tesco, Sainsbury's and Asda, and an aisle-ordered list for Aldi and Lidl,
+   which have no online shop. Shopping is there to make life easier, not to earn money: no affiliate links, no
+   sponsored products. One-tap baskets wait for direct deals with the supermarkets; we won't use a third-party basket
+   service in the meantime.
 6. **Safe mode runs through all of it:** no numbers, no weight features, no streaks, hand-portion language and a Beat
    signpost, switched on by the user or by screening.
+7. **Exercise demos are illustrated loops we make ourselves,** in the brand's shapes with no faces. The first 80 (every
+   level of every pattern, plus the seated versions) are built: `packages/motion`, with a
+   [gallery](../packages/motion/gallery.html).
 
 ---
 
@@ -98,8 +103,9 @@ PAR-Q+ is copyrighted, so we write our own questions and have a physio review th
 
 - **Check with your GP first** (any yes): chest pain or unexplained breathlessness; fainting or blackouts in the last
   12 months; a heart condition diagnosed or changed in the last 12 months; surgery in the last 3 months, or told to
-  exercise only under supervision; pregnant or gave birth in the last 12 weeks; blood pressure very high and not yet
-  controlled. The habits and food still work; strength sessions wait, with an offer to remind them in a week or two.
+  exercise only under supervision; blood pressure very high and not yet controlled. The habits and food still work;
+  strength sessions wait, with an offer to remind them in a week or two.
+- **Refer on, then continue if they choose** (pregnant or gave birth in the last 12 weeks; kidney disease): see 4.2.1.
 - **Gentler track** (any yes, sets preferences, never excludes): diabetes treated with insulin or gliclazide-type
   tablets (hypo safety card, "follow your diabetes team's advice"); joint or back pain that affects daily life (comfort
   filters); osteoporosis or a broken bone from a minor fall since 50 (no loaded bending forward, no impact); falls in
@@ -107,6 +113,25 @@ PAR-Q+ is copyrighted, so we write our own questions and have a physio review th
   work); ME/CFS or feeling much worse after activity (pacing mode with no automatic progression, as NICE NG206
   requires); very flexible joints (control-focused ladders).
 - **Re-screen** every 12 weeks and whenever a check-in answer raises a red flag.
+
+#### 4.2.1 Pregnancy and kidney disease: refer on, with a disclaimer to continue
+
+Decided 5 October 2026. Anyone who says they are pregnant, gave birth in the last 12 weeks, or has kidney disease:
+
+1. Sees a calm referral screen: why it matters, and who to talk to first (midwife or GP for pregnancy; kidney team or
+   GP for kidney disease), with a "Remind me later" option.
+2. Can carry on only by ticking a box: "I've read this. I'll check with my [midwife / kidney team], and I agree to the
+   [terms and conditions] and [health disclaimer]." The button stays disabled until the box is ticked. We store the
+   answer, the wording version and the time, and ask again if the wording changes or at the 12-week re-screen.
+3. Carries on with the adaptations still on, whatever they tick. Pregnancy: safe mode for food, pregnancy-safe food
+   filter, protein targets and top-ups off, no weight features, and exercise rules the physio sets (for example no
+   lying flat on the back later in pregnancy, no heavy lifting or breath-holding). Kidney disease: protein targets and
+   top-ups off, low-salt mode on, and "follow your kidney team's advice" on food screens.
+4. Can withdraw at any time in settings, which turns strength sessions off again.
+
+The lawyer and the regulatory adviser review the screen, the checkbox wording and the terms before launch. Under UK
+law a disclaimer can't exclude liability for injury caused by negligence, so the adaptations and the referral are
+what protect people; the checkbox records an informed choice.
 
 ### 4.3 The exercise library
 
@@ -122,8 +147,12 @@ PAR-Q+ is copyrighted, so we write our own questions and have a physio review th
   needs floor transfer, weight through extended wrists, balance demand, cues, common mistakes, easier and harder
   versions.
 - **Launch size:** about 150 exercises (12 patterns × 6 levels, with roughly two setting variants each). Each needs a
-  short looping demo (silent video or illustration from the brand's shapes, no faces), 2 to 3 cues and one common
-  mistake. Plus about 15 warm-up and balance moves.
+  short looping demo, 2 to 3 cues and one common mistake. Plus about 15 warm-up and balance moves.
+- **Demos:** illustrated loops in the brand's shapes, no faces, made in house (decided 5 October 2026). The first 80
+  are built in `packages/motion`: a posable figure with props (chair, counter, step, bench, band, bottles, bags,
+  dumbbells, kettlebell, machines) whose keyframes compile to small animated SVGs (about 9 KB each) for the web and
+  prototype, and draw live in the Expo app. Reduced motion shows the starting position. Each exercise is a few lines
+  of keyframes, so the setting variants and warm-ups are quick to add. The physio reviews every loop with the cues.
 
 ### 4.4 How a session is built
 
@@ -228,7 +257,7 @@ yoghurt (almost no protein, warn).
 | Low FODMAP, IBS | A "gentler on the gut" tag only; no elimination programme; signpost GP or dietitian |
 | Type 2 diabetes | Carb-aware tag with fist-sized portions; hypo-awareness copy for insulin or gliclazide; no medication advice |
 | High blood pressure, cholesterol | Low-salt mode (reduced-salt stock and soy, flags over 1.5 g salt a portion); heart-friendly tag (oats, soya, beans, oily fish) |
-| Kidney disease, pregnancy | Protein targets and top-ups switched off, refer to their kidney team or midwife; pregnancy-safe food filter |
+| Kidney disease, pregnancy | Refer on, continue with a disclaimer checkbox (4.2.1); protein targets and top-ups switched off; pregnancy-safe food filter; low-salt mode for kidney disease |
 | Reflux, food aversions after GLP-1 | Gentle tag and a dinner-timing nudge; a "foods I can't face right now" list, rechecked after 8 weeks |
 | Budget, low skill, family, single person, microwave or kettle only, shift work | Cost per portion, skill level 0 to 3, build-your-own family formats, partial-pack planning, equipment filters, shift-anchored meal times |
 
@@ -262,23 +291,22 @@ asks for confirmation and shows the Beat link. SCOFF misses about half of cases,
 
 ## 6. Shopping and supermarkets
 
-### 6.1 What each supermarket allows today
+### 6.1 The big five at launch
+
+Decided 5 October 2026: the five largest supermarkets by share, plus "Somewhere else" for everyone else.
 
 | Supermarket | Share | One-tap basket now? | Launch hand-off |
 | --- | --- | --- | --- |
 | Tesco | 27.8% | No (private deals only; building its own planner) | Search links, shopping mode |
 | Sainsbury's | ~15% | No (has partnered with Whisk and Cherrypick before) | Search links, shopping mode |
 | Asda | 11.5% | No | Search links, shopping mode |
-| Aldi | ~10.8% | No online shop (Deliveroo pilot in 8 stores) | Printable or shared list in Aldi aisle order |
-| Lidl | 8.7% | No online shop | Printable or shared list in Lidl aisle order |
-| Morrisons | 8.4% | Yes, through Morrisons on Amazon | Amazon cart link, or search links on morrisons.com |
-| Co-op | 5.5% | Yes, through Co-op on Amazon (where available) | Amazon cart link, shared list |
-| Waitrose | 4.5% | No | Search links, shopping mode |
-| Iceland | 2.3% | Yes, through Iceland on Amazon | Amazon cart link, or search links |
-| Ocado (with M&S) | 2.2% | No (but the most open to partnerships) | Search links, shopping mode |
+| Aldi | ~10.8% | No online shop (Deliveroo pilot in 8 stores) | List in Aldi aisle order, to print or share |
+| Lidl | 8.7% | No online shop | List in Lidl aisle order, to print or share |
+| Somewhere else | | | Plain list grouped by aisle type, to print, share or send to Apple Reminders |
 
-Market shares are Worldpanel, 12 weeks to September 2026, from press summaries; check them before using externally.
-Search link formats must be tested on each site and in each supermarket's app before launch.
+Morrisons (8.4%) is a close sixth and the easiest to add later: Morrisons on Amazon takes a cart link today. Market
+shares are Worldpanel, 12 weeks to September 2026, from press summaries; check them before using externally. Search
+link formats must be tested on each site and in each supermarket's app before launch.
 
 ### 6.2 What the person sees
 
@@ -286,21 +314,21 @@ Search link formats must be tested on each site and in each supermarket's app be
 2. On a meal: **Add ingredients**. The ingredients go into Landing's weekly list, merged with the rest of the week,
    rounded to packs, with pantry items they already have left off.
 3. On the list: **Shop at [supermarket]**. What happens depends on the supermarket:
-   - **Amazon-backed (Morrisons, Iceland, Co-op on Amazon):** one tap fills the Amazon basket.
-   - **Other online supermarkets, at launch:** shopping mode. The list stays on screen and each item opens that
+   - **Tesco, Sainsbury's and Asda, at launch:** shopping mode. The list stays on screen and each item opens that
      supermarket's search (in its app if it supports the link, otherwise in a browser where the person is already
      signed in). They tick items off as they add them.
-   - **Later (aggregator or partner):** one tap fills the basket at that supermarket.
-   - **Aldi, Lidl or in store:** list grouped in aisle order, to print, share, or send to Apple Reminders.
+   - **Later, once a supermarket agrees a direct deal:** one tap fills the basket at that supermarket.
+   - **Aldi, Lidl or somewhere else:** list grouped in aisle order, to print, share, or send to Apple Reminders.
 4. A weekly cost shown as "about £X, estimate, checked [date]".
+5. No affiliate tags, tracking links or sponsored products anywhere in the flow (decided 5 October 2026). The links go
+   straight to the supermarket.
 
 ### 6.3 Phases
 
 | Phase | When | What ships | Cost |
 | --- | --- | --- | --- |
-| **1. Launch, no partnerships** | Built alongside the meal planner, about 8 to 12 weeks of engineering | Ingredient taxonomy (about 1,500 to 3,000 ingredients, each with a search term per supermarket); merged list with pack rounding, pantry and leftovers; shopping mode; Amazon cart links (Amazon Associates UK); exports (share sheet, clipboard, Apple Reminders, printable by aisle); estimated cost from a simple price table refreshed monthly; Awin affiliate tracking where programmes allow app traffic | Engineering time; affiliate accounts are free |
-| **2. One-tap baskets** | 3 to 6 months after launch | Trial Pepesto, which matches recipes to baskets at Tesco, Sainsbury's, Asda, Morrisons and Waitrose for about €1.20 a basket, after due diligence (is it authorised by each supermarket, indemnities, who owns the customer, does checkout in its app suit us and Apple). Or license a price and product feed (about £25,000 to £30,000 a year) for exact product matches | Per basket, or a licence |
-| **3. Direct partnerships** | 6 to 18 months, once there are tens of thousands of weekly planners | Approach Ocado's advertising team first (it put every Guardian Feast recipe into the Ocado basket, and 89% of visits came from non-Ocado customers), then Sainsbury's, then Tesco through dunnhumby, then Asda and Morrisons. Deal shapes: a basket endpoint with a fee per new customer, sponsored ingredient matches, loyalty co-marketing | Business development and legal review |
+| **1. Launch, no partnerships** | Built alongside the meal planner, about 8 to 12 weeks of engineering | Ingredient taxonomy (about 1,500 to 3,000 ingredients, each with a search term for Tesco, Sainsbury's and Asda); merged list with pack rounding, pantry and leftovers; shopping mode; aisle maps for Aldi and Lidl; exports (share sheet, clipboard, Apple Reminders, printable by aisle); estimated cost from a simple price table refreshed monthly | Engineering time |
+| **2. Direct deals** | 6 to 18 months, once there are tens of thousands of weekly planners | Approach Sainsbury's first (it has worked with recipe-to-basket partners before), then Tesco through dunnhumby, then Asda. Ask for a basket endpoint so one tap fills their basket. No third-party basket service in between (decided 5 October 2026). Any commercial terms are a later decision; for now the aim is ease for the user | Business development and legal review |
 
 **We will not** store anyone's supermarket password or session, run automated browsers against supermarket sites, or
 depend on scraped prices without a licence. That carries Computer Misuse Act, database right, GDPR and App Review
@@ -314,9 +342,11 @@ risk, and the supermarkets actively block it.
 
 | Path | What |
 | --- | --- |
-| `packages/content` (new) | Exercises, ladders, recipes, ingredients, swaps and aisle maps as reviewed data files (YAML or JSON), validated by a schema in CI. Clinicians review changes through pull requests or a simple CMS later |
+| `packages/content` (new) | Exercises, ladders, recipes, ingredients, swaps and aisle maps as data files (JSON), validated by a schema in CI. Edited through the CMS below, never by hand in production |
+| Simple CMS (new, decided 5 October 2026) | A web editor for the physio, the dietitian and the cook from day one: forms per content type, a draft → in review → approved status with the reviewer's name and date, and a preview of the exercise loop or recipe card. Pick a git-backed CMS that saves to `packages/content` (Keystatic, Decap or Tina, chosen in weeks 1 to 2), so every change still gets schema checks, history and a pull request, and nobody needs to learn GitHub. Hosted behind sign-in, at `/admin` on the web app or as its own small app |
+| `packages/motion` (built) | The exercise loops: figure, props, the 80 exercise animations, and renderers for SVG and React Native |
 | `packages/engine` (new) | Pure TypeScript with unit tests: session builder, progression rules, swap resolver, nutrition calculator, weekly planner, list aggregator and pack optimiser, supermarket hand-off links. Shared by the Expo app, the prototype and the web |
-| `apps/web` API routes | Saving plans and lists, price table, Amazon and affiliate link building, later the aggregator calls (keys stay on the server) |
+| `apps/web` API routes | Saving plans and lists, price table, supermarket search links, later the partner basket calls (keys stay on the server) |
 | Database (Supabase, already named in the privacy screen) | User profiles, equipment profiles, comfort flags, diet profile, pattern levels, session logs, meal plans, shopping lists, household sharing |
 | `apps/prototype` | Add the new screens with dummy data first, to agree flows before Expo |
 
@@ -347,7 +377,7 @@ them. Medication questions keep the prescriber redirect. Allergy answers always 
 | Registered dietitian (BDA) | Protein and fibre guidance, the Easy standard, swap tables, diet notes, kidney, diabetes and pregnancy handling | Same |
 | Eating-disorder specialist, ideally via Beat | Safe mode, language rules, screening triggers | Before beta |
 | Regulatory adviser | MHRA intended purpose, App Store and marketing wording (ASA/CAP), whether "after GLP-1" claims are borderline | Before the App Store listing is written |
-| Tech lawyer | Affiliate terms, aggregator contract, data licences (CoFID, Open Food Facts, price feeds), DMCC price display, GDPR for account linking | Before Phase 2 |
+| Tech lawyer | Terms and conditions, the health disclaimer and the continue checkbox (4.2.1), data licences (CoFID, Open Food Facts, price feeds), DMCC price display, GDPR for health data and consent records, later the supermarket contracts | Before launch |
 | A real cook | Times every recipe, with washing up, at the stated tier | Before each recipe ships |
 
 We write our own screening questions rather than licensing PAR-Q+ or SCOFF wording.
@@ -358,22 +388,23 @@ We write our own screening questions rather than licensing PAR-Q+ or SCOFF wordi
 
 | Weeks | Milestone |
 | --- | --- |
-| 1 to 2 | Decisions in section 10; book the physio, dietitian and regulatory reviews; write the content schemas |
-| 3 to 8 | Content v1: 150 exercises with demos, 60 recipes with swaps, 1,500 ingredients; build `packages/engine` with tests; add the new flows to the prototype with dummy data for testing |
-| 9 to 14 | Clinical review and fixes; Expo screens for sessions, meal plan, list and shopping mode; Supabase tables; Amazon and exports; recipes to 120 |
+| 1 to 2 | Book the physio, dietitian, regulatory and legal reviews; write the content schemas; choose and set up the CMS |
+| 3 to 8 | Content v1 in the CMS: 150 exercises (80 loops are done; add setting variants and warm-ups), 60 recipes with swaps, 1,500 ingredients; build `packages/engine` with tests; add the new flows, including the refer-on screen, to the prototype with dummy data for testing |
+| 9 to 14 | Clinical review and fixes; Expo screens for sessions, meal plan, list and shopping mode; Supabase tables; exports and aisle maps; recipes to 120 |
 | 15 to 18 | TestFlight beta with about 50 people across settings, diets and supermarkets; measure sessions done, meals planned, lists used, hand-off taps |
-| After launch | Pepesto trial and due diligence; more recipes and cultural collections; Ramadan mode; first partnership conversations with Ocado |
+| After launch | More recipes and cultural collections; Ramadan mode; Morrisons as a sixth supermarket; first partnership conversations with Sainsbury's and Tesco |
 
 ---
 
-## 10. Decisions needed
+## 10. Decisions made (5 October 2026)
 
-1. **Pregnancy and kidney disease:** adapt (features off, refer) or exclude? The research recommends adapting.
-2. **Demo media:** silent filmed videos (more trust, more cost) or illustrated loops in the brand's shapes?
-3. **Supermarket set at launch:** all ten, or the big five plus Amazon and "in store"?
-4. **Revenue from shopping:** affiliate only, or also sponsored ingredient matches later (must be labelled "sponsored")?
-5. **Pepesto:** happy for checkout to finish in a third party's app in Phase 2, or wait for direct deals?
-6. **Content tooling:** data files reviewed through GitHub, or a simple CMS for the clinicians from the start?
+1. **Pregnancy and kidney disease:** refer on, and let people continue only after ticking a disclaimer box that links
+   to the terms and conditions. Adaptations stay on either way (4.2.1).
+2. **Demo media:** illustrated loops in the brand's shapes, made in house. The first 80 are built (4.3).
+3. **Supermarkets at launch:** the big five, Tesco, Sainsbury's, Asda, Aldi and Lidl, plus "Somewhere else" (6.1).
+4. **Revenue from shopping:** none for now. No affiliate links and no sponsored matches; it is there for ease.
+5. **Third-party basket services:** wait for direct deals with the supermarkets (6.3).
+6. **Content tooling:** a simple CMS for the clinicians from the start, saving reviewed files to the repo (7.1).
 
 ---
 
@@ -381,7 +412,8 @@ We write our own screening questions rather than licensing PAR-Q+ or SCOFF wordi
 
 | Risk | What we do |
 | --- | --- |
-| Hand-off feels clunky without one-tap baskets | Make shopping mode fast (big tick boxes, item order by aisle, remember the last product chosen); prioritise Phase 2 |
+| Hand-off feels clunky without one-tap baskets | Make shopping mode fast (big tick boxes, item order by aisle, remember the last product chosen); use hand-off numbers to make the case to supermarkets for direct deals |
+| Someone continues past the refer-on screen and gets hurt | Adaptations stay on whatever they tick; clear referral copy; legal review of the terms; re-ask at every re-screen |
 | Tesco builds the same thing into its app | Our edge is the whole 12 months (movement, habits, safe mode, every supermarket), not the basket |
 | Content mistakes (allergens, unsafe exercise) | Schema validation, clinical sign-off, "check labels" everywhere, hard allergen filters |
 | Drifting into medical device territory | Preferences not diagnoses, no biometric interpretation, wording table, regulatory review of store copy |
@@ -395,7 +427,6 @@ We write our own screening questions rather than licensing PAR-Q+ or SCOFF wordi
 
 From the research briefs, before anything goes into in-app copy: exact NICE NG246 and QS212 wording; the ACSM 2026
 set and rep text; whether any GLP-1-specific strength trial has reported (LEAN-PREP, PRIME); the CoFID and Open Food
-Facts licences; current Worldpanel shares; each supermarket's search link format and app link support; which Awin
-programmes allow app traffic; Pepesto's legal basis per supermarket; whether Samsung Food still sells its basket API;
-the Beat helpline number; and verified protein and price values for the 150 core products. Full lists are at the end
+Facts licences; current Worldpanel shares; Tesco, Sainsbury's and Asda search link formats and app link support; Aldi
+and Lidl aisle layouts; which git-backed CMS suits clinicians best; the Beat helpline number; and verified protein and price values for the 150 core products. Full lists are at the end
 of each research brief.

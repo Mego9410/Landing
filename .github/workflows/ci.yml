@@ -30,6 +30,9 @@ jobs:
       - name: Generated tokens are up to date
         run: pnpm --filter @landing/design-system check
 
+      - name: Generated exercise animations are up to date
+        run: pnpm --filter @landing/motion check
+
       - name: Lint, typecheck and build every app
         run: pnpm turbo run lint typecheck build
         env:

@@ -14,7 +14,8 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "tokens": "pnpm --filter @landing/design-system build",
-    "check": "turbo run lint typecheck build && pnpm --filter @landing/design-system check"
+    "check": "turbo run lint typecheck build && pnpm --filter @landing/design-system check && pnpm --filter @landing/motion check",
+    "motion": "pnpm --filter @landing/motion build"
   },
   "devDependencies": {
     "turbo": "^2.11.7"

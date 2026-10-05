@@ -14,6 +14,12 @@ The Landing brand lives in [`design-system/`](design-system/), imported from the
 
 After editing `tokens.json` or a component preview, run `node design-system/build.mjs` to regenerate `tokens.css` and `preview.html`.
 
+## Prototype
+
+[`prototype/`](prototype/) is a clickable HTML version of the whole app with dummy data, the full sign-up flow,
+skip buttons and a test panel, for getting the brand and flows right before the Expo build. Open
+`prototype/index.html`, or see [its README](prototype/README.md).
+
 ## App screens
 
 [`designs/app-screens/`](designs/app-screens/) holds the 55 iPhone screen designs (onboarding, paywall,

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P3 Subscription ended</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px">
+  <div class="topbar">
+    <img src="../../../design-system/assets/Logos/landing-mark.svg" alt="" style="width: 40px; height: 35px">
+    <a class="avatar" href="S1-Settings.dc.html" aria-label="Settings">H</a>
+  </div>
+  <div class="stack">
+    <h1 class="t-title">Your subscription has ended</h1>
+    <p class="body-lg muted">Your plan and everything you've logged are safe. Pick up exactly where you left off.</p>
+  </div>
+  <div class="card hero tint-sage" style="gap: 12px">
+    <span class="label">WHERE YOU ARE</span>
+    <span class="t-heading">Week 14 · Settle</span>
+    <div class="between"><span class="body">Last landing score</span><span class="t-num-md">74</span></div>
+  </div>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="P1-Paywall.dc.html">Resubscribe</a>
+    <a class="ld-btn ld-btn--secondary ld-btn--md ld-btn--block" href="S8-Privacy.dc.html">Export my data</a>
+    <a class="ld-btn ld-btn--quiet ld-btn--sm" href="S3-Subscription.dc.html" style="align-self: center">Manage in the App Store</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

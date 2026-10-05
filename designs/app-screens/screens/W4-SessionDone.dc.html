@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>W4 Session done</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px">
+  <div aria-hidden="true" style="position: relative; height: 260px; margin: 0 -20px">
+    <div style="position: absolute; left: -20px; right: -20px; bottom: 0; height: 80px; border-radius: 9999px; background: var(--sage)"></div>
+    <div style="position: absolute; left: 145px; bottom: 80px; width: 100px; height: 100px; border-radius: 9999px; background: var(--apricot); display: grid; place-items: center; color: var(--on-pastel)"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div>
+    <div style="position: absolute; left: 60px; top: 50px; width: 14px; height: 14px; border-radius: 9999px; background: var(--lilac)"></div>
+    <div style="position: absolute; right: 70px; top: 36px; width: 22px; height: 22px; border-radius: 9999px; background: var(--sky)"></div>
+  </div>
+  <div class="stack" style="text-align: center; align-items: center">
+    <h1 class="t-display" style="font-size: 36px; line-height: 40px">Session done</h1>
+    <p class="body-lg">That's both strength sessions this week. Your muscles thank you.</p>
+  </div>
+  <div class="card" style="gap: 12px">
+    <span class="label">HOW DID THAT FEEL?</span>
+    <div class="wrap">
+      <sc-for list="{{feel}}" as="f" hint-placeholder-count="3"><button type="button" class="{{f.cls}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for>
+    </div>
+    <span class="caption muted">We use this to adjust next week's sessions.</span>
+  </div>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="T1-Today.dc.html">Back to Today</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { f: 'Just right' }; }
+  renderVals() { return { feel: ['Too easy', 'Just right', 'Tough'].map((label) => ({ label, cls: 'choice' + (this.state.f === label ? ' on' : ''), pick: () => this.setState({ f: label }) })) }; }
+}
+</script>
+</body>
+</html>

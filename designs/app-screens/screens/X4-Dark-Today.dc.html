@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dark mode: Today</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr dark" style="width: 390px; height: 1180px; gap: 24px">
+  <div class="topbar">
+    <div class="stack" style="gap: 2px">
+      <p class="caption muted">Monday 19 October</p>
+      <h1 class="t-title">Good evening, Hannah</h1>
+    </div>
+    <a class="avatar" href="S1-Settings.dc.html" aria-label="Settings">H</a>
+  </div>
+  <div class="row">
+    <x-import component-from-global-scope="Landing.Chip" tone="sage">Week 8 · Land</x-import>
+    <span class="caption muted">Settle starts next week</span>
+  </div>
+  <x-import component-from-global-scope="Landing.NudgeCard" title="Things shifted a little this week" action-label="See what changed">A lighter week with simpler habits usually settles it.</x-import>
+  <div class="card hero tint-apricot" style="gap: 14px">
+    <div class="between"><span class="label">PROTEIN TODAY</span><span class="caption">Target 100 g</span></div>
+    <div class="row" style="align-items: baseline; gap: 6px"><span class="t-num-md">82 g</span><span class="body">so far</span></div>
+    <div class="meter" style="background: var(--surface-raised)"><span style="width: 82%; background: var(--apricot-ink)"></span></div>
+    <a class="ld-btn ld-btn--md ld-btn--block" href="T2-QuickLog.dc.html" style="background: var(--surface-raised); color: var(--ink)">Quick log</a>
+  </div>
+  <div class="stack">
+    <h2 class="t-heading">This week's habits</h2>
+    <x-import component-from-global-scope="Landing.HabitCheck" label="Protein at breakfast" detail="25 g or more · 5 of 5 days" checked="{{yes}}"></x-import>
+    <x-import component-from-global-scope="Landing.HabitCheck" label="Two strength sessions" detail="2 of 2 done" checked="{{yes}}"></x-import>
+    <x-import component-from-global-scope="Landing.HabitCheck" label="Walk after dinner" detail="10 minutes, 3 of 5 days"></x-import>
+  </div>
+  <div class="card tint-lilac" style="gap: 6px">
+    <span class="label">TIP FOR TONIGHT</span>
+    <p class="body-lg">Evenings can feel hungrier. A protein-first dinner and a short walk after often help.</p>
+  </div>
+  <div class="tabslot"><dc-import name="TabBar" active="today" hint-size="350px,84px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() { return { yes: true }; }
+}
+</script>
+</body>
+</html>

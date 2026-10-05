@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>T4 Your week</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 900px; gap: 22px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="T1-Today.dc.html" aria-label="Close"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+    <span class="pill-tag tint-sky">Week 5 done</span>
+  </div>
+  <div class="stack" style="align-items: center; text-align: center; gap: 16px">
+    <h1 class="t-title">Your week, settled</h1>
+    <x-import component-from-global-scope="Landing.ScoreRing" score="{{score}}" size="{{ring}}"></x-import>
+    <p class="body-lg">Habits carried you this week. Your score is up 6 on last week.</p>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+    <div class="card" style="padding: 14px; gap: 2px; align-items: flex-start"><span class="t-num-md">13/15</span><span class="caption muted">habit days</span></div>
+    <div class="card" style="padding: 14px; gap: 2px; align-items: flex-start"><span class="t-num-md">2/2</span><span class="caption muted">workouts</span></div>
+    <div class="card" style="padding: 14px; gap: 2px; align-items: flex-start"><span class="t-num-md">3.4</span><span class="caption muted">avg hunger</span></div>
+  </div>
+  <div class="card tint-sunk" style="gap: 10px">
+    <span class="label">NEXT WEEK'S HABITS</span>
+    <div class="wrap">
+      <x-import component-from-global-scope="Landing.Chip" tone="apricot">Protein at breakfast</x-import>
+      <x-import component-from-global-scope="Landing.Chip" tone="sage">Two strength sessions</x-import>
+      <x-import component-from-global-scope="Landing.Chip" tone="lilac">Pause before seconds</x-import>
+    </div>
+  </div>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="T1-Today.dc.html">Start week 6</a>
+    <a class="ld-btn ld-btn--quiet ld-btn--sm" href="PR1-Progress.dc.html" style="align-self: center">See my progress</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return { score: 78, ring: 184 }; }
+}
+</script>
+</body>
+</html>

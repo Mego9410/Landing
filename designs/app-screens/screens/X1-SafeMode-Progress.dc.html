@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Safe mode: Progress</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr" style="width: 390px; height: 1000px">
+  <div class="topbar">
+    <h1 class="t-title">Progress</h1>
+    <a class="avatar" href="S1-Settings.dc.html" aria-label="Settings">H</a>
+  </div>
+  <a class="banner tint-sky" href="S7-Support.dc.html" style="text-decoration: none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
+    <span class="body grow">Safe mode is on. Weight is hidden.</span>
+    <span class="caption">Change</span>
+  </a>
+  <div class="card hero" style="flex-direction: row; align-items: center; gap: 16px">
+    <x-import component-from-global-scope="Landing.ScoreRing" score="{{score}}" size="{{ring}}" label="This week"></x-import>
+    <span class="grow stack" style="gap: 4px">
+      <span class="label muted">LANDING SCORE</span>
+      <span class="body" style="font-weight: 700">Built from your habits and hunger.</span>
+      <span class="caption" style="color: var(--sage-ink)">Your steadiest week yet</span>
+    </span>
+  </div>
+  <div class="card hero" style="gap: 12px">
+    <div class="between"><h2 class="t-heading">Hunger this week</h2><span class="caption muted">1 very hungry · 5 comfortably full</span></div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: end; height: 120px">
+      <sc-for list="{{bars}}" as="b" hint-placeholder-count="7">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end">
+          <span style="{{b.style}}"></span>
+          <span class="caption muted">{{b.day}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+    <div class="card" style="gap: 8px"><span class="label muted">HABITS</span><span class="t-num-md">13/15</span><div class="meter"><span style="width: 87%"></span></div></div>
+    <div class="card" style="gap: 8px"><span class="label muted">WORKOUTS</span><span class="t-num-md">2/2</span><div class="meter"><span style="width: 100%"></span></div></div>
+  </div>
+  <div class="tabslot"><dc-import name="TabBar" active="progress" hint-size="350px,84px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const vals = [['M', 3], ['T', 4], ['W', 3], ['T', 4], ['F', 4], ['S', 3], ['S', 5]];
+    return { score: 82, ring: 112, bars: vals.map(([day, v]) => ({ day, style: 'display: block; width: 100%; border-radius: 9999px; background: var(--sky); box-shadow: inset 0 0 0 2px var(--sky-ink); height: ' + (v * 18) + 'px' })) };
+  }
+}
+</script>
+</body>
+</html>

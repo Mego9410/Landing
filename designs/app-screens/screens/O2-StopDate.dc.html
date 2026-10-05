@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>O2 Stop date</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="O1-Status.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+    <div class="steps"><span style="width: 22%"></span></div>
+    <span class="caption muted">2 of 9</span>
+  </div>
+  <div class="stack">
+    <h1 class="t-title">When was your last injection?</h1>
+    <p class="body muted">Your plan counts its weeks from this date.</p>
+  </div>
+  <div class="card hero" style="gap: 14px">
+    <div class="between">
+      <button type="button" class="iconbtn flat" aria-label="Previous month"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <span class="t-heading">August 2026</span>
+      <button type="button" class="iconbtn flat" aria-label="Next month"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center">
+      <span class="caption muted">M</span><span class="caption muted">T</span><span class="caption muted">W</span><span class="caption muted">T</span><span class="caption muted">F</span><span class="caption muted">S</span><span class="caption muted">S</span>
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="35">
+        <button type="button" class="{{d.cls}}" onClick="{{d.pick}}" style="height: 40px; border: 0; border-radius: 9999px; font: inherit; font-weight: 700; cursor: pointer">{{d.label}}</button>
+      </sc-for>
+    </div>
+  </div>
+  <div class="row" style="justify-content: center">
+    <span class="pill-tag" style="background: var(--sky); color: var(--on-pastel)">{{summary}}</span>
+  </div>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="O3-StartingPoint.dc.html">Continue</a>
+    <a class="ld-btn ld-btn--quiet ld-btn--sm" href="O3-StartingPoint.dc.html" style="align-self: center">I'm not sure yet</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { day: 31 }; }
+  renderVals() {
+    const days = [];
+    for (let i = 0; i < 5; i++) days.push({ label: '', cls: 'cal-blank', pick: null });
+    for (let d = 1; d <= 31; d++) {
+      const on = this.state.day === d;
+      days.push({ label: String(d), cls: on ? 'cal-on' : 'cal-day', pick: () => this.setState({ day: d }) });
+    }
+    const weeks = Math.floor((Date.UTC(2026, 9, 5) - Date.UTC(2026, 7, this.state.day)) / 864e5 / 7) + 1;
+    return { days: days.map((d) => ({ ...d, cls: d.cls === 'cal-on' ? 'cal-on' : d.cls })), summary: this.state.day + ' August · you’re in week ' + weeks };
+  }
+}
+</script>
+</body>
+</html>

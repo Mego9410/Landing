@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>T3 Swap a habit</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr" style="width: 390px; height: 844px; padding: 0">
+  <div class="backdrop" aria-hidden="true">
+    <p class="caption muted">Monday 5 October</p>
+    <p class="t-title">Good afternoon, Hannah</p>
+  </div>
+  <div class="dim"></div>
+  <div class="sheet" role="dialog" aria-label="Swap a habit" style="top: 150px">
+    <span class="grab"></span>
+    <div class="between">
+      <h1 class="t-heading" style="font-size: 24px; line-height: 30px">Swap a habit</h1>
+      <a class="iconbtn" href="T1-Today.dc.html" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+    </div>
+    <div class="card tint-sunk" style="padding: 12px 16px; gap: 2px">
+      <span class="caption muted">Replacing, for this week only</span>
+      <span style="font-weight: 800">Pause before seconds</span>
+    </div>
+    <div class="stack" style="gap: 8px">
+      <sc-for list="{{options}}" as="o" hint-placeholder-count="4">
+        <button type="button" class="{{o.cls}}" onClick="{{o.pick}}"><span class="radio"></span><span class="grow stack" style="gap: 0"><span style="font-weight: 800">{{o.title}}</span><span class="caption" style="opacity: .8">{{o.detail}}</span></span></button>
+      </sc-for>
+    </div>
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="T1-Today.dc.html">Choose this one</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { picked: 'walk' }; }
+  renderVals() {
+    const list = [
+      { id: 'plate', title: 'Plate up once', detail: 'Serve in the kitchen, not at the table' },
+      { id: 'walk', title: 'Ten-minute walk after dinner', detail: 'Helps the evening wind down' },
+      { id: 'table', title: 'Eat at the table', detail: 'Screens off for one meal a day' },
+      { id: 'water', title: 'Water before dinner', detail: 'One glass while you cook' }
+    ];
+    return { options: list.map((o) => ({ ...o, cls: 'option' + (this.state.picked === o.id ? ' sel' : ''), pick: () => this.setState({ picked: o.id }) })) };
+  }
+}
+</script>
+</body>
+</html>

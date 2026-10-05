@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P1 Start your free week</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 920px; gap: 18px">
+  <div class="topbar">
+    <img src="../../../design-system/assets/Logos/landing-mark.svg" alt="" style="width: 40px; height: 35px">
+    <a class="ld-btn ld-btn--quiet ld-btn--sm" href="P2-YoureIn.dc.html">Restore</a>
+  </div>
+  <div class="stack" style="gap: 8px">
+    <h1 class="t-title">Try your plan free for 7 days</h1>
+    <p class="body muted">Everything you need for the year after the jab.</p>
+  </div>
+  <div class="stack" style="gap: 10px">
+    <div class="row"><span class="ico" style="width: 28px; height: 28px; border-radius: 9999px; display: grid; place-items: center; background: var(--sage); flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="body">Your 12-month plan, three habits a week</span></div>
+    <div class="row"><span class="ico" style="width: 28px; height: 28px; border-radius: 9999px; display: grid; place-items: center; background: var(--sage); flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="body">Weekly landing score and early warnings</span></div>
+    <div class="row"><span class="ico" style="width: 28px; height: 28px; border-radius: 9999px; display: grid; place-items: center; background: var(--sage); flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="body">Strength sessions for home or the gym</span></div>
+    <div class="row"><span class="ico" style="width: 28px; height: 28px; border-radius: 9999px; display: grid; place-items: center; background: var(--sage); flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="body">A coach for habits, food swaps and bad days</span></div>
+  </div>
+  <div class="stack" style="gap: 10px">
+    <button type="button" class="{{annualCls}}" onClick="{{pickAnnual}}" style="padding: 16px 18px">
+      <span class="radio"></span>
+      <span class="grow stack" style="gap: 0"><span class="between"><span style="font-weight: 800; font-size: 16px">Yearly</span><span class="pill-tag" style="background: var(--surface-raised); color: var(--ink)">7 days free</span></span><span class="caption" style="opacity: .85">£69.99 a year · about £1.35 a week</span></span>
+    </button>
+    <button type="button" class="{{monthlyCls}}" onClick="{{pickMonthly}}" style="padding: 16px 18px">
+      <span class="radio"></span>
+      <span class="grow stack" style="gap: 0"><span style="font-weight: 800; font-size: 16px">Monthly</span><span class="caption" style="opacity: .85">£12.99 a month · no free trial</span></span>
+    </button>
+  </div>
+  <div class="card tint-sunk" style="gap: 6px; padding: 14px 16px">
+    <div class="between"><span class="label">Today</span><span class="caption muted">Full access starts</span></div>
+    <div class="between"><span class="label">Day 5</span><span class="caption muted">We remind you the trial is ending</span></div>
+    <div class="between"><span class="label">Day 7</span><span class="caption muted">{{chargeLine}}</span></div>
+  </div>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="P2-YoureIn.dc.html">{{cta}}</a>
+    <p class="caption muted" style="text-align: center">Cancel any time in your App Store settings. Terms · Privacy</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":920}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { plan: 'annual' }; }
+  renderVals() {
+    const a = this.state.plan === 'annual';
+    return {
+      annualCls: 'option' + (a ? ' sel' : ''), monthlyCls: 'option' + (a ? '' : ' sel'),
+      pickAnnual: () => this.setState({ plan: 'annual' }), pickMonthly: () => this.setState({ plan: 'monthly' }),
+      cta: a ? 'Start my free week' : 'Subscribe for £12.99 a month',
+      chargeLine: a ? '£69.99 for the year, unless you cancel' : 'Monthly plans start straight away'
+    };
+  }
+}
+</script>
+</body>
+</html>

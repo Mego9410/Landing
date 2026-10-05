@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>S5 Apple Health</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="S1-Settings.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+  </div>
+  <h1 class="t-title">Apple Health</h1>
+  <div class="card tint-sage" style="flex-direction: row; align-items: center; gap: 12px">
+    <span style="width: 40px; height: 40px; border-radius: 9999px; background: var(--on-pastel); color: var(--sage); display: grid; place-items: center; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+    <span class="grow stack" style="gap: 0"><span style="font-weight: 800">Connected</span><span class="caption">Last synced today at 7:42</span></span>
+  </div>
+  <div class="list">
+    <div class="li"><span class="grow" style="font-weight: 700">Weight</span><span class="caption muted">Reading</span></div>
+    <div class="li"><span class="grow" style="font-weight: 700">Steps</span><span class="caption muted">Reading</span></div>
+    <div class="li"><span class="grow" style="font-weight: 700">Workouts</span><span class="caption muted">Reading and saving</span></div>
+  </div>
+  <p class="caption muted">To change what Landing can see, open the Health app, then Sharing, then Apps.</p>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="S5-AppleHealth.dc.html">Sync now</a>
+    <a class="ld-btn ld-btn--secondary ld-btn--md ld-btn--block" href="S5-AppleHealth.dc.html">Open Health settings</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

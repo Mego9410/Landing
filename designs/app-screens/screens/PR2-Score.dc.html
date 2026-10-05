@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PR2 About your score</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 900px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="PR1-Progress.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+    <span class="caption muted">Week 5</span>
+    <span style="width: 44px"></span>
+  </div>
+  <div class="stack" style="align-items: center; text-align: center; gap: 14px">
+    <x-import component-from-global-scope="Landing.ScoreRing" score="{{score}}" size="{{ring}}"></x-import>
+    <h1 class="t-title">About your score</h1>
+    <p class="body muted">It rewards steady habits, not weight loss. Three parts make it up.</p>
+  </div>
+  <div class="stack">
+    <sc-for list="{{parts}}" as="p" hint-placeholder-count="3">
+      <div class="card" style="gap: 8px">
+        <div class="between"><span style="font-weight: 800">{{p.name}}</span><span class="caption muted">{{p.weight}}</span></div>
+        <div class="row"><div class="meter grow"><span style="{{p.bar}}"></span></div><span class="t-heading" style="width: 36px; text-align: right">{{p.value}}</span></div>
+        <span class="caption muted">{{p.note}}</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const parts = [
+      { name: 'Weight stability', weight: '40% of your score', value: 85, note: 'Inside your steady zone on 6 of 7 days' },
+      { name: 'Habits', weight: '40% of your score', value: 80, note: '13 of 15 habit days and both strength sessions' },
+      { name: 'Hunger', weight: '20% of your score', value: 60, note: 'A little hungrier in the evenings than your first month' }
+    ];
+    return { score: 78, ring: 150, parts: parts.map((p) => ({ ...p, bar: 'width: ' + p.value + '%' })) };
+  }
+}
+</script>
+</body>
+</html>

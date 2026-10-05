@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>S2 Your details</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px; gap: 16px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="S1-Settings.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+    <a class="ld-btn ld-btn--quiet ld-btn--sm" href="S1-Settings.dc.html">Save</a>
+  </div>
+  <h1 class="t-title">Your details</h1>
+  <div class="stack" style="gap: 8px">
+    <p class="label">WHERE YOU ARE WITH YOUR JAB</p>
+    <div class="wrap">
+      <sc-for list="{{status}}" as="s" hint-placeholder-count="3"><button type="button" class="{{s.cls}}" onClick="{{s.pick}}">{{s.label}}</button></sc-for>
+    </div>
+  </div>
+  <x-import component-from-global-scope="Landing.TextField" label="Last injection" default-value="31 August 2026"></x-import>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+    <x-import component-from-global-scope="Landing.TextField" label="Weight at start" suffix="kg" default-value="96.2"></x-import>
+    <x-import component-from-global-scope="Landing.TextField" label="Lowest weight" suffix="kg" default-value="78.0"></x-import>
+    <x-import component-from-global-scope="Landing.TextField" label="Height" suffix="cm" default-value="168"></x-import>
+    <x-import component-from-global-scope="Landing.TextField" label="Training days" suffix="a week" default-value="2"></x-import>
+  </div>
+  <p class="caption muted">Changing your last injection date moves you to a different week of the plan.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { s: "I've stopped" }; }
+  renderVals() { return { status: ["I've stopped", 'Stopping soon', 'Still on it'].map((label) => ({ label, cls: 'choice' + (this.state.s === label ? ' on' : ''), pick: () => this.setState({ s: label }) })) }; }
+}
+</script>
+</body>
+</html>

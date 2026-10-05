@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>S6 Units</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="S1-Settings.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+  </div>
+  <h1 class="t-title">Units</h1>
+  <div class="card" style="gap: 12px">
+    <span class="label">WEIGHT</span>
+    <div class="seg" role="group" aria-label="Weight unit">
+      <button type="button" class="{{kgCls}}" onClick="{{pickKg}}">Kilograms</button>
+      <button type="button" class="{{stCls}}" onClick="{{pickSt}}">Stones and pounds</button>
+    </div>
+    <span class="caption muted">{{weightSample}}</span>
+  </div>
+  <div class="card" style="gap: 12px">
+    <span class="label">HEIGHT</span>
+    <div class="seg" role="group" aria-label="Height unit">
+      <button type="button" class="{{cmCls}}" onClick="{{pickCm}}">Centimetres</button>
+      <button type="button" class="{{ftCls}}" onClick="{{pickFt}}">Feet and inches</button>
+    </div>
+  </div>
+  <p class="caption muted">Protein is always shown in grams.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { w: 'kg', h: 'cm' }; }
+  renderVals() {
+    const s = this.state;
+    return {
+      kgCls: s.w === 'kg' ? 'on' : '', stCls: s.w === 'st' ? 'on' : '', cmCls: s.h === 'cm' ? 'on' : '', ftCls: s.h === 'ft' ? 'on' : '',
+      pickKg: () => this.setState({ w: 'kg' }), pickSt: () => this.setState({ w: 'st' }), pickCm: () => this.setState({ h: 'cm' }), pickFt: () => this.setState({ h: 'ft' }),
+      weightSample: s.w === 'kg' ? 'Shown as 78.4 kg' : 'Shown as 12 st 4 lb'
+    };
+  }
+}
+</script>
+</body>
+</html>

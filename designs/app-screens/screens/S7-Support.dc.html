@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>S7 Support and safe mode</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="S1-Settings.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+  </div>
+  <h1 class="t-title">Support and safe mode</h1>
+  <div class="card hero tint-sky" style="gap: 10px">
+    <div class="between"><span class="t-heading">Safe mode</span><button type="button" class="{{toggleCls}}" onClick="{{toggle}}" aria-label="Safe mode" aria-pressed="{{on}}"></button></div>
+    <p class="body">Hides weight targets and the weight chart, and builds your score from habits and hunger only. Turn it on any time you'd rather not see the numbers.</p>
+  </div>
+  <div class="stack" style="gap: 8px">
+    <p class="label muted">TALK TO SOMEONE</p>
+    <div class="list">
+      <a class="li" href="S7-Support.dc.html"><span class="grow stack" style="gap: 0"><span style="font-weight: 800">Beat</span><span class="caption muted">UK eating disorder charity</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></a>
+      <a class="li" href="S7-Support.dc.html"><span class="grow stack" style="gap: 0"><span style="font-weight: 800">Your GP or prescriber</span><span class="caption muted">For anything about your health or medication</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></a>
+    </div>
+  </div>
+  <div class="stack" style="gap: 8px">
+    <p class="label muted">HELP WITH THE APP</p>
+    <div class="card" style="gap: 2px"><span style="font-weight: 800">Email us</span><span class="body muted">help@[YOUR DOMAIN] · we reply within 2 working days</span></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { on: false }; }
+  renderVals() { return { on: this.state.on, toggleCls: 'toggle' + (this.state.on ? ' on' : ''), toggle: () => this.setState({ on: !this.state.on }) }; }
+}
+</script>
+</body>
+</html>

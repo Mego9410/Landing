@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PR5 Weigh-in history</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px; gap: 16px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="PR1-Progress.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+    <a class="iconbtn" href="T2-QuickLog.dc.html" aria-label="Add a weigh-in"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></a>
+  </div>
+  <div class="stack" style="gap: 4px">
+    <h1 class="t-title">Weigh-in history</h1>
+    <p class="caption muted">Tap an entry to edit or delete it. One entry a day; the latest wins.</p>
+  </div>
+  <div class="list">
+    <sc-for list="{{entries}}" as="e" hint-placeholder-count="8">
+      <a class="li" href="PR5-History.dc.html">
+        <span class="grow stack" style="gap: 0"><span style="font-weight: 800">{{e.day}}</span><span class="caption muted">{{e.source}}</span></span>
+        <span style="font-family: var(--font-display); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums">{{e.kg}} kg</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg>
+      </a>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { entries: [
+      { day: 'Mon 5 Oct', kg: '78.4', source: 'Apple Health · 7:42' },
+      { day: 'Sun 4 Oct', kg: '78.6', source: 'Logged by you' },
+      { day: 'Sat 3 Oct', kg: '78.3', source: 'Apple Health · 8:10' },
+      { day: 'Fri 2 Oct', kg: '78.7', source: 'Apple Health · 7:35' },
+      { day: 'Thu 1 Oct', kg: '78.5', source: 'Apple Health · 7:50' },
+      { day: 'Wed 30 Sep', kg: '78.9', source: 'Logged by you' },
+      { day: 'Tue 29 Sep', kg: '78.6', source: 'Apple Health · 7:44' },
+      { day: 'Mon 28 Sep', kg: '78.8', source: 'Apple Health · 7:39' }
+    ] };
+  }
+}
+</script>
+</body>
+</html>

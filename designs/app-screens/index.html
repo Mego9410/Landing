@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing app screens</title>
+<link rel="stylesheet" href="../../design-system/tokens.css">
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@600;700&display=swap");
+  body { margin: 0; background: var(--surface); color: var(--ink); font-family: var(--font-body); }
+  main { max-width: 1400px; margin: 0 auto; padding: var(--space-8) var(--space-4) var(--space-12); }
+  h1 { margin: 0 0 var(--space-2); font: 600 40px/44px var(--font-display); }
+  nav { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-4) 0 var(--space-8); }
+  nav a { padding: 6px 14px; border-radius: var(--radius-full); background: var(--surface-raised); box-shadow: var(--shadow-sm); color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; }
+  h2 { margin: var(--space-12) 0 var(--space-4); font: 600 28px/34px var(--font-display); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-6); align-items: start; }
+  figure { margin: 0; }
+  figure a { display: block; border-radius: 28px; overflow: hidden; box-shadow: var(--shadow-sm); }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: var(--space-2); font-size: 13px; font-weight: 700; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<main>
+<h1>Landing app screens</h1>
+<p style="margin:0;color:var(--ink-muted)">55 screens. Click one to see it full size.</p>
+<nav><a href="#s0">Entry and sign-in</a><a href="#s1">Onboarding</a><a href="#s2">Paywall</a><a href="#s3">Today</a><a href="#s4">Workouts</a><a href="#s5">Plan</a><a href="#s6">Progress</a><a href="#s7">Coach</a><a href="#s8">Settings and account</a><a href="#s9">Shared states</a><a href="#s10">Shared parts</a></nav>
+<h2 id="s0">Entry and sign-in</h2>
+<div class="grid">
+<figure><a href="renders/Main.png"><img src="renders/Main.png" alt="A1 Launch" loading="lazy" width="390" height="844"></a><figcaption>A1 Launch</figcaption></figure>
+<figure><a href="renders/A2-Welcome.png"><img src="renders/A2-Welcome.png" alt="A2 Welcome" loading="lazy" width="390" height="844"></a><figcaption>A2 Welcome</figcaption></figure>
+<figure><a href="renders/A3-Email.png"><img src="renders/A3-Email.png" alt="A3 Email sign-in" loading="lazy" width="390" height="844"></a><figcaption>A3 Email sign-in</figcaption></figure>
+<figure><a href="renders/A4-Inbox.png"><img src="renders/A4-Inbox.png" alt="A4 Check your inbox" loading="lazy" width="390" height="844"></a><figcaption>A4 Check your inbox</figcaption></figure>
+</div>
+<h2 id="s1">Onboarding</h2>
+<div class="grid">
+<figure><a href="renders/O1-Status.png"><img src="renders/O1-Status.png" alt="O1 Where you are now" loading="lazy" width="390" height="844"></a><figcaption>O1 Where you are now</figcaption></figure>
+<figure><a href="renders/O2-StopDate.png"><img src="renders/O2-StopDate.png" alt="O2 Stop date" loading="lazy" width="390" height="844"></a><figcaption>O2 Stop date</figcaption></figure>
+<figure><a href="renders/O3-StartingPoint.png"><img src="renders/O3-StartingPoint.png" alt="O3 Your starting point" loading="lazy" width="390" height="844"></a><figcaption>O3 Your starting point</figcaption></figure>
+<figure><a href="renders/O4-Screening.png"><img src="renders/O4-Screening.png" alt="O4 A few quick questions" loading="lazy" width="390" height="844"></a><figcaption>O4 A few quick questions</figcaption></figure>
+<figure><a href="renders/O5-Support.png"><img src="renders/O5-Support.png" alt="O5 Support and safe mode" loading="lazy" width="390" height="844"></a><figcaption>O5 Support and safe mode</figcaption></figure>
+<figure><a href="renders/O6-Training.png"><img src="renders/O6-Training.png" alt="O6 Your training" loading="lazy" width="390" height="844"></a><figcaption>O6 Your training</figcaption></figure>
+<figure><a href="renders/O7-FoodHunger.png"><img src="renders/O7-FoodHunger.png" alt="O7 Food and hunger" loading="lazy" width="390" height="844"></a><figcaption>O7 Food and hunger</figcaption></figure>
+<figure><a href="renders/O8-Consent.png"><img src="renders/O8-Consent.png" alt="O8 Your health data" loading="lazy" width="390" height="844"></a><figcaption>O8 Your health data</figcaption></figure>
+<figure><a href="renders/O9-AppleHealth.png"><img src="renders/O9-AppleHealth.png" alt="O9 Connect Apple Health" loading="lazy" width="390" height="844"></a><figcaption>O9 Connect Apple Health</figcaption></figure>
+<figure><a href="renders/O10-Reminders.png"><img src="renders/O10-Reminders.png" alt="O10 Reminders" loading="lazy" width="390" height="844"></a><figcaption>O10 Reminders</figcaption></figure>
+<figure><a href="renders/O11-Building.png"><img src="renders/O11-Building.png" alt="O11 Building your plan" loading="lazy" width="390" height="844"></a><figcaption>O11 Building your plan</figcaption></figure>
+<figure><a href="renders/O12-PlanReveal.png"><img src="renders/O12-PlanReveal.png" alt="O12 Your landing plan" loading="lazy" width="390" height="960"></a><figcaption>O12 Your landing plan</figcaption></figure>
+</div>
+<h2 id="s2">Paywall</h2>
+<div class="grid">
+<figure><a href="renders/P1-Paywall.png"><img src="renders/P1-Paywall.png" alt="P1 Start your free week" loading="lazy" width="390" height="920"></a><figcaption>P1 Start your free week</figcaption></figure>
+<figure><a href="renders/P2-YoureIn.png"><img src="renders/P2-YoureIn.png" alt="P2 You're in" loading="lazy" width="390" height="844"></a><figcaption>P2 You're in</figcaption></figure>
+<figure><a href="renders/P3-Lapsed.png"><img src="renders/P3-Lapsed.png" alt="P3 Subscription ended" loading="lazy" width="390" height="844"></a><figcaption>P3 Subscription ended</figcaption></figure>
+</div>
+<h2 id="s3">Today</h2>
+<div class="grid">
+<figure><a href="renders/T1-Today.png"><img src="renders/T1-Today.png" alt="T1 Today" loading="lazy" width="390" height="1180"></a><figcaption>T1 Today</figcaption></figure>
+<figure><a href="renders/T2-QuickLog.png"><img src="renders/T2-QuickLog.png" alt="T2 Quick log" loading="lazy" width="390" height="844"></a><figcaption>T2 Quick log</figcaption></figure>
+<figure><a href="renders/T3-SwapHabit.png"><img src="renders/T3-SwapHabit.png" alt="T3 Swap a habit" loading="lazy" width="390" height="844"></a><figcaption>T3 Swap a habit</figcaption></figure>
+<figure><a href="renders/T4-YourWeek.png"><img src="renders/T4-YourWeek.png" alt="T4 Your week" loading="lazy" width="390" height="900"></a><figcaption>T4 Your week</figcaption></figure>
+</div>
+<h2 id="s4">Workouts</h2>
+<div class="grid">
+<figure><a href="renders/W1-Sessions.png"><img src="renders/W1-Sessions.png" alt="W1 This week's sessions" loading="lazy" width="390" height="844"></a><figcaption>W1 This week's sessions</figcaption></figure>
+<figure><a href="renders/W2-SessionOverview.png"><img src="renders/W2-SessionOverview.png" alt="W2 Session overview" loading="lazy" width="390" height="900"></a><figcaption>W2 Session overview</figcaption></figure>
+<figure><a href="renders/W3-InSession.png"><img src="renders/W3-InSession.png" alt="W3 In session" loading="lazy" width="390" height="844"></a><figcaption>W3 In session</figcaption></figure>
+<figure><a href="renders/W4-SessionDone.png"><img src="renders/W4-SessionDone.png" alt="W4 Session done" loading="lazy" width="390" height="844"></a><figcaption>W4 Session done</figcaption></figure>
+</div>
+<h2 id="s5">Plan</h2>
+<div class="grid">
+<figure><a href="renders/PL1-Plan.png"><img src="renders/PL1-Plan.png" alt="PL1 Your plan" loading="lazy" width="390" height="1000"></a><figcaption>PL1 Your plan</figcaption></figure>
+<figure><a href="renders/PL2-Week.png"><img src="renders/PL2-Week.png" alt="PL2 Week detail" loading="lazy" width="390" height="1000"></a><figcaption>PL2 Week detail</figcaption></figure>
+<figure><a href="renders/PL3-Lesson.png"><img src="renders/PL3-Lesson.png" alt="PL3 Lesson" loading="lazy" width="390" height="1000"></a><figcaption>PL3 Lesson</figcaption></figure>
+<figure><a href="renders/PL4-NewPhase.png"><img src="renders/PL4-NewPhase.png" alt="PL4 New phase" loading="lazy" width="390" height="844"></a><figcaption>PL4 New phase</figcaption></figure>
+</div>
+<h2 id="s6">Progress</h2>
+<div class="grid">
+<figure><a href="renders/PR1-Progress.png"><img src="renders/PR1-Progress.png" alt="PR1 Progress" loading="lazy" width="390" height="1150"></a><figcaption>PR1 Progress</figcaption></figure>
+<figure><a href="renders/PR2-Score.png"><img src="renders/PR2-Score.png" alt="PR2 About your score" loading="lazy" width="390" height="900"></a><figcaption>PR2 About your score</figcaption></figure>
+<figure><a href="renders/PR3-WhatChanged.png"><img src="renders/PR3-WhatChanged.png" alt="PR3 What changed" loading="lazy" width="390" height="844"></a><figcaption>PR3 What changed</figcaption></figure>
+<figure><a href="renders/PR4-ResetWeek.png"><img src="renders/PR4-ResetWeek.png" alt="PR4 Your reset week" loading="lazy" width="390" height="844"></a><figcaption>PR4 Your reset week</figcaption></figure>
+<figure><a href="renders/PR5-History.png"><img src="renders/PR5-History.png" alt="PR5 Weigh-in history" loading="lazy" width="390" height="844"></a><figcaption>PR5 Weigh-in history</figcaption></figure>
+<figure><a href="renders/PR6-PrescriberPack.png"><img src="renders/PR6-PrescriberPack.png" alt="PR6 Prescriber pack" loading="lazy" width="390" height="900"></a><figcaption>PR6 Prescriber pack</figcaption></figure>
+</div>
+<h2 id="s7">Coach</h2>
+<div class="grid">
+<figure><a href="renders/C1-MeetCoach.png"><img src="renders/C1-MeetCoach.png" alt="C1 Meet your coach" loading="lazy" width="390" height="844"></a><figcaption>C1 Meet your coach</figcaption></figure>
+<figure><a href="renders/C2-CoachChat.png"><img src="renders/C2-CoachChat.png" alt="C2 Coach chat" loading="lazy" width="390" height="844"></a><figcaption>C2 Coach chat</figcaption></figure>
+</div>
+<h2 id="s8">Settings and account</h2>
+<div class="grid">
+<figure><a href="renders/S1-Settings.png"><img src="renders/S1-Settings.png" alt="S1 Settings" loading="lazy" width="390" height="980"></a><figcaption>S1 Settings</figcaption></figure>
+<figure><a href="renders/S2-Details.png"><img src="renders/S2-Details.png" alt="S2 Your details" loading="lazy" width="390" height="844"></a><figcaption>S2 Your details</figcaption></figure>
+<figure><a href="renders/S3-Subscription.png"><img src="renders/S3-Subscription.png" alt="S3 Subscription" loading="lazy" width="390" height="844"></a><figcaption>S3 Subscription</figcaption></figure>
+<figure><a href="renders/S4-Reminders.png"><img src="renders/S4-Reminders.png" alt="S4 Reminders" loading="lazy" width="390" height="844"></a><figcaption>S4 Reminders</figcaption></figure>
+<figure><a href="renders/S5-AppleHealth.png"><img src="renders/S5-AppleHealth.png" alt="S5 Apple Health" loading="lazy" width="390" height="844"></a><figcaption>S5 Apple Health</figcaption></figure>
+<figure><a href="renders/S6-Units.png"><img src="renders/S6-Units.png" alt="S6 Units" loading="lazy" width="390" height="844"></a><figcaption>S6 Units</figcaption></figure>
+<figure><a href="renders/S7-Support.png"><img src="renders/S7-Support.png" alt="S7 Support and safe mode" loading="lazy" width="390" height="844"></a><figcaption>S7 Support and safe mode</figcaption></figure>
+<figure><a href="renders/S8-Privacy.png"><img src="renders/S8-Privacy.png" alt="S8 Privacy and data" loading="lazy" width="390" height="844"></a><figcaption>S8 Privacy and data</figcaption></figure>
+<figure><a href="renders/S9-DeleteAccount.png"><img src="renders/S9-DeleteAccount.png" alt="S9 Delete account" loading="lazy" width="390" height="844"></a><figcaption>S9 Delete account</figcaption></figure>
+<figure><a href="renders/S10-Deleted.png"><img src="renders/S10-Deleted.png" alt="S10 Account deleted" loading="lazy" width="390" height="844"></a><figcaption>S10 Account deleted</figcaption></figure>
+<figure><a href="renders/S11-Legal.png"><img src="renders/S11-Legal.png" alt="S11 Legal" loading="lazy" width="390" height="844"></a><figcaption>S11 Legal</figcaption></figure>
+</div>
+<h2 id="s9">Shared states</h2>
+<div class="grid">
+<figure><a href="renders/X1-SafeMode-Progress.png"><img src="renders/X1-SafeMode-Progress.png" alt="Safe mode: Progress" loading="lazy" width="390" height="1000"></a><figcaption>Safe mode: Progress</figcaption></figure>
+<figure><a href="renders/X2-FirstDay-Today.png"><img src="renders/X2-FirstDay-Today.png" alt="First day: Today" loading="lazy" width="390" height="1000"></a><figcaption>First day: Today</figcaption></figure>
+<figure><a href="renders/X3-Offline-QuickLog.png"><img src="renders/X3-Offline-QuickLog.png" alt="Offline and save failed: Quick log" loading="lazy" width="390" height="844"></a><figcaption>Offline and save failed: Quick log</figcaption></figure>
+<figure><a href="renders/X4-Dark-Today.png"><img src="renders/X4-Dark-Today.png" alt="Dark mode: Today" loading="lazy" width="390" height="1180"></a><figcaption>Dark mode: Today</figcaption></figure>
+</div>
+<h2 id="s10">Shared parts</h2>
+<div class="grid">
+<figure><a href="renders/TabBar.png"><img src="renders/TabBar.png" alt="Tab bar (shared)" loading="lazy" width="350" height="84"></a><figcaption>Tab bar (shared)</figcaption></figure>
+</div>
+</main>
+</body>
+</html>

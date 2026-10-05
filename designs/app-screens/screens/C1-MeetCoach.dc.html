@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>C1 Meet your coach</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr" style="width: 390px; height: 844px">
+  <div aria-hidden="true" style="position: relative; height: 150px">
+    <div style="position: absolute; left: 0; top: 10px; width: 200px; height: 96px; border-radius: 32px 32px 32px 10px; background: var(--lilac)"></div>
+    <div style="position: absolute; right: 0; top: 70px; width: 150px; height: 64px; border-radius: 28px 28px 10px 28px; background: var(--surface-raised); box-shadow: var(--shadow-sm)"></div>
+    <div style="position: absolute; left: 28px; top: 46px; width: 14px; height: 14px; border-radius: 9999px; background: var(--on-pastel); opacity: .7"></div>
+    <div style="position: absolute; left: 52px; top: 46px; width: 14px; height: 14px; border-radius: 9999px; background: var(--on-pastel); opacity: .5"></div>
+    <div style="position: absolute; left: 76px; top: 46px; width: 14px; height: 14px; border-radius: 9999px; background: var(--on-pastel); opacity: .3"></div>
+  </div>
+  <div class="stack">
+    <h1 class="t-title">Meet your coach</h1>
+    <p class="body-lg muted">Ask anything about habits, food and getting through a tricky day.</p>
+  </div>
+  <div class="card tint-lilac" style="gap: 8px">
+    <span class="label">GOOD AT</span>
+    <p class="body">High-protein swaps and quick meal ideas</p>
+    <p class="body">Planning for meals out, holidays and busy weeks</p>
+    <p class="body">Talking through cravings and harder days</p>
+  </div>
+  <div class="card tint-sky" style="gap: 6px">
+    <span class="label">NEVER</span>
+    <p class="body">Advice on medication, doses, or stopping and restarting. That's always for your prescriber.</p>
+  </div>
+  <p class="caption muted">Replies are written by AI and can be wrong. Check anything important with a professional.</p>
+  <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="C2-CoachChat.dc.html">Start chatting</a>
+  <div class="tabslot"><dc-import name="TabBar" active="coach" hint-size="350px,84px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

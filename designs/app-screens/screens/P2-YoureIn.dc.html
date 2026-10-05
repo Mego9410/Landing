@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P2 You're in</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px">
+  <div aria-hidden="true" style="position: relative; height: 300px; margin: 0 -20px">
+    <div style="position: absolute; left: -20px; right: -20px; bottom: 0; height: 90px; border-radius: 9999px; background: var(--sage)"></div>
+    <div style="position: absolute; left: 135px; bottom: 90px; width: 120px; height: 120px; border-radius: 9999px; background: var(--apricot)"></div>
+    <div style="position: absolute; left: 40px; top: 40px; width: 56px; height: 24px; border-radius: 9999px; background: var(--lilac)"></div>
+    <div style="position: absolute; right: 50px; top: 60px; width: 40px; height: 40px; border-radius: 9999px; background: var(--sky)"></div>
+    <div style="position: absolute; right: 90px; top: 20px; width: 64px; height: 24px; border-radius: 9999px; background: var(--butter)"></div>
+  </div>
+  <div class="stack" style="align-items: center; text-align: center">
+    <h1 class="t-display">You're in</h1>
+    <p class="body-lg">Your free week has started. Your first habits are waiting on Today.</p>
+  </div>
+  <div class="card" style="gap: 6px">
+    <div class="between"><span class="body muted">Trial ends</span><span style="font-weight: 800">Mon 12 October</span></div>
+    <div class="between"><span class="body muted">We'll remind you on</span><span style="font-weight: 800">Sat 10 October</span></div>
+  </div>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="T1-Today.dc.html">Go to Today</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

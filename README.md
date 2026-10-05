@@ -13,3 +13,10 @@ The Landing brand lives in [`design-system/`](design-system/), imported from the
 - `preview.html`: a gallery of every component. Open it in a browser.
 
 After editing `tokens.json` or a component preview, run `node design-system/build.mjs` to regenerate `tokens.css` and `preview.html`.
+
+## App screens
+
+[`designs/app-screens/`](designs/app-screens/) holds the 55 iPhone screen designs (onboarding, paywall,
+Today, workouts, plan, progress, coach, settings and shared states), imported from the
+[Landing App Screens canvas](https://claude.ai/artifact/7QFUpd1hnCxoRoH7HG12V2). Open
+`designs/app-screens/index.html` to browse PNG renders of every screen; each screen's source is in `screens/`.

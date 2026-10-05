@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>O8 Your health data</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px; gap: 16px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="O7-FoodHunger.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+    <div class="steps"><span style="width: 78%"></span></div>
+    <span class="caption muted">7 of 9</span>
+  </div>
+  <div class="stack">
+    <h1 class="t-title">Your health data, your call</h1>
+    <p class="body muted">Weight, food and hunger logs count as health data. We need your permission to keep them.</p>
+  </div>
+  <div class="list">
+    <div class="li"><span class="ico tint-sage"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="grow"><span style="display: block; font-weight: 800">What we keep</span><span class="caption muted">Weigh-ins, protein, hunger, habits and workouts</span></span></div>
+    <div class="li"><span class="ico tint-sky"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"></circle><path d="M4 12h16M12 4c2.5 2.5 2.5 13.5 0 16M12 4c-2.5 2.5-2.5 13.5 0 16"></path></svg></span><span class="grow"><span style="display: block; font-weight: 800">Where</span><span class="caption muted">Stored in the UK and EU</span></span></div>
+    <div class="li"><span class="ico tint-lilac"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="3"></rect><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"></path></svg></span><span class="grow"><span style="display: block; font-weight: 800">Never</span><span class="caption muted">Sold, shared with advertisers or used for ads</span></span></div>
+    <div class="li"><span class="ico tint-rose"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"></path></svg></span><span class="grow"><span style="display: block; font-weight: 800">Delete any time</span><span class="caption muted">One tap in Settings removes everything</span></span></div>
+  </div>
+  <sc-if value="{{declined}}" hint-placeholder-val="{{false}}">
+    <div class="banner tint-butter" role="status"><p class="body">Landing can't build your plan without this. You can agree whenever you're ready.</p></div>
+  </sc-if>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="O9-AppleHealth.dc.html">Agree and continue</a>
+    <button type="button" class="ld-btn ld-btn--quiet ld-btn--sm" onClick="{{decline}}" style="align-self: center">Not now</button>
+    <p class="caption muted" style="text-align: center">Read the full privacy policy</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { declined: false }; }
+  renderVals() { return { declined: this.state.declined, decline: () => this.setState({ declined: true }) }; }
+}
+</script>
+</body>
+</html>

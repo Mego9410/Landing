@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>T2 Quick log</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr" style="width: 390px; height: 844px; padding: 0">
+  <div class="backdrop" aria-hidden="true">
+    <p class="caption muted">Monday 5 October</p>
+    <p class="t-title">Good afternoon, Hannah</p>
+  </div>
+  <div class="dim"></div>
+  <div class="sheet" role="dialog" aria-label="Quick log" style="top: 110px">
+    <span class="grab"></span>
+    <div class="between">
+      <div class="stack" style="gap: 0"><h1 class="t-heading" style="font-size: 24px; line-height: 30px">Quick log</h1><span class="caption muted">Today · updates today's entry</span></div>
+      <a class="iconbtn" href="T1-Today.dc.html" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+    </div>
+    <div class="row" style="gap: 12px; align-items: flex-start">
+      <x-import component-from-global-scope="Landing.TextField" label="Weight" suffix="kg" input-mode="decimal" default-value="78.4" style="flex: 1"></x-import>
+      <x-import component-from-global-scope="Landing.TextField" label="Protein, this meal" suffix="g" input-mode="numeric" default-value="30" style="flex: 1"></x-import>
+    </div>
+    <div class="wrap">
+      <sc-for list="{{meals}}" as="m" hint-placeholder-count="4"><button type="button" class="{{m.cls}}" onClick="{{m.pick}}" style="height: 34px; padding: 0 14px; font-size: 13px">{{m.label}}</button></sc-for>
+    </div>
+    <div class="stack" style="gap: 8px">
+      <span class="label">How hungry are you right now?</span>
+      <x-import component-from-global-scope="Landing.HungerScale" value="{{hunger}}" on-change="{{setHunger}}"></x-import>
+    </div>
+    <x-import component-from-global-scope="Landing.TextField" label="Cravings note (optional)" placeholder="e.g. wanted something sweet after lunch"></x-import>
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="T1-Today.dc.html">Save</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { meal: 'Lunch', hunger: 3 }; }
+  renderVals() {
+    return {
+      meals: ['Breakfast', 'Lunch', 'Dinner', 'Snack'].map((label) => ({ label, cls: 'choice' + (this.state.meal === label ? ' on' : ''), pick: () => this.setState({ meal: label }) })),
+      hunger: this.state.hunger, setHunger: (n) => this.setState({ hunger: n })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PR6 Prescriber pack</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 900px; gap: 16px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="PR1-Progress.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+  </div>
+  <div class="stack" style="gap: 6px">
+    <h1 class="t-title">Prescriber pack</h1>
+    <p class="body muted">A one-page summary to share at your next appointment. It shows your trend and habits only, never recommendations.</p>
+  </div>
+  <div class="wrap">
+    <sc-for list="{{ranges}}" as="r" hint-placeholder-count="3"><button type="button" class="{{r.cls}}" onClick="{{r.pick}}" style="height: 34px; font-size: 13px">{{r.label}}</button></sc-for>
+  </div>
+  <div style="background: #FFFFFF; color: #2E2A33; border-radius: 12px; box-shadow: var(--shadow-lg); padding: 18px; display: flex; flex-direction: column; gap: 12px; font-size: 12px; line-height: 16px">
+    <div class="between"><img src="../../../design-system/assets/Logos/landing-lockup.svg" alt="landing" style="width: 92px; height: 21px"><span style="font-weight: 700; color: #6A6371">5 Oct 2026</span></div>
+    <div style="font-family: var(--font-display); font-size: 17px; font-weight: 600">Summary for your prescriber</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px">
+      <span style="color: #6A6371">Name</span><span style="font-weight: 700">Hannah R.</span>
+      <span style="color: #6A6371">Last injection</span><span style="font-weight: 700">31 Aug 2026</span>
+      <span style="color: #6A6371">Weight at start</span><span style="font-weight: 700">96.2 kg</span>
+      <span style="color: #6A6371">Lowest weight</span><span style="font-weight: 700">78.0 kg</span>
+      <span style="color: #6A6371">7-day average now</span><span style="font-weight: 700">78.5 kg</span>
+    </div>
+    <svg viewBox="0 0 300 70" width="100%" height="70" aria-label="Weight trend, last 4 weeks, flat" role="img"><rect x="0" y="22" width="300" height="26" rx="6" fill="#CDE3D2"></rect><path d="M4 30 L40 34 L80 28 L120 33 L160 31 L200 36 L240 32 L296 34" fill="none" stroke="#2E2A33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px">
+      <span style="color: #6A6371">Habit days completed</span><span style="font-weight: 700">51 of 60</span>
+      <span style="color: #6A6371">Strength sessions</span><span style="font-weight: 700">8 of 8</span>
+    </div>
+    <div style="border-top: 1px solid #E6DED5; padding-top: 8px; color: #6A6371">Made with Landing, a general wellness app. It records habits only and gives no medical advice.</div>
+  </div>
+  <div class="foot">
+    <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="PR6-PrescriberPack.dc.html">Share PDF</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":900}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { r: 'Last 4 weeks' }; }
+  renderVals() { return { ranges: ['Last 4 weeks', 'Last 12 weeks', 'Since stopping'].map((label) => ({ label, cls: 'choice' + (this.state.r === label ? ' on' : ''), pick: () => this.setState({ r: label }) })) }; }
+}
+</script>
+</body>
+</html>

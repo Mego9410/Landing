@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>S9 Delete account</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr plain" style="width: 390px; height: 844px">
+  <div class="topbar">
+    <a class="iconbtn flat" href="S8-Privacy.dc.html" aria-label="Back"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+  </div>
+  <h1 class="t-title">Delete your account</h1>
+  <div class="card hero tint-rose" style="gap: 8px">
+    <span class="label">THIS REMOVES, FOR GOOD</span>
+    <p class="body">Every weigh-in, food and hunger log, habit, workout and score</p>
+    <p class="body">Your plan and your coach conversations</p>
+    <p class="body">Your consent records and account</p>
+  </div>
+  <p class="body muted">It can't be undone. If you might come back, export your data first. Deleting doesn't cancel an App Store subscription.</p>
+  <div class="ld-field">
+    <label class="ld-field__label" for="confirm-delete">Type DELETE to confirm</label>
+    <div class="ld-field__control"><input id="confirm-delete" class="ld-field__input" value="{{typed}}" onChange="{{onType}}" autocomplete="off" placeholder="DELETE"></div>
+  </div>
+  <div class="foot">
+    <sc-if value="{{ready}}" hint-placeholder-val="{{false}}">
+      <a class="ld-btn ld-btn--danger ld-btn--md ld-btn--block" href="S10-Deleted.dc.html">Delete everything</a>
+    </sc-if>
+    <sc-if value="{{notReady}}" hint-placeholder-val="{{true}}">
+      <button type="button" class="ld-btn ld-btn--danger ld-btn--md ld-btn--block" disabled="{{yes}}">Delete everything</button>
+    </sc-if>
+    <a class="ld-btn ld-btn--secondary ld-btn--md ld-btn--block" href="S1-Settings.dc.html">Keep my account</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { typed: '' }; }
+  renderVals() {
+    const ready = this.state.typed.trim().toUpperCase() === 'DELETE';
+    return { typed: this.state.typed, onType: (e) => this.setState({ typed: e.target.value }), ready, notReady: !ready, yes: true };
+  }
+}
+</script>
+</body>
+</html>

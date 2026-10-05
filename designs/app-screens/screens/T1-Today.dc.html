@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>T1 Today</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="../../../design-system/components/bundle.css">
+<script src="../../../design-system/components/bundle.js"></script>
+<link rel="stylesheet" href="screens.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&amp;family=Nunito:wght@400..800&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="scr" style="width: 390px; height: 1180px; gap: 24px">
+  <div class="topbar">
+    <div class="stack" style="gap: 2px">
+      <p class="caption muted">Monday 5 October</p>
+      <h1 class="t-title">Good afternoon, Hannah</h1>
+    </div>
+    <a class="avatar" href="S1-Settings.dc.html" aria-label="Settings">H</a>
+  </div>
+  <div class="row">
+    <a href="PL2-Week.dc.html" style="text-decoration: none"><x-import component-from-global-scope="Landing.Chip" tone="sky">Week 6 · Land</x-import></a>
+    <span class="caption muted">2 weeks until Settle</span>
+  </div>
+
+  <div class="card hero tint-apricot" style="gap: 14px">
+    <div class="between">
+      <span class="label">PROTEIN TODAY</span>
+      <span class="caption">Target 100 g</span>
+    </div>
+    <div class="row" style="align-items: baseline; gap: 6px"><span class="t-num-md">64 g</span><span class="body">so far</span></div>
+    <div class="meter" style="background: var(--surface-raised)"><span style="width: 64%; background: var(--on-pastel)"></span></div>
+    <a class="ld-btn ld-btn--md ld-btn--block" href="T2-QuickLog.dc.html" style="background: var(--surface-raised); color: var(--ink)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      Quick log
+    </a>
+  </div>
+
+  <div class="stack">
+    <div class="between">
+      <h2 class="t-heading">This week's habits</h2>
+      <a class="ld-btn ld-btn--quiet ld-btn--sm" href="T3-SwapHabit.dc.html" style="padding: 0 4px">Swap one</a>
+    </div>
+    <x-import component-from-global-scope="Landing.HabitCheck" label="Protein at breakfast" detail="25 g or more · 4 of 5 days" checked="{{yes}}"></x-import>
+    <x-import component-from-global-scope="Landing.HabitCheck" label="Two strength sessions" detail="1 of 2 done"></x-import>
+    <x-import component-from-global-scope="Landing.HabitCheck" label="Pause before seconds" detail="Wait 10 minutes, then decide"></x-import>
+  </div>
+
+  <a class="card" href="W2-SessionOverview.dc.html" style="flex-direction: row; align-items: center; gap: 14px; text-decoration: none; color: var(--ink)">
+    <span style="width: 52px; height: 52px; border-radius: 9999px; background: var(--sage); display: grid; place-items: center; color: var(--on-pastel); flex: none">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 8v8M17 8v8M4 10.5v3M20 10.5v3M7 12h10"></path></svg>
+    </span>
+    <span class="grow stack" style="gap: 2px"><span class="label muted">TODAY'S SESSION</span><span style="font-weight: 800; font-size: 16px">Strength B · at home</span><span class="caption muted">25 minutes · 5 exercises</span></span>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+  </a>
+
+  <div class="card tint-lilac" style="gap: 6px">
+    <span class="label">TIP FOR TODAY</span>
+    <p class="body-lg">Hunger often comes back mid-afternoon in the first weeks. Greek yoghurt with berries at 3pm takes the edge off.</p>
+    <a class="ld-btn ld-btn--quiet ld-btn--sm" href="C2-CoachChat.dc.html" style="align-self: flex-start; padding: 0; color: var(--on-pastel)">Ask the coach for more ideas</a>
+  </div>
+
+  <div class="tabslot"><dc-import name="TabBar" active="today" hint-size="350px,84px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() { return { yes: true }; }
+}
+</script>
+</body>
+</html>

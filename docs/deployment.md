@@ -11,7 +11,8 @@ Two Vercel projects deploy from this one repository, and the iPhone app ships th
 ## 1. The waitlist site on Vercel
 
 1. In Vercel, **Add New → Project** and import `Mego9410/Landing` from GitHub.
-2. Set **Root Directory** to `apps/web`. Vercel detects Next.js. Leave **Include files outside the root directory in
+2. Set **Root Directory** to `apps/web` (click **Edit** next to Root Directory when importing). Vercel then detects
+   Next.js. If you leave it at the repository root, the build stops with a message saying to change it. Leave **Include files outside the root directory in
    the Build Step** switched on, because the site imports `packages/design-system`.
 3. `apps/web/vercel.json` already sets the install command (installs only the web app and what it uses, from the
    repo root), the build command and a skip rule so commits that don't touch the site don't rebuild it.

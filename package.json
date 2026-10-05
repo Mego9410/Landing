@@ -4,7 +4,7 @@
   "description": "Landing: keep what you've worked for. Monorepo for the waitlist site, the app prototype, the Expo app and the design system.",
   "packageManager": "pnpm@10.28.0",
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "turbo run dev --filter=@landing/web",

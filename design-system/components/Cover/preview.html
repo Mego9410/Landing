@@ -1,0 +1,52 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Landing</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600&family=Nunito:wght@500;600&display=swap">
+<style>
+  html, body { margin:0; height:100%; }
+  body { background:var(--surface); color:var(--ink); font-family:var(--font-body); overflow:hidden; }
+  .cover { position:relative; width:960px; height:288px; overflow:hidden; }
+  .art { position:absolute; top:0; left:480px; width:480px; height:288px; overflow:hidden; }
+  .art svg { display:block; }
+  .apricot { fill:var(--apricot); }
+  .sage { fill:var(--sage); }
+  .lilac { fill:var(--lilac); }
+  .sky { fill:var(--sky); }
+  .butter { fill:var(--butter); }
+  .slab { rx:var(--radius-xl); }
+  .words { position:absolute; left:var(--space-8); bottom:var(--space-8); max-width:440px; }
+  .name { margin:0; font-family:var(--font-display); font-size:104px; line-height:.92; font-weight:600; letter-spacing:-.02em; color:var(--ink); }
+  .tag { margin:var(--space-3) 0 0 4px; font-size:14px; line-height:20px; font-weight:600; color:var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      sage horizon pill 448×96 bleeding off the right and bottom (the ground, largest) · apricot sun disc 104 · lilac slab 120×168 bled off the top · sky slab 96×120 bled off the right edge — ≈35% of 960×288
+  arrangement the mark, scaled into a landscape: a sun touching down on the sage horizon between two tall pastel slabs
+  pattern     discs, from "Everything is rounded" and the mark's descent: a trail of five apricot discs growing from 8 to 24 along the sun's path
+  scales      sides in space-2 multiples; gutters space-4; slab corners radius-xl (32); sun, trail discs and horizon pill use rx = half the short side (radius-full)
+-->
+<rect class="lilac slab" x="16" y="-40" width="120" height="168" rx="32"/>
+<rect class="sky slab" x="408" y="-24" width="96" height="120" rx="32"/>
+<rect class="sage" x="48" y="208" width="448" height="96" rx="48"/>
+<rect class="apricot" x="232" y="104" width="104" height="104" rx="52"/>
+<rect class="apricot" x="164" y="36" width="8" height="8" rx="4"/>
+<rect class="apricot" x="180" y="52" width="12" height="12" rx="6"/>
+<rect class="apricot" x="196" y="70" width="16" height="16" rx="8"/>
+<rect class="apricot" x="208" y="92" width="20" height="20" rx="10"/>
+<rect class="butter" x="40" y="152" width="72" height="32" rx="16"/>
+</svg>
+</div>
+<div class="words">
+<h1 class="name">Landing</h1>
+<p class="tag">Keep what you've worked for.</p>
+</div>
+</div>
+</body>
+</html>

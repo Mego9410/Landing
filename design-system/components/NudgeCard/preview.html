@@ -1,0 +1,14 @@
+<!-- @dsCard group="Feedback" height=168 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>NudgeCard — preview</title></head>
+<body>
+<div id="root" class="ld-stack"></div>
+<script>
+  var L = window.Landing, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(L.NudgeCard, { title: 'Things shifted a little this week', actionLabel: 'Start a reset week' },
+      "That's common around week 10. A lighter week with simpler habits usually settles it."));
+</script>
+</body>
+</html>

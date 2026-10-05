@@ -1,0 +1,14 @@
+<!-- @dsCard group="Progress" height=208 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>ScoreRing — preview</title></head>
+<body>
+<div id="root" class="ld-stage"></div>
+<script>
+  var L = window.Landing, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(L.ScoreRing, { score: 78 }),
+    h(L.ScoreRing, { score: 52, size: 120, label: 'This week' })));
+</script>
+</body>
+</html>

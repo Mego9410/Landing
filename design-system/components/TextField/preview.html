@@ -1,0 +1,14 @@
+<!-- @dsCard group="Logging" height=216 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>TextField — preview</title></head>
+<body>
+<div id="root" class="ld-stack"></div>
+<script>
+  var L = window.Landing, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(L.TextField, { label: "Today's weight", suffix: 'kg', inputMode: 'decimal', defaultValue: '78.4', hint: 'Synced from Apple Health · 7:42' }),
+    h(L.TextField, { label: 'Protein at lunch', suffix: 'g', inputMode: 'numeric', defaultValue: '300', error: 'That looks high for one meal. Check the number and try again.' })));
+</script>
+</body>
+</html>

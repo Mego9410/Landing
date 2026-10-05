@@ -1,0 +1,20 @@
+<!-- @dsCard group="Status" height=72 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Chip — preview</title></head>
+<body>
+<div id="root" class="ld-stage"></div>
+<script>
+  var L = window.Landing, h = React.createElement;
+  function Demo() {
+    var s = React.useState('Settle'), v = s[0], set = s[1];
+    return h(React.Fragment, null,
+      h(L.Chip, { tone: 'sky', selected: v === 'Land', onClick: function () { set('Land'); } }, 'Land · wk 1–8'),
+      h(L.Chip, { tone: 'sage', selected: v === 'Settle', onClick: function () { set('Settle'); } }, 'Settle · wk 9–26'),
+      h(L.Chip, { tone: 'lilac', selected: v === 'Steady', onClick: function () { set('Steady'); } }, 'Steady · wk 27–52'),
+      h(L.Chip, null, 'Home workout'));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+/* Generated from tokens.json by build.mjs. Do not edit by hand. */
+
+:root {
+  --surface: #FBF8F4;
+  --surface-raised: #FFFFFF;
+  --surface-sunk: #F3EEE8;
+  --line: #E6DED5;
+  --ink: #2E2A33;
+  --ink-muted: #6A6371;
+  --on-pastel: #2E2A33;
+  --apricot: #F8C8AC;
+  --apricot-ink: #9E4A20;
+  --sage: #CDE3D2;
+  --sage-ink: #2F6142;
+  --lilac: #DDD5F2;
+  --lilac-ink: #5A4A8E;
+  --sky: #CCE2EF;
+  --sky-ink: #285E7E;
+  --butter: #F6E5AC;
+  --butter-ink: #755810;
+  --rose: #F4CFD0;
+  --rose-ink: #983538;
+  --focus: var(--lilac-ink);
+  --shadow-sm: 0 1px 2px #2e2a330a, 0 4px 12px #6b4a3010;
+  --shadow-lg: 0 8px 24px #6b4a301a, 0 2px 6px #2e2a330d;
+  --focus-ring: 0 0 0 3px #fbf8f4, 0 0 0 5px #5a4a8e;
+  --font-display: "Fredoka", "SF Pro Rounded", ui-rounded, "Nunito", system-ui, sans-serif;
+  --font-body: "Nunito", "SF Pro Rounded", ui-rounded, system-ui, sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface: #1F1C23;
+    --surface-raised: #2A262F;
+    --surface-sunk: #18161C;
+    --line: #3B3642;
+    --ink: #F3EEF4;
+    --ink-muted: #B6AEBC;
+    --on-pastel: #1F1C23;
+    --apricot: #EBB394;
+    --apricot-ink: #F2BEA0;
+    --sage: #A3C7AD;
+    --sage-ink: #ADD3B7;
+    --lilac: #BAADE0;
+    --lilac-ink: #C7BCEC;
+    --sky: #A3C6DB;
+    --sky-ink: #AED0E4;
+    --butter: #E3C97F;
+    --butter-ink: #EBD18E;
+    --rose: #E4A9AB;
+    --rose-ink: #EFB5B7;
+    --focus: var(--lilac-ink);
+    --shadow-sm: 0 1px 3px #00000066;
+    --shadow-lg: 0 12px 32px #00000099;
+    --focus-ring: 0 0 0 3px #1f1c23, 0 0 0 5px #c7bcec;
+  }
+}
+
+:root[data-theme="dark"] {
+  --surface: #1F1C23;
+  --surface-raised: #2A262F;
+  --surface-sunk: #18161C;
+  --line: #3B3642;
+  --ink: #F3EEF4;
+  --ink-muted: #B6AEBC;
+  --on-pastel: #1F1C23;
+  --apricot: #EBB394;
+  --apricot-ink: #F2BEA0;
+  --sage: #A3C7AD;
+  --sage-ink: #ADD3B7;
+  --lilac: #BAADE0;
+  --lilac-ink: #C7BCEC;
+  --sky: #A3C6DB;
+  --sky-ink: #AED0E4;
+  --butter: #E3C97F;
+  --butter-ink: #EBD18E;
+  --rose: #E4A9AB;
+  --rose-ink: #EFB5B7;
+  --focus: var(--lilac-ink);
+  --shadow-sm: 0 1px 3px #00000066;
+  --shadow-lg: 0 12px 32px #00000099;
+  --focus-ring: 0 0 0 3px #1f1c23, 0 0 0 5px #c7bcec;
+}
+
+.ld-text-display {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 44px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.ld-text-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 600;
+}
+
+.ld-text-heading {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 26px;
+  font-weight: 500;
+}
+
+.ld-text-numeral {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 56px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ld-text-body-lg {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 26px;
+  font-weight: 400;
+}
+
+.ld-text-body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 500;
+}
+
+.ld-text-label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ld-text-caption {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+}

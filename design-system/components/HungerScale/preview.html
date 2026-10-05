@@ -1,0 +1,16 @@
+<!-- @dsCard group="Logging" height=132 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>HungerScale — preview</title></head>
+<body>
+<div id="root" class="ld-stage"></div>
+<script>
+  var L = window.Landing, h = React.createElement;
+  function Demo() {
+    var s = React.useState(3);
+    return h(L.HungerScale, { value: s[0], onChange: s[1] });
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

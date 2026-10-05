@@ -1,0 +1,19 @@
+<!-- @dsCard group="Logging" height=220 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>HabitCheck — preview</title></head>
+<body>
+<div id="root" class="ld-stack"></div>
+<script>
+  var L = window.Landing, h = React.createElement;
+  function Demo() {
+    var a = React.useState(true), b = React.useState(false), c = React.useState(false);
+    return h(React.Fragment, null,
+      h(L.HabitCheck, { label: 'Protein at breakfast', detail: '25 g or more · 4 of 7 days', checked: a[0], onChange: a[1] }),
+      h(L.HabitCheck, { label: 'Strength session', detail: 'Home, 25 minutes', checked: b[0], onChange: b[1] }),
+      h(L.HabitCheck, { label: 'Pause before seconds', detail: 'Wait 10 minutes, then decide', checked: c[0], onChange: c[1] }));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

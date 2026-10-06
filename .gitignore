@@ -34,3 +34,6 @@ apps/mobile/android/
 .DS_Store
 .idea/
 *.log
+
+# The motion browser bundle is generated but committed: the prototype and the gallery load it with no build step.
+!packages/motion/dist/

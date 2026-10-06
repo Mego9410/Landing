@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { cast, portraitSvg } from "@landing/motion/browser";
+import { cast } from "@landing/motion/browser";
 import styles from "./page.module.css";
 import { Carousel } from "./carousel";
 import { ExerciseLoop } from "./exercise-loop";
@@ -34,7 +34,7 @@ function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
 
 const TRUST: { icon: IconName; text: string }[] = [
   { icon: "gift", text: "7-day free trial" },
-  { icon: "person", text: "Reviewed by a physio and a dietitian" },
+  { icon: "person", text: "Specialist-reviewed before launch" },
   { icon: "shield", text: "Works alongside your prescriber" },
   { icon: "lock", text: "Data kept in the UK and EU" },
   { icon: "phone", text: "Coming to iPhone" },
@@ -71,10 +71,10 @@ const BRIEFS: Record<string, { build: string; move: string; ids: string[] }> = {
 };
 
 const EXPERTS = [
-  { role: "Physiotherapist", body: "HCPC-registered", text: "Reviews every exercise, the easier and harder versions, and how the plan adapts around aches and injuries." },
-  { role: "Dietitian", body: "BDA member", text: "Reviews protein and fibre guidance, every recipe swap, and the advice for diabetes, kidney disease and pregnancy." },
-  { role: "Eating-disorder specialist", body: "Safe mode and language", text: "Reviews safe mode, the words we use and when Landing signposts extra support." },
-];
+  { role: "Physiotherapist", icon: "strength", body: "HCPC-registered", text: "Reviews every exercise, the easier and harder versions, and how the plan adapts around aches and injuries." },
+  { role: "Dietitian", icon: "meal", body: "BDA member", text: "Reviews protein and fibre guidance, every recipe swap, and the advice for diabetes, kidney disease and pregnancy." },
+  { role: "Eating-disorder specialist", icon: "coach", body: "Safe mode and language", text: "Reviews safe mode, the words we use and when Landing signposts extra support." },
+] as const;
 
 const PROMISES: { icon: IconName; title: string; text: string }[] = [
   { icon: "heart", title: "No goal weight", text: "We help you hold steady, and offer a lighter week if things drift. Never a telling-off." },
@@ -101,7 +101,7 @@ const STEP1 = [
 ];
 
 function RegainChart() {
-  const W = 320, H = 170, L = 36, R = 16, T = 14, B = 30;
+  const W = 320, H = 170, L = 46, R = 16, T = 14, B = 30;
   const x = (w: number) => L + (w / 120) * (W - L - R);
   const y = (c: number) => T + (-c / 20) * (H - T - B);
   const pts = STEP1.map((p) => `${x(p.week)},${y(p.change)}`).join(" ");
@@ -110,15 +110,16 @@ function RegainChart() {
       {[0, -10, -20].map((g) => (
         <g key={g}>
           <line x1={L} x2={W - R} y1={y(g)} y2={y(g)} className={styles.chartGrid} />
-          <text x={L - 8} y={y(g) + 4} textAnchor="end" className={styles.chartAxis}>{g}%</text>
+          <text x={L - 8} y={y(g) + 4} textAnchor="end" className={styles.chartAxis}>{g === 0 ? "0%" : `−${-g}%`}</text>
         </g>
       ))}
+      <text x={x(68) - 8} y={T + 24} textAnchor="end" className={styles.chartAxis}>Treatment stops</text>
       <line x1={x(68)} x2={x(68)} y1={T} y2={H - B} className={styles.chartStop} />
       <polyline points={pts} fill="none" className={styles.chartLine} />
       {STEP1.map((p) => <circle key={p.week} cx={x(p.week)} cy={y(p.change)} r="4.5" className={styles.chartDot} />)}
-      <text x={x(68) + 8} y={y(-17.3) + 4} className={styles.chartLabel}>−17.3%</text>
+      <text x={x(68) + 10} y={y(-17.3) + 5} className={styles.chartLabel}>−17.3%</text>
       <text x={x(120) - 4} y={y(-5.6) - 10} textAnchor="end" className={styles.chartLabel}>−5.6%</text>
-      {[0, 68, 120].map((w) => <text key={w} x={x(w)} y={H - 10} textAnchor="middle" className={styles.chartAxis}>{w === 0 ? "Week 0" : `${w}`}</text>)}
+      {[0, 68, 120].map((w, i) => <text key={w} x={x(w)} y={H - 10} textAnchor={i === 0 ? "start" : i === 2 ? "end" : "middle"} className={styles.chartAxis}>Week {w}</text>)}
     </svg>
   );
 }
@@ -126,43 +127,62 @@ function RegainChart() {
 export default function Home() {
   return (
     <>
-      <div className={styles.announce}>
-        <span>Coming soon to iPhone.</span> <a href="#join">Join the waitlist for early access</a>
-      </div>
 
-      <header className={styles.hero}>
-        <div className={styles.scene} aria-hidden="true">
-          <span className={styles.sceneSun} />
-          <span className={styles.sceneHillBack} />
-          <span className={styles.sceneHill} />
-          <div className={`${styles.walker} ${styles.walker1}`}><ExerciseLoop ids={["walk"]} who="grace" ground={false} /></div>
-          <div className={`${styles.walker} ${styles.walker2}`}><ExerciseLoop ids={["walk"]} who="dev" ground={false} /></div>
-          <div className={`${styles.walker} ${styles.walker3}`}><ExerciseLoop ids={["walk"]} who="amira" ground={false} /></div>
-        </div>
-        <nav className={styles.nav} aria-label="Main">
-          <div className={styles.navLinks}>
+      <aside className={styles.announce} aria-label="Announcement">
+        <span>Coming soon to iPhone.</span> <a href="#join">Join the waitlist for early access</a>
+      </aside>
+      <header className={styles.header}>
+        <div className={`${styles.wrap} ${styles.headerInner}`}>
+          <Link href="/" aria-label="Landing home" className={styles.logo}><Lockup /></Link>
+          <nav className={styles.navLinks} aria-label="Main">
             <a href="#how">How it works</a>
             <a href="#support">What&apos;s included</a>
+            <a href="#cast">Exercises</a>
             <a href="#pricing">Pricing</a>
-          </div>
-          <Link href="/" aria-label="Landing home" className={styles.navLogo}><Lockup /></Link>
+            <a href="#faqs">FAQs</a>
+          </nav>
           <a className={styles.navCta} href="#join">Join the waitlist</a>
-        </nav>
-        <div className={styles.heroCopy}>
-          <h1 className={styles.display}>Keep what you&apos;ve worked for</h1>
-          <p className={styles.lede}>The 12-month plan for life after weight-loss jabs. Strength, protein and steady habits, with support on your side.</p>
-          <div className={styles.heroButtons}>
-            <a className={styles.btnPrimary} href="#join">Join the waitlist</a>
-            <a className={styles.btnGlass} href="#how">How it works</a>
-          </div>
         </div>
       </header>
 
-      <ul className={styles.trust} aria-label="Why people trust Landing">
-        {TRUST.map((t) => <li key={t.text}><Icon name={t.icon} size={18} />{t.text}</li>)}
-      </ul>
+      <section className={styles.hero} aria-labelledby="hero-title">
+        <div className={`${styles.wrap} ${styles.heroGrid}`}>
+          <div className={styles.heroCopy}>
+            <p className={styles.pill}><span className={styles.pillDot} aria-hidden="true" />For life after weight-loss jabs</p>
+            <h1 id="hero-title" className={styles.display}>Keep what you&apos;ve worked&nbsp;for.</h1>
+            <p className={styles.lede}>The 12-month plan for the year after your jab. Strength, protein and steady habits, with support on your side.</p>
+            <div id="join" className={styles.heroForm}><WaitlistForm /></div>
+          </div>
+          <div className={styles.heroArt} aria-hidden="true">
+            <span className={styles.shapeLilac} />
+            <span className={styles.shapeSky} />
+            <span className={styles.shapeButter} />
+            <span className={styles.shapeGround} />
+            <span className={styles.shapeSun} />
+            <div className={styles.phone}>
+              <Image src="/today.png" alt="" width={780} height={1688} sizes="(max-width: 900px) 250px, 290px" priority />
+            </div>
+            <div className={`${styles.float} ${styles.floatLoop}`}>
+              <span className={styles.floatLabel}>Today&apos;s session</span>
+              <div className={styles.floatStage}><ExerciseLoop ids={["squat-2", "push-2", "hinge-1", "row-2"]} /></div>
+            </div>
+            <div className={`${styles.float} ${styles.floatA}`}>
+              <span className={styles.scoreNum}>78</span>
+              <span><strong>Landing score</strong><br /><span className={styles.muted}>A steady week</span></span>
+            </div>
+            <div className={`${styles.float} ${styles.floatB}`}>
+              <span className={styles.habitTick}><Icon name="check" size={16} /></span>
+              <span><strong>Protein at breakfast</strong><br /><span className={styles.muted}>5 of 7 days</span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       <main>
+        <ul className={styles.trust} aria-label="Why people trust Landing">
+          {TRUST.map((t) => <li key={t.text}><Icon name={t.icon} size={18} />{t.text}</li>)}
+        </ul>
         <section className={styles.pillars} aria-labelledby="pillars-title">
           <div className={styles.wrap}>
             <div className={styles.head}>
@@ -183,7 +203,7 @@ export default function Home() {
                   <span className={styles.mealTag}>15 min · 6 ingredients</span>
                 </span>
               </a>
-              <a href="#app" className={styles.glass}>
+              <a href="#how" className={styles.glass}>
                 <span className={styles.glassText}><strong>Stay steady</strong><span>A weekly score for habits, not weight</span></span>
                 <span className={styles.glassArrow}><Icon name="arrow" size={18} /></span>
                 <span className={styles.ringArt} aria-hidden="true"><span>78</span></span>
@@ -200,7 +220,7 @@ export default function Home() {
             </div>
             <div className={styles.statGrid}>
               <div className={`${styles.statCard} ${styles.statChart}`}>
-                <p className={styles.statSmall}>Average weight change in the STEP 1 trial<sup><a href="#ref-1">1</a></sup></p>
+                <p className={styles.statSmall}>Average weight change in the STEP&nbsp;1&nbsp;trial<sup><a href="#ref-1">1</a></sup></p>
                 <RegainChart />
                 <p className={styles.statNote}>A year after stopping semaglutide, people had regained about two-thirds of the weight they lost. Muscle, protein and routines are what you can work on.</p>
               </div>
@@ -227,7 +247,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <div className={styles.glow} aria-hidden="true" />
 
         <section id="support" className={styles.section} aria-labelledby="support-title">
           <div className={styles.wrap}>
@@ -258,7 +277,6 @@ export default function Home() {
                   <li key={c.id} className={styles.castCard}>
                     <div className={styles.castStage} aria-hidden="true"><ExerciseLoop ids={b.ids} who={c.id} every={6} /></div>
                     <div className={styles.castMeta}>
-                      <span className={styles.castFace} aria-hidden="true" dangerouslySetInnerHTML={{ __html: portraitSvg(c.id) }} />
                       <span><strong>{c.name}, {c.age}</strong><br /><span className={styles.muted}>{b.build}. {b.move}</span></span>
                     </div>
                   </li>
@@ -266,33 +284,6 @@ export default function Home() {
               })}
             </Carousel>
             <p className={styles.castNote}>Pick who shows you the moves, or mix it up. Every exercise works for every one of them, at six levels and seated. Our cast are illustrated characters, not real members.</p>
-          </div>
-        </section>
-
-        <section id="app" className={styles.app} aria-labelledby="app-title">
-          <div className={styles.wrap}>
-            <div className={styles.head}>
-              <span className={styles.appMark} aria-hidden="true"><Image src="/landing-mark.svg" alt="" width={36} height={32} loading="eager" /></span>
-              <h2 id="app-title" className={styles.h2Light}>The Landing app</h2>
-              <p className={styles.sectionLede}>Your plan, your sessions and your weekly score in one calm place.</p>
-            </div>
-            <div className={styles.appStage}>
-              <div className={styles.phone}>
-                <Image src="/today.png" alt="The Today screen of the Landing app" width={780} height={1688} sizes="(max-width: 700px) 240px, 280px" loading="eager" />
-              </div>
-              <div className={`${styles.float} ${styles.floatA}`}>
-                <span className={styles.scoreNum}>78</span>
-                <span><strong>Landing score</strong><br /><span className={styles.muted}>A steady week</span></span>
-              </div>
-              <div className={`${styles.float} ${styles.floatB}`}>
-                <span className={styles.habitTick}><Icon name="check" size={16} /></span>
-                <span><strong>Protein at breakfast</strong><br /><span className={styles.muted}>5 of 7 days</span></span>
-              </div>
-              <div className={`${styles.float} ${styles.floatC}`}>
-                <span className={styles.coachTag}>Coach</span>
-                <span>Eating out tonight? Start with the protein and you&apos;ll feel steadier.</span>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -331,7 +322,7 @@ export default function Home() {
             <ul className={styles.experts}>
               {EXPERTS.map((e) => (
                 <li key={e.role} className={styles.expert}>
-                  <span className={styles.expertBadge}><Icon name="person" /></span>
+                  <span className={styles.expertBadge}><Icon name={e.icon} /></span>
                   <h3 className={styles.h3}>{e.role}</h3>
                   <p className={styles.expertBody}>{e.body}</p>
                   <p className={styles.muted}>{e.text}</p>
@@ -388,7 +379,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="join" className={styles.cta} aria-labelledby="cta-title">
+        <section className={styles.cta} aria-labelledby="cta-title">
           <div className={`${styles.wrap} ${styles.ctaInner}`}>
             <h2 id="cta-title" className={styles.display}>Make this year your steady one</h2>
             <p className={styles.lede}>Join the waitlist. One email when Landing opens, nothing else.</p>

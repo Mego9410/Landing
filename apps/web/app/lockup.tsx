@@ -1,12 +1,15 @@
+import { useId } from "react";
+
 // The landing lockup (packages/design-system/assets/Logos/landing-lockup.svg), inlined so the wordmark can take
 // the text colour: ink on light grounds, dark-mode ink on dark ones, as the brand guidelines ask. The mark keeps
 // its fixed apricot and sage.
 export function Lockup({ width = 137 }: { width?: number }) {
+  const clip = `lockup-h-${useId().replace(/:/g, "")}`;
   return (
     <svg viewBox="0 0 480 112" width={width} height={(width * 112) / 480} role="img" aria-label="landing">
-      <defs><clipPath id="lockup-h"><rect x="0" y="0" width="64" height="52" /></clipPath></defs>
+      <defs><clipPath id={clip}><rect x="0" y="0" width="64" height="52" /></clipPath></defs>
       <g transform="translate(4 22) scale(1.25)">
-        <g clipPath="url(#lockup-h)">
+        <g clipPath={`url(#${clip})`}>
           <rect x="4" y="38" width="56" height="14" rx="7" fill="#CDE3D2" />
           <rect x="27" y="16" width="22" height="22" rx="11" fill="#F8C8AC" />
           <rect x="8" y="5" width="6" height="6" rx="3" fill="#F8C8AC" />

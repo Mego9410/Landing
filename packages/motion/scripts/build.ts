@@ -39,7 +39,7 @@ writeFileSync(join(root, "gallery.html"), `<!doctype html><html lang="en-GB"><me
 <style>body{margin:0;padding:24px 16px;font:15px/1.4 system-ui,sans-serif;background:#FBF8F4;color:#2E2A33}h1,h2{font-weight:600}h2{margin:32px 0 12px}
 label{font-weight:700}select{font:inherit;margin-left:8px;padding:4px 8px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}figure{margin:0;background:#fff;border-radius:16px;overflow:hidden}
-svg{display:block;width:100%;aspect-ratio:260/216;background:#CCE2EF}figcaption{padding:10px 12px}b{display:block;font-size:12px;color:#5A4A8E}small{display:block;color:#6A6371;margin-top:4px}</style>
+svg{display:block;width:100%;aspect-ratio:270/224;background:#CCE2EF}figcaption{padding:10px 12px}b{display:block;font-size:12px;color:#5A4A8E}small{display:block;color:#6A6371;margin-top:4px}</style>
 <h1>Movement library</h1><p>${catalogue.length} looped exercises across ${PATTERNS.length} patterns, with ${CAST.length} people to show them.</p>
 <label>Shown by<select id="who">${options}</select></label>${sections}
 <script src="dist/landing-motion.js"></script>

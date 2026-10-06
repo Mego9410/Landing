@@ -29,6 +29,8 @@ export interface Pose {
   /** Pin a knee or elbow to an exact point instead of solving (e.g. a knee resting on the floor). */
   kneeAt?: [Pt | null, Pt | null];
   elbowAt?: [Pt | null, Pt | null];
+  /** Breathing, 0 (out) to 1 (in). Set by poseAt; it only changes the chest, never the movement. */
+  breath?: number;
 }
 
 export const L = { torso: 54, shoulder: 49, neck: 7, headR: 13, upperArm: 30, forearm: 28, thigh: 42, shin: 40, foot: 15 };
@@ -74,6 +76,7 @@ export interface Skeleton {
   hip: Pt; neck: Pt; shoulder: Pt; head: Pt;
   arms: { elbow: Pt; hand: Pt }[]; // [near, far]
   legs: { knee: Pt; ankle: Pt; toe: Pt }[];
+  breath?: number;
 }
 
 export function solve(p: Pose): Skeleton {
@@ -95,7 +98,7 @@ export function solve(p: Pose): Skeleton {
     const foot = add(r.end, scale(unit(sub(toe, r.end)), L.foot));
     return { knee: r.joint, ankle: r.end, toe: foot };
   });
-  return { hip: p.hip, neck, shoulder, head, arms, legs };
+  return { hip: p.hip, neck, shoulder, head, arms, legs, breath: p.breath };
 }
 
 // ---------- timing ----------
@@ -103,7 +106,8 @@ export function solve(p: Pose): Skeleton {
 /** One keyframe: a pose, how long to take getting to the next one, and how long to hold it. */
 export interface Key { pose: Pose; hold?: number; move?: number }
 
-const ease = (x: number) => 0.5 - 0.5 * Math.cos(Math.PI * x);
+// Slow in, slow out, with a firmer middle than a sine: the body gathers itself, moves, then settles (smootherstep).
+const ease = (x: number) => x * x * x * (x * (6 * x - 15) + 10);
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 const lerpPt = (a: Pt, b: Pt, k: number): Pt => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
 
@@ -139,8 +143,7 @@ export function cycleLength(keys: Key[]): number {
   return keys.reduce((s, k) => s + (k.hold ?? 0.3) + (k.move ?? 1), 0);
 }
 
-/** The pose at time t (seconds) in a looping sequence of keyframes. */
-export function poseAt(keys: Key[], t: number): Pose {
+function keyPose(keys: Key[], t: number): Pose {
   const total = cycleLength(keys);
   let x = ((t % total) + total) % total;
   for (let i = 0; i < keys.length; i++) {
@@ -152,4 +155,22 @@ export function poseAt(keys: Key[], t: number): Pose {
     x -= move;
   }
   return keys[0].pose;
+}
+
+/** How far behind the body the head runs, in seconds, and how much of the body's turn it takes up. */
+const HEAD_LAG = 0.14, HEAD_FOLLOW = 0.55, HEAD_MAX = 10;
+/** A slow breath, about every 3.5 s, fitted to a whole number per loop so the loop stays seamless. */
+const BREATH = 3.5;
+
+/**
+ * The pose at time t (seconds) in a looping sequence of keyframes, with the secondary motion that keeps it from
+ * looking mechanical: the head follows the torso a moment late (overlapping action), and the chest breathes. Hands,
+ * feet and hips stay exactly on their keyframes, so the exercise itself is never changed.
+ */
+export function poseAt(keys: Key[], t: number): Pose {
+  const p = keyPose(keys, t), before = keyPose(keys, t - HEAD_LAG);
+  const lag = Math.max(-HEAD_MAX, Math.min(HEAD_MAX, (before.torso - p.torso) * HEAD_FOLLOW));
+  const total = cycleLength(keys), breaths = Math.max(1, Math.round(total / BREATH));
+  const breath = 0.5 - 0.5 * Math.cos((2 * Math.PI * breaths * t) / total);
+  return { ...p, head: (p.head ?? 0) + lag, breath };
 }

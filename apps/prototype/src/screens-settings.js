@@ -27,6 +27,7 @@
         <p class="label muted">YOUR PLAN</p>
         <div class="list">
           <${Row} title="Your details" onClick=${function () { nav.go('details'); }} />
+          <${Row} title="Food preferences" value=${LP.food ? window.LandingFood.LABELS.diet[LP.food.prefs(s).diet] : ''} onClick=${function () { nav.go('food-prefs'); }} />
           <${Row} title="Subscription" value=${s.sub.status === 'none' ? 'None' : s.sub.plan === 'yearly' ? 'Yearly' : 'Monthly'} onClick=${function () { nav.go('subscription'); }} />
         </div>
       </div>

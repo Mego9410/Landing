@@ -314,7 +314,7 @@
   function ObFood() {
     var s = useApp();
     return html`<div class="scr plain">
-      <${Skip} onClick=${function () { nav.go('ob-consent'); }} />
+      <${Skip} onClick=${function () { nav.go('ob-eating'); }} />
       <${Steps} n=${7} />
       <div class="stack">
         <h1 class="t-title">Food and hunger</h1>
@@ -325,7 +325,9 @@
           options=${['Rarely', 'Some meals', 'Most meals'].map(function (x) { return { id: x, title: x }; })} /></div>
       <div class="stack"><p class="label">WHEN DO YOU USUALLY FEEL HUNGRIEST? PICK ANY</p>
         <${Choices} multi label="Hungriest times" options=${['Morning', 'Lunchtime', 'Afternoon', 'Evening', 'Late night']} value=${s.ob.hungryTimes} onChange=${function (v) { ob({ hungryTimes: v }); }} /></div>
-      <div class="foot"><${Btn} block onClick=${function () { nav.go('ob-consent'); }}>Continue<//></div>
+      <div class="stack"><p class="label">WHAT WOULD YOU LIKE FOOD TO DO FOR YOU?</p>
+        <${LP.food.GoalPicker} /></div>
+      <div class="foot"><${Btn} block onClick=${function () { nav.go('ob-eating'); }}>Continue<//></div>
     </div>`;
   }
 
@@ -337,7 +339,7 @@
       ['lock', 'tint-lilac', 'Never', 'Sold, shared with advertisers or used for ads'], ['trash', 'tint-rose', 'Delete any time', 'One tap in Settings removes everything']];
     return html`<div class="scr plain" style=${{ gap: 16 }}>
       <${Skip} onClick=${agree} />
-      <${Steps} n=${8} />
+      <${Steps} n=${10} />
       <div class="stack">
         <h1 class="t-title">Your health data, your call</h1>
         <p class="body muted">Weight, food and hunger logs count as health data. We need your permission to keep them.</p>
@@ -357,7 +359,7 @@
     function connect(on) { ob({ appleHealth: on }); set(function (s) { s.settings.appleHealth = on; return s; }); if (on) toast('Connected. In the app, iOS asks what to share first.'); nav.go('ob-reminders'); }
     return html`<div class="scr plain">
       <${Skip} onClick=${function () { connect(true); }} />
-      <${Steps} n=${9} />
+      <${Steps} n=${11} />
       <div style=${{ width: 96, height: 96, borderRadius: 9999, background: 'var(--rose)', display: 'grid', placeItems: 'center', color: 'var(--on-pastel)', marginTop: 8 }}><${Icon} name="heart" size=${40} w=${1.8} /></div>
       <div class="stack">
         <h1 class="t-title">Connect Apple Health</h1>
@@ -382,7 +384,7 @@
     function done(on) { ob({ remindersOn: on }); set(function (s) { s.settings.reminders.habit = on; return s; }); nav.go('ob-building'); }
     return html`<div class="scr plain">
       <${Skip} onClick=${function () { done(true); }} />
-      <${Steps} n=${10} />
+      <${Steps} n=${12} />
       <div class="stack">
         <h1 class="t-title">A gentle nudge, once a day</h1>
         <p class="body muted">Short, kind reminders for your habits. Never about your weight.</p>
@@ -442,6 +444,7 @@
         s.weights = s.weights.filter(function (w) { return w.date !== LP.TODAY; });
         if (tw) s.weights.unshift({ date: LP.TODAY, kg: tw, source: s.ob.appleHealth ? 'Apple Health · 7:42' : 'Logged by you' });
         PHASES_SEEN(s, week);
+        s.food = Object.assign({}, s.food, { joinedWeek: week, plan: null }); // the fibre ramp starts today
         return s;
       });
       nav.go('paywall');

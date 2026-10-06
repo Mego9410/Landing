@@ -18,13 +18,17 @@ test panel opens from the dashed **Test panel** button.
 
 ## What works
 
-- **Sign-up:** launch, welcome, Apple or email sign-in (Open Mail acts as tapping the link), all nine onboarding steps
+- **Sign-up:** launch, welcome, Apple or email sign-in (Open Mail acts as tapping the link), all twelve onboarding steps
   with branching (any Yes in the screening questions leads to safe mode), building your plan, plan reveal, paywall
   (yearly or monthly) and You're in.
 - **The app:** Today, quick log, swap a habit, workouts (overview, a set-by-set session, done), Plan, week detail,
   lesson, Progress (score, weight trend with ranges, weigh-in history with edit and delete, prescriber pack), drift
-  nudge, what changed, reset week, the Coach (scripted replies, with the prescriber redirect for any medication
+  nudge, what changed, reset week, meals (this week's plan by day, swap a meal, recipes with swaps and portions, the
+  recipe library with filters, the shopping list, food preferences), the Coach (scripted replies, with the prescriber redirect for any medication
   question) and every Settings screen down to deleting the account.
+- **Meals:** planned live by `packages/engine` from the onboarding and food-preference answers, so changing the diet,
+  allergies, kit or household rebuilds the week. Every recipe is a draft until the dietitian signs it off, and the
+  screens say so.
 - **Live data:** logging protein, weight and hunger, ticking habits, finishing sessions, swapping habits, reading
   lessons, units, safe mode and every toggle update the other screens. Everything is saved in the browser, so it
   survives a reload.
@@ -39,6 +43,7 @@ test panel opens from the dashed **Test panel** button.
   - Start from a fresh install, onboarding, the first day or Hannah in week 6.
   - Move to any week of the plan; weeks 9 and 27 show the new-phase screen.
   - Switch states: safe mode, drift nudge, reset week, offline, evening, week summary ready.
+  - Change the meals: vegan, vegetarian, gluten-free, microwave only, a family of four, build strength, or reset.
   - Set the subscription to none, free trial, paid or ended, and the theme to match device, light or dark.
   - Open a sheet, jump to any screen by its design ID, or clear everything.
 
@@ -51,6 +56,8 @@ No build step and no npm: React 18 (the copy in `packages/design-system/componen
 
 - `src/core.js`: state, dummy data, dates, navigation and shared UI pieces
 - `src/screens-*.js`: the screens, grouped as in the designs
+- `src/motion.js` and `src/food.js`: the exercise loops and the meal planner, copied from `packages/motion` and
+  `packages/engine` by `scripts/motion.mjs` and `scripts/food.mjs` (the build runs both)
 - `src/app.js`: the phone frame, routing, tab bar, sheets and the test panel
 - `app.css`: the screen layout classes from the designs, the frame and the panel. Colours, type and spacing all come
   from `packages/design-system/tokens.css`, so changing a token changes the prototype.

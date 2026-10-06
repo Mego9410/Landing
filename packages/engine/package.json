@@ -1,0 +1,29 @@
+{
+  "name": "@landing/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Landing's planning logic, shared by the app, the prototype and the web: meal plans, swaps and shopping lists.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./browser": "./src/browser.ts",
+    "./dist/*": "./dist/*"
+  },
+  "scripts": {
+    "build": "node scripts/build.ts",
+    "test": "node --test test/*.test.ts",
+    "check": "node --test test/*.test.ts && node scripts/build.ts && git diff --exit-code -- dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "dependencies": {
+    "@landing/content": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "esbuild": "^0.25.12",
+    "typescript": "~6.0.3"
+  }
+}

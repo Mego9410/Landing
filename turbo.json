@@ -25,7 +25,8 @@
         "public/prototype/**",
         "svg/**",
         "gallery.html",
-        "src/motion.js"
+        "src/motion.js",
+        "src/food.js"
       ],
       "env": [
         "NEXT_PUBLIC_*"

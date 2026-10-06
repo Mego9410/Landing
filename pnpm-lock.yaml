@@ -105,6 +105,9 @@ importers:
 
   apps/prototype:
     dependencies:
+      '@landing/engine':
+        specifier: workspace:*
+        version: link:../../packages/engine
       '@landing/motion':
         specifier: workspace:*
         version: link:../../packages/motion
@@ -149,7 +152,32 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/content:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.18.0
+        version: 22.20.5
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+
   packages/design-system: {}
+
+  packages/engine:
+    dependencies:
+      '@landing/content':
+        specifier: workspace:*
+        version: link:../content
+    devDependencies:
+      '@types/node':
+        specifier: ^22.18.0
+        version: 22.20.5
+      esbuild:
+        specifier: ^0.25.12
+        version: 0.25.12
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
 
   packages/motion:
     devDependencies:

@@ -37,3 +37,4 @@ apps/mobile/android/
 
 # The motion browser bundle is generated but committed: the prototype and the gallery load it with no build step.
 !packages/motion/dist/
+!packages/engine/dist/

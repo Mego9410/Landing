@@ -85,6 +85,7 @@
           <span style=${{ width: 52, height: 52, borderRadius: 9999, background: 'var(--on-pastel)', display: 'grid', placeItems: 'center', color: 'var(--sage)', flex: 'none' }}><${Icon} name="check" size=${24} /></span>
           <span class="grow stack" style=${{ gap: 2 }}><span class="label">THIS WEEK'S SESSIONS</span><span style=${{ fontWeight: 800, fontSize: 16 }}>Both done</span><span class="caption">Next ones arrive on Monday</span></span>
         </button>`}
+      <${LP.food.TonightCard} />
       <div class="card tint-lilac" style=${{ gap: 6 }}>
         <span class="label">${tip.label}</span>
         <p class="body-lg">${tip.text}</p>

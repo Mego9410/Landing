@@ -18,6 +18,7 @@
         <span class="t-heading" style=${{ fontSize: 22 }}>${s.reset.active ? 'Reset week' : lesson.week}</span>
         <span class="body">${s.lessonsRead[week] ? 'Lesson read · three habits and two sessions' : 'Lesson, three habits and two sessions'}</span>
       </button>
+      <${LP.food.PlanCard} />
       ${LP.PHASES.map(function (p) {
         var weeks = []; for (var w = p.from; w <= p.to; w++) weeks.push(w);
         return html`<div key=${p.key} class="card" style=${{ gap: 12 }}>

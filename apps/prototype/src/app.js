@@ -106,6 +106,19 @@
         <${Pbtn} on=${s.flags.evening} onClick=${function () { setFlag('evening', !s.flags.evening); }}>Evening<//>
         <${Pbtn} on=${s.flags.weekSummary} onClick=${function () { setFlag('weekSummary', !s.flags.weekSummary); }}>Week summary ready<//>
       </div></section>
+      <section><h3>Meals</h3><div class="pbtns">
+        ${[['diet', 'vegan', 'Vegan'], ['diet', 'vegetarian', 'Vegetarian'], ['allergens', 'gluten', 'Gluten-free'], ['kit', 'microwave', 'Microwave only'], ['household', 4, 'Family of 4'], ['goal', 'strength', 'Build strength']].map(function (o) {
+          var f = LP.food.prefs(s), on = o[0] === 'allergens' ? f.allergens.indexOf(o[1]) >= 0 : o[0] === 'kit' ? f.kit.length === 1 && f.kit[0] === o[1] : f[o[0]] === o[1];
+          return html`<${Pbtn} key=${o[2]} on=${on} onClick=${function () {
+            var patch = { plan: null };
+            if (o[0] === 'allergens') patch.allergens = on ? [] : [o[1]];
+            else if (o[0] === 'kit') patch.kit = on ? LP.food.DEFAULTS.kit : [o[1]];
+            else patch[o[0]] = on ? LP.food.DEFAULTS[o[0]] : o[1];
+            LP.food.setFood(patch);
+          }}>${o[2]}<//>`;
+        })}
+        <${Pbtn} onClick=${function () { LP.food.setFood(Object.assign({}, LP.food.DEFAULTS, { household: LP.food.prefs(LP.get()).household, joinedWeek: LP.food.prefs(LP.get()).joinedWeek })); }}>Reset food<//>
+      </div></section>
       <section><h3>Subscription</h3><div class="pbtns">
         ${[['none', 'None'], ['trial', 'Free trial'], ['active', 'Paid'], ['lapsed', 'Ended']].map(function (o) { return html`<${Pbtn} key=${o[0]} on=${s.sub.status === o[0]} onClick=${function () { set(function (s) { s.sub.status = o[0]; return s; }); }}>${o[1]}<//>`; })}
       </div></section>

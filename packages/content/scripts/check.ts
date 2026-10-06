@@ -1,0 +1,79 @@
+// Checks the food library before anyone reviews it: every reference resolves, every recipe meets the Easy standard
+// (plan §5.2) and the brand's language rules. Exits non-zero on any error. Run: pnpm --filter @landing/content check
+import { INGREDIENT, INGREDIENTS, PROTEIN_MIN, RECIPES, SWAPS, TOP_UPS, VEG_PORTION, nutritionOf } from "../src/index.ts";
+
+const errors: string[] = [];
+const notes: string[] = [];
+const err = (m: string) => errors.push(m);
+
+const dupes = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) !== i);
+for (const d of dupes(INGREDIENTS.map((i) => i.id))) err(`Duplicate ingredient id ${d}`);
+for (const d of dupes(RECIPES.map((r) => r.id))) err(`Duplicate recipe id ${d}`);
+
+for (const [from, list] of Object.entries(SWAPS)) {
+  if (!INGREDIENT[from]) err(`Swap list for unknown ingredient ${from}`);
+  for (const s of list) {
+    if (!INGREDIENT[s.to]) err(`Swap ${from} → unknown ${s.to}`);
+    if (s.to === from) err(`Swap ${from} → itself`);
+    if (!(s.ratio > 0 && s.ratio <= 4)) err(`Swap ${from} → ${s.to} has an odd ratio ${s.ratio}`);
+  }
+}
+for (const t of TOP_UPS) if (!INGREDIENT[t.i]) err(`Top-up uses unknown ${t.i}`);
+
+// Brand language (docs and the design-system README): no diet-culture words, no emoji.
+const BANNED = /\b(cheat|guilt|guilty|sinful|junk|clean eating|burn|fail|back on track|naughty|skinny|diet food)\b/i;
+const EMOJI = /\p{Extended_Pictographic}/u;
+const words = (r: (typeof RECIPES)[number]) => [r.name, r.blurb, ...r.steps, r.storeCupboard ?? ""];
+
+for (const r of RECIPES) {
+  const where = `${r.id}:`;
+  const unknown = r.ingredients.filter((l) => !INGREDIENT[l.i]);
+  for (const l of unknown) err(`${where} unknown ingredient ${l.i}`);
+  if (unknown.length) continue;
+
+  const shopping = r.ingredients.filter((l) => !l.optional && !INGREDIENT[l.i].pantry);
+  const n = nutritionOf(r.ingredients);
+  const batch = r.serves >= 4;
+  const ovenTime = r.kit.includes("tray") && r.handsOn <= 10;
+
+  if (shopping.length > 6) err(`${where} ${shopping.length} shopping ingredients (Easy standard: 6 or fewer)`);
+  if (r.handsOn > 15) err(`${where} ${r.handsOn} minutes hands-on (Easy standard: 15 or fewer)`);
+  if (r.handsOn > r.total) err(`${where} hands-on time is longer than the total`);
+  if (r.total > 20 && !batch && !ovenTime) err(`${where} ${r.total} minutes in total (Easy standard: 20, or a batch of 4+)`);
+  if (r.total > 20 && !batch && ovenTime) notes.push(`${r.id} takes ${r.total} minutes, ${r.handsOn} of them hands-on (oven time)`);
+  if (r.total > 45) err(`${where} ${r.total} minutes is too long even for a batch`);
+  if (r.washUp > 3) err(`${where} ${r.washUp} things to wash up (Easy standard: 3 or fewer)`);
+  if (n.protein < PROTEIN_MIN[r.slot]) err(`${where} ${n.protein.toFixed(1)} g protein (minimum for ${r.slot}: ${PROTEIN_MIN[r.slot]} g)`);
+  if ((r.slot === "lunch" || r.slot === "dinner") && n.vegGrams < VEG_PORTION) err(`${where} ${Math.round(n.vegGrams)} g veg (a main needs a portion, ${VEG_PORTION} g)`);
+  if (r.collections.includes("gentle") && (r.spicy || n.fat > 15)) err(`${where} tagged gentle but ${r.spicy ? "spicy" : `${Math.round(n.fat)} g fat`}`);
+  if (r.collections.includes("batch") && !batch) err(`${where} tagged batch but serves ${r.serves}`);
+  if (r.collections.includes("no-cook") && !r.kit.includes("none")) err(`${where} tagged no-cook but needs ${r.kit.join(", ")}`);
+  if (r.collections.includes("microwave") && r.kit.some((k) => k !== "microwave" && k !== "none")) err(`${where} tagged microwave but needs ${r.kit.join(", ")}`);
+  if (!r.steps.length) err(`${where} has no steps`);
+  for (const [from, alts] of Object.entries(r.only ?? {})) {
+    if (!r.ingredients.some((l) => l.i === from)) err(`${where} limits swaps for ${from}, which it doesn't use`);
+    for (const a of alts) if (!INGREDIENT[a]) err(`${where} allows unknown swap ${a}`);
+  }
+  if (r.review.status === "approved" && !r.review.by) err(`${where} approved without a reviewer`);
+  for (const t of words(r)) {
+    if (BANNED.test(t)) err(`${where} uses "${t.match(BANNED)![0]}"`);
+    if (EMOJI.test(t)) err(`${where} contains an emoji`);
+  }
+}
+
+const slots = ["breakfast", "lunch", "dinner", "snack"] as const;
+console.log(`${INGREDIENTS.length} ingredients, ${RECIPES.length} recipes: ${slots.map((k) => `${RECIPES.filter((r) => r.slot === k).length} ${k}`).join(", ")}`);
+console.log(`Review: ${RECIPES.filter((r) => r.review.status === "approved").length} approved, ${RECIPES.filter((r) => r.review.status !== "approved").length} waiting for the dietitian and the cook`);
+if (process.argv.includes("--table")) {
+  for (const r of RECIPES) {
+    const n = nutritionOf(r.ingredients);
+    console.log(`${r.slot.padEnd(9)} ${r.id.padEnd(28)} protein ${n.protein.toFixed(0).padStart(3)} g  fibre ${n.fibre.toFixed(0).padStart(2)} g  veg ${n.vegGrams.toFixed(0).padStart(3)} g  fat ${n.fat.toFixed(0).padStart(2)} g  salt ${n.salt.toFixed(1)} g`);
+  }
+}
+for (const m of notes) console.log(`note: ${m}`);
+if (errors.length) {
+  for (const e of errors) console.error(`error: ${e}`);
+  console.error(`${errors.length} error(s)`);
+  process.exit(1);
+}
+console.log("All recipes meet the Easy standard.");

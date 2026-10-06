@@ -29,7 +29,8 @@ must sign off the content before launch (section 8).
    including 12 "fakeaways" of the UK's favourite takeaways.
 4. **Every recipe is a base plus tagged swaps.** Protein, allergens and diet tags are recalculated on each swap, so one
    recipe serves vegans, coeliacs, halal and kosher eaters, people with nut allergies, people with only a microwave and
-   so on. A swap is never blocked; if it drops protein, the app offers a one-tap top-up.
+   so on. If a swap drops protein, the app adds a top-up. A recipe whose method can't take a swap (boiled eggs can't
+   become tofu) is left out for that person instead.
 5. **No UK supermarket offers a public API to fill a basket.** At launch we ship the hard, valuable part ourselves (the
    weekly plan, a merged shopping list with pack sizes, pantry and leftovers) and hand off to the big five: search
    links and a shopping-mode checklist for Tesco, Sainsbury's and Asda, and an aisle-ordered list for Aldi and Lidl,
@@ -290,6 +291,29 @@ asks for confirmation and shows the Beat link. SCOFF misses about half of cases,
   advice needed).
 - Nutrition shown as "approx." in whole grams, recalculated on every swap and serving change.
 
+### 5.8 What's built (6 October 2026)
+
+- **[`packages/content`](../packages/content/):** 70 draft recipes (14 breakfasts, 15 lunches, 30 dinners including 12
+  fakeaways and 11 batch recipes, 11 snacks), about 120 ingredients and the swap lists. A check holds every recipe to
+  the Easy standard. Nutrition values and costs are approximate and unverified, and every recipe is marked draft
+  until the dietitian and the cook sign it off.
+- **[`packages/engine`](../packages/engine/):** fits recipes to each person, sets the week's aims from the phase and
+  goal, plans the week (5.5), swaps meals and builds the shopping list. It has tests.
+- **The prototype:** two new onboarding steps (how you eat; your kitchen and your week) and a goal question. Also this
+  week's meals, recipes with swaps explained, the recipe library, the shopping list, food preferences in Settings, and
+  a "Tonight" card on Today. Drafts show a label.
+
+Proposed while building, for the team to decide:
+
+1. **The goal question offers "Hold steady", "Build strength" and "Feel fuller for longer".** There's no weight-loss
+   goal, in line with "no goal weight" on the waitlist site. Safe mode always plans for holding steady.
+2. **Tray bakes may run to 25 minutes in total** when 10 minutes or less is hands-on (six recipes). Otherwise they
+   fail the 20-minute rule.
+3. **Recipes can limit their swaps** when the method can't take one (4 above). Until the CMS has method variants for
+   each swap, a swapped recipe shows "use the tofu where the method says eggs".
+4. **The daily protein guide is 1.0 to 1.2 g/kg of a reference weight** (1.2 to 1.5 to build strength), or 90 to 120 g
+   a day without one. The clinical lead to confirm.
+
 ---
 
 ## 6. Shopping and supermarkets
@@ -345,10 +369,10 @@ risk, and the supermarkets actively block it.
 
 | Path | What |
 | --- | --- |
-| `packages/content` (new) | Exercises, ladders, recipes, ingredients, swaps and aisle maps as data files (JSON), validated by a schema in CI. Edited through the CMS below, never by hand in production |
+| `packages/content` (started, 5.8) | Exercises, ladders, recipes, ingredients, swaps and aisle maps as data files (JSON), validated by a schema in CI. Edited through the CMS below, never by hand in production |
 | Simple CMS (new, decided 5 October 2026) | A web editor for the physio, the dietitian and the cook from day one: forms per content type, a draft → in review → approved status with the reviewer's name and date, and a preview of the exercise loop or recipe card. Pick a git-backed CMS that saves to `packages/content` (Keystatic, Decap or Tina, chosen in weeks 1 to 2), so every change still gets schema checks, history and a pull request, and nobody needs to learn GitHub. Hosted behind sign-in, at `/admin` on the web app or as its own small app |
 | `packages/motion` (built) | The exercise loops: figure, props, the 80 exercise animations, and renderers for SVG and React Native |
-| `packages/engine` (new) | Pure TypeScript with unit tests: session builder, progression rules, swap resolver, nutrition calculator, weekly planner, list aggregator and pack optimiser, supermarket hand-off links. Shared by the Expo app, the prototype and the web |
+| `packages/engine` (started, 5.8) | Pure TypeScript with unit tests: session builder, progression rules, swap resolver, nutrition calculator, weekly planner, list aggregator and pack optimiser, supermarket hand-off links. Shared by the Expo app, the prototype and the web |
 | `apps/web` API routes | Saving plans and lists, price table, supermarket search links, later the partner basket calls (keys stay on the server) |
 | Database (Supabase, already named in the privacy screen) | User profiles, equipment profiles, comfort flags, diet profile, pattern levels, session logs, meal plans, shopping lists, household sharing |
 | `apps/prototype` | Add the new screens with dummy data first, to agree flows before Expo |
@@ -431,5 +455,6 @@ We write our own screening questions rather than licensing PAR-Q+ or SCOFF wordi
 From the research briefs, before anything goes into in-app copy: exact NICE NG246 and QS212 wording; the ACSM 2026
 set and rep text; whether any GLP-1-specific strength trial has reported (LEAN-PREP, PRIME); the CoFID and Open Food
 Facts licences; current Worldpanel shares; Tesco, Sainsbury's and Asda search link formats and app link support; Aldi
-and Lidl aisle layouts; which git-backed CMS suits clinicians best; the Beat helpline number; and verified protein and price values for the 150 core products. Full lists are at the end
+and Lidl aisle layouts; which git-backed CMS suits clinicians best; the Beat helpline number; and verified protein and price values for the 150 core products. For the meal library: every ingredient's nutrition
+against CoFID 2021 or the pack, every recipe's cost, and every recipe's timing by a real cook. Full lists are at the end
 of each research brief.

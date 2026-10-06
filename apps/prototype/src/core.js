@@ -40,7 +40,10 @@
     offline: '<path d="M4 9a12 12 0 0 1 16 0M7 12.5a7.5 7.5 0 0 1 10 0M10 16a3 3 0 0 1 4 0"/><path d="M3 3l18 18"/>',
     reset: '<path d="M5 12a7 7 0 1 0 2.1-5"/><path d="M5 4.5V8h3.5"/>',
     pause: '<path d="M9 6v12M15 6v12"/>',
-    play: '<path d="M8 5.5v13l10-6.5z"/>'
+    play: '<path d="M8 5.5v13l10-6.5z"/>',
+    meal: '<path d="M4 13h16a8 8 0 0 1-16 0z"/><path d="M9 4.5c0 1.5 1 1.5 1 3M13 4.5c0 1.5 1 1.5 1 3"/>',
+    basket: '<path d="M4 9.5h16l-1.6 9a2 2 0 0 1-2 1.5H7.6a2 2 0 0 1-2-1.5z"/><path d="M9 9.5l3-5 3 5"/>',
+    shuffle: '<path d="M4 7h3.5c4.5 0 4.5 10 9 10H20M4 17h3.5c1.6 0 2.6-1.2 3.4-2.8M13.1 9.8C14 8.2 15 7 16.5 7H20"/><path d="M17.5 4.5L20 7l-2.5 2.5M17.5 14.5L20 17l-2.5 2.5"/>'
   };
   function Icon(p) {
     return h('svg', { width: p.size || 22, height: p.size || 22, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: p.w || 2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true, style: p.style, dangerouslySetInnerHTML: { __html: ICON[p.name] || '' } });
@@ -165,6 +168,8 @@
       cravings: [],
       workouts: { where: 'home', done: {}, feel: null, active: null },
       demos: { who: 'mix', still: false, ghost: true },
+      // Food preferences and this week's meal plan (see screens-food.js and packages/engine).
+      food: { goal: 'steady', diet: 'none', allergens: [], lactoseFree: false, aversions: [], kit: ['hob', 'oven', 'microwave', 'kettle'], maxMinutes: 20, household: 1, cookNights: 4, conditions: [], cuisines: [], budget: 3, joinedWeek: null, seed: 1, plan: null, ticked: {}, open: null, pick: null },
       lessonsRead: {},
       phaseSeen: { land: true },
       flags: { drift: false, offline: false, weekSummary: false },
@@ -190,6 +195,7 @@
     s.protein = { Breakfast: 30, Lunch: 34 };
     s.habits = { ids: ['protein', 'strength', 'pause'], done: { protein: 4, strength: 1, pause: 2 }, today: { protein: true }, swappedFrom: null };
     s.workouts.done = { A: 'Thursday' };
+    s.food.household = 2; s.food.joinedWeek = 4;
     s.coach = { introSeen: true, messages: [
       { from: 'you', text: 'Should I go back on a lower dose?' },
       { from: 'coach', redirect: true, text: 'That’s a decision for your prescriber, so I can’t help with doses. I can make a one-page summary of your trend and habits to take with you.', pack: true },
@@ -285,11 +291,12 @@
 
   /* ---------- shared UI ---------- */
   function Back(p) { return html`<button type="button" class=${'iconbtn' + (p.solid ? '' : ' flat')} aria-label=${p.label || 'Back'} onClick=${p.onClick || function () { nav.back(p.fallback); }}><${Icon} name=${p.icon || 'back'} /></button>`; }
+  var STEPS = 12;
   function Steps(p) {
     return html`<div class="topbar">
       <${Back} fallback=${p.backTo} onClick=${p.onBack} />
-      <div class="steps" role="progressbar" aria-valuemin="1" aria-valuemax="10" aria-valuenow=${p.n} aria-label=${'Step ' + p.n + ' of 10'}><span style=${{ width: Math.round(p.n / 10 * 100) + '%' }}></span></div>
-      <span class="caption muted">${p.n} of 10</span>
+      <div class="steps" role="progressbar" aria-valuemin="1" aria-valuemax=${STEPS} aria-valuenow=${p.n} aria-label=${'Step ' + p.n + ' of ' + STEPS}><span style=${{ width: Math.round(p.n / STEPS * 100) + '%' }}></span></div>
+      <span class="caption muted">${p.n} of ${STEPS}</span>
     </div>`;
   }
   function Skip(p) { return html`<button type="button" class="skip" onClick=${p.onClick} title="Prototype only: fill this step with dummy answers and move on">${p.label || 'Skip'} ›</button>`; }

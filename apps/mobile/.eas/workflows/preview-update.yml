@@ -1,0 +1,15 @@
+# Publishes the app to the "preview" update branch on every push to these Git branches, so it can be opened on a
+# phone in Expo Go (expo.dev → this project → Updates → preview). Runs on Expo's servers through the GitHub link,
+# so no Expo login is needed in CI. The project's base directory in Expo's GitHub settings must be apps/mobile.
+name: Publish preview update
+
+on:
+  push:
+    branches: ['claude/zealous-fermat-jwlkqa', 'main']
+
+jobs:
+  publish_update:
+    name: Publish preview update
+    type: update
+    params:
+      branch: preview

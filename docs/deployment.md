@@ -52,11 +52,28 @@ its own address, for example to keep it after launch behind Vercel's password pr
 
 ## 3. The iPhone app with EAS
 
-1. Install the CLI once: `npm install -g eas-cli`, then `eas login`.
-2. In `apps/mobile/app.json`, change `ios.bundleIdentifier` and `android.package` from `com.yourcompany.landing` to
+The Expo project is already created and linked (its ID is in `apps/mobile/app.json`), and connected to this GitHub
+repository.
+
+**See it on your phone (Expo Go):**
+
+1. In expo.dev, open the project's **GitHub** settings and set the base directory to `apps/mobile`.
+2. Push to `main` or the working branch. `apps/mobile/.eas/workflows/preview-update.yml` runs on Expo's servers and
+   publishes an update to the `preview` branch.
+3. Install **Expo Go** on your phone. In expo.dev open the project → **Updates** → `preview`, and scan the QR code.
+
+Or by hand from your computer: `npm install -g eas-cli`, `eas login`, then `pnpm --filter @landing/mobile
+update:preview`.
+
+**Development build:** `expo-dev-client` is installed and `eas.json` has a `development` profile. Run
+`eas build --profile development --platform ios` (or `android`); for the iOS Simulator, set `"ios": { "simulator":
+true }` on that profile first. Then `pnpm dev:mobile` starts the development server.
+
+**Store builds:**
+
+1. In `apps/mobile/app.json`, change `ios.bundleIdentifier` and `android.package` from `com.yourcompany.landing` to
    your own reverse domain. This can't change after the first App Store build.
-3. From `apps/mobile`, run `eas init` to create the EAS project (it adds the project ID to `app.json`).
-4. `pnpm --filter @landing/mobile build:preview` makes an internal build to install on your phone.
+2. `pnpm --filter @landing/mobile build:preview` makes an internal build to install on your phone.
    `pnpm --filter @landing/mobile build:ios` makes a store build; `eas submit --platform ios` sends it to TestFlight
    (fill in the Apple IDs in `eas.json` first).
 

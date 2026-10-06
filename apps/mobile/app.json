@@ -34,13 +34,27 @@
           "backgroundColor": "#FBF8F4",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 120,
-          "dark": { "backgroundColor": "#1F1C23", "image": "./assets/images/splash-icon.png" }
+          "dark": {
+            "backgroundColor": "#1F1C23",
+            "image": "./assets/images/splash-icon.png"
+          }
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/eb04d207-c0e2-464e-8bee-5e6f711bc27f"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "eb04d207-c0e2-464e-8bee-5e6f711bc27f"
+      }
     }
   }
 }

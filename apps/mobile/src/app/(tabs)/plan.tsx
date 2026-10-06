@@ -1,46 +1,76 @@
-import { useState } from "react";
+import { router } from "expo-router";
 import { Pressable, View } from "react-native";
-import { mixFor } from "@landing/motion";
+import { progress } from "@landing/engine";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
-import { ExerciseAnimation } from "@/components/ExerciseAnimation";
-import { PortList } from "@/components/PortNote";
 import { Screen } from "@/components/Screen";
+import { Avatar, Disc, RowCard } from "@/components/ui";
+import { LESSONS, phaseOf, PHASES } from "@/data/content";
+import { thisWeek } from "@/state/food";
+import { useApp, weekOf } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
-// This week's Strength B, as in the prototype. The full plan screens are still to be ported.
-const MOVES = [
-  { id: "squat-4", name: "Goblet squat" },
-  { id: "hinge-1", name: "Glute bridge" },
-  { id: "push-2", name: "Counter press-up" },
-  { id: "row-4", name: "One-arm row" },
-  { id: "core-2", name: "Dead bug" },
-];
-
+/** PL1 Your plan: this week, meals this week and next, and the three phases. */
 export default function Plan() {
-  const c = useColors();
-  const [move, setMove] = useState(MOVES[0]);
+  const s = useApp(), c = useColors();
+  const week = weekOf(s), phase = phaseOf(week), lesson = LESSONS[phase.key];
+  const meals = thisWeek(s), cooks = meals.days.filter((d) => d.dinner.kind === "cook").length;
+  const nx = s.food.next, pr = nx ? progress(nx.week) : null;
   return (
-    <Screen contentContainerStyle={{ gap: space[4] }}>
-      <AppText variant="title" accessibilityRole="header">Your plan</AppText>
-      <Card tone="sky" style={{ padding: 0, overflow: "hidden" }}>
-        <ExerciseAnimation id={move.id} who={mixFor(`${move.id}-plan`)} />
-      </Card>
-      <AppText variant="heading">{move.name}</AppText>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
-        {MOVES.map((m) => (
-          <Pressable
-            key={m.id}
-            onPress={() => setMove(m)}
-            accessibilityRole="button"
-            accessibilityState={{ selected: m.id === move.id }}
-            style={{ backgroundColor: m.id === move.id ? c.apricot : c.surfaceSunk, borderRadius: radius.full, height: 36, paddingHorizontal: space[3], justifyContent: "center" }}
-          >
-            <AppText variant="label" color={m.id === move.id ? "onPastel" : "ink"}>{m.name}</AppText>
-          </Pressable>
-        ))}
+    <Screen contentContainerStyle={{ gap: space[5] }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+        <View style={{ gap: 2 }}>
+          <AppText variant="caption" color="inkMuted">Week {week} of 52</AppText>
+          <AppText variant="title" accessibilityRole="header">Your plan</AppText>
+        </View>
+        <Avatar name={s.name} />
       </View>
-      <PortList screens={["PL1 Your plan", "PL2 Week detail", "PL3 Lesson", "PL4 New phase"]} />
+
+      <Pressable accessibilityRole="button" onPress={() => router.push("/week")}>
+        <Card tone="apricot" hero style={{ gap: 6 }}>
+          <AppText variant="label" color="onPastel">THIS WEEK</AppText>
+          <AppText variant="heading" color="onPastel" style={{ fontSize: 22 }}>{lesson.week}</AppText>
+          <AppText color="onPastel">{s.lessonsRead[week] ? "Lesson read · three habits and two sessions" : "Lesson, three habits and two sessions"}</AppText>
+        </Card>
+      </Pressable>
+
+      <RowCard tone="sky" onPress={() => router.push("/meals")}>
+        <View style={{ flex: 1, gap: 2 }}>
+          <AppText variant="label" color="onPastel">MEALS THIS WEEK</AppText>
+          <AppText variant="heading" color="onPastel">{cooks} dinners, leftovers and a takeaway</AppText>
+          <AppText variant="caption" color="onPastel">Recipes, swaps and your shopping list</AppText>
+        </View>
+      </RowCard>
+      <RowCard onPress={() => router.push("/meals/next")}>
+        <Disc icon="basket" tone="butter" />
+        <View style={{ flex: 1, gap: 2 }}>
+          <AppText variant="label" color="inkMuted">NEXT WEEK</AppText>
+          <AppText weight="800" style={{ fontSize: 16 }}>{pr ? `${pr.chosen} of ${pr.total} meals picked` : "Pick your meals for next week"}</AppText>
+          <AppText variant="caption" color="inkMuted">{pr ? "Your shopping list adds it all up" : "Then get one shopping list for the lot"}</AppText>
+        </View>
+      </RowCard>
+
+      {PHASES.map((p) => {
+        const weeks = Array.from({ length: p.to - p.from + 1 }, (_, i) => p.from + i);
+        return (
+          <Card key={p.key} style={{ gap: 12 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: c[`${p.tone}Ink` as const] }} />
+                <AppText variant="heading">{p.name}</AppText>
+              </View>
+              <AppText variant="caption" color="inkMuted">Weeks {p.from}–{p.to}</AppText>
+            </View>
+            <AppText color="inkMuted">{p.focus}</AppText>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+              {weeks.map((w) => (
+                <View key={w} accessibilityLabel={`Week ${w}${w < week ? ", done" : w === week ? ", this week" : ", coming up"}`}
+                  style={{ width: 26, height: 26, borderRadius: radius.full, backgroundColor: w < week ? c.sageInk : w === week ? c.apricot : c.surfaceSunk, borderWidth: w === week ? 2 : w > week ? 1.5 : 0, borderColor: w === week ? c.apricotInk : c.line }} />
+              ))}
+            </View>
+          </Card>
+        );
+      })}
     </Screen>
   );
 }

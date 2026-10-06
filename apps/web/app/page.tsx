@@ -4,7 +4,9 @@ import { cast } from "@landing/motion/browser";
 import styles from "./page.module.css";
 import { Carousel } from "./carousel";
 import { ExerciseLoop } from "./exercise-loop";
-import { Lockup } from "./lockup";
+import { GUIDES } from "@/content/guides";
+import { SiteFooter, SiteHeader } from "./site-chrome";
+import { abs, ldJson, ORGANIZATION, SITE_NAME } from "./site";
 import { PrototypeLink } from "./prototype-link";
 import { WaitlistForm } from "./waitlist-form";
 
@@ -130,33 +132,28 @@ function RegainChart() {
   );
 }
 
+const HOME_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    ORGANIZATION,
+    { "@type": "WebSite", "@id": `${abs("/")}#website`, url: abs("/"), name: SITE_NAME, inLanguage: "en-GB", publisher: { "@id": ORGANIZATION["@id"] } },
+    { "@type": "FAQPage", "@id": `${abs("/")}#faq`, mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
+  ],
+};
+
 export default function Home() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={ldJson(HOME_LD)} />
 
-      <aside className={styles.announce} aria-label="Announcement">
-        <span>Coming soon to iPhone.</span> <a href="#join">Join the waitlist for early access</a>
-      </aside>
-      <header className={styles.header}>
-        <div className={`${styles.wrap} ${styles.headerInner}`}>
-          <Link href="/" aria-label="Landing home" className={styles.logo}><Lockup /></Link>
-          <nav className={styles.navLinks} aria-label="Main">
-            <a href="#how">How it works</a>
-            <a href="#support">What&apos;s included</a>
-            <a href="#cast">Exercises</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#faqs">FAQs</a>
-          </nav>
-          <a className={styles.navCta} href="#join">Join the waitlist</a>
-        </div>
-      </header>
+      <SiteHeader home />
 
       <section className={styles.hero} aria-labelledby="hero-title">
         <div className={`${styles.wrap} ${styles.heroGrid}`}>
           <div className={styles.heroCopy}>
             <p className={styles.pill}><span className={styles.pillDot} aria-hidden="true" />For life after weight-loss jabs</p>
             <h1 id="hero-title" className={styles.display}>Keep what you&apos;ve worked&nbsp;for.</h1>
-            <p className={styles.lede}>The 12-month plan for the year after your jab. Strength, protein and steady habits, with support on your side.</p>
+            <p className={styles.lede}>The 12-month plan for the year after you stop a weight-loss jab. Strength, protein and steady habits to keep the weight off, with support on your side.</p>
             <div id="join" className={styles.heroForm}><WaitlistForm /></div>
           </div>
           <div className={styles.heroArt} aria-hidden="true">
@@ -368,6 +365,20 @@ export default function Home() {
           </div>
         </section>
 
+        <section id="guides" className={styles.section} aria-labelledby="guides-title">
+          <div className={styles.wrap}>
+            <div className={styles.headRow}>
+              <h2 id="guides-title" className={styles.h2Light}>Guides for the year after<br /><span className={styles.mutedHead}>clear, kind and sourced</span></h2>
+            </div>
+            <ul className={styles.guideGrid}>
+              {GUIDES.filter((g) => g.pillar).concat(GUIDES.filter((g) => ["what-happens-when-you-stop-weight-loss-injections", "appetite-after-stopping-glp-1"].includes(g.slug))).map((g) => (
+                <li key={g.slug}><Link className={styles.guideCard} href={`/guides/${g.slug}`}><strong>{g.title}</strong><span>{g.description}</span></Link></li>
+              ))}
+            </ul>
+            <p className={styles.castNote}><Link href="/guides">See all {GUIDES.length} guides</Link></p>
+          </div>
+        </section>
+
         <section id="faqs" className={`${styles.section} ${styles.sunk}`} aria-labelledby="faq-title">
           <div className={`${styles.wrap} ${styles.narrow}`}>
             <div className={styles.head}>
@@ -393,29 +404,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className={styles.footer}>
-        <div className={`${styles.wrap} ${styles.footerGrid}`}>
-          <div className={styles.footerBrand}>
-            <Lockup />
-            <p className={styles.muted}>Keep what you&apos;ve worked for.</p>
-          </div>
-          <nav aria-label="Landing">
-            <p className={styles.footerHead}>Landing</p>
-            <a href="#how">How it works</a><a href="#support">What&apos;s included</a><a href="#cast">Exercises</a><a href="#pricing">Pricing</a><a href="#faqs">FAQs</a>
-          </nav>
-          <nav aria-label="Legal">
-            <p className={styles.footerHead}>Legal</p>
-            <Link href="/privacy">Waitlist privacy notice</Link>
-            <Link href="/app-privacy">App privacy policy</Link>
-            <Link href="/terms">Terms of use</Link>
-          </nav>
-        </div>
-        <div className={`${styles.wrap} ${styles.footerSmall}`}>
-          <p>Landing is a general wellness app. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment.</p>
-          <p id="ref-1">1. Wilding JPH, et al. Weight regain and cardiometabolic effects after withdrawal of semaglutide: the STEP 1 trial extension. Diabetes, Obesity and Metabolism. 2022;24(8):1553–1564.</p>
-          <p>© {new Date().getFullYear()} [YOUR COMPANY NAME]</p>
-        </div>
-      </footer>
+      <SiteFooter home />
       <PrototypeLink />
     </>
   );

@@ -37,6 +37,11 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "@landing/web#typecheck": {
+      "dependsOn": [
+        "@landing/web#build"
+      ]
     }
   }
 }

@@ -225,9 +225,16 @@
 .onApricot .error { color: var(--on-pastel); }
 
 
+/* guides on the home page */
+.guideGrid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.guideCard { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 20px; border-radius: var(--radius-lg); background: var(--surface-raised); box-shadow: var(--shadow-sm); text-decoration: none; color: var(--ink); }
+.guideCard strong { font-size: 18px; line-height: 24px; font-weight: 800; }
+.guideCard span { font-size: 15px; line-height: 22px; color: var(--ink-muted); }
+.guideCard:hover strong { color: var(--apricot-ink); }
+
 /* footer */
 .footer { padding-block: 64px 40px; background: var(--surface); border-top: 1px solid var(--line); font-size: 15px; line-height: 22px; }
-.footerGrid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; padding-bottom: 36px; }
+.footerGrid { display: grid; grid-template-columns: 1.5fr 1fr 1.3fr 1fr; gap: 32px; padding-bottom: 36px; }
 .footerBrand { display: flex; flex-direction: column; gap: 12px; }
 .footerGrid nav { display: flex; flex-direction: column; gap: 8px; }
 .footerGrid nav a { color: var(--ink); text-decoration: none; padding-block: 3px; }

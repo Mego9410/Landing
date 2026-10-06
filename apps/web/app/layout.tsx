@@ -7,15 +7,19 @@ const fredoka = Fredoka({ subsets: ["latin"], weight: ["300", "400", "500", "600
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-nunito", display: "swap" });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const description = "A 12-month habit plan for the year after you stop a weight-loss jab. Protein, strength and steady routines, at your pace.";
+const description = "A 12-month plan for the year after you stop a GLP-1 weight-loss jab: protein, short strength sessions, easy meals and steady habits to keep the weight off. Coming to iPhone.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: "Landing: keep what you've worked for", template: "%s · Landing" },
+  title: { default: "Landing: keep weight off after weight-loss jabs", template: "%s · Landing" },
+  applicationName: "Landing",
+  keywords: ["coming off weight loss injections", "life after GLP-1", "keep weight off after stopping weight loss jab", "weight maintenance after GLP-1", "protein and strength after weight loss injections"],
+  category: "health",
   description,
   openGraph: { title: "Landing: keep what you've worked for", description, url: "/", siteName: "Landing", locale: "en_GB", type: "website", images: ["/og.png"] },
   twitter: { card: "summary_large_image", title: "Landing: keep what you've worked for", description, images: ["/og.png"] },
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/", types: { "application/rss+xml": "/guides/feed.xml" } },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
 };
 
 export const viewport: Viewport = {

@@ -2,11 +2,13 @@ import { router } from "expo-router";
 import { View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Screen } from "@/components/Screen";
-import { Header, RowCard } from "@/components/ui";
+import { Header, RowCard, SessionHealth } from "@/components/ui";
 import { SESSIONS } from "@/data/content";
 import { fmt } from "@/data/dates";
 import { sessionDoneOn } from "@/state/habits";
-import { useApp } from "@/state/store";
+import { sessionNotes, sessionsPaused } from "@/state/health";
+import { set, useApp } from "@/state/store";
+import { toast } from "@/state/toast";
 import { space } from "@/theme";
 
 /** W1 This week's sessions. */
@@ -16,7 +18,8 @@ export default function Sessions() {
     <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <Header fallback="/" />
       <AppText variant="title" accessibilityRole="header">This week&apos;s sessions</AppText>
-      <AppText color="inkMuted">Two short strength sessions at home. Every move has an easier version.</AppText>
+      <AppText color="inkMuted">Two short strength sessions at home. Most moves have an easier version.</AppText>
+      <SessionHealth paused={sessionsPaused(s)} notes={sessionNotes(s)} onCleared={() => { set((st) => { st.health.gpCleared = true; }); toast("Thanks. Your sessions are ready."); }} />
       {(["A", "B"] as const).map((k) => {
         const on = sessionDoneOn(s, k), done = on ? fmt.weekday(on) : null;
         return (

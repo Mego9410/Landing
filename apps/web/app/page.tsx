@@ -400,7 +400,9 @@ export default function Home() {
           </nav>
           <nav aria-label="Legal">
             <p className={styles.footerHead}>Legal</p>
-            <Link href="/privacy">Privacy notice</Link>
+            <Link href="/privacy">Waitlist privacy notice</Link>
+            <Link href="/app-privacy">App privacy policy</Link>
+            <Link href="/terms">Terms of use</Link>
           </nav>
         </div>
         <div className={`${styles.wrap} ${styles.footerSmall}`}>

@@ -22,7 +22,7 @@ export default function Settings() {
       <AppText variant="title" accessibilityRole="header">Settings</AppText>
       <Section title="YOUR PLAN">
         <List>
-          <Row first title={s.name} sub={`Week ${week} · ${phaseOf(week).name}`} />
+          <Row first title={s.name || "Your plan"} sub={`Week ${week} · ${phaseOf(week).name}`} />
           <Row title="Food preferences" value={LABELS.diet[s.food.diet]} onPress={() => router.push("/meals/preferences")} />
           <Row title="Exercise demos" value={s.demos.who === "mix" ? "Mix it up" : castById(s.demos.who).name} onPress={() => router.push("/settings/demos")} />
         </List>
@@ -31,10 +31,17 @@ export default function Settings() {
         <View style={{ gap: space[3] }}>
           <List>
             <Row first title="Health and safety" sub={s.disclaimer ? `You accepted this on ${fmt.dayMonth(s.disclaimer.acceptedAt.slice(0, 10))}` : undefined} onPress={() => router.push({ pathname: "/disclaimer", params: { review: "1" } })} />
+            <Row title="Your health check" sub={s.health.checkedAt ? `Last done ${fmt.dayMonth(s.health.checkedAt)}` : "Not done yet"} onPress={() => router.push({ pathname: "/onboarding/health", params: { recheck: "1" } })} />
           </List>
           <ToggleRow title="Safe mode" sub="Hides weight and numbers, and keeps the focus on routines" value={s.settings.safeMode} onChange={(v) => { set((st) => { st.settings.safeMode = v; }); toast(v ? "Safe mode is on." : "Safe mode is off."); }} />
           <AppText variant="caption" color="inkMuted">If food or eating feels hard, Beat&apos;s helpline is there to talk to.</AppText>
         </View>
+      </Section>
+      <Section title="ABOUT">
+        <List>
+          <Row first title="Privacy policy" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />
+          <Row title="Terms of use" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "terms" } })} />
+        </List>
       </Section>
       {s.demo ? <Section title="DEMO">
         <View style={{ gap: space[3] }}>

@@ -54,6 +54,8 @@ export interface AppState {
   v: 3;
   name: string;
   onboarded: boolean;
+  /** The day onboarding finished: the check-in about "yesterday" starts the day after. */
+  startedOn: string | null;
   /** Demo mode: Hannah's dummy data and the preview controls in Settings. Off for real people. */
   demo: boolean;
   /** The last day the app was open, so a new day or week can be noticed. */
@@ -72,7 +74,14 @@ export interface AppState {
   journal: { questions: string[]; entries: Record<string, JournalEntry> };
   /** When the person accepted the health information at the start, and which wording they saw. */
   disclaimer: { acceptedAt: string; version: number } | null;
+  /** The health check: answers by question, when and which wording; whether they've checked with their GP; and, for
+   *  pregnancy or kidney disease, when they ticked the box to carry on. */
+  health: { answers: Record<string, boolean>; checkedAt: string | null; version: number; gpCleared: boolean; referAgreed: { at: string; version: number } | null };
+  /** Explicit consent to keep health information (weight, eating, check-ins) on the phone, and when it was given. */
+  consent: { healthDataAt: string } | null;
 }
+
+export const HEALTH_DEFAULTS: AppState["health"] = { answers: {}, checkedAt: null, version: 0, gpCleared: false, referAgreed: null };
 
 /** Bump when the wording of the health information changes, so everyone sees and accepts it again. */
 export const DISCLAIMER_VERSION = 1;
@@ -142,7 +151,7 @@ function seedJournal(t: string, weights: Weight[]): Record<string, JournalEntry>
 export function demoState(): AppState {
   const t = today(), weights = seedWeights(t), ids = habitsForWeek(6);
   return {
-    v: 3, name: "Hannah", onboarded: true, demo: true, lastSeen: t,
+    v: 3, name: "Hannah", onboarded: true, startedOn: addDays(t, -35), demo: true, lastSeen: t,
     ob: { status: "stopped", lastInjection: addDays(weekStart(t), -35), hungryTimes: ["Afternoon", "Evening"], lowestWeight: 78.0, proteinFreq: "Some meals" },
     food: { ...FOOD_DEFAULTS, household: 2, joinedWeek: 4 },
     habits: { week: 6, ids, swappedFrom: null },
@@ -160,6 +169,8 @@ export function demoState(): AppState {
     settings: { safeMode: false, units: "kg" },
     journal: { questions: STARTER, entries: seedJournal(t, weights) },
     disclaimer: null,
+    health: { ...HEALTH_DEFAULTS, checkedAt: addDays(t, -35), version: 1 },
+    consent: { healthDataAt: addDays(t, -35) },
   };
 }
 
@@ -167,7 +178,7 @@ export function demoState(): AppState {
 export function freshState(): AppState {
   const t = today();
   return {
-    v: 3, name: "", onboarded: false, demo: false, lastSeen: t,
+    v: 3, name: "", onboarded: false, startedOn: null, demo: false, lastSeen: t,
     ob: { status: "stopped", lastInjection: addDays(weekStart(t), -35), hungryTimes: [], lowestWeight: 0, proteinFreq: "Some meals" },
     food: { ...FOOD_DEFAULTS },
     habits: { week: 1, ids: [], swappedFrom: null },
@@ -177,6 +188,8 @@ export function freshState(): AppState {
     settings: { safeMode: false, units: "kg" },
     journal: { questions: STARTER, entries: {} },
     disclaimer: null,
+    health: { ...HEALTH_DEFAULTS },
+    consent: null,
   };
 }
 
@@ -214,7 +227,7 @@ export function migrate(saved: Record<string, unknown>): AppState | null {
   const base = freshState();
   if (saved.v === 3) {
     const s = saved as unknown as AppState;
-    return { ...base, ...s, food: { ...FOOD_DEFAULTS, ...s.food }, settings: { ...base.settings, ...s.settings } };
+    return { ...base, ...s, food: { ...FOOD_DEFAULTS, ...s.food }, settings: { ...base.settings, ...s.settings }, health: { ...HEALTH_DEFAULTS, ...s.health } };
   }
   if (saved.v === 2) {
     const old = saved as Record<string, any>;
@@ -228,6 +241,7 @@ export function migrate(saved: Record<string, unknown>): AppState | null {
       demos: { ...start.demos, ...old.demos }, lessonsRead: old.lessonsRead ?? {}, coach: old.coach ?? start.coach,
       settings: { ...start.settings, safeMode: !!old.settings?.safeMode },
       journal: old.journal ?? start.journal, disclaimer: old.disclaimer ?? null,
+      // Earlier versions had no health check: real people are asked it on their next visit.
     };
   }
   return null;

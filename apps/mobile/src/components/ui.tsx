@@ -1,5 +1,6 @@
 // Shared building blocks for the screens, matching the prototype's layout classes (apps/prototype/app.css):
 // header, list rows, choice chips, radio options, a toggle, a meter, pill tags and banners.
+import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import type { ReactNode } from "react";
 import { Pressable, Switch, TextInput, View, type TextInputProps, type ViewStyle } from "react-native";
@@ -226,4 +227,37 @@ export function Field({ label, error, suffix, hint, ...input }: TextInputProps &
       {error ? <AppText variant="caption" color="roseInk">{error}</AppText> : hint ? <AppText variant="caption" color="inkMuted">{hint}</AppText> : null}
     </View>
   );
+}
+
+/** A tick box for agreeing to something, filled sage when ticked. */
+export function Tick({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
+  const c = useColors();
+  return (
+    <Pressable accessibilityRole="checkbox" accessibilityState={{ checked }} accessibilityLabel={label}
+      onPress={() => { if (!checked) Haptics.selectionAsync().catch(() => {}); onChange(!checked); }}
+      style={{ flexDirection: "row", alignItems: "center", gap: space[3], padding: space[4], borderRadius: radius.md, backgroundColor: checked ? c.sage : c.surfaceRaised }}>
+      <View style={{ width: 28, height: 28, borderRadius: radius.sm, alignItems: "center", justifyContent: "center", backgroundColor: checked ? c.onPastel : "transparent", borderWidth: checked ? 0 : 2, borderColor: c.inkMuted }}>
+        {checked ? <Icon name="check" size={18} color={c.sage} /> : null}
+      </View>
+      <AppText weight="700" color={checked ? "onPastel" : "ink"} style={{ flex: 1 }}>{label}</AppText>
+    </Pressable>
+  );
+}
+
+/** Shown on workout screens when the health check paused sessions, or added notes for gentler sessions. */
+export function SessionHealth({ paused, notes, onCleared }: { paused: boolean; notes: string[]; onCleared: () => void }) {
+  const c = useColors();
+  if (paused) {
+    return (
+      <View style={{ gap: space[3], padding: space[4], borderRadius: radius.lg, backgroundColor: c.butter }}>
+        <AppText weight="800" color="onPastel">Sessions are waiting for a word with your GP</AppText>
+        <AppText color="onPastel">From your health check, it&apos;s worth checking with your GP before strength exercise. Your food plan and habits carry on as normal.</AppText>
+        <Pressable accessibilityRole="button" onPress={onCleared} style={{ alignSelf: "flex-start", paddingVertical: space[2] }}>
+          <AppText weight="800" color="onPastel" style={{ textDecorationLine: "underline" }}>I&apos;ve checked and they&apos;re happy for me to start</AppText>
+        </Pressable>
+      </View>
+    );
+  }
+  if (!notes.length) return null;
+  return <View style={{ gap: space[2] }}>{notes.map((n) => <Banner key={n} tone="sky">{n}</Banner>)}</View>;
 }

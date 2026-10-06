@@ -13,6 +13,7 @@ import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
 import { minutes, px, thisWeek } from "@/state/food";
 import { habitDetail, nextSession, toggleHabit } from "@/state/habits";
 import { needsDisclaimer, sessionsInWeek, useApp, weekOf } from "@/state/store";
+import { sessionsPaused } from "@/state/health";
 import { headline, todayPlan, type Task } from "@/state/today";
 import { radius, space, useColors } from "@/theme";
 
@@ -97,8 +98,8 @@ function Plans() {
   const dinner = m.kind === "takeaway" ? { line: "Takeaway night", detail: "A night off cooking, planned in" }
     : m.kind === "free" || !m.recipe ? { line: "A free night", detail: "Eat out, use the freezer or pick a recipe" }
     : { line: px(s, m.recipe).name, detail: m.kind === "leftover" ? "Tonight's leftovers" : `Tonight · ${minutes(px(s, m.recipe).recipe)}` };
-  const next = nextSession(s), done = sessionsInWeek(s).length;
-  const strength = next ? { line: `${SESSIONS[next].name} next`, detail: `${done} of 2 done this week · ${SESSIONS[next].minutes} min` } : { line: "Both sessions done", detail: "Next ones arrive on Monday" };
+  const next = nextSession(s), done = sessionsInWeek(s).length, paused = sessionsPaused(s);
+  const strength = paused ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" } : next ? { line: `${SESSIONS[next].name} next`, detail: `${done} of 2 done this week · ${SESSIONS[next].minutes} min` } : { line: "Both sessions done", detail: "Next ones arrive on Monday" };
   return (
     <View style={{ gap: space[3] }}>
       <AppText variant="heading" accessibilityRole="header">Your plans</AppText>

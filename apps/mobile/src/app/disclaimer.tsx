@@ -1,16 +1,14 @@
-import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { Icon } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
-import { Header } from "@/components/ui";
+import { Header, Tick } from "@/components/ui";
 import { fmt } from "@/data/dates";
 import { DISCLAIMER_VERSION, set, useApp } from "@/state/store";
-import { radius, space, useColors } from "@/theme";
+import { space } from "@/theme";
 
 // The wording people accept before using the app. Changing it means bumping DISCLAIMER_VERSION in the store.
 const POINTS: { title: string; text: string }[] = [
@@ -21,20 +19,6 @@ const POINTS: { title: string; text: string }[] = [
   { title: "Check labels", text: "Recipes, nutrition and allergen information are a guide. Always check the labels on what you buy, especially if you have an allergy." },
   { title: "If eating feels hard", text: "Beat, the UK's eating disorder charity, has a helpline you can talk to. Safe mode in Settings hides weight and numbers." },
 ];
-
-function Tick({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
-  const c = useColors();
-  return (
-    <Pressable accessibilityRole="checkbox" accessibilityState={{ checked }} accessibilityLabel={label}
-      onPress={() => { if (!checked) Haptics.selectionAsync().catch(() => {}); onChange(!checked); }}
-      style={{ flexDirection: "row", alignItems: "center", gap: space[3], padding: space[4], borderRadius: radius.md, backgroundColor: checked ? c.sage : c.surfaceRaised }}>
-      <View style={{ width: 28, height: 28, borderRadius: radius.sm, alignItems: "center", justifyContent: "center", backgroundColor: checked ? c.onPastel : "transparent", borderWidth: checked ? 0 : 2, borderColor: c.inkMuted }}>
-        {checked ? <Icon name="check" size={18} color={c.sage} /> : null}
-      </View>
-      <AppText weight="700" color={checked ? "onPastel" : "ink"} style={{ flex: 1 }}>{label}</AppText>
-    </Pressable>
-  );
-}
 
 /** Health and safety, shown once before anything else and again whenever the wording changes. Readable later from Settings. */
 export default function Disclaimer() {
@@ -72,6 +56,10 @@ export default function Disclaimer() {
           <Tick label="I'm 18 or over" checked={adult} onChange={(v) => { setError(""); setAdult(v); }} />
           {error ? <AppText variant="caption" color="roseInk">{error}</AppText> : null}
           <Button label="Continue" block onPress={accept} />
+          <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
+            <Button label="Terms of use" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "terms" } })} />
+            <Button label="Privacy policy" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />
+          </View>
         </View>
       )}
     </Screen>

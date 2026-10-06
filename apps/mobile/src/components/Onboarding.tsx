@@ -7,7 +7,7 @@ import { Button } from "./Button";
 import { Screen } from "./Screen";
 import { IconButton, Meter } from "./ui";
 
-export const STEPS = 5;
+export const STEPS = 6;
 
 /** An onboarding step: progress, a title and lede, the questions, and Continue. */
 export function Step({ n, title, lede, next, children, label = "Continue" }: { n: number; title: string; lede: string; next: () => void; children: ReactNode; label?: string }) {

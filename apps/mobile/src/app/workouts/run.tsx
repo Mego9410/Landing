@@ -10,6 +10,7 @@ import { Header, Meter, ToggleRow } from "@/components/ui";
 import { SESSIONS } from "@/data/content";
 import { whoFor } from "@/state/demos";
 import { logSession } from "@/state/habits";
+import { easierFirst } from "@/state/health";
 import { useApp } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
@@ -21,14 +22,14 @@ export default function InSession() {
   const [move, setMove] = useState(0);
   const [setNo, setSetNo] = useState(1);
   const [paused, setPaused] = useState(false);
-  const [easier, setEasier] = useState(false);
+  const [easier, setEasier] = useState(() => easierFirst(s));
   const m = session.moves[move];
   const anim = easier && m.easier ? m.easier : m.anim, who = whoFor(s, `${m.anim}-${id}`);
   const steps = session.moves.reduce((a, x) => a + x.sets, 0);
   const doneSteps = session.moves.slice(0, move).reduce((a, x) => a + x.sets, 0) + setNo - 1;
   function next() {
     if (setNo < m.sets) return setSetNo(setNo + 1);
-    if (move < session.moves.length - 1) { setMove(move + 1); setSetNo(1); setEasier(false); return; }
+    if (move < session.moves.length - 1) { setMove(move + 1); setSetNo(1); setEasier(easierFirst(s)); return; }
     logSession(id);
     router.replace({ pathname: "/workouts/done", params: { id } });
   }

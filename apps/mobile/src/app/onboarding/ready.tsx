@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { today } from "@/data/dates";
 import { View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
@@ -14,6 +15,7 @@ export default function Ready() {
   function start() {
     set((st) => {
       st.onboarded = true;
+      st.startedOn = today();
       const ids = habitsForWeek(week);
       st.habits = { week, ids, swappedFrom: null };
       st.food.joinedWeek = week; // the fibre ramp starts today
@@ -22,7 +24,7 @@ export default function Ready() {
     router.replace("/");
   }
   return (
-    <Step n={5} title="12 months to make it stick" lede={`Three phases, a few small habits at a time. You're starting in week ${week}.`} next={start} label="Start my plan">
+    <Step n={6} title="12 months to make it stick" lede={`Three phases, a few small habits at a time. You're starting in week ${week}.`} next={start} label="Start my plan">
       <View style={{ gap: space[3] }}>
         {PHASES.map((p) => (
           <Card key={p.key} tone={p.tone} style={{ gap: 2, borderWidth: p.key === phase.key ? 2 : 0 }}>

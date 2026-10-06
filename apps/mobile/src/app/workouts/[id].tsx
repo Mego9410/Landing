@@ -6,10 +6,12 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { ExerciseAnimation } from "@/components/ExerciseAnimation";
 import { Screen } from "@/components/Screen";
-import { Header, List } from "@/components/ui";
+import { Header, List, SessionHealth } from "@/components/ui";
 import { SESSIONS } from "@/data/content";
 import { whoFor } from "@/state/demos";
-import { useApp } from "@/state/store";
+import { sessionNotes, sessionsPaused } from "@/state/health";
+import { set, useApp } from "@/state/store";
+import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
 
 /** W2 Session overview: every move with its loop, sets and cue. Tap a move to watch it. */
@@ -24,6 +26,7 @@ export default function SessionOverview() {
       <Header fallback="/workouts" />
       <AppText variant="title" accessibilityRole="header">{session.name}</AppText>
       <AppText color="inkMuted">{session.minutes} minutes at home · {session.moves.length} exercises</AppText>
+      <SessionHealth paused={sessionsPaused(s)} notes={sessionNotes(s)} onCleared={() => { set((st) => { st.health.gpCleared = true; }); toast("Thanks. Your sessions are ready."); }} />
       <View style={{ borderRadius: radius.lg, backgroundColor: c.sky, overflow: "hidden" }}>
         <ExerciseAnimation id={move.anim} who={who} paused={s.demos.still} />
         <View style={{ position: "absolute", left: 12, top: 12, backgroundColor: c.surfaceRaised, borderRadius: radius.full, paddingHorizontal: 12, height: 30, justifyContent: "center" }}>
@@ -43,7 +46,7 @@ export default function SessionOverview() {
         ))}
       </List>
       <AppText variant="caption" color="inkMuted">Stop if anything hurts sharply, and go easier on any move you need to. A stiff, worked feeling is normal.</AppText>
-      <Button label="Start session" icon="play" block onPress={() => router.push({ pathname: "/workouts/run", params: { id: id === "B" ? "B" : "A" } })} />
+      {sessionsPaused(s) ? null : <Button label="Start session" icon="play" block onPress={() => router.push({ pathname: "/workouts/run", params: { id: id === "B" ? "B" : "A" } })} />}
     </Screen>
   );
 }

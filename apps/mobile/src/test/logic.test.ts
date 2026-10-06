@@ -3,14 +3,13 @@
 // migration. Run with `pnpm --filter @landing/mobile test`.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { addDays, daysBetween, isoDate, weekDates, weekdayIndex, weekStart } from "@/data/dates";
+import { addDays, daysBetween, isoDate, today, weekDates, weekdayIndex, weekStart } from "@/data/dates";
 import { change, kgFromStLb, weight } from "@/data/units";
 import { applyHealth, needsHealthCheck, proteinTargetsOff, referrals, sessionsPaused } from "@/state/health";
 import { insights } from "@/state/journal";
 import { weekScore } from "@/state/score";
 import { demoState, freshState, migrate, sessionsInWeek, steadyZone, weekOf, type AppState } from "@/state/store";
 import { headline, todayPlan } from "@/state/today";
-import { today } from "@/data/dates";
 
 const clone = (s: AppState): AppState => JSON.parse(JSON.stringify(s));
 

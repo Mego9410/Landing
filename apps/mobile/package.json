@@ -16,7 +16,8 @@
     "web:export": "expo export --platform web --output-dir dist",
     "web:phone": "expo export --platform web --output-dir dist && node scripts/pack-web.mjs dist dist/landing-app.html",
     "update:preview": "eas update --branch preview --message \"Preview\"",
-    "build:dev": "eas build --profile development"
+    "build:dev": "eas build --profile development",
+    "test": "tsx --tsconfig tsconfig.json --test src/test/*.test.ts"
   },
   "dependencies": {
     "@expo-google-fonts/fredoka": "^0.4.1",
@@ -59,9 +60,11 @@
   },
   "devDependencies": {
     "@react-native/metro-config": "0.86.3",
+    "@types/node": "^22.20.5",
     "@types/react": "~19.2.2",
     "eslint": "^9",
     "eslint-config-expo": "~57.0.2",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3"
   }
 }

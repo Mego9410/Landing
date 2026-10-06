@@ -165,7 +165,9 @@ export default function Today() {
       <Card tone="lilac" style={{ gap: 6 }}>
         <AppText variant="label" color="onPastel">{tip.label}</AppText>
         <AppText variant="bodyLg" color="onPastel">{tip.text}</AppText>
-        <Button label="Ask the coach for more ideas" variant="quiet" onPress={() => router.push("/coach")} style={{ marginLeft: -space[6] }} />
+        <Pressable accessibilityRole="button" onPress={() => router.push("/coach")} style={{ alignSelf: "flex-start", paddingVertical: space[2] }}>
+          <AppText weight="800" color="onPastel" style={{ textDecorationLine: "underline" }}>Ask the coach for more ideas</AppText>
+        </Pressable>
       </Card>
     </Screen>
   );

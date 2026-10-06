@@ -7,7 +7,7 @@ import type { Week } from "@landing/engine";
 import { habitsForWeek } from "@/data/content";
 import { addDays, daysBetween, today, weekDates, weekdayIndex, weekStart } from "@/data/dates";
 import { STARTER } from "@/data/journal";
-import { REMINDER_DEFAULTS, type Reminders } from "./reminders";
+import { REMINDER_DEFAULTS, type Reminders } from "@/data/reminders";
 
 export type Hungry = "Morning" | "Lunchtime" | "Afternoon" | "Evening" | "Late night";
 

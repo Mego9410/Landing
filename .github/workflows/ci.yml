@@ -33,6 +33,9 @@ jobs:
       - name: Generated exercise animations are up to date
         run: pnpm --filter @landing/motion check
 
+      - name: App logic tests
+        run: pnpm --filter @landing/mobile test
+
       - name: Lint, typecheck and build every app
         run: pnpm turbo run lint typecheck build
         env:

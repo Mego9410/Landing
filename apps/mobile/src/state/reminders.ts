@@ -5,18 +5,7 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { sessionsPaused } from "./health";
 import type { AppState } from "./store";
-
-export interface Reminders {
-  checkIn: { on: boolean; hour: number; minute: number };
-  sessions: { on: boolean; hour: number; minute: number; /** Monday is 0. */ days: number[] };
-  planning: { on: boolean };
-}
-
-export const REMINDER_DEFAULTS: Reminders = {
-  checkIn: { on: false, hour: 8, minute: 0 },
-  sessions: { on: false, hour: 18, minute: 0, days: [1, 4] },
-  planning: { on: false },
-};
+export type { Reminders } from "@/data/reminders";
 
 const supported = Platform.OS === "ios" || Platform.OS === "android";
 // expo-notifications counts weekdays from Sunday = 1; ours start at Monday = 0.

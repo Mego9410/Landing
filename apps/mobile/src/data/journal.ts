@@ -52,4 +52,4 @@ export const STARTER = YES_NO.filter((q) => q.starter).map((q) => q.id);
 export const questionById = (id: string) => YES_NO.find((q) => q.id === id);
 
 /** Days a question needs on each side (yes and no) before the app shows a pattern. */
-export const MIN_DAYS = 4;
+export const MIN_DAYS = 7;

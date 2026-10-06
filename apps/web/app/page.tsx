@@ -26,6 +26,8 @@ const ICONS = {
   phone: '<rect x="6.5" y="2.5" width="11" height="19" rx="3"/><path d="M11 18.5h2"/>',
   gift: '<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M12 9v11M4 13h16M12 9c-2-4-6-3-5-1s5 1 5 1zM12 9c2-4 6-3 5-1s-5 1-5 1z"/>',
   person: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 3v1.5M12 19.5V21M3 12h1.5M19.5 12H21M5.6 5.6l1.1 1.1M17.3 17.3l1.1 1.1M5.6 18.4l1.1-1.1M17.3 6.7l1.1-1.1"/>',
+  bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
 };
 type IconName = keyof typeof ICONS;
 function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
@@ -34,25 +36,27 @@ function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
 
 const TRUST: { icon: IconName; text: string }[] = [
   { icon: "gift", text: "7-day free trial" },
-  { icon: "person", text: "Specialist-reviewed before launch" },
+  { icon: "heart", text: "A health check before you start" },
   { icon: "shield", text: "Works alongside your prescriber" },
-  { icon: "lock", text: "Data kept in the UK and EU" },
+  { icon: "lock", text: "Your data stays on your phone" },
   { icon: "phone", text: "Coming to iPhone" },
 ];
 
 const SUPPORT: { icon: IconName; tone: string; title: string; text: string }[] = [
-  { icon: "strength", tone: "sky", title: "Strength for every body", text: "Twenty-five-minute sessions at home, seated or at the gym, with an easier version of every move." },
+  { icon: "strength", tone: "sky", title: "Strength for every body", text: "Twenty-five-minute sessions at home that step up gently as you get stronger, with easier versions a tap away." },
   { icon: "meal", tone: "apricot", title: "Meals easier than a takeaway", text: "Fifteen minutes hands-on, six ingredients, one pan. Swaps for every diet and a shopping list for your supermarket." },
-  { icon: "habit", tone: "sage", title: "Three small habits a week", text: "Protein at breakfast, a session, a pause before seconds. Swap one if it doesn't suit your week." },
+  { icon: "habit", tone: "sage", title: "Three small habits a week", text: "Protein at breakfast, a session, a pause before seconds, with a short lesson each week. Swap one if it doesn't suit your week." },
+  { icon: "sun", tone: "sky", title: "A one-minute morning check-in", text: "A few questions about yesterday. Over a few weeks, Landing shows what goes with your fuller, steadier days." },
   { icon: "score", tone: "butter", title: "A weekly landing score", text: "It rewards steady habits, not weight loss, and notices drift early, kindly." },
   { icon: "coach", tone: "lilac", title: "A coach for tricky days", text: "Ideas for meals out, high-protein swaps and a calm word when a day doesn't go to plan." },
   { icon: "doc", tone: "rose", title: "A summary for your prescriber", text: "A one-page update to take to appointments. Landing never gives advice about doses or stopping." },
+  { icon: "bell", tone: "butter", title: "Gentle reminders, and Apple Health", text: "Nudges at times that suit you, never about weight. Bring in your weight and steps from Apple Health if you like." },
 ];
 
 const STEPS = [
-  { title: "Answer a few questions", text: "Two minutes on when you stopped, how you like to move and what you eat. No weigh-in needed." },
+  { title: "Answer a few questions", text: "A few minutes on when you stopped, a quick health check, and how you like to eat. No weigh-in needed." },
   { title: "Get your 12-month plan", text: "Three phases, three small habits a week and short strength sessions that fit your week and your body." },
-  { title: "Keep it, with support", text: "A weekly landing score, a coach for tricky days and a lighter reset week if things start to drift." },
+  { title: "Keep it, with support", text: "A morning check-in, a weekly landing score and a coach for tricky days, with a calm plan if things start to drift." },
 ];
 
 const PHASES = [
@@ -70,26 +74,28 @@ const BRIEFS: Record<string, { build: string; move: string; ids: string[] }> = {
   grace: { build: "Fuller build", move: "Low-impact, knee-friendly sessions", ids: ["hinge-1", "squat-3"] },
 };
 
-const EXPERTS = [
-  { role: "Physiotherapist", icon: "strength", body: "HCPC-registered", text: "Reviews every exercise, the easier and harder versions, and how the plan adapts around aches and injuries." },
-  { role: "Dietitian", icon: "meal", body: "BDA member", text: "Reviews protein and fibre guidance, every recipe swap, and the advice for diabetes, kidney disease and pregnancy." },
-  { role: "Eating-disorder specialist", icon: "coach", body: "Safe mode and language", text: "Reviews safe mode, the words we use and when Landing signposts extra support." },
-] as const;
+const SAFETY: { icon: IconName; title: string; text: string }[] = [
+  { icon: "heart", title: "A health check first", text: "A few questions before you start, and again every 12 weeks. If something needs a word with your GP, strength sessions wait while food and habits carry on." },
+  { icon: "strength", title: "Gentler when you need it", text: "Sore joints, a fall or feeling wiped out after activity? Sessions start with the easier version of each move and step up only when you're ready." },
+  { icon: "meal", title: "Food that fits your health", text: "Pregnancy, kidney disease, diabetes and high blood pressure each switch on the right food settings. For pregnancy and kidney disease, we suggest who to talk to first." },
+];
 
 const PROMISES: { icon: IconName; title: string; text: string }[] = [
-  { icon: "heart", title: "No goal weight", text: "We help you hold steady, and offer a lighter week if things drift. Never a telling-off." },
-  { icon: "habit", title: "Numbers only if they help", text: "Safe mode hides weight entirely and builds your score from habits and hunger." },
+  { icon: "heart", title: "No goal weight", text: "We help you hold steady, and help you reset gently if things drift. Never a telling-off." },
+  { icon: "habit", title: "Numbers only if they help", text: "Safe mode hides weight entirely and builds your score from habits and check-ins." },
   { icon: "shield", title: "Your prescriber stays in charge", text: "Landing never gives advice about medication, doses or stopping treatment." },
-  { icon: "lock", title: "Your data stays yours", text: "Never sold, never used for ads. Delete everything in one tap." },
+  { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, never sold, never used for ads. Export it or delete everything in one tap." },
 ];
 
 const FAQS = [
   { q: "Who is Landing for?", a: "Adults who have stopped a weight-loss jab such as Wegovy or Mounjaro, are stopping soon, or want a plan ready for when they do." },
   { q: "Is Landing medical advice?", a: "No. Landing is a general wellness app for building food, activity and eating habits. It doesn't diagnose or treat anything, and decisions about medication are always for your prescriber." },
   { q: "I'm still on my jab. Can I start now?", a: "Yes. Many people start building the habits before their last injection, so the routines are in place when appetite returns." },
-  { q: "Do I have to weigh myself?", a: "No. Weigh-ins are optional, and safe mode hides weight completely. Your weekly score can come from habits and hunger alone." },
-  { q: "What do I need for the exercises?", a: "Nothing but a chair to start. Every session works at home, seated or at the gym, and each move has an easier and a harder version." },
+  { q: "Do I have to weigh myself?", a: "No. Weigh-ins are optional, and safe mode hides weight completely. Your weekly score can come from habits and your morning check-ins alone." },
+  { q: "I have a health condition. Can I use Landing?", a: "Landing gives general guidance, not medical advice. A quick health check at the start suggests checking with your GP, midwife or specialist where it matters, pauses strength sessions until you have, and adjusts food and sessions to suit. It asks again every 12 weeks." },
+  { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
+  { q: "Where is my data kept?", a: "On your phone. Landing doesn't have accounts and doesn't send what you log to us. You can export everything or delete it all from Settings. If you connect Apple Health, that information is never used for advertising or shared." },
   { q: "When can I use it, and what will it cost?", a: `Landing is coming to iPhone first. It will cost ${PRICE.yearly} a year after a 7-day free trial, or ${PRICE.monthly} a month. Join the waitlist and we'll email you once when it opens.` },
 ];
 
@@ -229,8 +235,8 @@ export default function Home() {
                 <p className={styles.statNote}>weeks of plan, counted from your last injection</p>
               </div>
               <div className={styles.statCard}>
-                <p className={styles.statBig}>80</p>
-                <p className={styles.statNote}>guided exercises at six levels, from a chair to the gym</p>
+                <p className={styles.statBig}>1</p>
+                <p className={styles.statNote}>minute each morning to check in on yesterday</p>
               </div>
               <div className={styles.statCard}>
                 <p className={styles.statBig}>3</p>
@@ -314,17 +320,16 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.sunk}`} aria-labelledby="experts-title">
+        <section id="safety" className={`${styles.section} ${styles.sunk}`} aria-labelledby="safety-title">
           <div className={styles.wrap}>
             <div className={styles.headRow}>
-              <h2 id="experts-title" className={styles.h2Light}>Checked by specialists<br /><span className={styles.mutedHead}>before it reaches you</span></h2>
+              <h2 id="safety-title" className={styles.h2Light}>Careful by design<br /><span className={styles.mutedHead}>so the plan fits your body</span></h2>
             </div>
             <ul className={styles.experts}>
-              {EXPERTS.map((e) => (
-                <li key={e.role} className={styles.expert}>
+              {SAFETY.map((e) => (
+                <li key={e.title} className={styles.expert}>
                   <span className={styles.expertBadge}><Icon name={e.icon} /></span>
-                  <h3 className={styles.h3}>{e.role}</h3>
-                  <p className={styles.expertBody}>{e.body}</p>
+                  <h3 className={styles.h3}>{e.title}</h3>
                   <p className={styles.muted}>{e.text}</p>
                 </li>
               ))}
@@ -353,7 +358,7 @@ export default function Home() {
               <p className={styles.price}>{PRICE.yearly}<span> a year</span></p>
               <p className={styles.muted}>About {PRICE.weekly} a week. Or {PRICE.monthly} a month, with no free trial.</p>
               <ul className={styles.priceList}>
-                {["Your 12-month plan, phase by phase", "Strength sessions with all 80 exercises", "Easy meals, swaps and shopping lists", "Weekly landing score and reset weeks", "A coach for tricky days", "A summary for your prescriber"].map((x) => (
+                {["Your 12-month plan, with a lesson each week", "Strength sessions that step up as you do", "Easy meals, swaps and shopping lists", "A morning check-in and your weekly landing score", "A coach for tricky days", "A summary for your prescriber", "Reminders and Apple Health"].map((x) => (
                   <li key={x}><Icon name="check" size={18} />{x}</li>
                 ))}
               </ul>

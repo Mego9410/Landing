@@ -1,6 +1,6 @@
 // Turns a solved skeleton plus props into flat shapes (lines, circles, rects, paths). Renderers (animated SVG, React
 // Native) draw these shapes; the SVG renderer animates any attribute that changes between frames.
-import { castById, castFigure, footShadow, type PathShape } from "./cast.ts";
+import { backDepth, castById, castFigure, footShadow, type PathShape } from "./cast.ts";
 export { footShadow };
 import { FLOOR, L, type Pt, type Skeleton } from "./rig.ts";
 
@@ -112,7 +112,8 @@ function held(item: string, at: Pt, idp: string): Shape[] {
 
 const mid = (a: Pt, b: Pt): Pt => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
 
-function dynamicProp(p: Prop, i: number, s: Skeleton, props: Prop[]): { back: Shape[]; front: Shape[] } {
+function dynamicProp(p: Prop, i: number, s: Skeleton, props: Prop[], who: string): { back: Shape[]; front: Shape[] } {
+  const backOff = backDepth(who) + 4;
   const id = (x: string) => `d${i}-${x}`;
   const hands = (h: 0 | 1 | "both") => (h === "both" ? [0, 1] : [h]);
   switch (p.kind) {
@@ -131,12 +132,12 @@ function dynamicProp(p: Prop, i: number, s: Skeleton, props: Prop[]): { back: Sh
     case "dowel": {
       const sp = unitv([s.neck[0] - s.hip[0], s.neck[1] - s.hip[1]]);
       const back: Pt = [sp[1], -sp[0]]; // perpendicular, behind the back for a right-facing figure
-      const o = (pt: Pt, d: number): Pt => [pt[0] + back[0] * 13 + sp[0] * d, pt[1] + back[1] * 13 + sp[1] * d];
+      const o = (pt: Pt, d: number): Pt => [pt[0] + back[0] * backOff + sp[0] * d, pt[1] + back[1] * backOff + sp[1] * d];
       return { back: [], front: [line(id("dowel"), o(s.hip, -14), o(s.hip, L.torso + 30), "#B98A5A", 4)] };
     }
     case "wornBackpack": {
       const sp = unitv([s.neck[0] - s.hip[0], s.neck[1] - s.hip[1]]);
-      const c: Pt = [s.hip[0] + sp[0] * 32 + sp[1] * 15, s.hip[1] + sp[1] * 32 - sp[0] * 15];
+      const c: Pt = [s.hip[0] + sp[0] * 32 + sp[1] * (backOff + 6), s.hip[1] + sp[1] * 32 - sp[0] * (backOff + 6)];
       return { back: held("backpack", c, id("bp")), front: [] };
     }
     case "sled": {
@@ -159,7 +160,7 @@ function unitv(v: Pt): Pt { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] 
 /** All shapes for one frame, back to front. */
 export function frameShapes(s: Skeleton, props: Prop[], who = "maya"): Shape[] {
   const statics = props.flatMap(staticProp);
-  const dyn = props.map((p, i) => dynamicProp(p, i, s, props));
+  const dyn = props.map((p, i) => dynamicProp(p, i, s, props, who));
   const f = castFigure(s, castById(who));
   return [
     ...ground(),

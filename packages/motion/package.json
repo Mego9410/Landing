@@ -11,9 +11,10 @@
   },
   "scripts": {
     "build": "node scripts/build.ts",
-    "check": "node scripts/build.ts && git diff --exit-code -- svg dist gallery.html",
+    "check": "node scripts/check-cast.ts && node scripts/build.ts && git diff --exit-code -- svg dist gallery.html",
     "contact": "node scripts/contact.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "matrix": "node scripts/matrix.ts"
   },
   "engines": {
     "node": ">=22.18"

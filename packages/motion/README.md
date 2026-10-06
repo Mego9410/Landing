@@ -35,10 +35,19 @@ svg/index.json    Generated: the catalogue of exercises, patterns and cast
 ```sh
 pnpm motion                                   # rebuild dist/, svg/index.json and gallery.html (from the repo root)
 pnpm --filter @landing/motion contact         # contact sheet of every loop at 4 moments, for checking poses
-pnpm --filter @landing/motion check           # CI: fails if the generated files are out of date
+pnpm --filter @landing/motion matrix          # every exercise with every person, to check by eye
+pnpm --filter @landing/motion check           # CI: every exercise works for every person, generated files up to date
 ```
 
 Node 22.18 or later runs the TypeScript directly; esbuild builds the browser bundle.
+
+## Every exercise, every person
+
+No exercise belongs to one body. The exercises are keyframes for a skeleton and the cast is drawn on top, so all 80
+work with all six people, and "Mix it up" can give anyone any session. Bodies lying down rest on the floor whatever
+their size, and props worn against the back (a backpack, a broom handle) sit at each person's own back.
+`scripts/check-cast.ts` samples every loop for every person and fails CI if anything can't be drawn or goes through
+the floor; `pnpm --filter @landing/motion matrix` renders the full grid to look at.
 
 ## Who shows the moves
 

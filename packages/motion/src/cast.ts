@@ -96,7 +96,10 @@ function place(d: string, origin: Pt, deg: number): string {
   return out.trim();
 }
 
-function blob(ps: Pt[]): string {
+/** A smooth closed shape through points. Points below the floor are flattened onto it, so a body lying down rests on
+ * the floor instead of sinking into it, whatever its size. */
+function blob(raw: Pt[]): string {
+  const ps = raw.map((p): Pt => [p[0], Math.min(p[1], FLOOR + 2)]);
   const n = ps.length;
   let out = `M${pt(ps[0])}`;
   for (let i = 0; i < n; i++) {
@@ -135,6 +138,7 @@ export function castFigure(s: Skeleton, who: CastMember): { far: PathShape[]; bo
   const shoulder = s.shoulder;
   const hu = unit(sub(s.head, s.neck)), hf = perp(hu);
   const head = add(s.neck, mul(hu, NECK + HEAD_R));
+  head[1] = Math.min(head[1], FLOOR + 2 - HEAD_R); // lying down: the head rests on the floor
   const angle = (Math.atan2(hu[0], -hu[1]) * 180) / Math.PI;
 
   const leg = (i: number, cf: (c: string) => string) => {
@@ -214,6 +218,12 @@ export function castFigure(s: Skeleton, who: CastMember): { far: PathShape[]; bo
   arm(0, same, true);
   const near = take();
   return { far, body, near };
+}
+
+/** How far the back sits behind the spine, for props worn or held against it (a backpack, a broom handle). */
+export function backDepth(who: string): number {
+  const c = castById(who);
+  return BODIES[c.body].back * c.s;
 }
 
 /** A soft shadow under the feet when they're on the floor. */

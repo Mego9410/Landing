@@ -4,7 +4,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText } from "@/components/AppText";
 import { Icon } from "@/components/Icon";
 import { coachReply } from "@/data/content";
+import { sharePrescriberPack } from "@/state/prescriber";
 import { set, useApp } from "@/state/store";
+import { toast } from "@/state/toast";
 import { radius, space, textStyle, useColors } from "@/theme";
 
 const STARTERS = ["A quick high-protein lunch?", "I'm hungry tonight", "Eating out this weekend", "I had a hard day"];
@@ -33,6 +35,11 @@ export default function Coach() {
             backgroundColor: m.from === "you" ? c.apricot : m.redirect ? c.butter : c.lilac }}>
             {m.redirect ? <AppText variant="label" color="onPastel" style={{ marginBottom: 4 }}>FOR YOUR PRESCRIBER</AppText> : null}
             <AppText color="onPastel">{m.text}</AppText>
+            {m.redirect ? (
+              <Pressable accessibilityRole="button" onPress={() => sharePrescriberPack(s).catch(() => toast("Couldn't make the summary. Try again."))} style={{ marginTop: space[2], alignSelf: "flex-start", height: 36, paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, justifyContent: "center" }}>
+                <AppText variant="caption" weight="800">Make my summary</AppText>
+              </Pressable>
+            ) : null}
           </View>
         ))}
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2], marginTop: space[2] }}>

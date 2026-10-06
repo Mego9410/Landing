@@ -8,7 +8,9 @@ import { Avatar, Disc, List, Row, RowCard } from "@/components/ui";
 import { HABITS } from "@/data/content";
 import { addDays, daysBetween, fmt, today } from "@/data/dates";
 import { change, weight } from "@/data/units";
+import { sharePrescriberPack } from "@/state/prescriber";
 import { recentScores } from "@/state/score";
+import { toast } from "@/state/toast";
 import { insights, loggedOf } from "@/state/journal";
 import { avg7, habitDays, sessionsInWeek, steadyZone, useApp, weekOf, type AppState } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
@@ -89,6 +91,14 @@ export default function Progress() {
           <AppText variant="caption" color="inkMuted">Strength sessions</AppText>
         </Card>
       </View>
+      <RowCard onPress={() => sharePrescriberPack(s).catch(() => toast("Couldn't make the summary. Try again."))}>
+        <Disc icon="doc" tone="butter" />
+        <View style={{ flex: 1, gap: 2 }}>
+          <AppText variant="label" color="inkMuted">FOR YOUR PRESCRIBER</AppText>
+          <AppText weight="800" style={{ fontSize: 16 }}>A one-page summary</AppText>
+          <AppText variant="caption" color="inkMuted">Your last four weeks, to share or print</AppText>
+        </View>
+      </RowCard>
       <RowCard onPress={() => router.push("/journal/insights")}>
         <Disc icon="today" tone="sky" />
         <View style={{ flex: 1, gap: 2 }}>

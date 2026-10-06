@@ -54,7 +54,7 @@ The palette is oat neutrals plus six pastels. Pastels are fills; each has a deep
 
 - Icons are the original 2px rounded line set in `assets/Icons`, rendered with `currentColor`. Never use emoji as icons.
 - No bathroom scales, tape measures, before/after bodies or syringes, anywhere, including marketing.
-- Illustration, when needed, is built from the mark's shapes: discs, pills and soft horizons in the pastels. No faces.
+- Illustration, when needed, is built from the mark's shapes: discs, pills and soft horizons in the pastels. People are drawn side-on in profile (nose, ear and hair) with no eyes or mouth, so a face never shows strain. The movement cast in `packages/motion` is the reference.
 - Photography (marketing only): warm natural light, real food, everyday movement, people over 30. No gym-mirror shots.
 
 ## Logo

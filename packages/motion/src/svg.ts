@@ -6,7 +6,7 @@ import { frameShapes, VIEWBOX, type Prop, type Shape } from "./scene.ts";
 
 const VB = `${VIEWBOX.x} ${VIEWBOX.y} ${VIEWBOX.w} ${VIEWBOX.h}`;
 
-const ATTRS: Record<Shape["kind"], string[]> = { line: ["x1", "y1", "x2", "y2"], circle: ["cx", "cy"], rect: ["x", "y"] };
+const ATTRS: Record<Shape["kind"], string[]> = { line: ["x1", "y1", "x2", "y2"], circle: ["cx", "cy"], rect: ["x", "y"], path: [] };
 const SVG_NAME: Record<string, string> = { w: "width", h: "height", r: "r", rx: "rx" };
 
 const r1 = (n: number) => {
@@ -30,11 +30,30 @@ function simplify(v: number[], tol: number): number[] {
   return [...keep].sort((x, y) => x - y);
 }
 
-export function sampleFrames(keys: Key[], props: Prop[], fps = 24): { total: number; frames: Shape[][] } {
+/** Like simplify, for a path: the frames needed so every number in it stays within `tol` when tweened. */
+function simplifyVec(v: number[][], tol: number): number[] {
+  const keep = new Set([0, v.length - 1]);
+  const walk = (a: number, b: number) => {
+    let worst = -1, err = tol;
+    for (let i = a + 1; i < b; i++) {
+      const k = (i - a) / (b - a);
+      for (let j = 0; j < v[i].length; j++) {
+        const e = Math.abs(v[i][j] - (v[a][j] + (v[b][j] - v[a][j]) * k));
+        if (e > err) { err = e; worst = i; }
+      }
+    }
+    if (worst >= 0) { keep.add(worst); walk(a, worst); walk(worst, b); }
+  };
+  walk(0, v.length - 1);
+  return [...keep].sort((x, y) => x - y);
+}
+const NUM = /-?(?:\d+\.?\d*|\.\d+)/g;
+
+export function sampleFrames(keys: Key[], props: Prop[], fps = 24, who = "maya"): { total: number; frames: Shape[][] } {
   const total = cycleLength(keys);
   const n = Math.max(24, Math.round(total * fps));
   const frames: Shape[][] = [];
-  for (let i = 0; i <= n; i++) frames.push(frameShapes(solve(poseAt(keys, (total * i) / n)), props));
+  for (let i = 0; i <= n; i++) frames.push(frameShapes(solve(poseAt(keys, (total * i) / n)), props, who));
   return { total, frames };
 }
 
@@ -43,18 +62,29 @@ function attrs(s: Shape): string {
     case "line": return `x1="${r1(s.x1)}" y1="${r1(s.y1)}" x2="${r1(s.x2)}" y2="${r1(s.y2)}" stroke="${s.stroke}" stroke-width="${s.width}"`;
     case "circle": return `cx="${r1(s.cx)}" cy="${r1(s.cy)}" r="${s.r}" fill="${s.fill}"`;
     case "rect": return `x="${r1(s.x)}" y="${r1(s.y)}" width="${r1(s.w)}" height="${r1(s.h)}" rx="${s.rx}" fill="${s.fill}"`;
+    case "path": return `d="${s.d}" fill="${s.fill}"`;
   }
 }
 
-export interface RenderOptions { title: string; fps?: number; tolerance?: number; background?: string }
+export interface RenderOptions { title: string; who?: string; fps?: number; tolerance?: number; background?: string }
 
 export function renderSvg(keys: Key[], props: Prop[], o: RenderOptions): string {
-  const { total, frames } = sampleFrames(keys, props, o.fps ?? 24);
+  const { total, frames } = sampleFrames(keys, props, o.fps ?? 24, o.who);
   const n = frames.length - 1;
   const dur = `${r1(total)}s`;
   const first = frames[0];
   const body = first.map((shape, idx) => {
     const anims: string[] = [];
+    if (shape.kind === "path") {
+      const ds = frames.map((f) => (f[idx] as typeof shape).d);
+      if (ds.some((d) => d !== ds[0])) {
+        const vecs = ds.map((d) => (d.match(NUM) ?? []).map(Number));
+        const same = vecs.every((v) => v.length === vecs[0].length);
+        const kept = same ? simplifyVec(vecs, o.tolerance ?? 0.3) : ds.map((_, i) => i);
+        const times = kept.map((i) => String(Math.round((i / n) * 10000) / 10000)).join(";");
+        anims.push(`<animate attributeName="d" dur="${dur}" repeatCount="indefinite" values="${kept.map((i) => ds[i]).join(";")}" keyTimes="${times}"${same ? "" : ' calcMode="discrete"'}/>`);
+      }
+    }
     for (const a of ATTRS[shape.kind]) {
       const series = frames.map((f) => (f[idx] as unknown as Record<string, number>)[a]);
       if (Math.max(...series) - Math.min(...series) < 0.05) continue;
@@ -71,8 +101,8 @@ export function renderSvg(keys: Key[], props: Prop[], o: RenderOptions): string 
 }
 
 /** A single still frame at time t (used for reduced motion posters and contact sheets). */
-export function renderStill(keys: Key[], props: Prop[], t: number, title = ""): string {
-  const shapes = frameShapes(solve(poseAt(keys, t)), props);
+export function renderStill(keys: Key[], props: Prop[], t: number, title = "", who = "maya"): string {
+  const shapes = frameShapes(solve(poseAt(keys, t)), props, who);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${VB}" role="img" aria-label="${esc(title)}"><g stroke-linecap="round">${shapes.map((s) => `<${s.kind} ${attrs(s)}/>`).join("")}</g></svg>`;
 }
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
+import { mixFor } from "@landing/motion";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
 import { ExerciseAnimation } from "@/components/ExerciseAnimation";
@@ -23,7 +24,7 @@ export default function Plan() {
     <Screen contentContainerStyle={{ gap: space[4] }}>
       <AppText variant="title" accessibilityRole="header">Your plan</AppText>
       <Card tone="sky" style={{ padding: 0, overflow: "hidden" }}>
-        <ExerciseAnimation id={move.id} />
+        <ExerciseAnimation id={move.id} who={mixFor(`${move.id}-plan`)} />
       </Card>
       <AppText variant="heading">{move.name}</AppText>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>

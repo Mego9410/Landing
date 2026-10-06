@@ -164,6 +164,7 @@
       hunger: [],
       cravings: [],
       workouts: { where: 'home', done: {}, feel: null, active: null },
+      demos: { who: 'mix', still: false, ghost: true },
       lessonsRead: {},
       phaseSeen: { land: true },
       flags: { drift: false, offline: false, weekSummary: false },
@@ -287,8 +288,8 @@
   function Steps(p) {
     return html`<div class="topbar">
       <${Back} fallback=${p.backTo} onClick=${p.onBack} />
-      <div class="steps" role="progressbar" aria-valuemin="1" aria-valuemax="9" aria-valuenow=${p.n} aria-label=${'Step ' + p.n + ' of 9'}><span style=${{ width: Math.round(p.n / 9 * 100) + '%' }}></span></div>
-      <span class="caption muted">${p.n} of 9</span>
+      <div class="steps" role="progressbar" aria-valuemin="1" aria-valuemax="10" aria-valuenow=${p.n} aria-label=${'Step ' + p.n + ' of 10'}><span style=${{ width: Math.round(p.n / 10 * 100) + '%' }}></span></div>
+      <span class="caption muted">${p.n} of 10</span>
     </div>`;
   }
   function Skip(p) { return html`<button type="button" class="skip" onClick=${p.onClick} title="Prototype only: fill this step with dummy answers and move on">${p.label || 'Skip'} ›</button>`; }

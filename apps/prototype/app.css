@@ -170,3 +170,8 @@ button.banner { cursor: pointer; }
 @keyframes pop { 0% { transform: scale(.96); } 60% { transform: scale(1.02); } 100% { transform: none; } }
 .screen-enter { animation: fade .2s ease-out; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* Exercise demo cast picker */
+.castpick { border: 0; padding: 0; background: var(--surface-raised); color: var(--ink); border-radius: 18px; overflow: hidden; cursor: pointer; font: inherit; text-align: center; display: flex; flex-direction: column; }
+.castpick:focus-visible { outline: 2px solid transparent; box-shadow: var(--focus-ring) !important; }
+.castpick svg { display: block; width: 100%; height: 100%; }

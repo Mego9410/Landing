@@ -16,15 +16,6 @@
     });
     if (on && navigator.vibrate) { try { navigator.vibrate(10); } catch (e) {} }
   }
-  /* Exercise loops from packages/motion (src/motion.js). Paused, or with reduced motion on, shows the still. */
-  function Demo(props) {
-    var M = window.LANDING_MOTION || { loops: {}, stills: {} };
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var src = (props.still || reduce ? M.stills : M.loops)[props.id];
-    if (!src) return null;
-    return html`<img key=${props.id + (props.still ? '-still' : '')} src=${src} alt=${props.alt || ''} style=${Object.assign({ display: 'block', width: '100%', height: '100%', objectFit: 'contain' }, props.style)} />`;
-  }
-
   function nextSession(s) { return ['A', 'B'].find(function (k) { return !s.workouts.done[k]; }) || null; }
   function untilNext(week) {
     var p = LP.phaseOf(week), nextP = LP.PHASES[LP.PHASES.indexOf(p) + 1];
@@ -270,7 +261,7 @@
       <div class="list">
         ${S.moves.map(function (m, i) {
           return html`<div key=${m.name} class="li">
-            <span style=${{ width: 56, height: 46, borderRadius: 12, background: 'var(--sky)', overflow: 'hidden', flex: 'none' }} aria-hidden="true"><${Demo} id=${m.anim} still /></span>
+            <span style=${{ width: 56, height: 46, borderRadius: 12, background: 'var(--sky)', overflow: 'hidden', flex: 'none' }} aria-hidden="true"><${LP.demo.Thumb} id=${m.anim} who=${LP.demo.whoFor(s, k + '-w' + LP.weekOf(s))} /></span>
             <span class="grow strong">${m.name}</span><span class="caption muted">${m.sets} × ${m.reps}</span></div>`;
         })}
       </div>
@@ -288,6 +279,7 @@
     var a = s.workouts.active || { id: 'B', move: 0, set: 1, paused: false };
     var S = LP.SESSIONS[a.id], m = S.moves[a.move];
     var es = React.useState(false), easy = es[0], setEasy = es[1];
+    var dp = LP.demo.prefs(s), who = LP.demo.whoFor(s, a.id + '-w' + LP.weekOf(s));
     function finish() {
       set(function (s) {
         var id = s.workouts.active ? s.workouts.active.id : 'B';
@@ -313,8 +305,9 @@
         <span class="caption muted">${a.move + 1} of ${S.moves.length}</span>
       </div>
       <div style=${{ height: 250, borderRadius: 'var(--radius-lg)', background: 'var(--sky)', position: 'relative', overflow: 'hidden', flex: 'none' }}>
-        <${Demo} id=${easy && m.easier ? m.easier : m.anim} still=${a.paused} alt=${'Animation: ' + m.name} />
+        <${LP.demo.Motion} id=${easy && m.easier ? m.easier : m.anim} who=${who} paused=${a.paused} still=${dp.still} ghost=${dp.ghost} label=${m.name + ', shown by ' + LP.demo.nameOf(who)} />
         ${a.paused ? html`<span class="label" style=${{ position: 'absolute', top: 12, left: 14, color: 'var(--on-pastel)' }}>Paused</span>` : null}
+        <span class="ld-chip" style=${{ position: 'absolute', top: 10, right: 10, background: 'var(--surface-raised)', color: 'var(--ink)' }}>${LP.demo.nameOf(who)}</span>
       </div>
       <div class="stack" style=${{ gap: 4 }}>
         <h1 class="t-title">${easy && m.easier ? m.name + ', easier' : m.name}</h1>

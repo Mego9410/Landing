@@ -38,9 +38,9 @@ must sign off the content before launch (section 8).
    service in the meantime.
 6. **Safe mode runs through all of it:** no numbers, no weight features, no streaks, hand-portion language and a Beat
    signpost, switched on by the user or by screening.
-7. **Exercise demos are illustrated loops we make ourselves,** in the brand's shapes with no faces. The first 80 (every
-   level of every pattern, plus the seated versions) are built: `packages/motion`, with a
-   [gallery](../packages/motion/gallery.html).
+7. **Exercise demos are illustrated loops we make ourselves,** shown by a cast of six people that each user can choose
+   from (or mix). The first 80 (every level of every pattern, plus the seated versions) are built:
+   `packages/motion`, with a [gallery](../packages/motion/gallery.html).
 
 ---
 
@@ -148,11 +148,14 @@ what protect people; the checkbox records an informed choice.
   versions.
 - **Launch size:** about 150 exercises (12 patterns × 6 levels, with roughly two setting variants each). Each needs a
   short looping demo, 2 to 3 cues and one common mistake. Plus about 15 warm-up and balance moves.
-- **Demos:** illustrated loops in the brand's shapes, no faces, made in house (decided 5 October 2026). The first 80
-  are built in `packages/motion`: a posable figure with props (chair, counter, step, bench, band, bottles, bags,
-  dumbbells, kettlebell, machines) whose keyframes compile to small animated SVGs (about 9 KB each) for the web and
-  prototype, and draw live in the Expo app. Reduced motion shows the starting position. Each exercise is a few lines
-  of keyframes, so the setting variants and warm-ups are quick to add. The physio reviews every loop with the cues.
+- **Demos:** illustrated loops made in house (decided 5 October 2026), shown by a cast of six adults aged 38 to 63
+  in four body shapes, drawn from the brand's shapes in profile with no eyes or mouth (research:
+  [character.md](research/character.md)). People pick who shows them the moves in sign-up and can change it in
+  Settings; the default is "Mix it up", a different person each session. The first 80 loops are built in
+  `packages/motion`, with props (chair, counter, step, bench, band, bottles, bags, dumbbells, kettlebell, machines).
+  They draw live from one small script on the web and in the prototype, and with react-native-svg in the Expo app.
+  Reduce Motion and the "Still pictures" setting show still frames. Each exercise is a few lines of keyframes, so the
+  setting variants and warm-ups are quick to add. The physio reviews every loop with the cues.
 
 ### 4.4 How a session is built
 

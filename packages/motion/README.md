@@ -1,44 +1,66 @@
 # @landing/motion
 
-The exercise loops: a side-on Landing figure built from the brand's shapes (pill limbs, a sun-disc head, no face),
-posed by keyframes, with simple props. 80 loops cover every level of the 12 movement patterns plus the seated
-versions. Open [gallery.html](gallery.html) to see them all.
+The exercise loops. Six people, the movement cast, demonstrate 80 exercises (every level of the 12 movement
+patterns plus the seated versions). Each person is drawn from the brand's shapes: tapered pill limbs, a soft torso
+with a real profile, and a round head in profile with no eyes or mouth. Any of them can do any exercise, because
+the exercises are keyframes for a skeleton and the cast is drawn on top. Open [gallery.html](gallery.html) to see
+every loop with any of the cast.
+
+| Person | Age | Build | Detail |
+| --- | --- | --- | --- |
+| Maya | 38 | Mid | Bun with a hair tie, apricot tee |
+| Dev | 52 | Full | Short hair and a beard, sage tee, watch |
+| Sue | 63 | Full | Grey crop, glasses, lilac tee |
+| Amira | 44 | Mid | Hijab, long sleeves in butter yellow |
+| Tom | 47 | Slim | Receding auburn hair, sky tee, watch |
+| Grace | 57 | Fuller | Natural hair with a headband, rose tee |
+
+Names and ages are briefs for the illustration and copy, not real people. The designs live on the "Landing movement
+cast" canvas in Claude Design.
 
 ```
-src/rig.ts        The figure: pose targets, two-bone IK for elbows and knees, blending and timing
+src/rig.ts        The skeleton: pose targets, two-bone IK for elbows and knees, blending and timing
 src/poses.ts      Pose builders: standing, sitting, lying, kneeling, plank lines, press-ups, walking
-src/scene.ts      Turns a pose plus props into flat shapes; the palette lives here
-src/exercises.ts  The library: one entry per exercise with name, level, equipment, cue, props and keyframes
-src/svg.ts        Renders a loop as a self-contained animated SVG (SMIL, no script)
-svg/              Generated: <id>.svg loops, still/<id>.svg posters, index.json catalogue
+src/cast.ts       The six people: body shapes, skin, hair, kit, and drawing them on a skeleton
+src/scene.ts      Props (chair, counter, bands, weights, machines) and the full frame, back to front
+src/exercises.ts  The library: name, level, equipment, cue, props and keyframes for each exercise
+src/browser.ts    window.LandingMotion for web pages: mount(), stillSvg(), portraitSvg(), mixFor()
+src/svg.ts        Self-contained animated or still SVG for one exercise and one person
+dist/             Generated: landing-motion.js (the browser bundle, about 45 KB)
+svg/index.json    Generated: the catalogue of exercises, patterns and cast
 ```
 
 ## Commands
 
 ```sh
-pnpm motion                                   # rebuild svg/ and gallery.html (from the repo root)
+pnpm motion                                   # rebuild dist/, svg/index.json and gallery.html (from the repo root)
 pnpm --filter @landing/motion contact         # contact sheet of every loop at 4 moments, for checking poses
-pnpm --filter @landing/motion check           # CI: fails if svg/ is out of date
+pnpm --filter @landing/motion check           # CI: fails if the generated files are out of date
 ```
 
-Node 22.18 or later runs the TypeScript directly; there is no compile step.
+Node 22.18 or later runs the TypeScript directly; esbuild builds the browser bundle.
+
+## Who shows the moves
+
+People choose during sign-up and can change it in Settings → Exercise demos. The default is **Mix it up**: each
+session gets its own person, picked by `mixFor(sessionKey)`, so it stays the same whenever that session is opened.
+Settings also has **Still pictures** (the start and end positions instead of a loop) and **Starting outline** (a
+faint outline of where the move begins). Reduce Motion always shows still frames.
 
 ## Where the loops are used
 
-- **Prototype:** `apps/prototype/scripts/motion.mjs` copies the loops named in `src/core.js` (`anim` and `easier`)
-  into `src/motion.js` as data URIs. The session overview shows stills; the in-session screen plays the loop, and
-  shows the still when paused or when reduced motion is on.
-- **Expo app:** `apps/mobile/src/components/ExerciseAnimation.tsx` draws the same frames live with react-native-svg,
-  so the loops stay sharp at any size. It holds the starting position when reduced motion is on.
-- **Web:** use `svg/<id>.svg` in an `<img>`.
+- **Prototype:** `apps/prototype/scripts/motion.mjs` copies `dist/landing-motion.js` into `src/motion.js`;
+  `src/demo.js` has the live animation, the thumbnails and the cast picker used in sign-up and settings.
+- **Expo app:** `apps/mobile/src/components/ExerciseAnimation.tsx` draws the same frames with react-native-svg.
+- **Web:** load `dist/landing-motion.js` and call `LandingMotion.mount(svgElement, { id, who })`.
 
 ## Adding an exercise
 
-1. Add an `ex(...)` entry in `src/exercises.ts`. Give the id as `<pattern>-<level>`, a name, equipment, one cue in the
-   brand's voice (UK English, sentence case, calm), props, and two to five keys built from the helpers in `poses.ts`.
-2. Run `pnpm --filter @landing/motion contact` and look at the sheet: knees bend the right way, feet stay on the
-   floor, hands reach what they hold.
-3. Run `pnpm motion` and commit `svg/` and `gallery.html` with the change.
+1. Add an `ex(...)` entry in `src/exercises.ts`: id `<pattern>-<level>`, name, equipment, one cue in the brand's voice
+   (UK English, sentence case, calm), props, and two to five keys built from the helpers in `poses.ts`.
+2. Run `pnpm --filter @landing/motion contact` and check the sheet: knees bend the right way, feet stay on the floor,
+   hands reach what they hold. The sheet cycles through the cast, so every body gets checked.
+3. Run `pnpm motion` and commit `dist/`, `svg/` and `gallery.html` with the change.
 
 Coordinates are a 240 × 200 box, y down, the figure facing right; the floor's top edge is at y = 186. A pose sets the
 hips, the torso angle (0 upright, 90 face down, −90 on the back) and where the hands and ankles go; elbows and knees

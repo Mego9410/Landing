@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { View, type ViewStyle } from "react-native";
 import { useReducedMotion } from "react-native-reanimated";
-import Svg, { Circle, Line, Rect } from "react-native-svg";
-import { byId, frameShapes, poseAt, solve, VIEWBOX, type Shape } from "@landing/motion";
+import Svg, { Circle, Line, Path, Rect } from "react-native-svg";
+import { byId, castById, frameShapes, poseAt, solve, VIEWBOX, type Shape } from "@landing/motion";
 
 /**
- * An exercise loop from @landing/motion, drawn live with react-native-svg so it stays crisp at any size. With
- * reduced motion on, or while paused, it holds the starting position.
+ * An exercise loop from @landing/motion, shown by one of the movement cast and drawn live with react-native-svg so it
+ * stays crisp at any size. With reduced motion on, or while paused, it holds the starting position.
  */
-type Props = { id: string; paused?: boolean; style?: ViewStyle };
+type Props = { id: string; who: string; paused?: boolean; style?: ViewStyle };
 
 export function ExerciseAnimation(props: Props) {
   // Keyed by id so a new exercise starts its loop from the beginning.
-  return <Loop key={props.id} {...props} />;
+  return <Loop key={`${props.id}-${props.who}`} {...props} />;
 }
 
-function Loop({ id, paused, style }: Props) {
+function Loop({ id, who, paused, style }: Props) {
   const exercise = byId(id);
   const reduce = useReducedMotion();
   const [t, setT] = useState(0);
@@ -35,9 +35,9 @@ function Loop({ id, paused, style }: Props) {
   }, [exercise, paused, reduce]);
 
   if (!exercise) return null;
-  const shapes = frameShapes(solve(poseAt(exercise.keys, reduce ? 0 : t)), exercise.props);
+  const shapes = frameShapes(solve(poseAt(exercise.keys, reduce ? 0 : t)), exercise.props, who);
   return (
-    <View style={[{ aspectRatio: VIEWBOX.w / VIEWBOX.h }, style]} accessible accessibilityRole="image" accessibilityLabel={`Animation: ${exercise.name}`}>
+    <View style={[{ aspectRatio: VIEWBOX.w / VIEWBOX.h }, style]} accessible accessibilityRole="image" accessibilityLabel={`${exercise.name}, shown by ${castById(who).name}`}>
       <Svg width="100%" height="100%" viewBox={`${VIEWBOX.x} ${VIEWBOX.y} ${VIEWBOX.w} ${VIEWBOX.h}`}>
         {shapes.map(draw)}
       </Svg>
@@ -50,5 +50,6 @@ function draw(s: Shape) {
     case "line": return <Line key={s.id} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2} stroke={s.stroke} strokeWidth={s.width} strokeLinecap="round" />;
     case "circle": return <Circle key={s.id} cx={s.cx} cy={s.cy} r={s.r} fill={s.fill} />;
     case "rect": return <Rect key={s.id} x={s.x} y={s.y} width={s.w} height={s.h} rx={s.rx} fill={s.fill} />;
+    case "path": return <Path key={s.id} d={s.d} fill={s.fill} />;
   }
 }

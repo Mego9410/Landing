@@ -1,4 +1,42 @@
 {
+  "cast": [
+    {
+      "id": "maya",
+      "name": "Maya",
+      "age": 38,
+      "body": "mid"
+    },
+    {
+      "id": "dev",
+      "name": "Dev",
+      "age": 52,
+      "body": "full"
+    },
+    {
+      "id": "sue",
+      "name": "Sue",
+      "age": 63,
+      "body": "full"
+    },
+    {
+      "id": "amira",
+      "name": "Amira",
+      "age": 44,
+      "body": "mid"
+    },
+    {
+      "id": "tom",
+      "name": "Tom",
+      "age": 47,
+      "body": "slim"
+    },
+    {
+      "id": "grace",
+      "name": "Grace",
+      "age": 57,
+      "body": "fuller"
+    }
+  ],
   "patterns": [
     {
       "id": "squat",

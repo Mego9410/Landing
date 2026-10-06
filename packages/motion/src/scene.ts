@@ -1,11 +1,14 @@
 // Turns a solved skeleton plus props into flat shapes (lines, circles, rects, paths). Renderers (animated SVG, React
 // Native) draw these shapes; the SVG renderer animates any attribute that changes between frames.
+import { castById, castFigure, footShadow, type PathShape } from "./cast.ts";
+export { footShadow };
 import { FLOOR, L, type Pt, type Skeleton } from "./rig.ts";
 
 export type Shape =
   | { id: string; kind: "line"; x1: number; y1: number; x2: number; y2: number; stroke: string; width: number; dash?: string }
   | { id: string; kind: "circle"; cx: number; cy: number; r: number; fill: string }
-  | { id: string; kind: "rect"; x: number; y: number; w: number; h: number; rx: number; fill: string };
+  | { id: string; kind: "rect"; x: number; y: number; w: number; h: number; rx: number; fill: string }
+  | PathShape;
 
 // Landing palette (light values from the design system tokens).
 export const COLOR = {
@@ -153,30 +156,14 @@ function dynamicProp(p: Prop, i: number, s: Skeleton, props: Prop[]): { back: Sh
 }
 function unitv(v: Pt): Pt { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; }
 
-export function figure(s: Skeleton): { far: Shape[]; body: Shape[]; near: Shape[] } {
-  const limb = (prefix: string, color: string, i: number): Shape[] => [
-    line(`${prefix}-thigh`, s.hip, s.legs[i].knee, color, W.limb + 1),
-    line(`${prefix}-shin`, s.legs[i].knee, s.legs[i].ankle, color, W.limb),
-    line(`${prefix}-foot`, s.legs[i].ankle, s.legs[i].toe, color, W.foot),
-  ];
-  const arm = (prefix: string, color: string, i: number): Shape[] => [
-    line(`${prefix}-upper`, s.shoulder, s.arms[i].elbow, color, W.limb),
-    line(`${prefix}-fore`, s.arms[i].elbow, s.arms[i].hand, color, W.limb - 1),
-  ];
-  return {
-    far: [...arm("farArm", COLOR.far, 1), ...limb("farLeg", COLOR.far, 1)],
-    body: [line("torso", s.hip, s.neck, COLOR.near, W.torso), circle("head", s.head, L.headR, COLOR.head)],
-    near: [...limb("nearLeg", COLOR.near, 0), ...arm("nearArm", COLOR.near, 0)],
-  };
-}
-
 /** All shapes for one frame, back to front. */
-export function frameShapes(s: Skeleton, props: Prop[]): Shape[] {
+export function frameShapes(s: Skeleton, props: Prop[], who = "maya"): Shape[] {
   const statics = props.flatMap(staticProp);
   const dyn = props.map((p, i) => dynamicProp(p, i, s, props));
-  const f = figure(s);
+  const f = castFigure(s, castById(who));
   return [
     ...ground(),
+    ...footShadow(s),
     ...statics,
     ...f.far,
     ...dyn.flatMap((d) => d.back),

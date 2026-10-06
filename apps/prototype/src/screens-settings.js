@@ -36,6 +36,7 @@
           <${Row} title="Reminders" value=${on ? on + ' on' : 'Off'} onClick=${function () { nav.go('reminders'); }} />
           <${Row} title="Apple Health" value=${s.settings.appleHealth ? 'Connected' : 'Not connected'} valueColor=${s.settings.appleHealth ? 'var(--sage-ink)' : null} onClick=${function () { nav.go('health'); }} />
           <${Row} title="Units" value=${(s.settings.units === 'kg' ? 'kg' : 'st, lb') + ', ' + (s.settings.height === 'cm' ? 'cm' : 'ft, in')} onClick=${function () { nav.go('units'); }} />
+          <${Row} title="Exercise demos" value=${LP.demo.prefs(s).who === 'mix' ? 'Mix it up' : LP.demo.nameOf(LP.demo.prefs(s).who)} onClick=${function () { nav.go('demos'); }} />
         </div>
       </div>
       <div class="stack" style=${{ gap: 8 }}>
@@ -183,6 +184,34 @@
     </div>`;
   }
 
+  function Demos() {
+    var s = useApp(), D = LP.demo, p = D.prefs(s);
+    var lr = React.useState(p.who === 'mix' ? 'grace' : p.who), last = lr[0], setLast = lr[1];
+    var who = p.who === 'mix' ? D.whoFor(s, 'preview') : p.who;
+    function pick(v) { if (v !== 'mix') setLast(v); D.setPrefs({ who: v }); }
+    var rows = [['still', 'Still pictures', 'Show the start and end positions instead of a moving loop'], ['ghost', 'Starting outline', 'A faint outline of where each move begins']];
+    return html`<div class="scr plain" style=${{ gap: 18 }}>
+      <${Head} />
+      <h1 class="t-title">Exercise demos</h1>
+      <div style=${{ height: 220, borderRadius: 'var(--radius-lg)', background: 'var(--sky)', overflow: 'hidden', position: 'relative', flex: 'none' }}>
+        <${D.Motion} id="squat-2" who=${who} still=${p.still} ghost=${p.ghost} />
+        <span class="ld-chip" style=${{ position: 'absolute', left: 12, top: 12, background: 'var(--surface-raised)', color: 'var(--ink)' }}>${p.who === 'mix' ? 'Mix it up · today ' + D.nameOf(who) : D.nameOf(who) + ' · sit to stand'}</span>
+      </div>
+      <div class="stack" style=${{ gap: 8 }}>
+        <p class="label muted">WHO SHOWS YOU THE MOVES</p>
+        <${D.CastPicker} compact value=${p.who} last=${last} onChange=${pick} />
+      </div>
+      <div class="list">
+        ${rows.map(function (r) {
+          return html`<div key=${r[0]} class="li" style=${{ alignItems: 'flex-start' }}>
+            <span class="grow stack" style=${{ gap: 2 }}><span class="strong">${r[1]}</span><span class="caption muted">${r[2]}</span></span>
+            <${Toggle} on=${p[r[0]]} label=${r[1]} onClick=${function () { var o = {}; o[r[0]] = !p[r[0]]; D.setPrefs(o); }} /></div>`;
+        })}
+      </div>
+      <p class="caption muted">Changes apply from your next exercise. Everyone does the same moves and gets the same cues.</p>
+    </div>`;
+  }
+
   function Support() {
     var s = useApp();
     var on = s.settings.safeMode;
@@ -293,6 +322,7 @@
     reminders: { c: Reminders, id: 'S4', title: 'Reminders', group: 'Settings and account' },
     health: { c: Health, id: 'S5', title: 'Apple Health', group: 'Settings and account' },
     units: { c: Units, id: 'S6', title: 'Units', group: 'Settings and account' },
+    demos: { c: Demos, id: 'S6b', title: 'Exercise demos', group: 'Settings and account' },
     support: { c: Support, id: 'S7', title: 'Support and safe mode', group: 'Settings and account' },
     privacy: { c: Privacy, id: 'S8', title: 'Privacy and data', group: 'Settings and account' },
     delete: { c: Delete, id: 'S9', title: 'Delete account', group: 'Settings and account' },

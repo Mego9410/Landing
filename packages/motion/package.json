@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Illustrated exercise loops: the Landing figure, the movement library and renderers for SVG and React Native.",
+  "description": "Illustrated exercise loops: the movement cast, the movement library and renderers for the browser, SVG and React Native.",
   "exports": {
     ".": "./src/index.ts",
+    "./dist/*": "./dist/*",
     "./svg/*": "./svg/*"
   },
   "scripts": {
     "build": "node scripts/build.ts",
-    "check": "node scripts/build.ts && git diff --exit-code -- svg gallery.html",
+    "check": "node scripts/build.ts && git diff --exit-code -- svg dist gallery.html",
     "contact": "node scripts/contact.ts",
     "typecheck": "tsc --noEmit"
   },
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.18.0",
+    "esbuild": "^0.25.12",
     "typescript": "~6.0.3"
   }
 }

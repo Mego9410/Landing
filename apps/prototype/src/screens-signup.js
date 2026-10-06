@@ -273,7 +273,7 @@
   function ObTraining() {
     var s = useApp();
     return html`<div class="scr plain">
-      <${Skip} onClick=${function () { nav.go('ob-food'); }} />
+      <${Skip} onClick=${function () { nav.go('ob-demo'); }} />
       <${Steps} n=${5} />
       <div class="stack">
         <h1 class="t-title">Strength keeps what you've worked for</h1>
@@ -285,7 +285,28 @@
         <${Choices} label="Days a week" options=${['2', '3', '4', '5+']} value=${s.ob.days} style=${{ minWidth: 64 }} onChange=${function (v) { ob({ days: v }); }} /></div>
       <div class="stack"><p class="label">WHERE</p>
         <${Choices} label="Where you train" options=${['At home', 'At a gym', 'Both']} value=${s.ob.place} onChange=${function (v) { ob({ place: v }); set(function (s) { s.workouts.where = v === 'At a gym' ? 'gym' : 'home'; return s; }); }} /></div>
-      <div class="foot"><${Btn} block onClick=${function () { nav.go('ob-food'); }}>Continue<//></div>
+      <div class="foot"><${Btn} block onClick=${function () { nav.go('ob-demo'); }}>Continue<//></div>
+    </div>`;
+  }
+
+  /* O6b Who shows you the moves */
+  function ObDemo() {
+    var s = useApp(), D = LP.demo, p = D.prefs(s);
+    var lr = React.useState('grace'), last = lr[0], setLast = lr[1];
+    function pick(v) { if (v !== 'mix') setLast(v); D.setPrefs({ who: v }); }
+    function next() { nav.go('ob-food'); }
+    return html`<div class="scr plain">
+      <${Skip} onClick=${function () { D.setPrefs({ who: 'mix' }); next(); }} />
+      <${Steps} n=${6} />
+      <div class="stack">
+        <h1 class="t-title">Who would you like to show you the moves?</h1>
+        <p class="body muted">They'll demonstrate every exercise in your plan. You can change this any time in Settings.</p>
+      </div>
+      <${D.CastPicker} value=${p.who} last=${last} onChange=${pick} />
+      <div class="foot">
+        <${Btn} block onClick=${next}>${p.who === 'mix' ? 'Continue with a mix' : 'Continue with ' + D.nameOf(p.who)}<//>
+        <${Btn} block variant="quiet" onClick=${function () { D.setPrefs({ who: 'mix' }); next(); }}>Decide later<//>
+      </div>
     </div>`;
   }
 
@@ -294,7 +315,7 @@
     var s = useApp();
     return html`<div class="scr plain">
       <${Skip} onClick=${function () { nav.go('ob-consent'); }} />
-      <${Steps} n=${6} />
+      <${Steps} n=${7} />
       <div class="stack">
         <h1 class="t-title">Food and hunger</h1>
         <p class="body muted">Appetite often comes back after the jab. Knowing your hungry times helps us plan around them.</p>
@@ -316,7 +337,7 @@
       ['lock', 'tint-lilac', 'Never', 'Sold, shared with advertisers or used for ads'], ['trash', 'tint-rose', 'Delete any time', 'One tap in Settings removes everything']];
     return html`<div class="scr plain" style=${{ gap: 16 }}>
       <${Skip} onClick=${agree} />
-      <${Steps} n=${7} />
+      <${Steps} n=${8} />
       <div class="stack">
         <h1 class="t-title">Your health data, your call</h1>
         <p class="body muted">Weight, food and hunger logs count as health data. We need your permission to keep them.</p>
@@ -336,7 +357,7 @@
     function connect(on) { ob({ appleHealth: on }); set(function (s) { s.settings.appleHealth = on; return s; }); if (on) toast('Connected. In the app, iOS asks what to share first.'); nav.go('ob-reminders'); }
     return html`<div class="scr plain">
       <${Skip} onClick=${function () { connect(true); }} />
-      <${Steps} n=${8} />
+      <${Steps} n=${9} />
       <div style=${{ width: 96, height: 96, borderRadius: 9999, background: 'var(--rose)', display: 'grid', placeItems: 'center', color: 'var(--on-pastel)', marginTop: 8 }}><${Icon} name="heart" size=${40} w=${1.8} /></div>
       <div class="stack">
         <h1 class="t-title">Connect Apple Health</h1>
@@ -361,7 +382,7 @@
     function done(on) { ob({ remindersOn: on }); set(function (s) { s.settings.reminders.habit = on; return s; }); nav.go('ob-building'); }
     return html`<div class="scr plain">
       <${Skip} onClick=${function () { done(true); }} />
-      <${Steps} n=${9} />
+      <${Steps} n=${10} />
       <div class="stack">
         <h1 class="t-title">A gentle nudge, once a day</h1>
         <p class="body muted">Short, kind reminders for your habits. Never about your weight.</p>
@@ -543,6 +564,7 @@
     'ob-screening': { c: ObScreening, id: 'O4', title: 'A few quick questions', group: 'Onboarding' },
     'ob-support': { c: ObSupport, id: 'O5', title: 'Support and safe mode', group: 'Onboarding' },
     'ob-training': { c: ObTraining, id: 'O6', title: 'Your training', group: 'Onboarding' },
+    'ob-demo': { c: ObDemo, id: 'O6b', title: 'Who shows you the moves', group: 'Onboarding' },
     'ob-food': { c: ObFood, id: 'O7', title: 'Food and hunger', group: 'Onboarding' },
     'ob-consent': { c: ObConsent, id: 'O8', title: 'Your health data', group: 'Onboarding' },
     'ob-health': { c: ObHealth, id: 'O9', title: 'Connect Apple Health', group: 'Onboarding' },

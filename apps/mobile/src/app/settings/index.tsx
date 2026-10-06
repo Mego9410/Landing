@@ -36,16 +36,16 @@ export default function Settings() {
           <AppText variant="caption" color="inkMuted">If food or eating feels hard, Beat&apos;s helpline is there to talk to.</AppText>
         </View>
       </Section>
-      <Section title="DEMO">
+      {s.demo ? <Section title="DEMO">
         <View style={{ gap: space[3] }}>
-          <AppText variant="caption" color="inkMuted">Preview controls. Today is fixed at Monday 5 October 2026, so the dummy data lines up.</AppText>
+          <AppText variant="caption" color="inkMuted">You&apos;re in demo mode with Hannah&apos;s dummy data. These controls only show in demo mode.</AppText>
           <AppText weight="700">Week of the plan</AppText>
           <Choices label="Week" value={week} onChange={(v) => { set((st) => { setWeek(st, v as number); st.food.plan = null; st.food.next = null; }); }}
             options={[1, 6, 9, 27].map((w) => ({ id: w, label: w === 9 ? "Week 9 (Settle)" : w === 27 ? "Week 27 (Steady)" : `Week ${w}` }))} />
-          <Button label="Start onboarding again" variant="secondary" block onPress={() => { replace(freshState()); router.replace("/onboarding"); }} />
-          <Button label="Reset to Hannah, week 6" variant="quiet" onPress={() => { replace(demoState()); toast("Back to Hannah in week 6."); router.dismissTo("/"); }} style={{ alignSelf: "center" }} />
+          <Button label="Leave the demo and start fresh" variant="secondary" block onPress={() => { replace({ ...freshState(), disclaimer: s.disclaimer }); router.replace("/onboarding"); }} />
+          <Button label="Reset to Hannah, week 6" variant="quiet" onPress={() => { replace({ ...demoState(), disclaimer: s.disclaimer }); toast("Back to Hannah in week 6."); router.dismissTo("/"); }} style={{ alignSelf: "center" }} />
         </View>
-      </Section>
+      </Section> : null}
       <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>Landing 1.0 · preview. Recipes and nutrition are drafts until our dietitian signs them off.</AppText>
     </Screen>
   );

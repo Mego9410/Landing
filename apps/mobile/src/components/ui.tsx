@@ -2,8 +2,8 @@
 // header, list rows, choice chips, radio options, a toggle, a meter, pill tags and banners.
 import { router } from "expo-router";
 import type { ReactNode } from "react";
-import { Pressable, Switch, View, type ViewStyle } from "react-native";
-import { radius, space, useColors, type Colors } from "@/theme";
+import { Pressable, Switch, TextInput, View, type TextInputProps, type ViewStyle } from "react-native";
+import { radius, space, textStyle, useColors, type Colors } from "@/theme";
 import { AppText } from "./AppText";
 import { Icon, type IconName } from "./Icon";
 
@@ -208,7 +208,22 @@ export function Avatar({ name }: { name: string }) {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push("/settings")}
       style={{ width: 44, height: 44, borderRadius: radius.full, backgroundColor: c.lilac, alignItems: "center", justifyContent: "center" }}>
-      <AppText variant="heading" color="onPastel" weight="600">{name.charAt(0)}</AppText>
+      {name ? <AppText variant="heading" color="onPastel" weight="600">{name.charAt(0).toUpperCase()}</AppText> : <Icon name="settings" color={c.onPastel} />}
     </Pressable>
+  );
+}
+
+/** A labelled text field with the design system's line border; an optional unit sits at the end. */
+export function Field({ label, error, suffix, hint, ...input }: TextInputProps & { label: string; error?: string; suffix?: string; hint?: string }) {
+  const c = useColors();
+  return (
+    <View style={{ gap: 6, flex: 1 }}>
+      <AppText weight="700">{label}</AppText>
+      <View style={{ flexDirection: "row", alignItems: "center", height: 56, borderRadius: radius.md, backgroundColor: c.surfaceRaised, paddingHorizontal: space[4], borderWidth: 1.5, borderColor: error ? c.roseInk : c.line }}>
+        <TextInput accessibilityLabel={label} placeholderTextColor={c.inkMuted} {...input} style={[textStyle("bodyLg"), { flex: 1, color: c.ink }]} />
+        {suffix ? <AppText color="inkMuted">{suffix}</AppText> : null}
+      </View>
+      {error ? <AppText variant="caption" color="roseInk">{error}</AppText> : hint ? <AppText variant="caption" color="inkMuted">{hint}</AppText> : null}
+    </View>
   );
 }

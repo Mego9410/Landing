@@ -34,14 +34,17 @@ for (const r of RECIPES) {
   const shopping = r.ingredients.filter((l) => !l.optional && !INGREDIENT[l.i].pantry);
   const n = nutritionOf(r.ingredients);
   const batch = r.serves >= 4;
-  const ovenTime = r.kit.includes("tray") && r.handsOn <= 10;
+  // Tray bakes may run past 20 minutes because the oven does the work (decided 6 October 2026), up to 40.
+  const trayBake = r.kit.includes("tray");
 
   if (shopping.length > 6) err(`${where} ${shopping.length} shopping ingredients (Easy standard: 6 or fewer)`);
   if (r.handsOn > 15) err(`${where} ${r.handsOn} minutes hands-on (Easy standard: 15 or fewer)`);
   if (r.handsOn > r.total) err(`${where} hands-on time is longer than the total`);
-  if (r.total > 20 && !batch && !ovenTime) err(`${where} ${r.total} minutes in total (Easy standard: 20, or a batch of 4+)`);
-  if (r.total > 20 && !batch && ovenTime) notes.push(`${r.id} takes ${r.total} minutes, ${r.handsOn} of them hands-on (oven time)`);
+  if (r.total > 20 && !batch && !trayBake) err(`${where} ${r.total} minutes in total (Easy standard: 20, or a tray bake or batch)`);
+  if (r.total > 40 && trayBake && !batch) err(`${where} ${r.total} minutes is too long for a tray bake (40 at most)`);
   if (r.total > 45) err(`${where} ${r.total} minutes is too long even for a batch`);
+  if (r.handsOn !== r.time.active || r.total !== r.time.active + r.time.wait) err(`${where} times don't add up`);
+  if (r.total > 20 && trayBake && !batch) notes.push(`${r.id}: ready in ${r.total} minutes, ${r.handsOn} hands-on (tray bake)`);
   if (r.washUp > 3) err(`${where} ${r.washUp} things to wash up (Easy standard: 3 or fewer)`);
   if (n.protein < PROTEIN_MIN[r.slot]) err(`${where} ${n.protein.toFixed(1)} g protein (minimum for ${r.slot}: ${PROTEIN_MIN[r.slot]} g)`);
   if ((r.slot === "lunch" || r.slot === "dinner") && n.vegGrams < VEG_PORTION) err(`${where} ${Math.round(n.vegGrams)} g veg (a main needs a portion, ${VEG_PORTION} g)`);
@@ -55,6 +58,8 @@ for (const r of RECIPES) {
     for (const a of alts) if (!INGREDIENT[a]) err(`${where} allows unknown swap ${a}`);
   }
   if (r.review.status === "approved" && !r.review.by) err(`${where} approved without a reviewer`);
+  // Times live in the recipe's time fields and are shown by the app; a name or blurb that states one goes out of date.
+  if (/\b(minute|minutes|mins?)\b/i.test(r.name + " " + r.blurb)) err(`${where} states a time in its name or blurb`);
   for (const t of words(r)) {
     if (BANNED.test(t)) err(`${where} uses "${t.match(BANNED)![0]}"`);
     if (EMOJI.test(t)) err(`${where} contains an emoji`);
@@ -67,7 +72,7 @@ console.log(`Review: ${RECIPES.filter((r) => r.review.status === "approved").len
 if (process.argv.includes("--table")) {
   for (const r of RECIPES) {
     const n = nutritionOf(r.ingredients);
-    console.log(`${r.slot.padEnd(9)} ${r.id.padEnd(28)} protein ${n.protein.toFixed(0).padStart(3)} g  fibre ${n.fibre.toFixed(0).padStart(2)} g  veg ${n.vegGrams.toFixed(0).padStart(3)} g  fat ${n.fat.toFixed(0).padStart(2)} g  salt ${n.salt.toFixed(1)} g`);
+    console.log(`${r.slot.padEnd(9)} ${r.id.padEnd(28)} ${String(r.handsOn).padStart(2)}+${String(r.time.wait).padStart(2)}=${String(r.total).padStart(2)} min  protein ${n.protein.toFixed(0).padStart(3)} g  fibre ${n.fibre.toFixed(0).padStart(2)} g  veg ${n.vegGrams.toFixed(0).padStart(3)} g  fat ${n.fat.toFixed(0).padStart(2)} g  salt ${n.salt.toFixed(1)} g`);
   }
 }
 for (const m of notes) console.log(`note: ${m}`);

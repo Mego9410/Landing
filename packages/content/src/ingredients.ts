@@ -120,6 +120,7 @@ export const INGREDIENTS: Ingredient[] = [
   ing("roll", "Wholemeal rolls", [10, 44, 6, 3, 1], "plant", ["gluten"], "Bakery", { buy: { unit: "pack of 4", plural: "packs of 4", size: 240 }, each: { name: "roll", plural: "rolls", grams: 60 } }),
   ing("bagel", "Bagels", [10, 48, 3, 1.5, 1], "plant", ["gluten"], "Bakery", { short: "bagel", buy: { unit: "pack of 4", plural: "packs of 4", size: 340 }, each: { name: "bagel", plural: "bagels", grams: 85 } }),
   ing("pasta", "Wholewheat pasta (dry)", [13, 62, 9, 2.5, 0], "plant", ["gluten"], "Rice, pasta and grains", { short: "pasta", buy: bag(500) }),
+  ing("fresh-pasta", "Fresh egg pasta", [11, 50, 2.5, 3, 0.05], "egg", ["gluten", "eggs"], "Chilled", { short: "pasta", buy: pack(300) }),
   ing("gf-pasta", "Gluten-free pasta (dry)", [7, 75, 3, 1.5, 0], "plant", [], "Rice, pasta and grains", { short: "pasta", buy: bag(500) }),
   ing("noodles", "Straight-to-wok egg noodles", [5.5, 26, 1.5, 2, 0.4], "plant", ["gluten", "eggs"], "World foods", { short: "noodle", buy: pouch(150) }),
   ing("rice-noodles", "Straight-to-wok rice noodles", [2, 30, 1, 0.5, 0.1], "plant", [], "World foods", { short: "noodle", buy: pouch(150) }),

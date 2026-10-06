@@ -28,7 +28,7 @@ export interface Profile {
   dislikes: string[];
   aversions: Aversion[];
   kit: KitOwned[];
-  /** The longest a weekday meal can take, in minutes. */
+  /** The most hands-on time someone wants to spend on a weekday meal, in minutes. Oven and simmering time don't count. */
   maxMinutes: number;
   /** Portions for dinner: everyone eating. */
   household: number;

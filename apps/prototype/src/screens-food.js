@@ -52,8 +52,8 @@
   function px(s, id) { return F.personaliseById(id, profileOf(s)); }
 
   function protein(s, n) { return s.settings.safeMode ? 'protein-rich' : 'about ' + n + ' g protein'; }
-  // Batch recipes say their hands-on time: the rest is simmering, and it makes several meals.
-  function minutes(r) { return r.total <= 1 ? 'No cooking' : r.serves >= 4 ? r.handsOn + ' min hands-on' : r.total + ' min'; }
+  // Total time to the table, and the hands-on part when the oven or hob does the rest. Washing up isn't included.
+  function minutes(r) { return r.total <= 1 ? 'No cooking' : r.handsOn === r.total ? r.total + ' min' : r.total + ' min, ' + r.handsOn + ' hands-on'; }
   var GOAL_LINE = { steady: 'to help you hold steady', strength: 'to help you build strength', fuller: 'to help you feel fuller for longer' };
   function openRecipe(id, from) { set(function (s) { s.food = Object.assign({}, DEFAULTS, s.food || {}); s.food.open = Object.assign({ id: id }, from || {}); return s; }); nav.go('recipe'); }
 
@@ -171,7 +171,8 @@
         <h1 class="t-title">${x.name}</h1>
         <p class="body-lg muted">${r.blurb}</p>
         <div class="wrap">
-          <span class="pill-tag tint-sunk">${r.handsOn} min hands-on${r.total > r.handsOn ? ', ' + r.total + ' total' : ''}</span>
+          <span class="pill-tag tint-sunk">${r.total <= 1 ? 'No cooking' : r.total + ' min to the table'}</span>
+          ${r.total > r.handsOn ? html`<span class="pill-tag tint-sunk">${r.handsOn} min hands-on</span>` : null}
           <span class="pill-tag tint-sunk">${r.washUp} to wash up</span>
           ${r.serves > 1 ? html`<span class="pill-tag tint-sunk">Makes ${r.serves}</span>` : null}
           <span class="pill-tag tint-sunk">${r.cuisine}</span>
@@ -220,6 +221,8 @@
           ${x.swaps.map(function (sw) { return html`<p key=${sw.to} class="body">Use the ${F.plainName(sw.to)} where the method says ${F.plainName(sw.from)}.${sw.note && !/top-up/.test(sw.note) ? ' ' + sw.note + '.' : ''}</p>`; })}
         </div>` : null}
         ${r.steps.map(function (st, i) { return html`<div key=${i} class="row" style=${{ alignItems: 'flex-start' }}><span class="pill-tag tint-apricot" style=${{ width: 26, justifyContent: 'center', padding: 0, flex: 'none' }}>${i + 1}</span><p class="body grow">${st}</p></div>`; })}
+        ${r.ahead ? html`<p class="caption muted"><span class="strong">Ahead:</span> ${r.ahead}.</p>` : null}
+        ${r.kit.indexOf('tray') >= 0 ? html`<p class="caption muted">Times are for a fan oven, heated while you prep. An air fryer heats up faster, so it's usually a few minutes quicker.</p>` : null}
         <p class="caption muted">${r.fridgeDays ? 'Keeps ' + r.fridgeDays + (r.fridgeDays === 1 ? ' day' : ' days') + ' in the fridge' : 'Best eaten fresh'}${r.freezes ? ' · Freezes' : ''}</p>
         ${r.storeCupboard ? html`<p class="caption muted"><span class="strong">From the store cupboard:</span> ${r.storeCupboard}</p>` : null}
       </div>
@@ -485,7 +488,7 @@
   var AVERSIONS = ['spicy', 'rich', 'strong-smells', 'meat', 'fish', 'eggs', 'dairy'];
   var KIT = ['hob', 'oven', 'air-fryer', 'microwave', 'kettle'];
   var CONDITIONS = ['type-2-diabetes', 'high-blood-pressure', 'reflux'];
-  var TIMES = [[10, '10 min'], [15, '15 min'], [20, '20 min'], [30, '30 min']];
+  var TIMES = [[10, '10 min'], [15, '15 min'], [20, 'No limit']];
 
   // Choices works on labels; these map labels to ids and back.
   function Multi(p) {
@@ -528,8 +531,9 @@
     return html`<div class="stack" style=${{ gap: 16 }}>
       <div class="stack" style=${{ gap: 8 }}><p class="label">YOUR KITCHEN</p>
         <${Multi} label="Kitchen kit" ids=${KIT} names=${F.LABELS.kit} value=${f.kit} onChange=${function (v) { setFood({ kit: v.length ? v : ['microwave'], plan: null }); }} /></div>
-      <div class="stack" style=${{ gap: 8 }}><p class="label">LONGEST A WEEKDAY MEAL CAN TAKE</p>
-        <${One} label="Time" ids=${TIMES.map(function (t) { return t[0]; })} names=${timeNames} value=${f.maxMinutes} onChange=${function (v) { setFood({ maxMinutes: v, plan: null }); }} /></div>
+      <div class="stack" style=${{ gap: 8 }}><p class="label">HANDS-ON TIME ON A WEEKDAY</p>
+        <${One} label="Time" ids=${TIMES.map(function (t) { return t[0]; })} names=${timeNames} value=${f.maxMinutes} onChange=${function (v) { setFood({ maxMinutes: v, plan: null }); }} />
+        <p class="caption muted">Time spent chopping and stirring. Oven and simmering time don't count, as you're free then.</p></div>
       <div class="stack" style=${{ gap: 8 }}><p class="label">HOW MANY EAT DINNER?</p>
         <${One} label="People at dinner" ids=${[1, 2, 3, 4, 5]} names=${people} value=${f.household} onChange=${function (v) { setFood({ household: v, plan: null }); }} /></div>
       <div class="stack" style=${{ gap: 8 }}><p class="label">DINNERS TO COOK A WEEK</p>
@@ -581,7 +585,7 @@
       <${Steps} n=${9} />
       <div class="stack">
         <h1 class="t-title">Your kitchen and your week</h1>
-        <p class="body muted">Meals are 20 minutes or less, with six ingredients or fewer. Tell us what you've got to work with.</p>
+        <p class="body muted">Meals take 15 minutes hands-on or less, with six ingredients or fewer. Tell us what you've got to work with.</p>
       </div>
       <${KitchenPicker} />
       <div class="foot"><${Btn} block onClick=${function () { nav.go('ob-consent'); }}>Continue<//></div>

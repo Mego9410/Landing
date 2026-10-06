@@ -98,7 +98,8 @@ test("a swap renames the dish and tops up protein when it falls short", () => {
 test("kit, time, heat and salt rules", () => {
   const microwaveOnly = profile({ kit: ["microwave", "kettle"] });
   for (const x of library(microwaveOnly, opts)) assert.ok(x.recipe.kit.every((k) => k === "microwave" || k === "kettle" || k === "none"), x.recipe.id);
-  for (const x of library(profile({ maxMinutes: 10 }), opts)) assert.ok(x.recipe.serves >= 4 ? x.recipe.handsOn <= 10 : x.recipe.total <= 10, x.recipe.id);
+  for (const x of library(profile({ maxMinutes: 10 }), opts)) assert.ok(x.recipe.handsOn <= 10, x.recipe.id);
+  for (const r of RECIPES) assert.equal(r.total, r.time.active + r.time.wait, r.id);
   for (const x of library(profile({ aversions: ["spicy"] }), opts)) assert.ok(!x.recipe.spicy, x.recipe.id);
   for (const x of library(profile({ conditions: ["high-blood-pressure"] }), opts)) assert.ok(x.nutrition.salt <= 1.5, x.recipe.id);
 });

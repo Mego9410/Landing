@@ -68,9 +68,20 @@ export interface Recipe {
   blurb: string;
   /** Portions the method makes. Batch recipes make 4 or more. */
   serves: number;
-  /** Minutes: hands-on (including washing up, as the Easy standard asks) and total. */
+  /**
+   * Honest minutes from opening the fridge to food on the table. Washing up isn't included: `washUp` counts the items
+   * instead. `active` is hands-on time: getting things out, chopping, stirring, plating. `wait` is time the oven, hob
+   * or microwave works while you're free, including any oven preheat the prep doesn't cover (a fan oven takes about
+   * 10 minutes to reach 200°C). Times assume a fan oven where a recipe offers an air fryer too. Estimates until a real
+   * cook times each recipe.
+   */
+  time: { active: number; wait: number };
+  /** Hands-on minutes: the same as time.active. */
   handsOn: number;
+  /** Minutes until it's on the table: active + wait. */
   total: number;
+  /** Anything done ahead that the times don't include, such as defrosting overnight. */
+  ahead?: string;
   kit: Kit[];
   /** Items to wash up. */
   washUp: number;

@@ -217,8 +217,10 @@ glucose or blood pressure thresholds, no "rehab" or "prevents muscle loss" claim
 
 ### 5.2 The Easy standard (every recipe passes all of these)
 
-1. 15 minutes hands-on or less, 20 total (tiers: 5, 10, 15, 20 minutes). Batch recipes may take longer but make 4+
-   portions.
+1. 15 minutes hands-on or less, 20 minutes to the table. Batch recipes (4+ portions) may take up to 45, and tray bakes
+   up to 40, because the oven or hob does the work. Times run from opening the fridge to food on the table: hands-on
+   time plus waiting (preheating, roasting, simmering). Washing up isn't included in the times; the number of things
+   to wash up is shown separately (decided 6 October 2026).
 2. 6 shopping ingredients or fewer, plus an assumed pantry (oil, salt, pepper, stock, a curry paste or soy sauce,
    dried herbs, garlic).
 3. One pan, one tray (oven or air fryer), one bowl, or microwave only.
@@ -235,7 +237,7 @@ glucose or blood pressure thresholds, no "rehab" or "prevents muscle loss" claim
 | --- | --- | --- |
 | Breakfast | 20 | Yoghurt bowls, overnight oats, microwave eggs, beans and eggs, tofu scramble, on-the-go options |
 | Lunch | 25 | Tuna and bean salad, wraps, grain pouch bowls, soup plus protein, jacket potatoes, no-cook boxes |
-| Dinner | 40 | 12 fakeaways (chow mein, egg-fried rice, tikka traybake, chana masala, air-fryer fish and chips, wrap pizza, shawarma, smash burger, crunchy chicken, poke, Thai green curry, bagel), traybakes, 10-minute chilli, stir-fries, batch-and-freeze |
+| Dinner | 40 | 12 fakeaways (chow mein, egg-fried rice, tikka traybake, chana masala, air-fryer fish and chips, wrap pizza, shawarma, smash burger, crunchy chicken, poke, Thai green curry, bagel), traybakes, turkey chilli, stir-fries, batch-and-freeze |
 | Snacks | 20 | Egg pots, skyr, cottage cheese, edamame, chicken pieces, protein milk |
 | Meal deals | 6 formulas | "Main with 20 g+ protein + protein snack + protein or zero drink", held as formulas, not products |
 
@@ -306,16 +308,19 @@ asks for confirmation and shows the Beat link. SCOFF misses about half of cases,
   week's meals, recipes with swaps explained, the recipe library, the shopping list, food preferences in Settings, and
   a "Tonight" card on Today. Drafts show a label.
 
-Proposed while building, for the team to decide:
+Decided 6 October 2026 (also in section 10):
 
 1. **The goal question offers "Hold steady", "Build strength" and "Feel fuller for longer".** There's no weight-loss
    goal, in line with "no goal weight" on the waitlist site. Safe mode always plans for holding steady.
-2. **Tray bakes may run to 25 minutes in total** when 10 minutes or less is hands-on (six recipes). Otherwise they
-   fail the 20-minute rule.
+2. **Tray bakes stay, with honest timings.** Every recipe now has its hands-on and waiting minutes worked out the same
+   way, from its method, so the eight tray bakes show 28 to 35 minutes to the table with 6 to 10 of those hands-on. To
+   keep other recipes inside 20 minutes honestly, some methods changed (frozen chopped onion and sliced peppers, fresh
+   pasta, defrosting overnight, eggs boiled ahead), and those steps say so. The time preference in the app is now
+   hands-on time, since oven time leaves you free. A real cook still has to time each recipe.
 3. **Recipes can limit their swaps** when the method can't take one (4 above). Until the CMS has method variants for
    each swap, a swapped recipe shows "use the tofu where the method says eggs".
 4. **The daily protein guide is 1.0 to 1.2 g/kg of a reference weight** (1.2 to 1.5 to build strength), or 90 to 120 g
-   a day without one. The clinical lead to confirm.
+   a day without one, for the clinical lead to confirm.
 
 ---
 
@@ -435,6 +440,11 @@ We write our own screening questions rather than licensing PAR-Q+ or SCOFF wordi
 4. **Revenue from shopping:** none for now. No affiliate links and no sponsored matches; it is there for ease.
 5. **Third-party basket services:** wait for direct deals with the supermarkets (6.3).
 6. **Content tooling:** a simple CMS for the clinicians from the start, saving reviewed files to the repo (7.1).
+7. **Meal goals (6 October 2026):** hold steady, build strength, or feel fuller for longer. No weight-loss goal (5.8).
+8. **Recipe timings (6 October 2026):** tray bakes may take longer than 20 minutes; every time is honest, hands-on
+   plus waiting, without washing up (5.2).
+9. **Swaps (6 October 2026):** a recipe whose method can't take a swap is left out for that person (5.8).
+10. **Protein guide (6 October 2026):** 1.0 to 1.2 g/kg of a reference weight, for the clinical lead to confirm (5.8).
 
 ---
 

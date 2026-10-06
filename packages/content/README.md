@@ -27,12 +27,22 @@ shown with instructions that don't work.
 
 - unknown ingredients or swaps, and duplicate ids
 - anything outside the Easy standard ([plan §5.2](../../docs/plan-movement-food-shopping.md)): more than 6 shopping
-  ingredients, more than 15 minutes hands-on, more than 20 minutes in total, more than 3 things to wash up, mains
+  ingredients, more than 15 minutes hands-on, more than 20 minutes to the table (see Timings), more than 3 things to wash up, mains
   under 25 g protein (breakfasts 15 g, snacks 10 g), mains without a portion (80 g) of veg
 - tags that don't match the recipe: "gentle" with chilli or over 15 g fat, "no-cook" that needs kit, "batch" that
   makes fewer than 4
 - diet-culture words and emoji
 
-Batch recipes (4 or more portions) may take longer. **Proposed, for the team to decide:** tray bakes with 10 minutes
-or less hands-on may take up to 25 minutes in total, because the oven does the work. The check lists these six as
-notes rather than errors.
+### Timings
+
+Each recipe has `time: { active, wait }`, worked out from its method the same way every time:
+
+- **active** is hands-on time to the table: getting things out, chopping, stirring, plating.
+- **wait** is time the oven, hob or microwave works while you're free. It includes oven preheating the prep doesn't
+  cover (a fan oven takes about 10 minutes to reach 200°C), water coming to the boil, roasting and simmering.
+- Washing up isn't included. `washUp` counts the items instead.
+
+`handsOn` is `active`, and `total` is `active + wait`. Times assume a fan oven where an air fryer is an option. Anything
+done ahead, like defrosting overnight, is in `ahead` and shown on the recipe. Batch recipes may take up to 45 minutes and
+tray bakes up to 40 (decided 6 October 2026); the check lists the tray bakes over 20 as notes. These are still
+estimates until a real cook times each recipe.

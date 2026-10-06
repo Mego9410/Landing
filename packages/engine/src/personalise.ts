@@ -97,8 +97,7 @@ export function personalise(r: Recipe, p: Profile): Personalised {
 
   // Recipe-level rules: kit, time, budget, heat, richness, salt.
   if (!kitOk(r, p)) blocked.push(`needs ${r.kit.filter((k) => k !== "none").join(" and ")}`);
-  const batch = r.serves >= 4;
-  if (batch ? r.handsOn > p.maxMinutes : r.total > p.maxMinutes) blocked.push(`takes ${r.total} minutes`);
+  if (r.handsOn > p.maxMinutes) blocked.push(`${r.handsOn} minutes hands-on`);
   if (r.cost > p.budget) blocked.push("over your budget");
   if (r.spicy && p.aversions.includes("spicy")) blocked.push("spicy");
 

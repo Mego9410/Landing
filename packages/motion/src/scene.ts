@@ -56,8 +56,8 @@ export type Prop =
   | { kind: "barbell"; hands: true } // a bar held in both hands (side view: a disc at the hands)
   | { kind: "towel"; foot: 0 | 1 };
 
-/** The drawing box: a little headroom above y = 0 for overhead reaches and raised steps. Ratio 6:5. */
-export const VIEWBOX = { x: -10, y: -14, w: 260, h: 216 };
+/** The drawing box: a little headroom above y = 0 for overhead reaches and raised steps. Ratio about 6:5. */
+export const VIEWBOX = { x: -15, y: -22, w: 270, h: 224 };
 
 export function ground(): Shape[] {
   return [rect("ground", 0, FLOOR, 240, 11, COLOR.ground, 5.5)];

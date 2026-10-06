@@ -360,11 +360,11 @@ ex("lunge-2", "Supported split squat", ["counter"], "Lower your back knee toward
   return [key(supported(split([113, 106])), 1.2, 0.3), key(supported(split([110, 140])), 1.1, 0.3)];
 })());
 
-ex("lunge-3", "Step-up", ["step"], "Whole foot on the step. Push through it to stand up, then step down.", [{ kind: "step", x: 130, w: 56, h: 30 }], (() => {
-  const start = hang({ hip: [118, 103], torso: 4, hands: [[0, 0], [0, 0]], ankles: [[150, 151], [108, G]] });
-  const mid = hang({ ...start, hip: [134, 90], torso: 16, ankles: [[150, 151], [118, 170]], toes: [null, [130, 178]] });
-  const up = hang({ ...start, hip: [147, 72], torso: 2, ankles: [[150, 151], [142, 151]] });
-  const back = hang({ ...start, hip: [132, 92], torso: 10, ankles: [[150, 151], [124, 172]], toes: [null, [136, 182]] });
+ex("lunge-3", "Step-up", ["step"], "Whole foot on the step. Push through it to stand up, then step down.", [{ kind: "step", x: 130, w: 56, h: 22 }], (() => {
+  const start = hang({ hip: [118, 103], torso: 4, hands: [[0, 0], [0, 0]], ankles: [[150, 159], [108, G]] });
+  const mid = hang({ ...start, hip: [134, 96], torso: 16, ankles: [[150, 159], [118, 170]], toes: [null, [130, 178]] });
+  const up = hang({ ...start, hip: [147, 80], torso: 2, ankles: [[150, 159], [142, 159]] });
+  const back = hang({ ...start, hip: [132, 98], torso: 10, ankles: [[150, 159], [124, 172]], toes: [null, [136, 182]] });
   return [key(start, 0.6, 0.3), key(mid, 0.6, 0), key(up, 0.7, 0.4), key(back, 0.6, 0)];
 })());
 

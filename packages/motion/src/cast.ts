@@ -1,5 +1,5 @@
-// The movement cast: six adults drawn from the brand's shapes (tapered pill limbs, a soft torso with a real profile,
-// a round head in profile with no eyes or mouth), each with their own body shape, skin, hair and kit. Any of them can
+// The movement cast: six adults drawn from a few rounded shapes (pill limbs, mitten hands, a soft torso with a real
+// profile, a big round head in profile with one calm eye and a soft smile), each with their own body shape, skin, hair and kit. Any of them can
 // be drawn on any solved skeleton, so one set of exercise keyframes animates the whole cast.
 // Designs: the "Landing movement cast" canvas in Claude Design.
 import { FLOOR, type Pt, type Skeleton } from "./rig.ts";
@@ -47,14 +47,8 @@ const HAIR: Record<string, string> = {
   receding: "M2 -14C-4 -17 -12 -14 -15 -7C-16 -2 -15 4 -12 8C-10 3 -8 -1 -6 -4C-3 -8 0 -10 2 -14Z",
   bun: "M10 -9C8 -18 -9 -20 -15 -9C-17 -3 -16 4 -12 9C-10 4 -7 -1 -4 -4C0 -7 5 -7 10 -9ZM-19 -14a7 7 0 1 0 14 0a7 7 0 1 0 -14 0Z",
   afro: "M11 -8C11 -22 -6 -27 -16 -18C-24 -12 -24 0 -18 8C-14 13 -10 10 -9 4C-7 -1 -3 -4 1 -6C5 -7 8 -6 11 -8Z",
-  hijab: "M11.5 -8C10 -20 -11 -22 -17 -8C-20 0 -19 12 -13 21L6 23C7 15 9 9 10 4C11 0 11.5 -4 11.5 -8Z",
-  crop_hi: "M5 -12C0 -16 -8 -15 -12 -9C-8 -12 -2 -13 5 -12Z",
-  grey_hi: "M4 -12.5C0 -15.5 -7 -15 -11 -9.5C-7 -12 -2 -13 4 -12.5Z",
-  receding_hi: "M-1 -13C-5 -15 -10 -13 -13 -8C-9 -11 -5 -12 -1 -13Z",
-  bun_hi: "M5 -12C0 -16 -8 -15 -12 -9C-8 -12 -2 -13 5 -12ZM-16 -18C-14 -20.5 -9.5 -19.5 -8 -17C-10.5 -18.5 -13 -18.5 -16 -18Z",
-  afro_hi: "M6 -14C2 -21 -9 -22 -15 -15C-9 -18 -2 -18 6 -14Z",
-  hijab_hi: "M9.5 -6C6.5 2 2 10 -4 20L-1 21C4 12 8 4 10.5 -4Z",
-  beard: "M-8 -1C-8 9 -2 16 6 16.5C10.5 16.8 13.5 13 14 7.5C9 7 3 4.5 -2 2C-4 1 -6 0 -8 -1Z",
+  hijab: "M12 -7C11 -19 -10 -22 -17 -9C-21 0 -19 13 -12 21L8 23C10 20 12 17 13 14C9 14 5 11 4 6C3 2 3 -3 5 -6C7 -8 10 -8 12 -7Z",
+  beard: "M-6 1C-6 10 -1 15.5 6 16C10.5 16.3 13.5 13 14 9.5C10 10 6 9 3 7.5C0 6 -3 3.5 -6 1Z",
 };
 
 export type PathShape = { id: string; kind: "path"; d: string; fill: string };
@@ -75,10 +69,10 @@ export function pill(a: Pt, b: Pt, ra: number, rb: number): string {
 function circle(c: Pt, r: number): string {
   return `M${pt([c[0] - r, c[1]])}a${f(r)} ${f(r)} 0 1 0 ${f(2 * r)} 0a${f(r)} ${f(r)} 0 1 0 ${f(-2 * r)} 0Z`;
 }
-/** Rotates (degrees) then moves a path drawn in local units. Handles the commands the cast uses: M L C A Z and a. */
-function place(d: string, origin: Pt, deg: number): string {
+/** Rotates (degrees), scales then moves a path drawn in local units. Handles the commands the cast uses: M L C A Z and a. */
+function place(d: string, origin: Pt, deg: number, sc = 1): string {
   const r = (deg * Math.PI) / 180, c = Math.cos(r), sn = Math.sin(r);
-  const rot = (x: number, y: number): Pt => [x * c - y * sn, x * sn + y * c];
+  const rot = (x: number, y: number): Pt => [(x * c - y * sn) * sc, (x * sn + y * c) * sc];
   const abs = (x: number, y: number) => pt(add(origin, rot(x, y)));
   const tokens = d.match(/[MLCAZa]|-?(?:\d+\.?\d*|\.\d+)/g) ?? [];
   let out = "", i = 0, cmd = "";
@@ -90,7 +84,7 @@ function place(d: string, origin: Pt, deg: number): string {
     else if (cmd === "a" || cmd === "A") {
       const rx = num(), ry = num(), xr = num(), la = num(), sw = num(), x = num(), y = num();
       const end = cmd === "a" ? (() => { const v = rot(x, y); return `${f(v[0])} ${f(v[1])}`; })() : abs(x, y);
-      out += `${f(rx)} ${f(ry)} ${f(xr + deg)} ${la} ${sw} ${end} `;
+      out += `${f(rx * sc)} ${f(ry * sc)} ${f(xr + deg)} ${la} ${sw} ${end} `;
     } else i++;
   }
   return out.trim();
@@ -114,24 +108,18 @@ export function mix(hex: string, to: string, k: number): string {
   return "#" + ((1 << 24) + (ch(16) << 16) + (ch(8) << 8) + ch(0)).toString(16).slice(1);
 }
 
-const SHADE = "#3A2F45", WHITE = "#FFFFFF";
-const LIGHT: Pt = [0.6, -0.8]; // light from the upper front
-const HEAD_R = 15, NECK = 7, TORSO = 54;
+const SHADE = "#3A2F45", INK = "#2E2A33";
+// Proportions: a bigger head on a shorter neck (about five heads tall) reads friendlier and clearer at phone size.
+const HEAD_R = 17, NECK = 5, TORSO = 54, HAIR_SCALE = HEAD_R / 15;
 
-/** The cast member drawn on a solved skeleton, split into layers: far limbs, body and head, near limbs. */
+/** The cast member drawn on a solved skeleton, split into layers: far limbs, body and head, near limbs. Flat colour
+ * only: the far side is a shade deeper, nothing else is shaded, so the silhouette does the work. */
 export function castFigure(s: Skeleton, who: CastMember): { far: PathShape[]; body: PathShape[]; near: PathShape[] } {
-  const B = BODIES[who.body], k = who.s;
+  const B = BODIES[who.body], k = who.s * 1.06;
   const layer: PathShape[] = [];
   let n = 0;
   const push = (d: string, fill: string) => layer.push({ id: `c${n++}`, kind: "path", d, fill });
   const take = () => layer.splice(0, layer.length);
-
-  const shaded = (a: Pt, b: Pt, ra: number, rb: number, color: string) => {
-    push(pill(a, b, ra, rb), color);
-    const v = sub(b, a), l = Math.hypot(v[0], v[1]) || 1, u: Pt = [v[0] / l, v[1] / l], nn = perp(u);
-    const side = nn[0] * LIGHT[0] + nn[1] * LIGHT[1] >= 0 ? 1 : -1;
-    push(pill(add(add(a, mul(u, l * 0.12)), mul(nn, side * ra * 0.38)), add(sub(b, mul(u, l * 0.12)), mul(nn, side * rb * 0.38)), ra * 0.36, rb * 0.36), mix(color, WHITE, 0.11));
-  };
 
   const tu = unit(sub(s.neck, s.hip)), tn = perp(tu);
   const at = (t: number, off: number): Pt => add(add(s.hip, mul(tu, TORSO * t)), mul(tn, off));
@@ -140,79 +128,66 @@ export function castFigure(s: Skeleton, who: CastMember): { far: PathShape[]; bo
   const head = add(s.neck, mul(hu, NECK + HEAD_R));
   head[1] = Math.min(head[1], FLOOR + 2 - HEAD_R); // lying down: the head rests on the floor
   const angle = (Math.atan2(hu[0], -hu[1]) * 180) / Math.PI;
+  const breath = s.breath ?? 0;
 
   const leg = (i: number, cf: (c: string) => string) => {
     const g = s.legs[i];
     const fd = unit(sub(g.toe, g.ankle));
-    const heel = add(sub(g.ankle, mul(fd, 3)), [0, 0.5]), toe = add(heel, mul(fd, 17 * k));
-    shaded(s.hip, g.knee, (B.thigh / 2) * k, (B.knee / 2) * k, cf(who.bottom));
-    shaded(g.knee, g.ankle, (B.knee / 2) * k, (B.ankle / 2) * k, cf(who.bottom));
-    push(pill(add(heel, [0, 3.4]), add(toe, [0, 3]), 2.2, 2), cf("#CFC3B6"));
-    push(pill(heel, toe, 5.6, 4.8), cf("#FBF8F4"));
-    push(pill(sub(toe, mul(fd, 4)), toe, 4, 4.2), cf("#EEE7DF"));
-    push(pill(add(add(heel, mul(fd, 4)), [0, -1.5]), add(add(heel, mul(fd, 10)), [0, -3.2]), 1.4, 1.4), cf(who.top));
+    const heel = add(sub(g.ankle, mul(fd, 3)), [0, 0.5]), toe = add(heel, mul(fd, 16 * k));
+    push(pill(g.knee, g.ankle, (B.knee / 2) * k, (B.ankle / 2) * k + 0.5), cf(who.bottom));
+    push(pill(s.hip, g.knee, (B.thigh / 2) * k, (B.knee / 2) * k), cf(who.bottom));
+    // A soft trainer: one rounded shape with a sole under it.
+    push(pill(add(heel, [0, 2.6]), add(toe, [0, 2.4]), 3.4, 3.2), cf("#D9CFC4"));
+    push(pill(heel, toe, 5.8, 5), cf("#FBF8F4"));
   };
   const arm = (i: number, cf: (c: string) => string, near: boolean) => {
     const a = s.arms[i];
     const fd = unit(sub(a.hand, a.elbow));
-    const wrist = sub(a.hand, mul(fd, 4));
+    const wrist = sub(a.hand, mul(fd, 3));
     const long = who.sleeve === "long";
     const limb = cf(long ? who.top : who.skin);
-    shaded(shoulder, a.elbow, (B.upper / 2) * k, (B.fore / 2) * k * 1.05, limb);
-    shaded(a.elbow, wrist, (B.fore / 2) * k, (B.fore / 2) * k * 0.8, limb);
-    if (!long) {
-      const sl = add(shoulder, mul(sub(a.elbow, shoulder), 0.48));
-      push(pill(shoulder, sl, (B.upper / 2) * k + 2.5, (B.upper / 2) * k + 1.5), cf(who.top));
-      const sn = perp(unit(sub(sl, shoulder))), r2 = (B.upper / 2) * k + 1.4;
-      push(pill(add(sl, mul(sn, r2)), sub(sl, mul(sn, r2)), 1.6, 1.6), cf(mix(who.top, SHADE, 0.18)));
-    } else {
-      const cn = perp(fd), cr = (B.fore / 2) * k * 0.8, cuff = sub(wrist, mul(fd, 2));
-      push(pill(add(cuff, mul(cn, cr)), sub(cuff, mul(cn, cr)), 2, 2), cf(mix(who.top, SHADE, 0.18)));
-    }
+    const ru = (B.upper / 2) * k, rf = (B.fore / 2) * k;
+    push(pill(a.elbow, wrist, rf, rf * 0.82), limb);
+    push(pill(shoulder, a.elbow, ru, rf), limb);
+    if (!long) push(pill(shoulder, add(shoulder, mul(sub(a.elbow, shoulder), 0.45)), ru + 2, ru + 1.4), cf(who.top));
     if (near && who.watch) {
-      const wn = perp(fd), wr = (B.fore / 2) * k * 0.85, w = sub(wrist, mul(fd, 3));
-      push(pill(add(w, mul(wn, wr)), sub(w, mul(wn, wr)), 2.3, 2.3), "#2E2A33");
+      const wn = perp(fd), wr = rf * 0.9, w = sub(wrist, mul(fd, 1.5));
+      push(pill(add(w, mul(wn, wr)), sub(w, mul(wn, wr)), 2.2, 2.2), INK);
     }
-    const fn = perp(fd), thumb = fn[0] * tn[0] + fn[1] * tn[1] >= 0 ? 1 : -1;
-    push(pill(wrist, add(wrist, mul(fd, 6.5)), 4.4, 4), cf(who.skin));
-    push(pill(add(wrist, add(mul(fd, 1.5), mul(fn, thumb * 3))), add(wrist, add(mul(fd, 4.5), mul(fn, thumb * 5.4))), 1.9, 1.7), cf(mix(who.skin, SHADE, 0.06)));
+    // A mitten hand: one round shape, a touch bigger than the wrist, so grips and pushes read at a glance.
+    push(circle(add(wrist, mul(fd, 3.2)), Math.max(5, rf * 1.05)), cf(who.skin));
   };
 
-  const farC = (c: string) => mix(c, SHADE, 0.2), same = (c: string) => c;
+  const farC = (c: string) => mix(c, SHADE, 0.22), same = (c: string) => c;
   arm(1, farC, false);
   leg(1, farC);
   const far = take();
 
-  const hemF = B.hipF + B.belly * 0.3;
-  push(pill(s.neck, add(s.neck, mul(hu, NECK + 4)), 5.8, 5.5), mix(who.skin, SHADE, 0.1));
+  const chest = B.chest * (1 + 0.05 * breath), hemF = B.hipF + B.belly * 0.35;
+  push(pill(s.neck, add(s.neck, mul(hu, NECK + 6)), 6.4, 6), mix(who.skin, SHADE, 0.12));
+  // Trousers: a rounded seat that the thighs grow out of.
+  push(blob([at(-0.14, hemF * 0.6), at(0.05, hemF), at(0.24, hemF), at(0.24, -B.seat * 0.95), at(0.02, -B.seat), at(-0.16, -B.seat * 0.6)]), who.bottom);
+  // The top: one soft shape, chest forward, back gently curved.
   push(blob([
-    at(-0.08, B.hipF * 0.7), at(0.06, B.hipF), at(0.3, B.waistF + B.belly), at(0.55, B.waistF + B.belly * 0.55), at(0.72, B.chest), at(0.9, B.chest * 0.85), at(1.0, 8),
-    at(1.02, -7), at(0.9, -B.back - 1), at(0.6, -B.back * 0.9), at(0.32, -B.back * 0.95), at(0.1, -B.seat), at(-0.1, -B.seat * 0.75), at(-0.16, 0),
-  ]), who.bottom);
-  push(blob([
-    at(0.05, hemF), at(0.3, B.waistF + B.belly), at(0.55, B.waistF + B.belly * 0.55), at(0.72, B.chest), at(0.9, B.chest * 0.85), at(1.0, 8),
-    at(1.02, -7), at(0.9, -B.back - 1), at(0.6, -B.back * 0.9), at(0.32, -B.back * 0.95), at(0.05, -B.seat * 0.98), at(0.02, -B.seat * 0.3), at(0.03, hemF * 0.4),
+    at(0.12, hemF), at(0.42, B.waistF + B.belly), at(0.74, chest), at(0.94, chest * 0.8), at(1.03, 6),
+    at(1.03, -7), at(0.86, -B.back - 0.5), at(0.5, -B.back), at(0.18, -B.seat * 0.95), at(0.1, -B.seat * 0.6),
   ]), who.top);
-  push(blob([
-    at(1.0, -6.5), at(0.9, -B.back - 0.6), at(0.6, -B.back * 0.88), at(0.32, -B.back * 0.92), at(0.07, -B.seat * 0.92),
-    at(0.08, -B.seat * 0.45), at(0.4, -B.back * 0.42), at(0.7, -B.back * 0.4), at(0.92, -B.back * 0.35),
-  ]), mix(who.top, SHADE, 0.1));
-  push(pill(at(0.045, -B.seat * 0.95), at(0.055, hemF - 0.5), 1.8, 1.8), mix(who.top, SHADE, 0.16));
-  push(pill(at(0.995, -6), at(0.975, 7.5), 1.9, 1.9), mix(who.top, SHADE, 0.16));
   leg(0, same);
 
-  const T = (d: string) => place(d, head, angle);
+  const T = (d: string) => place(d, head, angle, HAIR_SCALE);
   push(circle(head, HEAD_R), who.skin);
-  push(circle(add(add(head, mul(hf, HEAD_R - 0.5)), mul(hu, -1.5)), 3.2), who.skin);
-  push(T("M2.5 4a3 2.6 0 1 0 6 0a3 2.6 0 1 0 -6 0Z"), mix(who.skin, "#E07A7C", 0.22));
+  push(circle(add(add(head, mul(hf, HEAD_R - 0.8)), mul(hu, -1.2)), 3.4), who.skin);
   const style = who.style === "cropBeard" ? "crop" : who.style;
   push(T(HAIR[style]), who.hair);
-  push(T(HAIR[`${style}_hi`]), style === "hijab" ? mix(who.hair, SHADE, 0.25) : mix(who.hair, WHITE, 0.22));
   if (who.style === "cropBeard") push(T(HAIR.beard), who.hair);
-  if (who.extra === "glasses") { push(T(pill([11.5, -2], [-3, -1.5], 0.8, 0.8)), "#5A4A8E"); push(T(pill([12.6, -4.5], [12.6, 0.5], 1.5, 1.5)), "#5A4A8E"); }
+  // A calm face: one eye, a soft smile, a little colour in the cheek. Relaxed whatever the effort.
+  push(T("M6.2 -2.6a1.5 2 0 1 0 3 0a1.5 2 0 1 0 -3 0Z"), INK);
+  push(T("M7.2 5.6C8.6 6.9 10.6 6.9 12 5.6C12.3 5.3 12.9 5.6 12.7 6C11.2 8.4 8.2 8.6 6.6 6.2C6.4 5.8 6.9 5.3 7.2 5.6Z"), mix(who.skin, INK, 0.55));
+  push(T("M3.6 3.8a2.6 2.2 0 1 0 5.2 0a2.6 2.2 0 1 0 -5.2 0Z"), mix(who.skin, "#E07A7C", 0.25));
+  if (who.extra === "glasses") { push(T(pill([11.5, -2.4], [-3, -1.5], 0.8, 0.8)), "#5A4A8E"); push(T(pill([11.4, -5.2], [11.4, 0.4], 2, 2)), "#5A4A8E"); }
   if (who.extra === "headband") push(T(pill([9, -10], [-7, -19], 2.6, 2.6)), "#F6E5AC");
   if (who.extra === "hairTie") push(T(pill([-10, -10.5], [-12, -13.5], 2.1, 2.1)), "#E59A9C");
-  if (who.style !== "hijab") push(circle(add(add(head, mul(hf, -6)), mul(hu, -1.5)), 3.1), mix(who.skin, SHADE, 0.07));
+  if (who.style !== "hijab") push(circle(add(add(head, mul(hf, -6.5)), mul(hu, -1)), 3.3), mix(who.skin, SHADE, 0.08));
   const body = take();
 
   arm(0, same, true);

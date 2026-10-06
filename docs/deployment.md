@@ -73,6 +73,17 @@ true }` on that profile first. Then `pnpm dev:mobile` starts the development ser
 
 1. In `apps/mobile/app.json`, change `ios.bundleIdentifier` and `android.package` from `com.yourcompany.landing` to
    your own reverse domain. This can't change after the first App Store build.
+   - Before the first store build, change `runtimeVersion` from `{ "policy": "sdkVersion" }` to
+     `{ "policy": "appVersion" }`. The SDK policy is what lets updates open in Expo Go; store builds include native
+     modules Expo Go doesn't have (Apple Health), so their updates must be tied to the app version instead.
+   - Apple Health's permission text and the iOS privacy manifest are already in `app.json`.
+   - To charge, create the subscription products in App Store Connect and RevenueCat (entitlement `plan`), then set
+     `EXPO_PUBLIC_REVENUECAT_IOS_KEY` (RevenueCat's public iOS key) in the EAS `production` environment. Without
+     it there's no paywall, which suits a free TestFlight beta.
+   - In App Store Connect, use `https://[YOUR DOMAIN]/app-privacy` as the privacy policy URL and link
+     `https://[YOUR DOMAIN]/terms` in the description. Both pages are on the website, from the same text the app
+     shows.
+   - In the review notes, explain demo mode: hold the picture on the welcome screen for three seconds.
 2. `pnpm --filter @landing/mobile build:preview` makes an internal build to install on your phone.
    `pnpm --filter @landing/mobile build:ios` makes a store build; `eas submit --platform ios` sends it to TestFlight
    (fill in the Apple IDs in `eas.json` first).

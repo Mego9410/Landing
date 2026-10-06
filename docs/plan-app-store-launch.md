@@ -28,6 +28,34 @@ the team, so they should start this week.
 
 ---
 
+## Progress (6 October 2026)
+
+Built in the app, with tests for the logic:
+
+| Plan item | Status |
+| --- | --- |
+| Real dates and a log for each day; weekly totals and rollover | Done |
+| Fresh start for new people; demo hidden behind a long press | Done |
+| Landing score worked out from the logs | Done |
+| Units (kg or stones and pounds) | Done |
+| Health disclaimer, 18+ tick, health check with GP pause, referrals and gentler track, 12-weekly re-check | Done |
+| Consent for health data; app privacy policy and terms (drafts) in the app and on the website | Done, wording for the lawyer |
+| Export my data, delete everything | Done |
+| Reminders | Done |
+| Apple Health: weight and steps | Built; needs a development build to try |
+| Prescriber pack (PDF) | Done |
+| 52 weekly lessons, rotating habits, session levels and a third session in Settle | Done; lesson copy worth a read |
+| Subscriptions and paywall (RevenueCat) | Built; off until the key and products exist |
+| iOS privacy manifest, Apple Health permission text | Done |
+| Journal minimum raised to 7 days; dark-mode fix on the tip card | Done |
+
+Still to do in the app: the reset week as its own flow (there's a lesson for it), crash reporting (needs a Sentry
+account), more signed-off recipes, and an accessibility pass on a real phone (VoiceOver, large text).
+Decisions used: phone-only data with no accounts, a subscription with a free trial, the scripted coach, UK only,
+iPhone first. Section 2 still applies if any of those change.
+
+---
+
 ## 2. Decisions needed first
 
 These change what gets built, so they come before the build work. A recommendation for each.

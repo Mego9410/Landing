@@ -10,8 +10,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  // The design system is a workspace package that ships plain CSS.
-  transpilePackages: ["@landing/design-system"],
+  // Workspace packages: the design system ships plain CSS, motion ships TypeScript source.
+  transpilePackages: ["@landing/design-system", "@landing/motion"],
   async headers() {
     return [
       { source: "/(.*)", headers: securityHeaders },

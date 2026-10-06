@@ -4,7 +4,7 @@
 import { CAST, castById, castFigure, mixFor } from "./cast.ts";
 import { ALIASES, byId, EXERCISES, PATTERNS } from "./exercises.ts";
 import { cycleLength, poseAt, solve, type Key } from "./rig.ts";
-import { standing } from "./poses.ts";
+import { gait, standing } from "./poses.ts";
 import { frameShapes, footShadow, ground, VIEWBOX, type Shape } from "./scene.ts";
 
 const r1 = (n: number) => String(Math.round(n * 10) / 10);
@@ -17,19 +17,26 @@ function markup(s: Shape): string {
   }
 }
 
+/** Loops for marketing pages that aren't exercises in the library, such as an easy walk. */
+const SCENES: Record<string, { name: string; keys: Key[] }> = {
+  walk: { name: "Walking", keys: gait(118, { armSwing: 1 }) },
+};
+const find = (id: string) => byId(id) ?? (SCENES[id] ? { ...SCENES[id], props: [] } : undefined);
+
 /** The time of the second keyframe: the far end of the move, for still pictures. */
 const endTime = (keys: Key[]) => (keys[0].hold ?? 0.3) + (keys[0].move ?? 1);
 
 /** Inner markup for one frame. `ghost` adds a faint outline of the starting position behind the figure. */
-export function frame(id: string, who: string, t: number, ghost = false): string {
-  const ex = byId(id);
+export function frame(id: string, who: string, t: number, ghost = false, ground = true): string {
+  const ex = find(id);
   if (!ex) return "";
   let out = "";
   if (ghost) {
     const f = castFigure(solve(poseAt(ex.keys, 0)), castById(who));
     out += `<g opacity="0.18" style="filter:grayscale(1)">${[...f.far, ...f.body, ...f.near].map(markup).join("")}</g>`;
   }
-  return out + frameShapes(solve(poseAt(ex.keys, t)), ex.props, who).map(markup).join("");
+  const shapes = frameShapes(solve(poseAt(ex.keys, t)), ex.props, who);
+  return out + (ground ? shapes : shapes.filter((x) => x.id !== "ground")).map(markup).join("");
 }
 
 const VB = `${VIEWBOX.x} ${VIEWBOX.y} ${VIEWBOX.w} ${VIEWBOX.h}`;
@@ -48,7 +55,7 @@ export function portraitSvg(who: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="64 14 112 178" aria-hidden="true">${shapes.map(markup).join("")}</svg>`;
 }
 
-export interface MountOptions { id: string; who: string; paused?: boolean; still?: boolean; ghost?: boolean; label?: string }
+export interface MountOptions { id: string; who: string; paused?: boolean; still?: boolean; ghost?: boolean; ground?: boolean; label?: string }
 
 /**
  * Animates an exercise into an <svg> element. Paused or reduced motion holds the start position; `still` shows the
@@ -60,7 +67,7 @@ export function mount(svg: SVGSVGElement, initial: MountOptions) {
   const reduce = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   svg.setAttribute("role", "img");
   const draw = (t: number) => {
-    const ex = byId(o.id);
+    const ex = find(o.id);
     if (!ex) { svg.innerHTML = ""; return; }
     svg.setAttribute("aria-label", o.label ?? `${ex.name}, shown by ${castById(o.who).name}`);
     if (o.still) {
@@ -68,7 +75,7 @@ export function mount(svg: SVGSVGElement, initial: MountOptions) {
       svg.innerHTML = frame(o.id, o.who, 0) + `<g transform="translate(${VIEWBOX.w} 0)">${frame(o.id, o.who, endTime(ex.keys))}</g>`;
     } else {
       svg.setAttribute("viewBox", VB);
-      svg.innerHTML = frame(o.id, o.who, t, o.ghost);
+      svg.innerHTML = frame(o.id, o.who, t, o.ghost, o.ground ?? true);
     }
   };
   const tick = (now: number) => {

@@ -3,7 +3,7 @@ import { Fredoka, Nunito } from "next/font/google";
 import "@landing/design-system/tokens.css";
 import "./globals.css";
 
-const fredoka = Fredoka({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-fredoka", display: "swap" });
+const fredoka = Fredoka({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-fredoka", display: "swap" });
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-nunito", display: "swap" });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";

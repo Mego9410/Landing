@@ -6,6 +6,7 @@
   "description": "Illustrated exercise loops: the movement cast, the movement library and renderers for the browser, SVG and React Native.",
   "exports": {
     ".": "./src/index.ts",
+    "./browser": "./src/browser.ts",
     "./dist/*": "./dist/*",
     "./svg/*": "./svg/*"
   },

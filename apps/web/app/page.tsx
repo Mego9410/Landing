@@ -1,9 +1,59 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cast, portraitSvg } from "@landing/motion/browser";
 import styles from "./page.module.css";
+import { Carousel } from "./carousel";
+import { ExerciseLoop } from "./exercise-loop";
 import { Lockup } from "./lockup";
 import { PrototypeLink } from "./prototype-link";
 import { WaitlistForm } from "./waitlist-form";
+
+// Pricing from the paywall design. Confirm before launch; the page says so under the plan.
+const PRICE = { yearly: "£69.99", weekly: "£1.35", monthly: "£12.99" };
+
+const ICONS = {
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  strength: '<path d="M7 8v8M17 8v8M4 10.5v3M20 10.5v3M7 12h10"/>',
+  meal: '<path d="M4 13h16a8 8 0 0 1-16 0z"/><path d="M9 4.5c0 1.5 1 1.5 1 3M13 4.5c0 1.5 1 1.5 1 3"/>',
+  habit: '<rect x="4" y="4.5" width="16" height="15" rx="4"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  score: '<path d="M4 19.5h16"/><path d="M5 15l4.5-4.5 3.5 3 6-6"/>',
+  coach: '<path d="M7 4.5h10a3 3 0 0 1 3 3v5.5a3 3 0 0 1-3 3h-5.5L7.5 19.5V16H7a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3z"/>',
+  doc: '<path d="M7 3.5h7l4 4v13H7z"/><path d="M14 3.5v4h4M10 12h5M10 15.5h5"/>',
+  shield: '<path d="M12 3.5l7 3v5.5c0 4.2-3 7.3-7 8.5-4-1.2-7-4.3-7-8.5V6.5z"/><path d="M9 12l2 2 4-4"/>',
+  heart: '<path d="M12 19.5s-7-4.3-7-9.5a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.2-7 9.5-7 9.5z"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="3"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
+  phone: '<rect x="6.5" y="2.5" width="11" height="19" rx="3"/><path d="M11 18.5h2"/>',
+  gift: '<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M12 9v11M4 13h16M12 9c-2-4-6-3-5-1s5 1 5 1zM12 9c2-4 6-3 5-1s-5 1-5 1z"/>',
+  person: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/>',
+};
+type IconName = keyof typeof ICONS;
+function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICONS[name] }} />;
+}
+
+const TRUST: { icon: IconName; text: string }[] = [
+  { icon: "gift", text: "7-day free trial" },
+  { icon: "person", text: "Reviewed by a physio and a dietitian" },
+  { icon: "shield", text: "Works alongside your prescriber" },
+  { icon: "lock", text: "Data kept in the UK and EU" },
+  { icon: "phone", text: "Coming to iPhone" },
+];
+
+const SUPPORT: { icon: IconName; tone: string; title: string; text: string }[] = [
+  { icon: "strength", tone: "sky", title: "Strength for every body", text: "Twenty-five-minute sessions at home, seated or at the gym, with an easier version of every move." },
+  { icon: "meal", tone: "apricot", title: "Meals easier than a takeaway", text: "Fifteen minutes hands-on, six ingredients, one pan. Swaps for every diet and a shopping list for your supermarket." },
+  { icon: "habit", tone: "sage", title: "Three small habits a week", text: "Protein at breakfast, a session, a pause before seconds. Swap one if it doesn't suit your week." },
+  { icon: "score", tone: "butter", title: "A weekly landing score", text: "It rewards steady habits, not weight loss, and notices drift early, kindly." },
+  { icon: "coach", tone: "lilac", title: "A coach for tricky days", text: "Ideas for meals out, high-protein swaps and a calm word when a day doesn't go to plan." },
+  { icon: "doc", tone: "rose", title: "A summary for your prescriber", text: "A one-page update to take to appointments. Landing never gives advice about doses or stopping." },
+];
+
+const STEPS = [
+  { title: "Answer a few questions", text: "Two minutes on when you stopped, how you like to move and what you eat. No weigh-in needed." },
+  { title: "Get your 12-month plan", text: "Three phases, three small habits a week and short strength sessions that fit your week and your body." },
+  { title: "Keep it, with support", text: "A weekly landing score, a coach for tricky days and a lighter reset week if things start to drift." },
+];
 
 const PHASES = [
   { name: "Land", weeks: "Weeks 1–8", tone: "sky", text: "Your appetite starts to come back. Protein at every meal and two short strength sessions a week." },
@@ -11,69 +61,257 @@ const PHASES = [
   { name: "Steady", weeks: "Weeks 27–52", tone: "lilac", text: "The routines are yours now. Fewer prompts, and a check-in each month." },
 ] as const;
 
-const FEATURES = [
-  { title: "Three small habits a week", text: "Protein at breakfast, a strength session, a pause before seconds. Swap one if it doesn't suit your week.", icon: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', tone: "sage" },
-  { title: "A weekly landing score", text: "It rewards steady habits, not weight loss. If things shift, you get a gentle nudge and a lighter reset week.", icon: '<path d="M4 19.5h16"/><path d="M5 15l4.5-4.5 3.5 3 6-6"/>', tone: "apricot" },
-  { title: "Short strength sessions", text: "Twenty-five minutes, at home or the gym. Muscle helps your body hold steady after the jab.", icon: '<path d="M7 8v8M17 8v8M4 10.5v3M20 10.5v3M7 12h10"/>', tone: "sky" },
-  { title: "A coach for tricky days", text: "Quick high-protein ideas, plans for meals out, and help talking through a harder day.", icon: '<path d="M7 4.5h10a3 3 0 0 1 3 3v5.5a3 3 0 0 1-3 3h-5.5L7.5 19.5V16H7a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3z"/>', tone: "lilac" },
+const BRIEFS: Record<string, { build: string; move: string; ids: string[] }> = {
+  maya: { build: "Mid build", move: "Often trains with a chair at home", ids: ["squat-2", "push-2"] },
+  dev: { build: "Full build", move: "Back at the gym after a break", ids: ["hinge-4", "row-4"] },
+  sue: { build: "Full build", move: "Balance and seated options first", ids: ["balance-3", "press-2"] },
+  amira: { build: "Mid build", move: "Bands and dumbbells at home", ids: ["row-3", "lunge-3"] },
+  tom: { build: "Slim build", move: "Walks a lot, new to strength", ids: ["push-1", "core-2"] },
+  grace: { build: "Fuller build", move: "Low-impact, knee-friendly sessions", ids: ["hinge-1", "squat-3"] },
+};
+
+const EXPERTS = [
+  { role: "Physiotherapist", body: "HCPC-registered", text: "Reviews every exercise, the easier and harder versions, and how the plan adapts around aches and injuries." },
+  { role: "Dietitian", body: "BDA member", text: "Reviews protein and fibre guidance, every recipe swap, and the advice for diabetes, kidney disease and pregnancy." },
+  { role: "Eating-disorder specialist", body: "Safe mode and language", text: "Reviews safe mode, the words we use and when Landing signposts extra support." },
 ];
 
-const PROMISES = [
-  { title: "No goal weight", text: "We help you hold steady. Landing notices gentle drift early and offers a lighter week, never a telling-off." },
-  { title: "Numbers only if they help", text: "Safe mode hides weight entirely and builds your score from habits and hunger." },
-  { title: "Your prescriber stays in charge", text: "Landing never gives advice about doses or stopping. It makes a one-page summary you can take to appointments." },
-  { title: "Your data stays yours", text: "Stored in the UK and EU. Never sold, and never used for ads. Delete everything in one tap." },
+const PROMISES: { icon: IconName; title: string; text: string }[] = [
+  { icon: "heart", title: "No goal weight", text: "We help you hold steady, and offer a lighter week if things drift. Never a telling-off." },
+  { icon: "habit", title: "Numbers only if they help", text: "Safe mode hides weight entirely and builds your score from habits and hunger." },
+  { icon: "shield", title: "Your prescriber stays in charge", text: "Landing never gives advice about medication, doses or stopping treatment." },
+  { icon: "lock", title: "Your data stays yours", text: "Never sold, never used for ads. Delete everything in one tap." },
 ];
 
 const FAQS = [
+  { q: "Who is Landing for?", a: "Adults who have stopped a weight-loss jab such as Wegovy or Mounjaro, are stopping soon, or want a plan ready for when they do." },
   { q: "Is Landing medical advice?", a: "No. Landing is a general wellness app for building food, activity and eating habits. It doesn't diagnose or treat anything, and decisions about medication are always for your prescriber." },
-  { q: "Who is it for?", a: "Adults who have stopped a weight-loss jab, are stopping soon, or want a plan ready for when they do." },
-  { q: "When can I use it?", a: "Landing is coming to iPhone first. Join the waitlist and we'll email you once when it opens." },
-  { q: "What will it cost?", a: "There will be a 7-day free trial. We'll share the price before launch." },
+  { q: "I'm still on my jab. Can I start now?", a: "Yes. Many people start building the habits before their last injection, so the routines are in place when appetite returns." },
+  { q: "Do I have to weigh myself?", a: "No. Weigh-ins are optional, and safe mode hides weight completely. Your weekly score can come from habits and hunger alone." },
+  { q: "What do I need for the exercises?", a: "Nothing but a chair to start. Every session works at home, seated or at the gym, and each move has an easier and a harder version." },
+  { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
+  { q: "When can I use it, and what will it cost?", a: `Landing is coming to iPhone first. It will cost ${PRICE.yearly} a year after a 7-day free trial, or ${PRICE.monthly} a month. Join the waitlist and we'll email you once when it opens.` },
 ];
 
-function Icon({ paths }: { paths: string }) {
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: paths }} />;
+// STEP 1 trial extension (reference 1): mean change in body weight from the start of treatment.
+const STEP1 = [
+  { week: 0, change: 0, label: "Start" },
+  { week: 68, change: -17.3, label: "Week 68, treatment stops" },
+  { week: 120, change: -5.6, label: "Week 120" },
+];
+
+function RegainChart() {
+  const W = 320, H = 170, L = 36, R = 16, T = 14, B = 30;
+  const x = (w: number) => L + (w / 120) * (W - L - R);
+  const y = (c: number) => T + (-c / 20) * (H - T - B);
+  const pts = STEP1.map((p) => `${x(p.week)},${y(p.change)}`).join(" ");
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className={styles.chart} role="img" aria-label="Average weight change in the STEP 1 trial: down 17.3% at week 68 when treatment stopped, then down 5.6% at week 120.">
+      {[0, -10, -20].map((g) => (
+        <g key={g}>
+          <line x1={L} x2={W - R} y1={y(g)} y2={y(g)} className={styles.chartGrid} />
+          <text x={L - 8} y={y(g) + 4} textAnchor="end" className={styles.chartAxis}>{g}%</text>
+        </g>
+      ))}
+      <line x1={x(68)} x2={x(68)} y1={T} y2={H - B} className={styles.chartStop} />
+      <polyline points={pts} fill="none" className={styles.chartLine} />
+      {STEP1.map((p) => <circle key={p.week} cx={x(p.week)} cy={y(p.change)} r="4.5" className={styles.chartDot} />)}
+      <text x={x(68) + 8} y={y(-17.3) + 4} className={styles.chartLabel}>−17.3%</text>
+      <text x={x(120) - 4} y={y(-5.6) - 10} textAnchor="end" className={styles.chartLabel}>−5.6%</text>
+      {[0, 68, 120].map((w) => <text key={w} x={x(w)} y={H - 10} textAnchor="middle" className={styles.chartAxis}>{w === 0 ? "Week 0" : `${w}`}</text>)}
+    </svg>
+  );
 }
 
 export default function Home() {
   return (
     <>
-      <header className={styles.header}>
-        <div className={styles.wrap}>
-          <Link href="/" aria-label="Landing home"><Lockup /></Link>
-          <a className={styles.headerCta} href="#join">Join the waitlist</a>
+      <div className={styles.announce}>
+        <span>Coming soon to iPhone.</span> <a href="#join">Join the waitlist for early access</a>
+      </div>
+
+      <header className={styles.hero}>
+        <div className={styles.scene} aria-hidden="true">
+          <span className={styles.sceneSun} />
+          <span className={styles.sceneHillBack} />
+          <span className={styles.sceneHill} />
+          <div className={`${styles.walker} ${styles.walker1}`}><ExerciseLoop ids={["walk"]} who="grace" ground={false} /></div>
+          <div className={`${styles.walker} ${styles.walker2}`}><ExerciseLoop ids={["walk"]} who="dev" ground={false} /></div>
+          <div className={`${styles.walker} ${styles.walker3}`}><ExerciseLoop ids={["walk"]} who="amira" ground={false} /></div>
+        </div>
+        <nav className={styles.nav} aria-label="Main">
+          <div className={styles.navLinks}>
+            <a href="#how">How it works</a>
+            <a href="#support">What&apos;s included</a>
+            <a href="#pricing">Pricing</a>
+          </div>
+          <Link href="/" aria-label="Landing home" className={styles.navLogo}><Lockup /></Link>
+          <a className={styles.navCta} href="#join">Join the waitlist</a>
+        </nav>
+        <div className={styles.heroCopy}>
+          <h1 className={styles.display}>Keep what you&apos;ve worked for</h1>
+          <p className={styles.lede}>The 12-month plan for life after weight-loss jabs. Strength, protein and steady habits, with support on your side.</p>
+          <div className={styles.heroButtons}>
+            <a className={styles.btnPrimary} href="#join">Join the waitlist</a>
+            <a className={styles.btnGlass} href="#how">How it works</a>
+          </div>
         </div>
       </header>
 
+      <ul className={styles.trust} aria-label="Why people trust Landing">
+        {TRUST.map((t) => <li key={t.text}><Icon name={t.icon} size={18} />{t.text}</li>)}
+      </ul>
+
       <main>
-        <section className={styles.hero}>
-          <div className={`${styles.wrap} ${styles.heroGrid}`}>
-            <div className={styles.heroCopy}>
-              <p className={styles.eyebrow}>For life after weight-loss jabs</p>
-              <h1 className={styles.display}>Keep what you&apos;ve worked for.</h1>
-              <p className={styles.lede}>A 12-month habit plan for the year after you stop a weight-loss jab. Protein, strength and steady routines, at your pace.</p>
-              <div id="join" className={styles.heroForm}><WaitlistForm /></div>
-              <p className={styles.small}>Coming to iPhone first.</p>
+        <section className={styles.pillars} aria-labelledby="pillars-title">
+          <div className={styles.wrap}>
+            <div className={styles.head}>
+              <p className={styles.eyebrow}>Built for life after the jab</p>
+              <h2 id="pillars-title" className={styles.h2}>Move, eat and stay steady</h2>
             </div>
-            <div className={styles.heroArt} aria-hidden="true">
-              <span className={styles.shapeLilac} />
-              <span className={styles.shapeSky} />
-              <span className={styles.shapeButter} />
-              <span className={styles.shapeGround} />
-              <span className={styles.shapeSun} />
+            <div className={styles.glassGrid}>
+              <a href="#cast" className={`${styles.glass} ${styles.glassWide}`}>
+                <span className={styles.glassText}><strong>Move</strong><span>Short strength sessions, shown by someone like you</span></span>
+                <span className={styles.glassArrow}><Icon name="arrow" size={18} /></span>
+                <span className={styles.glassArt}><ExerciseLoop ids={["squat-2", "push-2", "row-2", "lunge-3"]} every={6} /></span>
+              </a>
+              <a href="#support" className={styles.glass}>
+                <span className={styles.glassText}><strong>Eat</strong><span>Meals easier than a takeaway</span></span>
+                <span className={styles.glassArrow}><Icon name="arrow" size={18} /></span>
+                <span className={styles.mealArt} aria-hidden="true">
+                  <span className={styles.bowl}><span /><span /><span /></span>
+                  <span className={styles.mealTag}>15 min · 6 ingredients</span>
+                </span>
+              </a>
+              <a href="#app" className={styles.glass}>
+                <span className={styles.glassText}><strong>Stay steady</strong><span>A weekly score for habits, not weight</span></span>
+                <span className={styles.glassArrow}><Icon name="arrow" size={18} /></span>
+                <span className={styles.ringArt} aria-hidden="true"><span>78</span></span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.dark} aria-labelledby="proof-title">
+          <div className={styles.wrap}>
+            <div className={styles.head}>
+              <p className={styles.eyebrowDark}>Why the year after matters</p>
+              <h2 id="proof-title" className={styles.h2}>Weight often comes back after the jab. That&apos;s biology, not willpower.</h2>
+            </div>
+            <div className={styles.statGrid}>
+              <div className={`${styles.statCard} ${styles.statChart}`}>
+                <p className={styles.statSmall}>Average weight change in the STEP 1 trial<sup><a href="#ref-1">1</a></sup></p>
+                <RegainChart />
+                <p className={styles.statNote}>A year after stopping semaglutide, people had regained about two-thirds of the weight they lost. Muscle, protein and routines are what you can work on.</p>
+              </div>
+              <div className={styles.statCard}>
+                <p className={styles.statBig}>52</p>
+                <p className={styles.statNote}>weeks of plan, counted from your last injection</p>
+              </div>
+              <div className={styles.statCard}>
+                <p className={styles.statBig}>80</p>
+                <p className={styles.statNote}>guided exercises at six levels, from a chair to the gym</p>
+              </div>
+              <div className={styles.statCard}>
+                <p className={styles.statBig}>3</p>
+                <p className={styles.statNote}>small habits a week. Nothing more.</p>
+              </div>
+              <div className={styles.statCard}>
+                <p className={styles.statBig}>25</p>
+                <p className={styles.statNote}>minute strength sessions, twice a week</p>
+              </div>
+              <div className={styles.statCard}>
+                <p className={styles.statBig}>6</p>
+                <p className={styles.statNote}>people of different ages and sizes to show you the moves</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div className={styles.glow} aria-hidden="true" />
+
+        <section id="support" className={styles.section} aria-labelledby="support-title">
+          <div className={styles.wrap}>
+            <div className={styles.headRow}>
+              <h2 id="support-title" className={styles.h2Light}>Support that feels personal,<br /><span className={styles.mutedHead}>not like another diet</span></h2>
+            </div>
+            <Carousel label="What's included">
+              {SUPPORT.map((f) => (
+                <li key={f.title} className={styles.slide}>
+                  <span className={`${styles.slideArt} ${styles[f.tone]}`}><span className={styles.slideIcon}><Icon name={f.icon} size={44} /></span></span>
+                  <h3 className={styles.h3}>{f.title}</h3>
+                  <p className={styles.muted}>{f.text}</p>
+                </li>
+              ))}
+            </Carousel>
+          </div>
+        </section>
+
+        <section id="cast" className={styles.section} aria-labelledby="cast-title">
+          <div className={styles.wrap}>
+            <div className={styles.headRow}>
+              <h2 id="cast-title" className={styles.h2Light}>Shown by someone like you,<br /><span className={styles.mutedHead}>whoever you are</span></h2>
+            </div>
+            <Carousel label="The movement cast">
+              {cast.map((c) => {
+                const b = BRIEFS[c.id];
+                return (
+                  <li key={c.id} className={styles.castCard}>
+                    <div className={styles.castStage} aria-hidden="true"><ExerciseLoop ids={b.ids} who={c.id} every={6} /></div>
+                    <div className={styles.castMeta}>
+                      <span className={styles.castFace} aria-hidden="true" dangerouslySetInnerHTML={{ __html: portraitSvg(c.id) }} />
+                      <span><strong>{c.name}, {c.age}</strong><br /><span className={styles.muted}>{b.build}. {b.move}</span></span>
+                    </div>
+                  </li>
+                );
+              })}
+            </Carousel>
+            <p className={styles.castNote}>Pick who shows you the moves, or mix it up. Every exercise works for every one of them, at six levels and seated. Our cast are illustrated characters, not real members.</p>
+          </div>
+        </section>
+
+        <section id="app" className={styles.app} aria-labelledby="app-title">
+          <div className={styles.wrap}>
+            <div className={styles.head}>
+              <span className={styles.appMark} aria-hidden="true"><Image src="/landing-mark.svg" alt="" width={36} height={32} loading="eager" /></span>
+              <h2 id="app-title" className={styles.h2Light}>The Landing app</h2>
+              <p className={styles.sectionLede}>Your plan, your sessions and your weekly score in one calm place.</p>
+            </div>
+            <div className={styles.appStage}>
               <div className={styles.phone}>
-                <Image src="/today.png" alt="" width={780} height={1688} sizes="(max-width: 900px) 260px, 300px" priority />
+                <Image src="/today.png" alt="The Today screen of the Landing app" width={780} height={1688} sizes="(max-width: 700px) 240px, 280px" loading="eager" />
+              </div>
+              <div className={`${styles.float} ${styles.floatA}`}>
+                <span className={styles.scoreNum}>78</span>
+                <span><strong>Landing score</strong><br /><span className={styles.muted}>A steady week</span></span>
+              </div>
+              <div className={`${styles.float} ${styles.floatB}`}>
+                <span className={styles.habitTick}><Icon name="check" size={16} /></span>
+                <span><strong>Protein at breakfast</strong><br /><span className={styles.muted}>5 of 7 days</span></span>
+              </div>
+              <div className={`${styles.float} ${styles.floatC}`}>
+                <span className={styles.coachTag}>Coach</span>
+                <span>Eating out tonight? Start with the protein and you&apos;ll feel steadier.</span>
               </div>
             </div>
           </div>
         </section>
 
-        <section className={styles.section} aria-labelledby="plan-title">
+        <section id="how" className={styles.section} aria-labelledby="how-title">
           <div className={styles.wrap}>
-            <h2 id="plan-title" className={styles.h2}>A plan in three phases</h2>
-            <p className={styles.sectionLede}>Your plan counts from your last injection. Each week brings three small habits and two short sessions, nothing more.</p>
-            <ol className={styles.phases}>
+            <div className={styles.head}>
+              <p className={styles.eyebrow}>How it works</p>
+              <h2 id="how-title" className={styles.h2Light}>Three steps to steady</h2>
+            </div>
+            <ol className={styles.steps}>
+              {STEPS.map((s, i) => (
+                <li key={s.title} className={styles.step}>
+                  <span className={styles.stepNum}>{i + 1}</span>
+                  <h3 className={styles.h3}>{s.title}</h3>
+                  <p className={styles.muted}>{s.text}</p>
+                </li>
+              ))}
+            </ol>
+            <ol className={styles.phases} aria-label="Your 12-month plan">
               {PHASES.map((p) => (
                 <li key={p.name} className={`${styles.phase} ${styles[p.tone]}`}>
                   <span className={styles.phaseWeeks}>{p.weeks}</span>
@@ -85,49 +323,60 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.sunk}`} aria-labelledby="inside-title">
+        <section className={`${styles.section} ${styles.sunk}`} aria-labelledby="experts-title">
           <div className={styles.wrap}>
-            <h2 id="inside-title" className={styles.h2}>What&apos;s in it</h2>
-            <ul className={styles.features}>
-              {FEATURES.map((f) => (
-                <li key={f.title} className={styles.feature}>
-                  <span className={`${styles.featureIcon} ${styles[f.tone]}`}><Icon paths={f.icon} /></span>
-                  <h3 className={styles.h3}>{f.title}</h3>
-                  <p className={styles.muted}>{f.text}</p>
+            <div className={styles.headRow}>
+              <h2 id="experts-title" className={styles.h2Light}>Checked by specialists<br /><span className={styles.mutedHead}>before it reaches you</span></h2>
+            </div>
+            <ul className={styles.experts}>
+              {EXPERTS.map((e) => (
+                <li key={e.role} className={styles.expert}>
+                  <span className={styles.expertBadge}><Icon name="person" /></span>
+                  <h3 className={styles.h3}>{e.role}</h3>
+                  <p className={styles.expertBody}>{e.body}</p>
+                  <p className={styles.muted}>{e.text}</p>
+                </li>
+              ))}
+            </ul>
+            <ul className={styles.promises}>
+              {PROMISES.map((p) => (
+                <li key={p.title} className={styles.promise}>
+                  <span className={styles.promiseIcon}><Icon name={p.icon} size={20} /></span>
+                  <span><strong>{p.title}</strong><br /><span className={styles.muted}>{p.text}</span></span>
                 </li>
               ))}
             </ul>
           </div>
         </section>
 
-        <section className={styles.section} aria-labelledby="side-title">
+        <section id="pricing" className={styles.section} aria-labelledby="price-title">
           <div className={`${styles.wrap} ${styles.split}`}>
-            <div>
-              <h2 id="side-title" className={styles.h2}>On your side</h2>
-              <p className={styles.sectionLede}>You&apos;ve paid a lot and worked hard. Landing is built to feel like a soft place to land, not another diet app.</p>
+            <div className={styles.splitCopy}>
+              <p className={styles.eyebrow}>Pricing</p>
+              <h2 id="price-title" className={styles.h2Light}>One membership, everything included</h2>
+              <p className={styles.sectionLede}>Try everything free for 7 days. Cancel any time in your iPhone settings.</p>
             </div>
-            <dl className={styles.promises}>
-              {PROMISES.map((p) => (
-                <div key={p.title} className={styles.promise}>
-                  <dt className={styles.promiseTitle}>{p.title}</dt>
-                  <dd className={styles.muted}>{p.text}</dd>
-                </div>
-              ))}
-            </dl>
+            <div className={styles.priceCard}>
+              <span className={styles.badge}>7 days free</span>
+              <p className={styles.priceName}>Yearly</p>
+              <p className={styles.price}>{PRICE.yearly}<span> a year</span></p>
+              <p className={styles.muted}>About {PRICE.weekly} a week. Or {PRICE.monthly} a month, with no free trial.</p>
+              <ul className={styles.priceList}>
+                {["Your 12-month plan, phase by phase", "Strength sessions with all 80 exercises", "Easy meals, swaps and shopping lists", "Weekly landing score and reset weeks", "A coach for tricky days", "A summary for your prescriber"].map((x) => (
+                  <li key={x}><Icon name="check" size={18} />{x}</li>
+                ))}
+              </ul>
+              <a className={styles.btnPrimary} href="#join">Join the waitlist</a>
+              <p className={styles.fine}>Prices are confirmed at launch.</p>
+            </div>
           </div>
         </section>
 
-        <section className={styles.cta} aria-labelledby="cta-title">
-          <div className={`${styles.wrap} ${styles.ctaInner}`}>
-            <h2 id="cta-title" className={styles.h2}>Be first to try Landing</h2>
-            <p>One email when it opens. No spam, no countdowns.</p>
-            <WaitlistForm tone="apricot" />
-          </div>
-        </section>
-
-        <section className={styles.section} aria-labelledby="faq-title">
+        <section id="faqs" className={`${styles.section} ${styles.sunk}`} aria-labelledby="faq-title">
           <div className={`${styles.wrap} ${styles.narrow}`}>
-            <h2 id="faq-title" className={styles.h2}>Questions</h2>
+            <div className={styles.head}>
+              <h2 id="faq-title" className={styles.h2Light}>Questions, answered</h2>
+            </div>
             <div className={styles.faqs}>
               {FAQS.map((f) => (
                 <details key={f.q} className={styles.faq}>
@@ -138,13 +387,35 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <section id="join" className={styles.cta} aria-labelledby="cta-title">
+          <div className={`${styles.wrap} ${styles.ctaInner}`}>
+            <h2 id="cta-title" className={styles.display}>Make this year your steady one</h2>
+            <p className={styles.lede}>Join the waitlist. One email when Landing opens, nothing else.</p>
+            <WaitlistForm />
+          </div>
+        </section>
       </main>
 
       <footer className={styles.footer}>
-        <div className={`${styles.wrap} ${styles.footerInner}`}>
-          <Image src="/landing-mark.svg" alt="" width={40} height={35} />
-          <p className={styles.muted}>Landing is a general wellness app. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment.</p>
-          <p className={styles.footerLinks}><Link href="/privacy">Privacy</Link><span>© {new Date().getFullYear()} [YOUR COMPANY NAME]</span></p>
+        <div className={`${styles.wrap} ${styles.footerGrid}`}>
+          <div className={styles.footerBrand}>
+            <Lockup />
+            <p className={styles.muted}>Keep what you&apos;ve worked for.</p>
+          </div>
+          <nav aria-label="Landing">
+            <p className={styles.footerHead}>Landing</p>
+            <a href="#how">How it works</a><a href="#support">What&apos;s included</a><a href="#cast">Exercises</a><a href="#pricing">Pricing</a><a href="#faqs">FAQs</a>
+          </nav>
+          <nav aria-label="Legal">
+            <p className={styles.footerHead}>Legal</p>
+            <Link href="/privacy">Privacy notice</Link>
+          </nav>
+        </div>
+        <div className={`${styles.wrap} ${styles.footerSmall}`}>
+          <p>Landing is a general wellness app. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment.</p>
+          <p id="ref-1">1. Wilding JPH, et al. Weight regain and cardiometabolic effects after withdrawal of semaglutide: the STEP 1 trial extension. Diabetes, Obesity and Metabolism. 2022;24(8):1553–1564.</p>
+          <p>© {new Date().getFullYear()} [YOUR COMPANY NAME]</p>
         </div>
       </footer>
       <PrototypeLink />

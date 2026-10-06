@@ -20,6 +20,7 @@ docs/
   development.md  Setup, commands and how the pieces fit
   deployment.md   Vercel, domains, EAS and branch rules
   plan-movement-food-shopping.md  Plan for strength sessions, easy meals and supermarket baskets
+  plan-app-store-launch.md  What's left to build, decide and sign off to launch on the App Store
   research/       The research behind it: movement, food, supermarkets
 .github/        CI, pull request template, Dependabot
 ```

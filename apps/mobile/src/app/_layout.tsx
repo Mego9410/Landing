@@ -34,6 +34,7 @@ export default function RootLayout() {
         <Stack.Screen name="meals/add" options={SHEET} />
         <Stack.Screen name="quick-log" options={SHEET} />
         <Stack.Screen name="swap-habit" options={SHEET} />
+        <Stack.Screen name="journal/index" options={SHEET} />
       </Stack>
       <Toast />
     </View>

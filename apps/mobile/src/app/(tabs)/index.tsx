@@ -12,6 +12,7 @@ import { HABITS, phaseOf, PHASES, SESSIONS, TIPS } from "@/data/content";
 import { fmt, TODAY, weekdayIndex } from "@/data/dates";
 import { minutes, proteinText, px, thisWeek } from "@/state/food";
 import { habitDetail, nextSession, toggleHabit } from "@/state/habits";
+import { insights, YESTERDAY } from "@/state/journal";
 import { proteinToday, useApp, weekOf } from "@/state/store";
 import { space, useColors } from "@/theme";
 
@@ -37,6 +38,35 @@ function Tonight() {
         <AppText variant="label" color="inkMuted">{m.kind === "leftover" ? "TONIGHT · LEFTOVERS" : "TONIGHT"}</AppText>
         <AppText weight="800" style={{ fontSize: 16, color: c.ink }}>{x.name}</AppText>
         <AppText variant="caption" color="inkMuted">{m.kind === "leftover" ? "Cooked earlier this week" : `${minutes(x.recipe)} · ${proteinText(s, x.nutrition.protein)}`}</AppText>
+      </View>
+    </RowCard>
+  );
+}
+
+/** The morning check-in on yesterday, and once it's done, a way into what the answers show. */
+function YourDay() {
+  const s = useApp();
+  if (!s.journal.entries[YESTERDAY]) {
+    const n = s.journal.questions.length + 2;
+    return (
+      <Card tone="sky" style={{ gap: space[3] }}>
+        <View style={{ gap: 2 }}>
+          <AppText variant="label" color="onPastel">YOUR DAY</AppText>
+          <AppText variant="heading" color="onPastel">How was yesterday?</AppText>
+          <AppText variant="caption" color="onPastel">{n} quick questions, about a minute. Over time they show what helps your days.</AppText>
+        </View>
+        <Button label="Check in" variant="secondary" block onPress={() => router.push("/journal")} />
+      </Card>
+    );
+  }
+  const patterns = insights(s).ready.filter((i) => i.lead).length;
+  return (
+    <RowCard tone="sky" onPress={() => router.push("/journal/insights")}>
+      <Disc icon="check" tone="sage" />
+      <View style={{ flex: 1, gap: 2 }}>
+        <AppText variant="label" color="onPastel">YOUR DAY</AppText>
+        <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>Yesterday is logged</AppText>
+        <AppText variant="caption" color="onPastel">{patterns ? `${patterns} ${patterns === 1 ? "pattern" : "patterns"} so far · see what shapes your days` : "See what shapes your days"}</AppText>
       </View>
     </RowCard>
   );
@@ -81,6 +111,8 @@ export default function Today() {
         )}
         <Button label="Quick log" icon="plus" variant="secondary" block onPress={() => router.push("/quick-log")} />
       </Card>
+
+      <YourDay />
 
       <View style={{ gap: space[3] }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>

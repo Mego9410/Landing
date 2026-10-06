@@ -4,7 +4,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 import type { Week } from "@landing/engine";
 import { habitsForWeek } from "@/data/content";
-import { addDays, daysBetween, TODAY } from "@/data/dates";
+import { addDays, daysBetween, TODAY, weekdayIndex } from "@/data/dates";
+import { STARTER } from "@/data/journal";
 
 export type Hungry = "Morning" | "Lunchtime" | "Afternoon" | "Evening" | "Late night";
 
@@ -33,6 +34,9 @@ export interface FoodPrefs {
 
 export interface Weight { date: string; kg: number; source: string }
 
+/** One day's journal, kept under the day it describes. Scales run 1 to 5; fullness 1 is "Very hungry". */
+export interface JournalEntry { yes: Record<string, boolean>; fullness?: number; energy?: number }
+
 export interface AppState {
   v: 2;
   name: string;
@@ -48,6 +52,7 @@ export interface AppState {
   coach: { messages: { from: "you" | "coach"; text: string; redirect?: boolean }[] };
   settings: { safeMode: boolean; evening: boolean };
   scores: Record<number, number>;
+  journal: { questions: string[]; entries: Record<string, JournalEntry> };
 }
 
 export const FOOD_DEFAULTS: FoodPrefs = {
@@ -66,14 +71,43 @@ function seedWeights(): Weight[] {
   return out;
 }
 
+// About six weeks of Hannah's journal, leaving yesterday for her to fill in. The answers lean on her weigh-ins so the
+// insights show the patterns people usually see: drinks and eating out before a higher morning, sleep and protein
+// before fuller days. Seeded, so the demo is the same every time.
+function seedJournal(weights: Weight[]): Record<string, JournalEntry> {
+  const kg: Record<string, number> = Object.fromEntries(weights.map((w) => [w.date, w.kg]));
+  let r = 11;
+  const rand = () => (r = (r * 16807) % 2147483647) / 2147483647;
+  const scale = (v: number) => Math.max(1, Math.min(5, Math.round(v)));
+  const rise = (day: string) => (kg[day] != null && kg[addDays(day, 1)] != null ? kg[addDays(day, 1)] - kg[day] : 0);
+  const days = Array.from({ length: 42 }, (_, i) => addDays(TODAY, -(i + 2))).filter((_, i) => i % 9 !== 3); // a few days missed, as happens
+  const sorted = days.map(rise).sort((a, b) => a - b), q = (p: number) => sorted[Math.floor(p * (sorted.length - 1))];
+  const out: Record<string, JournalEntry> = {};
+  for (const day of days) {
+    const up = rise(day), weekend = weekdayIndex(day) >= 4;
+    const drink = rand() < (up >= q(0.7) ? 0.8 : weekend ? 0.15 : 0.05);
+    const out_ = rand() < (up >= q(0.6) ? 0.55 : weekend ? 0.2 : 0.08);
+    const late = rand() < (up >= q(0.5) ? 0.5 : 0.2) || (drink && rand() < 0.5);
+    const sleep7 = rand() < (drink ? 0.35 : 0.7), stress = rand() < (weekend ? 0.15 : 0.35);
+    const breakfastProtein = rand() < 0.65, steps = rand() < (weekend ? 0.7 : 0.45);
+    out[day] = {
+      yes: { sleep7, breakfastProtein, late, drink, out: out_, steps, stress },
+      fullness: scale(3 + (sleep7 ? 0.5 : -0.6) + (breakfastProtein ? 0.6 : -0.4) + (stress ? -0.5 : 0) + (rand() - 0.5) * 1.2),
+      energy: scale(3 + (sleep7 ? 0.7 : -0.6) + (steps ? 0.5 : -0.2) + (drink ? -0.4 : 0) + (stress ? -0.4 : 0) + (rand() - 0.5) * 1.2),
+    };
+  }
+  return out;
+}
+
 export function demoState(): AppState {
+  const weights = seedWeights();
   return {
     v: 2, name: "Hannah", onboarded: true,
     ob: { status: "stopped", lastInjection: "2026-08-31", hungryTimes: ["Afternoon", "Evening"], lowestWeight: 78.0, proteinFreq: "Some meals" },
     food: { ...FOOD_DEFAULTS, household: 2, joinedWeek: 4 },
     habits: { ids: ["protein", "strength", "pause"], done: { protein: 4, strength: 1, pause: 2 }, today: { protein: true }, swappedFrom: null },
     protein: { Breakfast: 30, Lunch: 34 },
-    weights: seedWeights(),
+    weights,
     workouts: { done: { A: "Thursday" }, feel: null },
     demos: { who: "mix", still: false, ghost: true },
     lessonsRead: {},
@@ -85,6 +119,7 @@ export function demoState(): AppState {
     ] },
     settings: { safeMode: false, evening: false },
     scores: { 2: 64, 3: 70, 4: 72, 5: 78 },
+    journal: { questions: STARTER, entries: seedJournal(weights) },
   };
 }
 
@@ -92,7 +127,8 @@ export function demoState(): AppState {
 export function freshState(): AppState {
   const s = demoState();
   return { ...s, onboarded: false, protein: {}, weights: s.weights.filter((w) => w.date === TODAY), workouts: { done: {}, feel: null },
-    habits: { ids: [], done: {}, today: {}, swappedFrom: null }, coach: { messages: [] }, food: { ...FOOD_DEFAULTS }, lessonsRead: {} };
+    habits: { ids: [], done: {}, today: {}, swappedFrom: null }, coach: { messages: [] }, food: { ...FOOD_DEFAULTS }, lessonsRead: {},
+    journal: { questions: STARTER, entries: {} } };
 }
 
 /* ---------- the store ---------- */

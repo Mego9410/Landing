@@ -1,11 +1,13 @@
+import { router } from "expo-router";
 import { View } from "react-native";
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
-import { Avatar, List, Row } from "@/components/ui";
+import { Avatar, Disc, List, Row, RowCard } from "@/components/ui";
 import { HABITS } from "@/data/content";
 import { addDays, daysBetween, fmt, TODAY } from "@/data/dates";
+import { insights, loggedOf } from "@/state/journal";
 import { avg7, steadyZone, useApp, weekOf, type AppState } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
@@ -73,6 +75,14 @@ export default function Progress() {
           <AppText variant="caption" color="inkMuted">Strength sessions</AppText>
         </Card>
       </View>
+      <RowCard onPress={() => router.push("/journal/insights")}>
+        <Disc icon="today" tone="sky" />
+        <View style={{ flex: 1, gap: 2 }}>
+          <AppText variant="label" color="inkMuted">YOUR DAY</AppText>
+          <AppText weight="800" style={{ fontSize: 16 }}>What shapes your days</AppText>
+          <AppText variant="caption" color="inkMuted">{insights(s).ready.filter((i) => i.lead).length} patterns from {loggedOf(s, 30)} days of check-ins</AppText>
+        </View>
+      </RowCard>
       {safe ? (
         <Card tone="sunk" style={{ gap: 6 }}>
           <AppText weight="800">Weight is hidden in safe mode</AppText>

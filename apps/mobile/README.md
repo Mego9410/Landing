@@ -15,6 +15,11 @@ controls: change the week, switch to evening, start onboarding again, or reset.
   is a draft until the dietitian signs it off, and the app says so.
 - **Workouts:** sessions, an overview with each move's loop, a set-by-set session with an easier version, and done.
   The loops are `@landing/motion`, shown by the cast member chosen in Settings, or mixed.
+- **Your day:** a morning check-in on yesterday, loosely after Whoop's journal: yes/no questions people choose (sleep,
+  protein at breakfast, eating late, a drink, eating out, steps, stress and more) plus hunger and energy on a five-step
+  scale. After four days with and four without, each question shows how those days compare on hunger, energy and the
+  next morning's weigh-in (weight is left out in safe mode). Questions live in `src/data/journal.ts`, the comparisons
+  in `src/state/journal.ts`.
 - **Progress:** the landing score, habit days and sessions, the 7-day weight trend with the steady zone, and recent
   weigh-ins. Safe mode hides weight.
 - **Coach:** scripted replies, with the prescriber redirect for any medication question.

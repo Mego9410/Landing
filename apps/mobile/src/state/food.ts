@@ -4,7 +4,7 @@
 import { useMemo } from "react";
 import type { Slot } from "@landing/content";
 import { DAYS, emptyWeek, personaliseById, planWeek, profile, type Personalised, type Profile, type Week } from "@landing/engine";
-import { addDays, fmt, TODAY } from "@/data/dates";
+import { addDays, fmt, today, weekStart } from "@/data/dates";
 import { useApp, weekOf, type AppState } from "./store";
 
 export const INCLUDE_DRAFTS = true;
@@ -27,7 +27,8 @@ export function profileOf(s: AppState, ahead = 0): Profile {
   return profiles.get(key)!;
 }
 
-export const planKey = (s: AppState) => JSON.stringify(profileOf(s)) + "#" + s.food.seed;
+/** A plan belongs to its week, the preferences it was made for and the seed, so a new week gets a new plan. */
+export const planKey = (s: AppState) => weekStart(today()) + "#" + JSON.stringify(profileOf(s)) + "#" + s.food.seed;
 const weeks = new Map<string, Week>();
 /** This week's meals: the saved, edited plan if it still matches, otherwise a fresh plan for these preferences. */
 export function thisWeek(s: AppState): Week {
@@ -41,22 +42,22 @@ export function saveThisWeek(s: AppState, week: Week) { s.food.plan = { key: pla
 export type Which = "this" | "next";
 export const weekFor = (s: AppState, which: Which): Week | null => (which === "next" ? s.food.next?.week ?? null : thisWeek(s));
 export function saveWeekFor(s: AppState, which: Which, week: Week) {
-  if (which === "next") s.food.next = { from: s.food.next?.from ?? "blank", ticked: s.food.next?.ticked ?? {}, week };
+  if (which === "next") s.food.next = { from: s.food.next?.from ?? "blank", ticked: s.food.next?.ticked ?? {}, week, start: s.food.next?.start ?? nextStart() };
   else saveThisWeek(s, week);
 }
 export const profileFor = (s: AppState, which: Which) => profileOf(s, which === "next" ? 1 : 0);
 
 export function startNextWeek(s: AppState, from: "blank" | "suggested") {
   const p = profileOf(s, 1);
-  s.food.next = { from, ticked: {}, week: from === "blank" ? emptyWeek(p) : planWeek(p, { seed: s.food.seed + 7, includeDrafts: INCLUDE_DRAFTS }) };
+  s.food.next = { from, ticked: {}, start: nextStart(), week: from === "blank" ? emptyWeek(p) : planWeek(p, { seed: s.food.seed + 7, includeDrafts: INCLUDE_DRAFTS }) };
 }
 
 export const mealAt = (week: Week, day: number, slot: Slot, index = 0) => (slot === "snack" ? week.days[day].snacks[index] : week.days[day][slot]);
 export const px = (s: AppState, id: string, which: Which = "this"): Personalised => personaliseById(id, profileFor(s, which));
 
-/** Next week runs Monday 12 to Sunday 18 October in the demo. */
-export const NEXT_START = addDays(TODAY, 7);
-export const nextDate = (day: number) => fmt.dayMonth(addDays(NEXT_START, day));
+/** Next Monday. */
+export const nextStart = () => addDays(weekStart(today()), 7);
+export const nextDate = (day: number) => fmt.dayMonth(addDays(nextStart(), day));
 export const dayName = (day: number) => DAYS[day];
 
 export const SLOT_NAME: Record<Slot, string> = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };

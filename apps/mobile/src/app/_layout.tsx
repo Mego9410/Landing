@@ -7,6 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Toast } from "@/components/Toast";
+import { watchDay } from "@/state/rollover";
 import { hydrate } from "@/state/store";
 import { useColors } from "@/theme";
 
@@ -20,7 +21,11 @@ export default function RootLayout() {
   const [loaded, error] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold, Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold });
   const [ready, setReady] = useState(false);
 
-  useEffect(() => { hydrate().finally(() => setReady(true)); }, []);
+  useEffect(() => {
+    let stop: (() => void) | undefined;
+    hydrate().finally(() => { stop = watchDay(); setReady(true); });
+    return () => stop?.();
+  }, []);
   useEffect(() => {
     if ((loaded || error) && ready) SplashScreen.hideAsync().catch(() => {});
   }, [loaded, error, ready]);

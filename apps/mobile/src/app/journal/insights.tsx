@@ -5,9 +5,9 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Header, List, Pill, Row, Section } from "@/components/ui";
-import { addDays, fmt } from "@/data/dates";
+import { addDays, fmt, yesterday } from "@/data/dates";
 import { MIN_DAYS } from "@/data/journal";
-import { clear, describe, figures, insights, loggedOf, METRIC_LABEL, YESTERDAY, type Insight } from "@/state/journal";
+import { clear, describe, figures, insights, loggedOf, METRIC_LABEL, type Insight } from "@/state/journal";
 import { useApp } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
@@ -16,7 +16,7 @@ const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 /** The last two weeks as dots: filled for a day with a journal entry. Not a streak; a gap is just a gap. */
 function Fortnight() {
   const s = useApp(), c = useColors();
-  const days = Array.from({ length: 14 }, (_, i) => addDays(YESTERDAY, -(13 - i)));
+  const days = Array.from({ length: 14 }, (_, i) => addDays(yesterday(), -(13 - i)));
   return (
     <View accessible accessibilityLabel={`Logged ${loggedOf(s, 14)} of the last 14 days`} style={{ flexDirection: "row", justifyContent: "space-between" }}>
       {days.map((d) => (
@@ -73,7 +73,7 @@ export default function JournalInsights() {
         </View>
         <Fortnight />
       </Card>
-      {!s.journal.entries[YESTERDAY] ? <Button label="Log yesterday" block onPress={() => router.push("/journal")} /> : null}
+      {!s.journal.entries[yesterday()] ? <Button label="Log yesterday" block onPress={() => router.push("/journal")} /> : null}
       {ready.length ? (
         <View style={{ gap: space[3] }}>{ready.map((i) => <InsightCard key={i.q.id} i={i} />)}</View>
       ) : (

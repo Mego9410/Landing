@@ -1,5 +1,5 @@
 import { MIN_DAYS, questionById, type YesNoQuestion } from "@/data/journal";
-import { addDays, daysBetween, TODAY } from "@/data/dates";
+import { addDays, daysBetween, yesterday } from "@/data/dates";
 import { set, type AppState, type JournalEntry } from "./store";
 
 export type Metric = "fullness" | "energy" | "weight";
@@ -13,7 +13,6 @@ const NOISE: Record<Metric, number> = { fullness: 0.3, energy: 0.3, weight: 0.1 
 // How big a difference reads as, for ordering: a whole step on a scale weighs about the same as 0.3 kg overnight.
 const UNIT: Record<Metric, number> = { fullness: 1, energy: 1, weight: 0.3 };
 
-export const YESTERDAY = addDays(TODAY, -1);
 
 /** The weigh-in the morning after a day, less the one that morning. Null if either is missing. */
 export function overnight(s: AppState, day: string): number | null {
@@ -75,7 +74,7 @@ export const METRIC_LABEL: Record<Metric, string> = { fullness: "Hunger", energy
 
 /** Days logged out of the last n, counting back from yesterday. */
 export function loggedOf(s: AppState, n: number) {
-  return Object.keys(s.journal.entries).filter((d) => { const k = daysBetween(d, YESTERDAY); return k >= 0 && k < n; }).length;
+  return Object.keys(s.journal.entries).filter((d) => { const k = daysBetween(d, yesterday()); return k >= 0 && k < n; }).length;
 }
 
 export function saveEntry(day: string, entry: JournalEntry) {

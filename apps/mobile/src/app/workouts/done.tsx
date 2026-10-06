@@ -6,14 +6,14 @@ import { Card } from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
 import { Choices } from "@/components/ui";
-import { set, useApp } from "@/state/store";
+import { sessionsInWeek, set, useApp } from "@/state/store";
 import { space, useColors } from "@/theme";
 
 /** W4 Session done. */
 export default function SessionDone() {
   const s = useApp(), c = useColors();
   useLocalSearchParams<{ id: string }>();
-  const both = !!(s.workouts.done.A && s.workouts.done.B);
+  const done = sessionsInWeek(s), both = done.includes("A") && done.includes("B");
   return (
     <Screen contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
       <View style={{ height: 180, alignItems: "center", justifyContent: "center" }}>

@@ -5,8 +5,9 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Screen } from "@/components/Screen";
 import { Choices, Header } from "@/components/ui";
-import { TODAY } from "@/data/dates";
-import { set, useApp } from "@/state/store";
+import { today } from "@/data/dates";
+import { logProtein } from "@/state/habits";
+import { dayLog, set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, textStyle, useColors } from "@/theme";
 
@@ -30,9 +31,9 @@ function Field({ label, value, onChange, suffix, error, placeholder }: { label: 
 /** T2 Quick log: protein for a meal and today's weight, in one go. */
 export default function QuickLog() {
   const s = useApp();
-  const [meal, setMeal] = useState<string>(MEALS.find((m) => !s.protein[m]) ?? "Snack");
+  const [meal, setMeal] = useState<string>(MEALS.find((m) => !dayLog(s).protein?.[m]) ?? "Snack");
   const [protein, setProtein] = useState("");
-  const [weight, setWeight] = useState(String(s.weights.find((w) => w.date === TODAY)?.kg ?? ""));
+  const [weight, setWeight] = useState(String(s.weights.find((w) => w.date === today())?.kg ?? ""));
   const [errors, setErrors] = useState<Record<string, string>>({});
   function save() {
     const e: Record<string, string> = {};
@@ -42,11 +43,8 @@ export default function QuickLog() {
     setErrors(e);
     if (Object.keys(e).length) return;
     set((st) => {
-      if (g != null) {
-        st.protein[meal] = Math.round(g);
-        if (meal === "Breakfast" && g >= 25 && st.habits.ids.includes("protein") && !st.habits.today.protein) { st.habits.today.protein = true; st.habits.done.protein = (st.habits.done.protein ?? 0) + 1; }
-      }
-      if (kg != null) { st.weights = st.weights.filter((w) => w.date !== TODAY); st.weights.unshift({ date: TODAY, kg: Math.round(kg * 10) / 10, source: "Logged by you" }); }
+      if (g != null) logProtein(st, meal, g);
+      if (kg != null) { const t = today(); st.weights = st.weights.filter((w) => w.date !== t); st.weights.unshift({ date: t, kg: Math.round(kg * 10) / 10, source: "Logged by you" }); }
     });
     toast("Logged. Nice one.");
     router.back();

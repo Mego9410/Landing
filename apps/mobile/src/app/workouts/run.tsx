@@ -8,10 +8,9 @@ import { ExerciseAnimation } from "@/components/ExerciseAnimation";
 import { Screen } from "@/components/Screen";
 import { Header, Meter, ToggleRow } from "@/components/ui";
 import { SESSIONS } from "@/data/content";
-import { DAYS } from "@landing/engine";
-import { TODAY, weekdayIndex } from "@/data/dates";
 import { whoFor } from "@/state/demos";
-import { set, useApp } from "@/state/store";
+import { logSession } from "@/state/habits";
+import { useApp } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
 /** W3 In session: one move at a time, set by set, with the loop playing and an easier version a tap away. */
@@ -30,7 +29,7 @@ export default function InSession() {
   function next() {
     if (setNo < m.sets) return setSetNo(setNo + 1);
     if (move < session.moves.length - 1) { setMove(move + 1); setSetNo(1); setEasier(false); return; }
-    set((st) => { st.workouts.done[id] = DAYS[weekdayIndex(TODAY)]; });
+    logSession(id);
     router.replace({ pathname: "/workouts/done", params: { id } });
   }
   return (

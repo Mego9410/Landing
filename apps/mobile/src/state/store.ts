@@ -1,10 +1,11 @@
-// App state: one object, saved to the phone with AsyncStorage, read with useApp(). Starts as Hannah in week 6
-// (the prototype's demo) so every screen has something real to show; Settings can restart onboarding or reset.
+// App state: one object, saved to the phone with AsyncStorage, read with useApp(). A new install starts empty at the
+// health information and onboarding. Demo mode (Hannah, six weeks in, with a month of history) is for previews and
+// App Review, and is switched on from a hidden control on the welcome screen.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 import type { Week } from "@landing/engine";
 import { habitsForWeek } from "@/data/content";
-import { addDays, daysBetween, TODAY, weekdayIndex } from "@/data/dates";
+import { addDays, daysBetween, today, weekDates, weekdayIndex, weekStart } from "@/data/dates";
 import { STARTER } from "@/data/journal";
 
 export type Hungry = "Morning" | "Lunchtime" | "Afternoon" | "Evening" | "Late night";
@@ -29,7 +30,7 @@ export interface FoodPrefs {
   plan: { key: string; week: Week } | null;
   ticked: Record<string, boolean>;
   /** Next week's meals, picked the week before. */
-  next: { from: "blank" | "suggested"; week: Week; ticked: Record<string, boolean> } | null;
+  next: { from: "blank" | "suggested"; week: Week; ticked: Record<string, boolean>; /** The Monday it starts. */ start?: string } | null;
 }
 
 export interface Weight { date: string; kg: number; source: string }
@@ -37,21 +38,37 @@ export interface Weight { date: string; kg: number; source: string }
 /** One day's journal, kept under the day it describes. Scales run 1 to 5; fullness 1 is "Very hungry". */
 export interface JournalEntry { yes: Record<string, boolean>; fullness?: number; energy?: number }
 
+/** What happened on one day. Kept by date, so weekly totals and the landing score are worked out from these. */
+export interface DayLog {
+  /** Grams of protein by meal: Breakfast, Lunch, Dinner, Snack. */
+  protein?: Record<string, number>;
+  /** Habits ticked that day. */
+  habits?: Record<string, boolean>;
+  /** Strength sessions finished that day. */
+  sessions?: ("A" | "B")[];
+}
+
+export type Units = "kg" | "stlb";
+
 export interface AppState {
-  v: 2;
+  v: 3;
   name: string;
   onboarded: boolean;
+  /** Demo mode: Hannah's dummy data and the preview controls in Settings. Off for real people. */
+  demo: boolean;
+  /** The last day the app was open, so a new day or week can be noticed. */
+  lastSeen: string;
   ob: { status: "stopped" | "soon" | "on"; lastInjection: string; hungryTimes: Hungry[]; lowestWeight: number; proteinFreq: string };
   food: FoodPrefs;
-  habits: { ids: string[]; done: Record<string, number>; today: Record<string, boolean>; swappedFrom: string | null };
-  protein: Record<string, number>;
+  /** The week's habits. `week` is the plan week they belong to; a swap lasts until the week changes. */
+  habits: { week: number; ids: string[]; swappedFrom: string | null };
+  days: Record<string, DayLog>;
   weights: Weight[];
-  workouts: { done: Record<string, string>; feel: string | null };
+  workouts: { feel: string | null };
   demos: { who: string; still: boolean; ghost: boolean };
   lessonsRead: Record<number, boolean>;
   coach: { messages: { from: "you" | "coach"; text: string; redirect?: boolean }[] };
-  settings: { safeMode: boolean; evening: boolean };
-  scores: Record<number, number>;
+  settings: { safeMode: boolean; units: Units };
   journal: { questions: string[]; entries: Record<string, JournalEntry> };
   /** When the person accepted the health information at the start, and which wording they saw. */
   disclaimer: { acceptedAt: string; version: number } | null;
@@ -66,27 +83,43 @@ export const FOOD_DEFAULTS: FoodPrefs = {
   maxMinutes: 20, household: 1, cookNights: 4, conditions: [], cuisines: [], budget: 3, joinedWeek: null, seed: 1, plan: null, ticked: {}, next: null,
 };
 
-// The last eight weigh-ins match the prototype; earlier days follow the trend its progress chart draws.
-const RECENT: [string, number, string][] = [["2026-10-05", 78.4, "Apple Health"], ["2026-10-04", 78.6, "Logged by you"], ["2026-10-03", 78.3, "Apple Health"], ["2026-10-02", 78.7, "Apple Health"], ["2026-10-01", 78.5, "Apple Health"], ["2026-09-30", 78.9, "Logged by you"], ["2026-09-29", 78.6, "Apple Health"], ["2026-09-28", 78.8, "Apple Health"]];
-function seedWeights(): Weight[] {
-  const out = RECENT.map(([date, kg, source]) => ({ date, kg, source }));
-  for (let i = 8; i < 95; i++) {
-    const v = i <= 35 ? 79.3 - 0.026 * (35 - i) + 0.22 * Math.sin(i * 1.1) + 0.12 * Math.sin(i * 0.37) : 78.2 + (i - 35) * 0.07 + 0.2 * Math.sin(i * 0.9);
-    out.push({ date: addDays(TODAY, -i), kg: Math.round(v * 10) / 10, source: i % 4 === 1 ? "Logged by you" : "Apple Health" });
+// Hannah's weigh-ins: a gentle settle over the last month after a slow climb, with day-to-day wobble.
+function seedWeights(t: string): Weight[] {
+  const out: Weight[] = [];
+  for (let i = 0; i < 95; i++) {
+    const v = i <= 35 ? 78.5 + 0.22 * Math.sin(i * 1.1) + 0.12 * Math.sin(i * 0.37) + (i > 7 ? 0.025 * (i - 7) : 0)
+      : 79.2 - (i - 35) * 0.016 + 0.2 * Math.sin(i * 0.9);
+    out.push({ date: addDays(t, -i), kg: Math.round(v * 10) / 10, source: i % 4 === 1 ? "Logged by you" : "Apple Health" });
   }
+  return out;
+}
+
+// Three weeks of logs before today, plus this week so far: most habits most days, two sessions a week.
+function seedDays(t: string, ids: string[]): Record<string, DayLog> {
+  const out: Record<string, DayLog> = {};
+  let r = 5;
+  const rand = () => (r = (r * 16807) % 2147483647) / 2147483647;
+  for (let i = 1; i <= 21 + weekdayIndex(t); i++) {
+    const day = addDays(t, -i), wd = weekdayIndex(day), log: DayLog = { habits: {} };
+    for (const id of ids) if (rand() < (id === "protein" ? 0.6 : 0.4)) log.habits![id] = true;
+    if (wd === 1 || wd === 4) log.sessions = [wd === 1 ? "A" : "B"];
+    log.protein = { Breakfast: 22 + Math.round(rand() * 12), Lunch: 25 + Math.round(rand() * 12), Dinner: 30 + Math.round(rand() * 10) };
+    out[day] = log;
+  }
+  out[t] = { protein: { Breakfast: 30, Lunch: 34 }, habits: { protein: true } };
   return out;
 }
 
 // About six weeks of Hannah's journal, leaving yesterday for her to fill in. The answers lean on her weigh-ins so the
 // insights show the patterns people usually see: drinks and eating out before a higher morning, sleep and protein
 // before fuller days. Seeded, so the demo is the same every time.
-function seedJournal(weights: Weight[]): Record<string, JournalEntry> {
+function seedJournal(t: string, weights: Weight[]): Record<string, JournalEntry> {
   const kg: Record<string, number> = Object.fromEntries(weights.map((w) => [w.date, w.kg]));
   let r = 11;
   const rand = () => (r = (r * 16807) % 2147483647) / 2147483647;
   const scale = (v: number) => Math.max(1, Math.min(5, Math.round(v)));
   const rise = (day: string) => (kg[day] != null && kg[addDays(day, 1)] != null ? kg[addDays(day, 1)] - kg[day] : 0);
-  const days = Array.from({ length: 42 }, (_, i) => addDays(TODAY, -(i + 2))).filter((_, i) => i % 9 !== 3); // a few days missed, as happens
+  const days = Array.from({ length: 42 }, (_, i) => addDays(t, -(i + 2))).filter((_, i) => i % 9 !== 3); // a few days missed, as happens
   const sorted = days.map(rise).sort((a, b) => a - b), q = (p: number) => sorted[Math.floor(p * (sorted.length - 1))];
   const out: Record<string, JournalEntry> = {};
   for (const day of days) {
@@ -105,16 +138,17 @@ function seedJournal(weights: Weight[]): Record<string, JournalEntry> {
   return out;
 }
 
+/** Hannah, six weeks after her last injection, with a month of history: for previews, App Review and testing. */
 export function demoState(): AppState {
-  const weights = seedWeights();
+  const t = today(), weights = seedWeights(t), ids = habitsForWeek(6);
   return {
-    v: 2, name: "Hannah", onboarded: true,
-    ob: { status: "stopped", lastInjection: "2026-08-31", hungryTimes: ["Afternoon", "Evening"], lowestWeight: 78.0, proteinFreq: "Some meals" },
+    v: 3, name: "Hannah", onboarded: true, demo: true, lastSeen: t,
+    ob: { status: "stopped", lastInjection: addDays(weekStart(t), -35), hungryTimes: ["Afternoon", "Evening"], lowestWeight: 78.0, proteinFreq: "Some meals" },
     food: { ...FOOD_DEFAULTS, household: 2, joinedWeek: 4 },
-    habits: { ids: ["protein", "strength", "pause"], done: { protein: 4, strength: 1, pause: 2 }, today: { protein: true }, swappedFrom: null },
-    protein: { Breakfast: 30, Lunch: 34 },
+    habits: { week: 6, ids, swappedFrom: null },
+    days: seedDays(t, ids),
     weights,
-    workouts: { done: { A: "Thursday" }, feel: null },
+    workouts: { feel: null },
     demos: { who: "mix", still: false, ghost: true },
     lessonsRead: {},
     coach: { messages: [
@@ -123,24 +157,32 @@ export function demoState(): AppState {
       { from: "you", text: "Yes please. And a quick high-protein lunch?" },
       { from: "coach", text: "Greek yoghurt, berries and a handful of nuts gets you about 30 g in two minutes. Want a savoury one too?" },
     ] },
-    settings: { safeMode: false, evening: false },
-    scores: { 2: 64, 3: 70, 4: 72, 5: 78 },
-    journal: { questions: STARTER, entries: seedJournal(weights) },
+    settings: { safeMode: false, units: "kg" },
+    journal: { questions: STARTER, entries: seedJournal(t, weights) },
     disclaimer: null,
   };
 }
 
-/** A fresh start for onboarding: today's weigh-in only, nothing logged. */
+/** A new person: nothing logged, straight to onboarding. */
 export function freshState(): AppState {
-  const s = demoState();
-  return { ...s, onboarded: false, protein: {}, weights: s.weights.filter((w) => w.date === TODAY), workouts: { done: {}, feel: null },
-    habits: { ids: [], done: {}, today: {}, swappedFrom: null }, coach: { messages: [] }, food: { ...FOOD_DEFAULTS }, lessonsRead: {},
-    journal: { questions: STARTER, entries: {} }, disclaimer: null };
+  const t = today();
+  return {
+    v: 3, name: "", onboarded: false, demo: false, lastSeen: t,
+    ob: { status: "stopped", lastInjection: addDays(weekStart(t), -35), hungryTimes: [], lowestWeight: 0, proteinFreq: "Some meals" },
+    food: { ...FOOD_DEFAULTS },
+    habits: { week: 1, ids: [], swappedFrom: null },
+    days: {}, weights: [], workouts: { feel: null },
+    demos: { who: "mix", still: false, ghost: true },
+    lessonsRead: {}, coach: { messages: [] },
+    settings: { safeMode: false, units: "kg" },
+    journal: { questions: STARTER, entries: {} },
+    disclaimer: null,
+  };
 }
 
 /* ---------- the store ---------- */
-const KEY = "landing-app-v2";
-let state: AppState = demoState();
+const KEY = "landing-app-v2"; // the key stays the same; the saved object carries its own version
+let state: AppState = freshState();
 let hydrated = false;
 const listeners = new Set<() => void>();
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -166,32 +208,76 @@ export function useApp(): AppState {
   return useSyncExternalStore((l) => { listeners.add(l); return () => { listeners.delete(l); }; }, () => state, () => state);
 }
 
-/** Loads the saved state once, before the first screen shows. */
+/** Brings an older save up to date. Version 2 kept today's ticks without dates, so those are dropped. */
+export function migrate(saved: Record<string, unknown>): AppState | null {
+  if (!saved || typeof saved !== "object") return null;
+  const base = freshState();
+  if (saved.v === 3) {
+    const s = saved as unknown as AppState;
+    return { ...base, ...s, food: { ...FOOD_DEFAULTS, ...s.food }, settings: { ...base.settings, ...s.settings } };
+  }
+  if (saved.v === 2) {
+    const old = saved as Record<string, any>;
+    const wasDemo = old.name === "Hannah";
+    const start = wasDemo ? demoState() : base;
+    return {
+      ...start,
+      name: old.name ?? start.name, onboarded: !!old.onboarded,
+      ob: { ...start.ob, ...old.ob }, food: { ...FOOD_DEFAULTS, ...old.food, plan: null, next: null },
+      weights: Array.isArray(old.weights) ? old.weights : start.weights,
+      demos: { ...start.demos, ...old.demos }, lessonsRead: old.lessonsRead ?? {}, coach: old.coach ?? start.coach,
+      settings: { ...start.settings, safeMode: !!old.settings?.safeMode },
+      journal: old.journal ?? start.journal, disclaimer: old.disclaimer ?? null,
+    };
+  }
+  return null;
+}
+
+/** Loads the saved state once, before the first screen shows. With no save, a new person starts at onboarding. */
 export async function hydrate(): Promise<void> {
   if (hydrated) return;
   try {
     const raw = await AsyncStorage.getItem(KEY);
-    if (raw) {
-      const saved = JSON.parse(raw) as AppState;
-      if (saved && saved.v === 2) state = { ...demoState(), ...saved, food: { ...FOOD_DEFAULTS, ...saved.food } };
-    }
+    const next = raw ? migrate(JSON.parse(raw)) : null;
+    if (next) state = next;
   } catch {
-    // A broken save shouldn't stop the app opening: carry on with the demo.
+    // A broken save shouldn't stop the app opening: start fresh rather than crash.
   }
   hydrated = true;
   emit();
 }
 
 /* ---------- derived values ---------- */
-export const weekOf = (s: AppState) => Math.max(1, Math.min(52, Math.floor(daysBetween(s.ob.lastInjection, TODAY) / 7) + 1));
+/** The plan week, counted in calendar weeks (Monday to Sunday) from the week of the last injection. */
+export const weekOf = (s: AppState, on = today()) =>
+  Math.max(1, Math.min(52, Math.floor(daysBetween(weekStart(s.ob.lastInjection), weekStart(on)) / 7) + 1));
 export function setWeek(s: AppState, week: number) {
-  s.ob.lastInjection = addDays(TODAY, -((week - 1) * 7));
-  const ids = habitsForWeek(week);
-  s.habits = { ids, done: Object.fromEntries(ids.map((id) => [id, 0])), today: {}, swappedFrom: null };
+  s.ob.lastInjection = addDays(weekStart(today()), -((week - 1) * 7));
+  s.habits = { week, ids: habitsForWeek(week), swappedFrom: null };
 }
-export const proteinToday = (s: AppState) => Object.values(s.protein).reduce((a, b) => a + (+b || 0), 0);
-export function avg7(s: AppState, end = TODAY): number | null {
+
+export const dayLog = (s: AppState, day = today()): DayLog => s.days[day] ?? {};
+const sum = (r: Record<string, number> | undefined) => Object.values(r ?? {}).reduce((a, b) => a + (+b || 0), 0);
+export const proteinOn = (s: AppState, day = today()) => sum(dayLog(s, day).protein);
+export const proteinToday = (s: AppState) => proteinOn(s);
+export const mealsLogged = (s: AppState, day = today()) => Object.keys(dayLog(s, day).protein ?? {}).length;
+
+/** Sessions finished in the week a date falls in, in the order they were done. */
+export function sessionsInWeek(s: AppState, on = today()): ("A" | "B")[] {
+  return weekDates(on).filter((d) => d <= on).flatMap((d) => dayLog(s, d).sessions ?? []);
+}
+/** Days in the week (up to `on`) with a habit ticked. */
+export const habitDays = (s: AppState, id: string, on = today()) => weekDates(on).filter((d) => d <= on && dayLog(s, d).habits?.[id]).length;
+
+export function avg7(s: AppState, end = today()): number | null {
   const vals = s.weights.filter((w) => { const n = daysBetween(w.date, end); return n >= 0 && n < 7; }).map((w) => w.kg);
   return vals.length ? Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10 : null;
 }
-export const steadyZone = (s: AppState): [number, number] => [s.ob.lowestWeight, Math.round(s.ob.lowestWeight * 1.02 * 10) / 10];
+/** The weight the steady zone starts from: the lowest weight they gave in onboarding, or else their first weigh-in. */
+export function steadyBase(s: AppState): number | null {
+  if (s.ob.lowestWeight) return s.ob.lowestWeight;
+  const first = [...s.weights].sort((a, b) => (a.date < b.date ? -1 : 1))[0];
+  return first ? first.kg : null;
+}
+/** Up to 2% above the base: day-to-day changes inside it are mostly water. */
+export const steadyZone = (s: AppState): [number, number] => { const b = steadyBase(s) ?? 0; return [b, Math.round(b * 1.02 * 10) / 10]; };

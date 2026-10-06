@@ -9,10 +9,10 @@ import { Icon, type IconName } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc } from "@/components/ui";
 import { HABITS, phaseOf, PHASES, SESSIONS, TIPS } from "@/data/content";
-import { fmt, TODAY, weekdayIndex } from "@/data/dates";
+import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
 import { minutes, px, thisWeek } from "@/state/food";
 import { habitDetail, nextSession, toggleHabit } from "@/state/habits";
-import { needsDisclaimer, useApp, weekOf } from "@/state/store";
+import { needsDisclaimer, sessionsInWeek, useApp, weekOf } from "@/state/store";
 import { headline, todayPlan, type Task } from "@/state/today";
 import { radius, space, useColors } from "@/theme";
 
@@ -93,11 +93,11 @@ function Shortcut({ icon, label, onPress }: { icon: IconName; label: string; onP
 
 function Plans() {
   const s = useApp();
-  const day = weekdayIndex(TODAY), m = thisWeek(s).days[day].dinner;
+  const day = weekdayIndex(today()), m = thisWeek(s).days[day].dinner;
   const dinner = m.kind === "takeaway" ? { line: "Takeaway night", detail: "A night off cooking, planned in" }
     : m.kind === "free" || !m.recipe ? { line: "A free night", detail: "Eat out, use the freezer or pick a recipe" }
     : { line: px(s, m.recipe).name, detail: m.kind === "leftover" ? "Tonight's leftovers" : `Tonight · ${minutes(px(s, m.recipe).recipe)}` };
-  const next = nextSession(s), done = Object.keys(s.workouts.done).length;
+  const next = nextSession(s), done = sessionsInWeek(s).length;
   const strength = next ? { line: `${SESSIONS[next].name} next`, detail: `${done} of 2 done this week · ${SESSIONS[next].minutes} min` } : { line: "Both sessions done", detail: "Next ones arrive on Monday" };
   return (
     <View style={{ gap: space[3] }}>
@@ -122,13 +122,13 @@ export default function Today() {
   const week = weekOf(s), phase = phaseOf(week), nextPhase = PHASES[PHASES.indexOf(phase) + 1];
   const items = todayPlan(s), done = items.filter((i) => i.done).length;
   const up = items.find((i): i is Task => i.kind === "task" && !i.done), habitsLeft = items.some((i) => i.kind === "habit" && !i.done);
-  const tip = s.settings.evening ? TIPS.evening : TIPS.day;
+  const part = partOfDay(), tip = part === "evening" ? TIPS.evening : TIPS.day;
   return (
     <Screen>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[3] }}>
         <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="caption" color="inkMuted">{fmt.long(TODAY)}</AppText>
-          <AppText variant="title" accessibilityRole="header">{s.settings.evening ? "Good evening" : "Good afternoon"}, {s.name}</AppText>
+          <AppText variant="caption" color="inkMuted">{fmt.long(today())}</AppText>
+          <AppText variant="title" accessibilityRole="header">Good {part}{s.name ? `, ${s.name}` : ""}</AppText>
         </View>
         <Avatar name={s.name} />
       </View>

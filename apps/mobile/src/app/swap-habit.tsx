@@ -28,7 +28,7 @@ export default function SwapHabit() {
       ) : null}
       <Options label="Swap options" value={pick} onChange={setPick} options={options} />
       <Button label="Choose this one" block onPress={() => {
-        set((st) => { const old = st.habits.ids[2]; st.habits.swappedFrom = st.habits.swappedFrom ?? old; st.habits.ids[2] = pick; st.habits.done[pick] = 0; delete st.habits.today[old]; });
+        set((st) => { const old = st.habits.ids[2]; st.habits.swappedFrom = st.habits.swappedFrom ?? old; st.habits.ids[2] = pick; });
         toast(`Swapped for this week: ${HABITS[pick].label}.`);
         router.back();
       }} />

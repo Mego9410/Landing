@@ -4,6 +4,8 @@ import { AppText } from "@/components/AppText";
 import { Screen } from "@/components/Screen";
 import { Header, RowCard } from "@/components/ui";
 import { SESSIONS } from "@/data/content";
+import { fmt } from "@/data/dates";
+import { sessionDoneOn } from "@/state/habits";
 import { useApp } from "@/state/store";
 import { space } from "@/theme";
 
@@ -16,7 +18,7 @@ export default function Sessions() {
       <AppText variant="title" accessibilityRole="header">This week&apos;s sessions</AppText>
       <AppText color="inkMuted">Two short strength sessions at home. Every move has an easier version.</AppText>
       {(["A", "B"] as const).map((k) => {
-        const done = s.workouts.done[k];
+        const on = sessionDoneOn(s, k), done = on ? fmt.weekday(on) : null;
         return (
           <RowCard key={k} tone={done ? "sage" : "raised"} onPress={() => router.push({ pathname: "/workouts/[id]", params: { id: k } })}>
             <View style={{ flex: 1, gap: 2 }}>

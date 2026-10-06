@@ -8,7 +8,8 @@ import { Header, RowCard } from "@/components/ui";
 import { HABITS, LESSONS, phaseOf, SESSIONS } from "@/data/content";
 import { useApp, weekOf } from "@/state/store";
 import { space } from "@/theme";
-import { habitDetail, toggleHabit } from "@/state/habits";
+import { habitDetail, isTicked, sessionDoneOn, toggleHabit } from "@/state/habits";
+import { fmt } from "@/data/dates";
 
 /** PL2 Week detail: the lesson, the three habits and the two sessions. */
 export default function Week() {
@@ -30,18 +31,18 @@ export default function Week() {
       </RowCard>
       <View style={{ gap: space[3] }}>
         <AppText variant="heading">Habits</AppText>
-        {s.habits.ids.map((id) => <HabitCheck key={id} label={HABITS[id].label} detail={habitDetail(s, id)} checked={!!s.habits.today[id]} onChange={(v) => toggleHabit(id, v)} />)}
+        {s.habits.ids.map((id) => <HabitCheck key={id} label={HABITS[id].label} detail={habitDetail(s, id)} checked={isTicked(s, id)} onChange={(v) => toggleHabit(id, v)} />)}
       </View>
       <View style={{ gap: space[3] }}>
         <AppText variant="heading">Sessions</AppText>
-        {(["A", "B"] as const).map((k) => (
-          <RowCard key={k} tone={s.workouts.done[k] ? "sage" : "raised"} onPress={() => router.push({ pathname: "/workouts/[id]", params: { id: k } })}>
+        {(["A", "B"] as const).map((k) => { const on = sessionDoneOn(s, k); return (
+          <RowCard key={k} tone={on ? "sage" : "raised"} onPress={() => router.push({ pathname: "/workouts/[id]", params: { id: k } })}>
             <View style={{ flex: 1, gap: 2 }}>
-              <AppText weight="800" color={s.workouts.done[k] ? "onPastel" : "ink"}>{SESSIONS[k].name}</AppText>
-              <AppText variant="caption" color={s.workouts.done[k] ? "onPastel" : "inkMuted"}>{s.workouts.done[k] ? `Done on ${s.workouts.done[k]}` : `${SESSIONS[k].minutes} minutes · ${SESSIONS[k].moves.length} exercises`}</AppText>
+              <AppText weight="800" color={on ? "onPastel" : "ink"}>{SESSIONS[k].name}</AppText>
+              <AppText variant="caption" color={on ? "onPastel" : "inkMuted"}>{on ? `Done on ${fmt.weekday(on)}` : `${SESSIONS[k].minutes} minutes · ${SESSIONS[k].moves.length} exercises`}</AppText>
             </View>
           </RowCard>
-        ))}
+        ); })}
       </View>
     </Screen>
   );

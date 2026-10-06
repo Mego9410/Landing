@@ -6,16 +6,18 @@ import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc, List, Row, RowCard } from "@/components/ui";
 import { HABITS } from "@/data/content";
-import { addDays, daysBetween, fmt, TODAY } from "@/data/dates";
+import { addDays, daysBetween, fmt, today } from "@/data/dates";
+import { change, weight } from "@/data/units";
+import { recentScores } from "@/state/score";
 import { insights, loggedOf } from "@/state/journal";
-import { avg7, steadyZone, useApp, weekOf, type AppState } from "@/state/store";
+import { avg7, habitDays, sessionsInWeek, steadyZone, useApp, weekOf, type AppState } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
 /** The 7-day average for each of the last 28 days, with the steady zone behind it. */
 function TrendChart({ s }: { s: AppState }) {
   const c = useColors();
   const days = 28, W = 320, H = 150, L = 34, R = 8, T = 10, B = 22;
-  const pts = Array.from({ length: days }, (_, i) => avg7(s, addDays(TODAY, -(days - 1 - i)))).map((v, i) => ({ i, v }));
+  const pts = Array.from({ length: days }, (_, i) => avg7(s, addDays(today(), -(days - 1 - i)))).map((v, i) => ({ i, v }));
   const vals = pts.map((p) => p.v).filter((v): v is number => v != null);
   const [lo, hi] = steadyZone(s);
   const min = Math.floor(Math.min(lo, ...vals) - 0.5), max = Math.ceil(Math.max(hi, ...vals) + 0.5);
@@ -43,31 +45,43 @@ function TrendChart({ s }: { s: AppState }) {
 export default function Progress() {
   const s = useApp(), c = useColors();
   const week = weekOf(s), safe = s.settings.safeMode;
-  const score = s.scores[week - 1] ?? s.scores[5], prev = s.scores[week - 2] ?? s.scores[4];
-  const habitDays = s.habits.ids.reduce((a, id) => a + Math.min(s.habits.done[id] ?? 0, HABITS[id]?.target ?? 0), 0);
-  const habitTarget = s.habits.ids.reduce((a, id) => a + (HABITS[id]?.target ?? 0), 0);
-  const sessions = Object.keys(s.workouts.done).length;
-  const now = avg7(s), weekAgo = avg7(s, addDays(TODAY, -7));
-  const recent = [...s.weights].sort((a, b) => (a.date < b.date ? 1 : -1)).filter((w) => daysBetween(w.date, TODAY) < 10);
+  const { last, before } = recentScores(s), lastWeek = week - 1;
+  const ids = s.habits.ids.filter((id) => HABITS[id]?.kind !== "sessions");
+  const habitTotal = ids.reduce((a, id) => a + Math.min(habitDays(s, id), HABITS[id]?.target ?? 0), 0);
+  const habitTarget = ids.reduce((a, id) => a + (HABITS[id]?.target ?? 0), 0);
+  const sessions = sessionsInWeek(s).length, units = s.settings.units;
+  const now = avg7(s), weekAgo = avg7(s, addDays(today(), -7));
+  const recent = [...s.weights].sort((a, b) => (a.date < b.date ? 1 : -1)).filter((w) => daysBetween(w.date, today()) < 10);
   return (
     <Screen contentContainerStyle={{ gap: space[5] }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <AppText variant="title" accessibilityRole="header">Progress</AppText>
         <Avatar name={s.name} />
       </View>
-      <Card tone="sage" hero style={{ flexDirection: "row", alignItems: "center", gap: space[4] }}>
-        <View style={{ width: 84, height: 84, borderRadius: 42, borderWidth: 9, borderColor: c.sageInk, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceRaised }}>
-          <AppText variant="numeral" style={{ fontSize: 28, lineHeight: 32 }}>{score}</AppText>
-        </View>
-        <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="label" color="onPastel">LANDING SCORE · WEEK {week - 1}</AppText>
-          <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>{score >= prev ? "A steady week" : "A wobblier week, and that's fine"}</AppText>
-          <AppText variant="caption" color="onPastel">{score >= prev ? `Up ${score - prev} on the week before` : `Down ${prev - score} on the week before`}. Built from habits, sessions{safe ? " and how you felt" : " and your trend"}.</AppText>
-        </View>
-      </Card>
+      {last ? (
+        <Card tone="sage" hero style={{ flexDirection: "row", alignItems: "center", gap: space[4] }}>
+          <View style={{ width: 84, height: 84, borderRadius: 42, borderWidth: 9, borderColor: c.sageInk, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceRaised }}>
+            <AppText variant="numeral" style={{ fontSize: 28, lineHeight: 32 }}>{last.score}</AppText>
+          </View>
+          <View style={{ flex: 1, gap: 2 }}>
+            <AppText variant="label" color="onPastel">LANDING SCORE · {lastWeek >= 1 ? `WEEK ${lastWeek}` : "LAST WEEK"}</AppText>
+            <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>{!before || last.score >= before.score ? "A steady week" : "A wobblier week, and that's fine"}</AppText>
+            <AppText variant="caption" color="onPastel">
+              {before ? (last.score >= before.score ? `Up ${last.score - before.score} on the week before. ` : `Down ${before.score - last.score} on the week before. `) : ""}
+              Built from habits, sessions{last.usedWeight ? " and your trend" : " and your check-ins"}.
+            </AppText>
+          </View>
+        </Card>
+      ) : (
+        <Card tone="sage" hero style={{ gap: 4 }}>
+          <AppText variant="label" color="onPastel">LANDING SCORE</AppText>
+          <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>Your first score arrives on Monday</AppText>
+          <AppText variant="caption" color="onPastel">It&apos;s built each week from your habits, sessions and {safe ? "check-ins" : "trend"}. There&apos;s no target to hit.</AppText>
+        </Card>
+      )}
       <View style={{ flexDirection: "row", gap: space[3] }}>
         <Card style={{ flex: 1, gap: 2 }}>
-          <AppText variant="numeral" style={{ fontSize: 26, lineHeight: 30 }}>{habitDays}<AppText color="inkMuted"> / {habitTarget}</AppText></AppText>
+          <AppText variant="numeral" style={{ fontSize: 26, lineHeight: 30 }}>{habitTotal}<AppText color="inkMuted"> / {habitTarget}</AppText></AppText>
           <AppText variant="caption" color="inkMuted">Habit days this week</AppText>
         </Card>
         <Card style={{ flex: 1, gap: 2 }}>
@@ -95,22 +109,22 @@ export default function Progress() {
               <AppText variant="heading">Your trend</AppText>
               <AppText variant="caption" color="inkMuted">7-day average</AppText>
             </View>
-            <View style={{ flexDirection: "row", alignItems: "baseline", gap: 8 }}>
-              <AppText variant="numeral" style={{ fontSize: 30, lineHeight: 34 }}>{now} kg</AppText>
-              {now != null && weekAgo != null ? <AppText variant="caption" color="inkMuted">{Math.abs(now - weekAgo) < 0.05 ? "Same as last week" : `${now > weekAgo ? "+" : "−"}${Math.abs(Math.round((now - weekAgo) * 10) / 10)} kg on last week`}</AppText> : null}
-            </View>
-            <TrendChart s={s} />
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            {now != null ? <View style={{ flexDirection: "row", alignItems: "baseline", gap: 8 }}>
+              <AppText variant="numeral" style={{ fontSize: 30, lineHeight: 34 }}>{weight(now, units)}</AppText>
+              {now != null && weekAgo != null ? <AppText variant="caption" color="inkMuted">{Math.abs(now - weekAgo) < 0.05 ? "Same as last week" : `${change(now - weekAgo, units)} ${now > weekAgo ? "higher" : "lower"} than last week`}</AppText> : null}
+            </View> : null}
+            {now != null ? <TrendChart s={s} /> : <AppText color="inkMuted">Log a weigh-in from Today, or connect Apple Health in Settings, and your 7-day average shows here.</AppText>}
+            {now != null ? <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
               <View style={{ width: 14, height: 10, borderRadius: radius.sm, backgroundColor: c.sage }} />
-              <AppText variant="caption" color="inkMuted">Steady zone: {steadyZone(s)[0]} to {steadyZone(s)[1]} kg. Day-to-day changes are mostly water.</AppText>
-            </View>
+              <AppText variant="caption" color="inkMuted">Steady zone: {weight(steadyZone(s)[0], units)} to {weight(steadyZone(s)[1], units)}. Day-to-day changes are mostly water.</AppText>
+            </View> : null}
           </Card>
-          <View style={{ gap: space[2] }}>
+          {recent.length ? <View style={{ gap: space[2] }}>
             <AppText variant="label" color="inkMuted">RECENT WEIGH-INS</AppText>
             <List>
-              {recent.map((w, i) => <Row key={w.date} first={i === 0} title={`${w.kg.toFixed(1)} kg`} sub={fmt.short(w.date)} value={w.source} />)}
+              {recent.map((w, i) => <Row key={w.date} first={i === 0} title={weight(w.kg, units)} sub={fmt.short(w.date)} value={w.source} />)}
             </List>
-          </View>
+          </View> : null}
         </>
       )}
     </Screen>

@@ -42,7 +42,6 @@ export default function Settings() {
           <AppText weight="700">Week of the plan</AppText>
           <Choices label="Week" value={week} onChange={(v) => { set((st) => { setWeek(st, v as number); st.food.plan = null; st.food.next = null; }); }}
             options={[1, 6, 9, 27].map((w) => ({ id: w, label: w === 9 ? "Week 9 (Settle)" : w === 27 ? "Week 27 (Steady)" : `Week ${w}` }))} />
-          <ToggleRow title="Evening" sub="Shows the evening greeting and tip" value={s.settings.evening} onChange={(v) => set((st) => { st.settings.evening = v; })} />
           <Button label="Start onboarding again" variant="secondary" block onPress={() => { replace(freshState()); router.replace("/onboarding"); }} />
           <Button label="Reset to Hannah, week 6" variant="quiet" onPress={() => { replace(demoState()); toast("Back to Hannah in week 6."); router.dismissTo("/"); }} style={{ alignSelf: "center" }} />
         </View>

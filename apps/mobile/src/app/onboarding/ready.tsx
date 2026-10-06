@@ -15,7 +15,7 @@ export default function Ready() {
     set((st) => {
       st.onboarded = true;
       const ids = habitsForWeek(week);
-      st.habits = { ids, done: Object.fromEntries(ids.map((id) => [id, 0])), today: {}, swappedFrom: null };
+      st.habits = { week, ids, swappedFrom: null };
       st.food.joinedWeek = week; // the fibre ramp starts today
       st.food.plan = null;
     });

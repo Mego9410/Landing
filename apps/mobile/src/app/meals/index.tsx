@@ -8,7 +8,7 @@ import { Card } from "@/components/Card";
 import { Chip } from "@/components/Chip";
 import { Screen } from "@/components/Screen";
 import { Banner, DraftNote, Header, List } from "@/components/ui";
-import { TODAY, weekdayIndex } from "@/data/dates";
+import { today as dateToday, weekdayIndex } from "@/data/dates";
 import { profileOf, thisWeek } from "@/state/food";
 import { set, useApp, weekOf } from "@/state/store";
 import { toast } from "@/state/toast";
@@ -22,10 +22,10 @@ const PHASE_NAME = { land: "Land", settle: "Settle", steady: "Steady" };
 export default function Meals() {
   const s = useApp(), c = useColors();
   const p = profileOf(s), t = targets(p), week = thisWeek(s), safe = s.settings.safeMode;
-  const [day, setDay] = useState(weekdayIndex(TODAY));
+  const [day, setDay] = useState(() => weekdayIndex(dateToday()));
   const today = week.days[day], tot = dayTotals(today, p), sum = weekSummary(week, p);
   const cooks = week.days.filter((d) => d.dinner.kind === "cook").length;
-  const isToday = day === weekdayIndex(TODAY);
+  const isToday = day === weekdayIndex(dateToday());
   return (
     <Screen contentContainerStyle={{ gap: space[5] }}>
       <Header fallback="/plan" middle={<Chip label={`Week ${weekOf(s)} · ${PHASE_NAME[t.phase]}`} tone="apricot" />} />

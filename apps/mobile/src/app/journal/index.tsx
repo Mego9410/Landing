@@ -7,16 +7,16 @@ import { Card } from "@/components/Card";
 import { Scale, YesNo } from "@/components/Journal";
 import { Screen } from "@/components/Screen";
 import { Choices, Header, List } from "@/components/ui";
-import { addDays, fmt } from "@/data/dates";
+import { addDays, fmt, yesterday } from "@/data/dates";
 import { questionById, SCALES } from "@/data/journal";
-import { saveEntry, YESTERDAY } from "@/state/journal";
+import { saveEntry } from "@/state/journal";
 import { useApp, type JournalEntry } from "@/state/store";
 import { toast } from "@/state/toast";
 import { space, useColors } from "@/theme";
 
 // Yesterday, or either of the two days before, for a missed morning.
-const DAYS = [0, 1, 2].map((n) => addDays(YESTERDAY, -n));
-const dayLabel = (d: string) => (d === YESTERDAY ? "Yesterday" : fmt.short(d));
+const choosable = () => [0, 1, 2].map((n) => addDays(yesterday(), -n));
+const dayLabel = (d: string) => (d === yesterday() ? "Yesterday" : fmt.short(d));
 
 function Questions({ day }: { day: string }) {
   const s = useApp(), c = useColors();
@@ -62,12 +62,13 @@ function Questions({ day }: { day: string }) {
 /** Your day: a minute each morning on how yesterday went. */
 export default function Journal() {
   const params = useLocalSearchParams<{ day?: string }>();
-  const [day, setDay] = useState(params.day && DAYS.includes(params.day) ? params.day : YESTERDAY);
+  const DAYS = choosable();
+  const [day, setDay] = useState(params.day && DAYS.includes(params.day) ? params.day : yesterday());
   return (
     <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <Header close fallback="/" />
       <View style={{ gap: space[2] }}>
-        <AppText variant="title" accessibilityRole="header">How was {day === YESTERDAY ? "yesterday" : fmt.long(day)}?</AppText>
+        <AppText variant="title" accessibilityRole="header">How was {day === yesterday() ? "yesterday" : fmt.long(day)}?</AppText>
         <AppText color="inkMuted">About a minute. Over a few weeks it shows what goes with your fuller, steadier days.</AppText>
       </View>
       <Choices label="Day" value={day} onChange={(v) => setDay(v as string)} options={DAYS.map((d) => ({ id: d, label: dayLabel(d) }))} />

@@ -126,3 +126,37 @@ test("older saves are brought up to date", () => {
   assert.equal(again?.settings.reminders.checkIn.on, false, "new settings get their defaults");
   assert.equal(migrate({ v: 1 }), null);
 });
+
+test("weekly content: a lesson for every week, habits that rotate, sessions that step up", async () => {
+  const { WEEKLY_LESSONS, lessonFor } = await import("@/data/lessons");
+  const { habitsForWeek } = await import("@/data/content");
+  const { sessionFor } = await import("@/data/sessions");
+  assert.equal(WEEKLY_LESSONS.length, 52);
+  assert.equal(lessonFor(9).title, "Meals that hold you steady");
+  assert.equal(lessonFor(99).title, lessonFor(52).title);
+  assert.notDeepEqual(habitsForWeek(1), habitsForWeek(3));
+  assert.deepEqual(habitsForWeek(10).slice(0, 2), ["proteinAll", "strength3"]);
+  const s = freshState();
+  s.ob.lastInjection = weekStart(today());
+  assert.equal(sessionFor(s, "A").level, 1);
+  s.ob.lastInjection = addDays(weekStart(today()), -7 * 14);
+  const a3 = sessionFor(s, "A");
+  assert.equal(a3.level, 3);
+  assert.equal(a3.moves[0].reps, "12");
+  assert.equal(a3.moves[0].sets, 4);
+  s.workouts.feel = "Tough";
+  assert.equal(sessionFor(s, "A").level, 2);
+  s.health.answers.fatigue = true;
+  assert.equal(sessionFor(s, "A").level, 1, "pacing: no automatic progression");
+});
+
+test("a third session in Settle weeks", async () => {
+  const { nextSession } = await import("@/state/habits");
+  const s = freshState();
+  s.habits.ids = ["proteinAll", "strength3", "mealplan"];
+  const d = weekDates(today());
+  s.days[d[0]] = { sessions: ["A", "B"] };
+  assert.equal(nextSession(s), "A");
+  s.habits.ids = ["protein", "strength", "pause"];
+  assert.equal(nextSession(s), null);
+});

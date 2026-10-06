@@ -8,10 +8,11 @@ import { HabitCheck } from "@/components/HabitCheck";
 import { Icon, type IconName } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc } from "@/components/ui";
-import { HABITS, phaseOf, PHASES, SESSIONS, TIPS } from "@/data/content";
+import { HABITS, phaseOf, PHASES, TIPS } from "@/data/content";
+import { sessionFor } from "@/data/sessions";
 import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
 import { minutes, px, thisWeek } from "@/state/food";
-import { habitDetail, nextSession, toggleHabit } from "@/state/habits";
+import { habitDetail, nextSession, sessionTarget, toggleHabit } from "@/state/habits";
 import { needsDisclaimer, sessionsInWeek, useApp, weekOf } from "@/state/store";
 import { sessionsPaused } from "@/state/health";
 import { headline, todayPlan, type Task } from "@/state/today";
@@ -99,7 +100,7 @@ function Plans() {
     : m.kind === "free" || !m.recipe ? { line: "A free night", detail: "Eat out, use the freezer or pick a recipe" }
     : { line: px(s, m.recipe).name, detail: m.kind === "leftover" ? "Tonight's leftovers" : `Tonight · ${minutes(px(s, m.recipe).recipe)}` };
   const next = nextSession(s), done = sessionsInWeek(s).length, paused = sessionsPaused(s);
-  const strength = paused ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" } : next ? { line: `${SESSIONS[next].name} next`, detail: `${done} of 2 done this week · ${SESSIONS[next].minutes} min` } : { line: "Both sessions done", detail: "Next ones arrive on Monday" };
+  const strength = paused ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" } : next ? { line: `${sessionFor(s, next).name} next`, detail: `${done} of ${sessionTarget(s)} done this week · ${sessionFor(s, next).minutes} min` } : { line: "Both sessions done", detail: "Next ones arrive on Monday" };
   return (
     <View style={{ gap: space[3] }}>
       <AppText variant="heading" accessibilityRole="header">Your plans</AppText>

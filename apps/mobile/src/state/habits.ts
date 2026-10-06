@@ -22,10 +22,15 @@ export function toggleHabit(id: string, on: boolean) {
   });
 }
 
-/** The next strength session still to do this week: A, then B. Null once both are done. */
+/** Sessions a week: two, or three in Settle when the week's habit asks for an optional third. */
+export const sessionTarget = (s: AppState) => (s.habits.ids.includes("strength3") ? 3 : 2);
+
+/** The next strength session this week: A, then B, then A again for a third. Null once the week's are done. */
 export function nextSession(s: AppState): "A" | "B" | null {
   const done = sessionsInWeek(s);
-  return !done.includes("A") ? "A" : !done.includes("B") ? "B" : null;
+  if (done.length >= sessionTarget(s)) return null;
+  const a = done.filter((x) => x === "A").length, b = done.length - a;
+  return a <= b ? "A" : "B";
 }
 
 /** The day a session was done this week, if it was. */
@@ -36,7 +41,7 @@ export function sessionDoneOn(s: AppState, id: "A" | "B"): string | null {
 
 export function logSession(id: "A" | "B") {
   const t = today();
-  set((s) => { const log = (s.days[t] ??= {}); log.sessions = [...(log.sessions ?? []).filter((x) => x !== id), id]; });
+  set((s) => { const log = (s.days[t] ??= {}); log.sessions = [...(log.sessions ?? []), id]; });
 }
 
 /** Protein for one meal today. Breakfast with 25 g or more ticks "Protein at breakfast" too. */

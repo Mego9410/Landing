@@ -5,7 +5,8 @@ import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc, RowCard } from "@/components/ui";
-import { LESSONS, phaseOf, PHASES } from "@/data/content";
+import { PHASES } from "@/data/content";
+import { lessonFor } from "@/data/lessons";
 import { thisWeek } from "@/state/food";
 import { useApp, weekOf } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
@@ -13,7 +14,7 @@ import { radius, space, useColors } from "@/theme";
 /** PL1 Your plan: this week, meals this week and next, and the three phases. */
 export default function Plan() {
   const s = useApp(), c = useColors();
-  const week = weekOf(s), phase = phaseOf(week), lesson = LESSONS[phase.key];
+  const week = weekOf(s), lesson = lessonFor(week);
   const meals = thisWeek(s), cooks = meals.days.filter((d) => d.dinner.kind === "cook").length;
   const nx = s.food.next, pr = nx ? progress(nx.week) : null;
   return (

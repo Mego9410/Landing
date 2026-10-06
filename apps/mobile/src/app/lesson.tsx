@@ -5,7 +5,8 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Header } from "@/components/ui";
-import { LESSONS, phaseOf } from "@/data/content";
+import { phaseOf } from "@/data/content";
+import { lessonFor } from "@/data/lessons";
 import { set, useApp, weekOf } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
@@ -13,7 +14,7 @@ import { radius, space, useColors } from "@/theme";
 /** PL3 This week's lesson. */
 export default function Lesson() {
   const s = useApp(), c = useColors();
-  const week = weekOf(s), phase = phaseOf(week), lesson = LESSONS[phase.key];
+  const week = weekOf(s), phase = phaseOf(week), lesson = lessonFor(week);
   return (
     <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <Header fallback="/week" right={<AppText variant="caption" color="inkMuted">3 minute read</AppText>} />

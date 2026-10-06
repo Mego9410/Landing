@@ -7,7 +7,7 @@ import { Button } from "@/components/Button";
 import { ExerciseAnimation } from "@/components/ExerciseAnimation";
 import { Screen } from "@/components/Screen";
 import { Header, List, SessionHealth } from "@/components/ui";
-import { SESSIONS } from "@/data/content";
+import { sessionFor } from "@/data/sessions";
 import { whoFor } from "@/state/demos";
 import { sessionNotes, sessionsPaused } from "@/state/health";
 import { set, useApp } from "@/state/store";
@@ -18,14 +18,14 @@ import { radius, space, useColors } from "@/theme";
 export default function SessionOverview() {
   const s = useApp(), c = useColors();
   const { id } = useLocalSearchParams<{ id: "A" | "B" }>();
-  const session = SESSIONS[id === "B" ? "B" : "A"];
+  const session = sessionFor(s, id === "B" ? "B" : "A");
   const [open, setOpen] = useState(0);
   const move = session.moves[open], who = whoFor(s, `${move.anim}-${id}`);
   return (
     <Screen contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <Header fallback="/workouts" />
       <AppText variant="title" accessibilityRole="header">{session.name}</AppText>
-      <AppText color="inkMuted">{session.minutes} minutes at home · {session.moves.length} exercises</AppText>
+      <AppText color="inkMuted">{session.minutes} minutes at home · {session.moves.length} exercises · level {session.level} of 3</AppText>
       <SessionHealth paused={sessionsPaused(s)} notes={sessionNotes(s)} onCleared={() => { set((st) => { st.health.gpCleared = true; }); toast("Thanks. Your sessions are ready."); }} />
       <View style={{ borderRadius: radius.lg, backgroundColor: c.sky, overflow: "hidden" }}>
         <ExerciseAnimation id={move.anim} who={who} paused={s.demos.still} />

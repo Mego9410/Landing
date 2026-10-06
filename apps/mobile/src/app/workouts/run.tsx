@@ -7,7 +7,7 @@ import { Button } from "@/components/Button";
 import { ExerciseAnimation } from "@/components/ExerciseAnimation";
 import { Screen } from "@/components/Screen";
 import { Header, Meter, ToggleRow } from "@/components/ui";
-import { SESSIONS } from "@/data/content";
+import { sessionFor } from "@/data/sessions";
 import { whoFor } from "@/state/demos";
 import { logSession } from "@/state/habits";
 import { easierFirst } from "@/state/health";
@@ -18,7 +18,8 @@ import { radius, space, useColors } from "@/theme";
 export default function InSession() {
   const s = useApp(), c = useColors();
   const { id: raw } = useLocalSearchParams<{ id: "A" | "B" }>();
-  const id = raw === "B" ? "B" : "A", session = SESSIONS[id];
+  const id = raw === "B" ? "B" : "A";
+  const [session] = useState(() => sessionFor(s, id)); // fixed for the length of the session
   const [move, setMove] = useState(0);
   const [setNo, setSetNo] = useState(1);
   const [paused, setPaused] = useState(false);

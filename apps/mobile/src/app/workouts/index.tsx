@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Screen } from "@/components/Screen";
 import { Header, RowCard, SessionHealth } from "@/components/ui";
-import { SESSIONS } from "@/data/content";
+import { sessionFor } from "@/data/sessions";
 import { fmt } from "@/data/dates";
 import { sessionDoneOn } from "@/state/habits";
 import { sessionNotes, sessionsPaused } from "@/state/health";
@@ -26,8 +26,8 @@ export default function Sessions() {
           <RowCard key={k} tone={done ? "sage" : "raised"} onPress={() => router.push({ pathname: "/workouts/[id]", params: { id: k } })}>
             <View style={{ flex: 1, gap: 2 }}>
               <AppText variant="label" color={done ? "onPastel" : "inkMuted"}>{done ? `DONE ON ${done.toUpperCase()}` : "TO DO"}</AppText>
-              <AppText weight="800" color={done ? "onPastel" : "ink"} style={{ fontSize: 16 }}>{SESSIONS[k].name}</AppText>
-              <AppText variant="caption" color={done ? "onPastel" : "inkMuted"}>{SESSIONS[k].minutes} minutes · {SESSIONS[k].moves.length} exercises</AppText>
+              <AppText weight="800" color={done ? "onPastel" : "ink"} style={{ fontSize: 16 }}>{sessionFor(s, k).name}</AppText>
+              <AppText variant="caption" color={done ? "onPastel" : "inkMuted"}>{sessionFor(s, k).minutes} minutes · {sessionFor(s, k).moves.length} exercises</AppText>
             </View>
           </RowCard>
         );

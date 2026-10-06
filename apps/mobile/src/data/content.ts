@@ -31,30 +31,20 @@ export const HABIT_SWAPS = [
   { id: "table", title: "Eat at the table", detail: "Screens off for one meal a day" },
   { id: "water", title: "Water before dinner", detail: "One glass while you cook" },
 ];
+// The week's three habits. The first two hold for each phase; the third changes every few weeks so there's always
+// something fresh to practise. Session habits are counted from the sessions themselves.
+const THIRD: [number, string][] = [
+  [1, "pause"], [3, "water"], [5, "pause"], [7, "walk"],
+  [9, "mealplan"], [13, "table"], [17, "plate"], [21, "walk"], [25, "mealplan"],
+  [27, "pause"], [33, "walk"], [39, "table"], [45, "water"], [51, "plate"],
+];
 export function habitsForWeek(week: number): string[] {
   const p = phaseOf(week).key;
-  if (p === "land") return ["protein", "strength", "pause"];
-  if (p === "settle") return ["proteinAll", "strength3", "mealplan"];
-  return ["ownRoutine", "strength", "pause"];
+  const third = [...THIRD].reverse().find(([from]) => week >= from)?.[1] ?? "pause";
+  if (p === "land") return ["protein", "strength", third];
+  if (p === "settle") return ["proteinAll", "strength3", third];
+  return ["ownRoutine", "strength", third];
 }
-
-export const LESSONS: Record<PhaseKey, { title: string; week: string; blurb: string; paras: string[]; tries: string[] }> = {
-  land: {
-    title: "Why protein matters more now", week: "Protein first", blurb: "As appetite returns, building meals around protein keeps you fuller and protects muscle.",
-    paras: ["As your appetite comes back, meals built around protein tend to keep you fuller for longer, so hunger feels easier to handle.", "Protein also helps your body hold on to muscle. Muscle is part of what you worked for, and strength sessions plus protein help you keep it."],
-    tries: ["A palm-sized portion at each meal: eggs, Greek yoghurt, chicken, fish, tofu, beans or lentils.", "Start with breakfast. It's the meal most people miss."],
-  },
-  settle: {
-    title: "Meals that hold you steady", week: "A rhythm for meals", blurb: "Regular meals with protein and fibre make hunger easier to predict and plan around.",
-    paras: ["In Settle, regular meals do a lot of quiet work. When you know roughly when you'll next eat, hunger is easier to sit with.", "Structure is not a rule book. It's a rough rhythm you can bend for a meal out or a busy day."],
-    tries: ["Three meals at roughly the same times on five days this week.", "Have a plan for the hungriest time of day, like a protein snack ready to go."],
-  },
-  steady: {
-    title: "Making it yours", week: "Your own routines", blurb: "The habits that stuck are now yours. Fewer prompts, same steady ground.",
-    paras: ["By now, the habits that worked are yours. Steady is about keeping them with fewer reminders.", "Check in once a month. If things shift, a reset week is always there."],
-    tries: ["Pick the two habits that matter most to you and keep them.", "Put a monthly check-in in your calendar."],
-  },
-};
 
 export interface Move { name: string; anim: string; easier?: string; sets: number; reps: string; cue: string }
 export const SESSIONS: Record<"A" | "B", { name: string; minutes: number; moves: Move[] }> = {

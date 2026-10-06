@@ -1,6 +1,7 @@
 // Today's plan: the handful of things worth doing today, in the order they're best done. The hero ring on Today
 // counts these, and the first one not yet done is the "next up" button, so the screen always answers "what now?".
-import { HABITS, SESSIONS } from "@/data/content";
+import { HABITS } from "@/data/content";
+import { sessionFor } from "@/data/sessions";
 import { today, yesterday } from "@/data/dates";
 import type { IconName } from "@/components/Icon";
 import { isTicked, nextSession, sessionDoneOn } from "./habits";
@@ -36,9 +37,9 @@ export function todayPlan(s: AppState): TodayItem[] {
   const k = doneToday ?? next;
   if (k && !sessionsPaused(s)) {
     items.push({ kind: "task", id: "session", icon: "workout", done: !!doneToday, href: { pathname: "/workouts/[id]", params: { id: k } },
-      cta: `Start ${SESSIONS[k].name}`,
-      label: doneToday ? `${SESSIONS[k].name} done` : `${SESSIONS[k].name} · ${SESSIONS[k].minutes} minutes`,
-      detail: doneToday ? "Nice work. That counts towards this week" : `${SESSIONS[k].moves.length} exercises at home` });
+      cta: `Start ${sessionFor(s, k).name}`,
+      label: doneToday ? `${sessionFor(s, k).name} done` : `${sessionFor(s, k).name} · ${sessionFor(s, k).minutes} minutes`,
+      detail: doneToday ? "Nice work. That counts towards this week" : `${sessionFor(s, k).moves.length} exercises at home` });
   }
 
   // Session habits are covered by the session above.

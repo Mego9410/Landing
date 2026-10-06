@@ -80,6 +80,8 @@ export interface AppState {
   health: { answers: Record<string, boolean>; checkedAt: string | null; version: number; gpCleared: boolean; referAgreed: { at: string; version: number } | null };
   /** Explicit consent to keep health information (weight, eating, check-ins) on the phone, and when it was given. */
   consent: { healthDataAt: string } | null;
+  /** The last known subscription status, so the app opens offline. Only used when billing is on. */
+  subscription: { active: boolean; checkedAt: string } | null;
 }
 
 export const HEALTH_DEFAULTS: AppState["health"] = { answers: {}, checkedAt: null, version: 0, gpCleared: false, referAgreed: null };
@@ -172,6 +174,7 @@ export function demoState(): AppState {
     disclaimer: null,
     health: { ...HEALTH_DEFAULTS, checkedAt: addDays(t, -35), version: 1 },
     consent: { healthDataAt: addDays(t, -35) },
+    subscription: null,
   };
 }
 
@@ -191,6 +194,7 @@ export function freshState(): AppState {
     disclaimer: null,
     health: { ...HEALTH_DEFAULTS },
     consent: null,
+    subscription: null,
   };
 }
 

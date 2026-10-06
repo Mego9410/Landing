@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Toast } from "@/components/Toast";
 import { watchDay } from "@/state/rollover";
+import { startBilling } from "@/state/subscription";
 import { hydrate } from "@/state/store";
 import { useColors } from "@/theme";
 
@@ -23,7 +24,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     let stop: (() => void) | undefined;
-    hydrate().finally(() => { stop = watchDay(); setReady(true); });
+    hydrate().finally(() => { stop = watchDay(); startBilling().catch(() => {}); setReady(true); });
     return () => stop?.();
   }, []);
   useEffect(() => {

@@ -30,8 +30,13 @@ const list = shoppingList(week, me);
   preferences, and ingredients already on the list. A seed makes it repeatable, and a new seed shuffles it.
 - **Swaps and edits** (`swapOptions`, `replaceMeal`): three alternatives with similar effort and enough protein.
   Leftovers follow a replaced dinner.
-- **The shopping list** (`shoppingList`): grouped by aisle and rounded up to packs, with leftovers and whole batches
-  counted. Pantry staples are listed separately to check.
+- **Picking a week by hand** (`emptyWeek`, `setMeal`, `leftoverOptions`, `progress`): start from an empty week (or a
+  suggested one) and set each meal to a recipe, leftovers of an earlier dinner that still keeps, a takeaway night or
+  nothing. Portions for leftovers are added to the night they're cooked.
+- **The shopping list** (`shoppingList`): every ingredient added up across all the dishes that use it, with each
+  dish's share (`uses`). For example, 260 g of chicken breast for Wednesday's fajitas plus 300 g for Thursday's tikka
+  makes 560 g. Each item has the total in kitchen units and what to buy, rounded up to packs. Items are grouped by
+  aisle, with leftovers and whole batches counted. Pantry staples are listed separately to check.
 - **Words for the app** (`reasons`, `weekSummary`, `quantity`, `LABELS`): why a recipe suits someone, notes when a
   week runs high in fibre or low in protein, and kitchen amounts ("2 eggs", "1 tbsp", "150 ml").
 

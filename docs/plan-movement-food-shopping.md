@@ -274,6 +274,9 @@ yoghurt (almost no protein, warn).
 - **Planned leftovers:** Tuesday's double chilli becomes Wednesday's jacket potato filling.
 - **One-tap "swap this meal"** for something with similar effort and protein.
 - **Hunger-aware timing:** the hungriest times from onboarding get a planned protein snack.
+- **Pick next week, the week before** (built 6 October 2026): start from an empty week or from suggestions, choose
+  each meal (a recipe, leftovers, a takeaway night or nothing), then get one shopping list for the week. Each
+  ingredient is added up across the dishes that use it, and each dish's share is shown under the total.
 
 ### 5.6 Safe mode for food
 

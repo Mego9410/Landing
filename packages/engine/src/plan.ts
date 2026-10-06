@@ -5,6 +5,7 @@ import { INGREDIENT, RECIPES, type Recipe, type Slot } from "@landing/content";
 import { personalise, plainName, type Personalised } from "./personalise.ts";
 import type { Profile } from "./profile.ts";
 import { targets, type Targets } from "./targets.ts";
+import { quantity } from "./format.ts";
 
 export const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
 
@@ -149,11 +150,10 @@ export function planWeek(p: Profile, { seed = 1, includeDrafts = false }: PlanOp
     if (b) day.breakfast = { slot: "breakfast", kind: "cook", recipe: b.recipe.id, cook: 1 };
   });
 
-  const snackTimes = p.hungryTimes.filter((h) => h === "afternoon" || h === "evening" || h === "late-night");
-  const snackCount = Math.min(2, Math.max(snackTimes.length, p.goal === "fuller" ? 1 : 0));
-  const snacks = Array.from({ length: Math.min(4, snackCount * 2) }, () => pick(bySlot("snack"), ctx, "snack")).filter(Boolean) as Personalised[];
+  const perDay = snackCount(p);
+  const snacks = Array.from({ length: Math.min(4, perDay * 2) }, () => pick(bySlot("snack"), ctx, "snack")).filter(Boolean) as Personalised[];
   days.forEach((day, d) => {
-    for (let k = 0; k < snackCount && snacks.length; k++) day.snacks.push({ slot: "snack", kind: "cook", recipe: snacks[(d + k * 2) % snacks.length].recipe.id, cook: 1 });
+    for (let k = 0; k < perDay && snacks.length; k++) day.snacks.push({ slot: "snack", kind: "cook", recipe: snacks[(d + k * 2) % snacks.length].recipe.id, cook: 1 });
   });
 
   return { seed, days };
@@ -202,23 +202,72 @@ export function swapOptions(week: Week, p: Profile, day: number, slot: Slot, { n
     .map((o) => o.x);
 }
 
-/** Puts a recipe into one meal. Leftovers of a replaced dinner follow it; portions are recounted. */
-export function replaceMeal(week: Week, p: Profile, day: number, slot: Slot, recipe: string): Week {
+/** What can go into one meal: a recipe, leftovers of an earlier dinner, a takeaway night or nothing yet. */
+export type Choice = { recipe: string } | { leftoverFrom: number } | { kind: "takeaway" | "free" };
+
+const mealRef = (week: Week, day: number, slot: Slot, index = 0): Meal | undefined =>
+  slot === "snack" ? week.days[day].snacks[index] : week.days[day][slot];
+
+/**
+ * Sets one meal and keeps the week consistent: leftovers of a replaced dinner follow the new dinner if it keeps,
+ * or become free to choose; portions are recounted.
+ */
+export function setMeal(week: Week, p: Profile, day: number, slot: Slot, choice: Choice, index = 0): Week {
   const next: Week = JSON.parse(JSON.stringify(week));
-  const target = slot === "snack" ? next.days[day].snacks[0] : next.days[day][slot];
+  const target = mealRef(next, day, slot, index);
   if (!target) return next;
-  Object.assign(target, { kind: "cook", recipe, cook: slot === "dinner" ? p.household : 1 });
-  delete target.from;
-  // Leftovers of a replaced dinner become leftovers of the new one, if it keeps; otherwise that meal is free to choose.
+  delete target.from; delete target.recipe; delete target.cook;
+  if ("recipe" in choice) Object.assign(target, { kind: "cook", recipe: choice.recipe, cook: slot === "dinner" ? p.household : 1 });
+  else if ("leftoverFrom" in choice) Object.assign(target, { kind: "leftover", recipe: next.days[choice.leftoverFrom].dinner.recipe, from: choice.leftoverFrom });
+  else target.kind = choice.kind;
   if (slot === "dinner") {
-    const keeps = personaliseById(recipe, p).recipe.fridgeDays >= 1;
+    const keeps = "recipe" in choice && personaliseById(choice.recipe, p).recipe.fridgeDays >= 1;
     for (const d of next.days) for (const m of [d.lunch, d.dinner]) {
-      if (m.kind !== "leftover" || m.from !== day) continue;
-      if (keeps) m.recipe = recipe;
+      if (m === target || m.kind !== "leftover" || m.from !== day) continue;
+      if (keeps) m.recipe = (choice as { recipe: string }).recipe;
       else { m.kind = "free"; delete m.recipe; delete m.from; }
     }
   }
   return recount(next, p);
+}
+
+/** Puts a recipe into one meal (see setMeal). */
+export function replaceMeal(week: Week, p: Profile, day: number, slot: Slot, recipe: string, index = 0): Week {
+  return setMeal(week, p, day, slot, { recipe }, index);
+}
+
+/** Earlier cooked dinners that would still keep by this meal, to offer as leftovers. */
+export function leftoverOptions(week: Week, p: Profile, day: number, slot: Slot): { from: number; recipe: string; name: string }[] {
+  if (slot !== "lunch" && slot !== "dinner") return [];
+  const out: { from: number; recipe: string; name: string }[] = [];
+  for (let f = day - 1; f >= 0; f--) {
+    const src = week.days[f].dinner;
+    if (src.kind !== "cook" || !src.recipe) continue;
+    const x = personaliseById(src.recipe, p);
+    if (x.recipe.fridgeDays >= day - f) out.push({ from: f, recipe: src.recipe, name: x.name });
+  }
+  return out;
+}
+
+/** A week with nothing chosen, for people who'd rather pick every meal themselves. */
+export function emptyWeek(p: Profile, seed = 1): Week {
+  const free = (slot: Slot): Meal => ({ slot, kind: "free" });
+  return {
+    seed,
+    days: DAYS.map((name, day) => ({ day, name, breakfast: free("breakfast"), lunch: free("lunch"), dinner: free("dinner"), snacks: Array.from({ length: snackCount(p) }, () => free("snack")) })),
+  };
+}
+
+/** Protein snacks a day: one for each of the hungriest times in the afternoon or later, up to two. */
+export function snackCount(p: Profile): number {
+  const times = p.hungryTimes.filter((h) => h === "afternoon" || h === "evening" || h === "late-night").length;
+  return Math.min(2, Math.max(times, p.goal === "fuller" ? 1 : 0));
+}
+
+/** How much of the week is decided: meals with a recipe, leftovers or a takeaway, out of all meals. */
+export function progress(week: Week): { chosen: number; total: number } {
+  const all = week.days.flatMap((d) => [d.breakfast, d.lunch, d.dinner, ...d.snacks]);
+  return { chosen: all.filter((m) => m.kind !== "free").length, total: all.length };
 }
 
 /** Recomputes cook portions from the leftovers that point at each cooked dinner. */
@@ -227,13 +276,20 @@ export function recount(week: Week, p: Profile): Week {
   for (const d of week.days) for (const m of [d.lunch, d.dinner]) {
     if (m.kind !== "leftover" || m.from === undefined) continue;
     const src = week.days[m.from].dinner;
-    if (src.kind === "cook" && src.recipe === m.recipe) src.cook = (src.cook ?? p.household) + (m.slot === "dinner" ? p.household : 1);
+    const keeps = !!src.recipe && personaliseById(src.recipe, p).recipe.fridgeDays >= d.day - m.from;
+    if (src.kind === "cook" && src.recipe === m.recipe && keeps) src.cook = (src.cook ?? p.household) + (m.slot === "dinner" ? p.household : 1);
     else { m.kind = "cook"; m.cook = m.slot === "dinner" ? p.household : 1; delete m.from; }
   }
   return week;
 }
 
-export interface ListItem { id: string; name: string; grams: number; label: string; detail?: string; recipes: string[] }
+/** One dish's share of a list item. */
+export interface Use { name: string; day: number; slot: Slot; grams: number; amount: string }
+/**
+ * One thing to buy, combined across every dish that needs it: `total` is the kitchen amount ("400 g", "6 eggs"),
+ * `label` what to pick up ("1 pack"), and `uses` the dishes it's for, so the sum is easy to check.
+ */
+export interface ListItem { id: string; name: string; grams: number; total: string; label: string; detail?: string; recipes: string[]; uses: Use[] }
 export interface ShoppingList { aisles: { aisle: string; items: ListItem[] }[]; pantry: string[]; batchNotes: string[] }
 
 const AISLE_ORDER = ["Fruit and veg", "Bakery", "Meat and fish", "Dairy and eggs", "Chilled", "Frozen", "Tins and jars", "Rice, pasta and grains", "World foods", "Store cupboard"];
@@ -251,12 +307,13 @@ function amount(id: string, grams: number): { label: string; detail?: string } {
 
 /** The week's shopping, by aisle, with the pantry staples listed separately to check (plan §6.2). */
 export function shoppingList(week: Week, p: Profile): ShoppingList {
-  const totals = new Map<string, { grams: number; recipes: Set<string> }>();
+  const totals = new Map<string, { grams: number; recipes: Set<string>; uses: Use[] }>();
   const pantry = new Set<string>();
   const batchNotes: string[] = [];
   for (const d of week.days) for (const m of [d.breakfast, d.lunch, d.dinner, ...d.snacks]) {
     if (m.kind !== "cook" || !m.recipe) continue;
     const x = personaliseById(m.recipe, p);
+    const used = new Map<string, number>();
     let portions = m.cook ?? 1;
     if (x.recipe.serves >= 4 && portions < x.recipe.serves) {
       batchNotes.push(`${x.name} makes ${x.recipe.serves}. Freeze what's left.`);
@@ -267,17 +324,21 @@ export function shoppingList(week: Week, p: Profile): ShoppingList {
       if (l.optional) continue;
       const ing = INGREDIENT[l.i];
       if (ing.pantry) { pantry.add(ing.name); continue; }
-      const e = totals.get(l.i) ?? { grams: 0, recipes: new Set<string>() };
-      e.grams += l.g * portions;
+      used.set(l.i, (used.get(l.i) ?? 0) + l.g * portions);
+    }
+    for (const [i, g] of used) {
+      const e = totals.get(i) ?? { grams: 0, recipes: new Set<string>(), uses: [] };
+      e.grams += g;
       e.recipes.add(x.name);
-      totals.set(l.i, e);
+      e.uses.push({ name: x.name, day: d.day, slot: m.slot, grams: Math.round(g), amount: quantity(i, g) });
+      totals.set(i, e);
     }
   }
   const aisles = new Map<string, ListItem[]>();
   for (const [id, e] of totals) {
     const ing = INGREDIENT[id];
     const list = aisles.get(ing.aisle) ?? [];
-    list.push({ id, name: ing.name, grams: Math.round(e.grams), ...amount(id, e.grams), recipes: [...e.recipes] });
+    list.push({ id, name: ing.name, grams: Math.round(e.grams), total: quantity(id, e.grams), ...amount(id, e.grams), recipes: [...e.recipes], uses: e.uses });
     aisles.set(ing.aisle, list);
   }
   return {

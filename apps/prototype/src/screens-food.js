@@ -11,7 +11,7 @@
   var SLOT_NAME = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' };
   var SLOT_TINT = { breakfast: 'tint-butter', lunch: 'tint-sky', dinner: 'tint-apricot', snack: 'tint-sage' };
   var HUNGRY = { Morning: 'morning', Lunchtime: 'lunchtime', Afternoon: 'afternoon', Evening: 'evening', 'Late night': 'late-night' };
-  var DEFAULTS = { goal: 'steady', diet: 'none', allergens: [], lactoseFree: false, aversions: [], kit: ['hob', 'oven', 'microwave', 'kettle'], maxMinutes: 20, household: 1, cookNights: 4, conditions: [], cuisines: [], budget: 3, joinedWeek: null, seed: 1, plan: null, ticked: {}, open: null, pick: null };
+  var DEFAULTS = { goal: 'steady', diet: 'none', allergens: [], lactoseFree: false, aversions: [], kit: ['hob', 'oven', 'microwave', 'kettle'], maxMinutes: 20, household: 1, cookNights: 4, conditions: [], cuisines: [], budget: 3, joinedWeek: null, seed: 1, plan: null, ticked: {}, open: null, pick: null, next: null };
   var TODAY_INDEX = (new Date(Date.UTC(2026, 9, 5)).getUTCDay() + 6) % 7; // the prototype's fixed "today" is a Monday
 
   function prefs(s) { return Object.assign({}, DEFAULTS, s.food || {}); }
@@ -19,8 +19,9 @@
 
   /* ---------- the person and their week, from app state ---------- */
   var profiles = new Map();
-  function profileOf(s) {
-    var f = prefs(s), week = LP.weekOf(s);
+  // `ahead` is 1 for next week, when the person is a week further on (phase and fibre ramp).
+  function profileOf(s, ahead) {
+    var f = prefs(s), week = Math.min(52, LP.weekOf(s) + (ahead || 0));
     var p = {
       weeksSinceLastDose: s.ob.status === 'stopped' ? week : 0,
       weeksOnPlan: Math.max(1, week - (f.joinedWeek || week) + 1),
@@ -42,7 +43,12 @@
     return weeks.get(key);
   }
   function saveWeek(s, week) { s.food = Object.assign({}, DEFAULTS, s.food || {}); s.food.plan = { key: keyOf(s), week: week }; }
-  function mealAt(week, day, slot) { return slot === 'snack' ? week.days[day].snacks[0] : week.days[day][slot]; }
+  function mealAt(week, day, slot, index) { return slot === 'snack' ? week.days[day].snacks[index || 0] : week.days[day][slot]; }
+  // Next week's meals, picked the week before: { from: 'blank' | 'suggested', week, ticked }.
+  function nextOf(s) { var n = prefs(s).next; return n && n.week ? n : null; }
+  function saveNext(s, week) { s.food = Object.assign({}, DEFAULTS, s.food || {}); s.food.next = Object.assign({ ticked: {} }, s.food.next || {}, { week: week }); }
+  var NEXT_START = LP.addDays(LP.TODAY, 7);
+  function nextDate(day) { return LP.fmt.dayMonth(LP.addDays(NEXT_START, day)); }
   function px(s, id) { return F.personaliseById(id, profileOf(s)); }
 
   function protein(s, n) { return s.settings.safeMode ? 'protein-rich' : 'about ' + n + ' g protein'; }
@@ -123,6 +129,7 @@
       ${sum.notes.map(function (n) { return html`<div key=${n} class="banner tint-sunk" role="note"><span class="caption">${n}</span></div>`; })}
       <div class="stack" style=${{ gap: 8 }}>
         <${Btn} block icon="basket" onClick=${function () { nav.go('shopping'); }}>Shopping list<//>
+        <${Btn} block variant="secondary" onClick=${function () { nav.go('plan-next'); }}>${nextOf(s) ? "Next week's meals" : 'Plan next week'}<//>
         <div class="grid2">
           <${Btn} variant="secondary" icon="shuffle" onClick=${shuffle}>New week<//>
           <${Btn} variant="secondary" onClick=${function () { setFood({ pick: null }); nav.go('recipes'); }}>All recipes<//>
@@ -148,9 +155,14 @@
     var why = F.reasons(x, p, week);
     var picking = f.pick;
     function use(dayIdx, slot) {
-      set(function (s) { saveWeek(s, F.replaceMeal(weekOf(s), profileOf(s), dayIdx, slot, r.id)); s.food.pick = null; return s; });
-      toast(x.name + ' is on for ' + F.DAYS[dayIdx] + '. Your shopping list is updated.');
-      nav.reset('meals');
+      var next = picking && picking.week === 'next';
+      set(function (s) {
+        if (next) saveNext(s, F.replaceMeal(nextOf(s).week, profileOf(s, 1), dayIdx, slot, r.id, picking.index || 0));
+        else saveWeek(s, F.replaceMeal(weekOf(s), profileOf(s), dayIdx, slot, r.id));
+        s.food.pick = null; return s;
+      });
+      toast(x.name + (next ? ' is on for next ' + F.DAYS[dayIdx] + '.' : ' is on for ' + F.DAYS[dayIdx] + '. Your shopping list is updated.'));
+      nav.reset(next ? 'plan-next' : 'meals');
     }
     var veg = Math.floor(n.vegGrams / 80);
     return html`<div class="scr" style=${{ gap: 18 }}>
@@ -213,7 +225,7 @@
       </div>
       <${Draft} />
       <div class="foot">
-        ${picking ? html`<${Btn} block onClick=${function () { use(picking.day, picking.slot); }}>Use this for ${F.DAYS[picking.day]}<//>`
+        ${picking ? html`<${Btn} block onClick=${function () { use(picking.day, picking.slot); }}>Use this for ${picking.week === 'next' ? 'next ' : ''}${F.DAYS[picking.day]}<//>`
           : inPlan ? html`<${Btn} block variant="secondary" onClick=${function () { nav.sheet('meal-swap', open.day + ':' + open.slot); }}>Swap this meal<//>`
           : html`<${Btn} block onClick=${function () { nav.sheet('add-meal', r.id); }}>Add to my week<//>`}
       </div>
@@ -237,8 +249,8 @@
     });
     var suits = lib.filter(function (x) { return x.ok; }).length;
     return html`<div class="scr" style=${{ gap: 16 }}>
-      <div class="topbar"><${Back} fallback="meals" onClick=${function () { setFood({ pick: null }); nav.back('meals'); }} /><span class="caption muted">${suits} of ${lib.length} suit you</span><span style=${{ width: 44 }}></span></div>
-      <h1 class="t-title">${f.pick ? 'Choose ' + SLOT_NAME[f.pick.slot].toLowerCase() + ' for ' + F.DAYS[f.pick.day] : 'Recipes'}</h1>
+      <div class="topbar"><${Back} fallback="meals" onClick=${function () { var nx = f.pick && f.pick.week === 'next'; setFood({ pick: null }); nav.back(nx ? 'plan-next' : 'meals'); }} /><span class="caption muted">${suits} of ${lib.length} suit you</span><span style=${{ width: 44 }}></span></div>
+      <h1 class="t-title">${f.pick ? 'Choose ' + SLOT_NAME[f.pick.slot].toLowerCase() + ' for ' + (f.pick.week === 'next' ? 'next ' : '') + F.DAYS[f.pick.day] : 'Recipes'}</h1>
       <${L.TextField} id="recipe-search" label="Search recipes" placeholder="Try chilli, salmon or no-cook" value=${query} onChange=${function (e) { setQuery(e.target.value); }} />
       ${f.pick ? null : html`<div class="wrap" role="radiogroup" aria-label="Meal">${['all'].concat(SLOTS).map(function (k) {
         return html`<button key=${k} type="button" role="radio" aria-checked=${slot === k} class=${'choice sm' + (slot === k ? ' on' : '')} onClick=${function () { setSlot(k); }}>${k === 'all' ? 'All meals' : SLOT_NAME[k] + (k === 'snack' ? 's' : '')}</button>`;
@@ -268,30 +280,46 @@
     </div>`;
   }
 
-  /* ---------- M4 Shopping list ---------- */
-  function Shopping() {
-    var s = useApp(), f = prefs(s), p = profileOf(s), week = weekOf(s), list = F.shoppingList(week, p);
-    var ticked = f.ticked || {};
-    function tick(id) { setFood(function (f) { var t = Object.assign({}, f.ticked); if (t[id]) delete t[id]; else t[id] = true; return { ticked: t }; }); }
+  /* ---------- M4 Shopping list (this week), M9 next week's ---------- */
+  function ShoppingView(props) {
+    var s = useApp(), f = prefs(s), isNext = props.which === 'next', nx = nextOf(s);
+    if (isNext && !nx) return html`<div class="scr"><div class="topbar"><${Back} fallback="plan-next" /></div><h1 class="t-title">Nothing picked yet</h1><${Btn} onClick=${function () { nav.go('plan-next'); }}>Plan next week<//></div>`;
+    var p = profileOf(s, isNext ? 1 : 0), week = isNext ? nx.week : weekOf(s), list = F.shoppingList(week, p);
+    var ticked = (isNext ? nx.ticked : f.ticked) || {};
+    function tick(id) {
+      set(function (s) {
+        var o = isNext ? s.food.next : s.food, t = Object.assign({}, o.ticked);
+        if (t[id]) delete t[id]; else t[id] = true; o.ticked = t; return s;
+      });
+    }
+    function untick() { set(function (s) { (isNext ? s.food.next : s.food).ticked = {}; return s; }); }
+    var pr = F.progress(week);
     var total = list.aisles.reduce(function (a, x) { return a + x.items.length; }, 0), done = list.aisles.reduce(function (a, x) { return a + x.items.filter(function (i) { return ticked[i.id]; }).length; }, 0);
+    var day3 = function (d) { return F.DAYS[d].slice(0, 3); };
     return html`<div class="scr" style=${{ gap: 16 }}>
-      <div class="topbar"><${Back} fallback="meals" /><span class="caption muted">${done} of ${total} ticked</span><span style=${{ width: 44 }}></span></div>
+      <div class="topbar"><${Back} fallback=${isNext ? 'plan-next' : 'meals'} /><span class="caption muted">${done} of ${total} ticked</span><span style=${{ width: 44 }}></span></div>
       <div class="stack" style=${{ gap: 6 }}>
-        <h1 class="t-title">Shopping list</h1>
-        <p class="body muted">Everything for this week's meals, in aisle order, for ${p.household === 1 ? 'one' : p.household + ' people'} at dinner. Amounts are rounded up to what's sold.</p>
+        <h1 class="t-title">${isNext ? "Next week's shopping" : 'Shopping list'}</h1>
+        <p class="body muted">${isNext ? 'For the ' + pr.chosen + ' meals you picked for ' + nextDate(0) + ' to ' + nextDate(6) + '. ' : "Everything for this week's meals. "}Each ingredient is added up across every dish that uses it, for ${p.household === 1 ? 'one' : p.household + ' people'} at dinner.</p>
       </div>
+      ${list.aisles.length ? null : html`<div class="card tint-sunk"><span class="body">Pick some meals and their ingredients appear here.</span></div>`}
       ${list.aisles.map(function (a) {
         return html`<div key=${a.aisle} class="stack" style=${{ gap: 8 }}>
           <p class="label muted">${a.aisle.toUpperCase()}</p>
           <div class="list">${a.items.map(function (it) {
             var on = !!ticked[it.id];
-            return html`<button key=${it.id} type="button" class="li" role="checkbox" aria-checked=${on} onClick=${function () { tick(it.id); }} style=${{ alignItems: 'flex-start' }}>
+            return html`<button key=${it.id} type="button" class="li" role="checkbox" aria-checked=${on} aria-label=${it.total + ' ' + it.name + ', buy ' + it.label} onClick=${function () { tick(it.id); }} style=${{ alignItems: 'flex-start' }}>
               <span style=${{ width: 26, height: 26, flex: 'none', borderRadius: 8, marginTop: 1, display: 'grid', placeItems: 'center', background: on ? 'var(--sage-ink)' : 'transparent', boxShadow: on ? 'none' : 'inset 0 0 0 2px var(--ink-muted)', color: 'var(--surface-raised)' }}>${on ? html`<${Icon} name="check" size=${16} w=${2.6} />` : null}</span>
-              <span class="grow stack" style=${{ gap: 2, opacity: on ? 0.55 : 1 }}>
-                <span class="strong" style=${{ textDecoration: on ? 'line-through' : 'none' }}>${it.name}</span>
-                <span class="caption muted">${it.detail ? it.detail + ' · ' : ''}${it.recipes.join(', ')}</span>
+              <span class="grow stack" style=${{ gap: 3, opacity: on ? 0.55 : 1 }}>
+                <span class="between" style=${{ alignItems: 'baseline', gap: 8 }}>
+                  <span class="strong" style=${{ textDecoration: on ? 'line-through' : 'none' }}>${it.name}</span>
+                  <span class="strong" style=${{ whiteSpace: 'nowrap' }}>${it.total}</span>
+                </span>
+                ${it.uses.length > 1 ? it.uses.map(function (u, i) {
+                  return html`<span key=${i} class="caption muted">${u.amount} · ${u.name}, ${day3(u.day)}</span>`;
+                }) : html`<span class="caption muted">${it.uses[0].name}, ${day3(it.uses[0].day)}</span>`}
+                <span class="caption">Buy ${it.label}</span>
               </span>
-              <span class="caption" style=${{ whiteSpace: 'nowrap', paddingTop: 2 }}>${it.label}</span>
             </button>`;
           })}</div>
         </div>`;
@@ -301,8 +329,105 @@
         <span class="body">${list.pantry.join(', ')}</span>
       </div>` : null}
       ${list.batchNotes.map(function (n) { return html`<p key=${n} class="caption muted">${n}</p>`; })}
-      <p class="caption muted">Products and prices vary. Always check labels for allergens. Sending this list to your supermarket comes next.</p>
-      ${done ? html`<${Btn} variant="quiet" size="sm" style=${{ alignSelf: 'center' }} onClick=${function () { setFood({ ticked: {} }); }}>Untick everything<//>` : null}
+      <p class="caption muted">Totals are for the portions you'll cook, leftovers included. Packs are rounded up to what's sold, and products vary, so check labels for allergens.</p>
+      ${done ? html`<${Btn} variant="quiet" size="sm" style=${{ alignSelf: 'center' }} onClick=${untick}>Untick everything<//>` : null}
+    </div>`;
+  }
+  function Shopping() { return html`<${ShoppingView} which="this" />`; }
+  function ShoppingNext() { return html`<${ShoppingView} which="next" />`; }
+
+  /* ---------- M7 Plan next week, M8 pick a meal (sheet) ---------- */
+  function PlanNext() {
+    var s = useApp(), nx = nextOf(s), p = profileOf(s, 1);
+    var st = React.useState('blank'), start = st[0], setStart = st[1];
+    function begin() {
+      set(function (s) { s.food = Object.assign({}, DEFAULTS, s.food || {}); s.food.next = { from: start, ticked: {}, week: start === 'blank' ? F.emptyWeek(p) : F.planWeek(p, { seed: prefs(s).seed + 7, includeDrafts: true }) }; return s; });
+    }
+    var head = html`<div class="stack" style=${{ gap: 6 }}>
+      <h1 class="t-title">Plan next week</h1>
+      <p class="body muted">${nextDate(0)} to ${nextDate(6)}. Pick your meals now and we'll add up everything you need into one shopping list.</p>
+    </div>`;
+    if (!nx) {
+      return html`<div class="scr" style=${{ gap: 20 }}>
+        <div class="topbar"><${Back} fallback="meals" /><span></span></div>
+        ${head}
+        <${Options} gap=${8} label="How to start" style=${{ padding: '14px 16px' }} value=${start} onChange=${setStart} options=${[
+          { id: 'blank', title: 'Pick every meal myself', detail: 'Start with an empty week and choose each meal' },
+          { id: 'suggested', title: 'Start from suggestions', detail: "We fill the week for you, then you change what you like" }
+        ]} />
+        <div class="foot"><${Btn} block onClick=${begin}>Start planning<//></div>
+      </div>`;
+    }
+    var week = nx.week, pr = F.progress(week);
+    function row(day, slot, m, index) {
+      var x = m.recipe ? F.personaliseById(m.recipe, p) : null;
+      var title = m.kind === 'takeaway' ? 'Takeaway night' : m.kind === 'leftover' ? x.name : x ? x.name : null;
+      var sub = m.kind === 'leftover' ? 'Leftovers from ' + F.DAYS[m.from] : m.kind === 'takeaway' ? 'A night off cooking' : x ? minutes(x.recipe) + ' · ' + protein(s, x.nutrition.protein) + (m.cook > 1 ? ' · cook ' + m.cook : '') : null;
+      return html`<button key=${slot + (index || 0)} type="button" class="li" onClick=${function () { nav.sheet('pick-meal', day + ':' + slot + ':' + (index || 0)); }}>
+        <span class="grow stack" style=${{ gap: 2 }}>
+          <span class="label muted">${SLOT_NAME[slot].toUpperCase()}</span>
+          ${title ? html`<span class="strong">${title}</span><span class="caption muted">${sub}</span>` : html`<span class="strong" style=${{ color: 'var(--apricot-ink)' }}>Choose ${SLOT_NAME[slot].toLowerCase()}</span>`}
+        </span>
+        <${Icon} name=${title ? 'chevron' : 'plus'} size=${18} />
+      </button>`;
+    }
+    return html`<div class="scr" style=${{ gap: 18 }}>
+      <div class="topbar"><${Back} fallback="meals" /><span class="caption muted">${pr.chosen} of ${pr.total} chosen</span><span style=${{ width: 44 }}></span></div>
+      ${head}
+      <div class="meter" role="progressbar" aria-label="Meals chosen" aria-valuemin="0" aria-valuemax=${pr.total} aria-valuenow=${pr.chosen}><span style=${{ width: Math.round(pr.chosen / pr.total * 100) + '%' }}></span></div>
+      ${week.days.map(function (d) {
+        return html`<div key=${d.day} class="stack" style=${{ gap: 8 }}>
+          <h2 class="t-heading">${d.name} <span class="caption muted">${nextDate(d.day)}</span></h2>
+          <div class="list">
+            ${row(d.day, 'breakfast', d.breakfast)}
+            ${row(d.day, 'lunch', d.lunch)}
+            ${row(d.day, 'dinner', d.dinner)}
+            ${d.snacks.map(function (m, i) { return row(d.day, 'snack', m, i); })}
+          </div>
+        </div>`;
+      })}
+      <p class="caption muted">Meals you leave empty aren't on the list. You can change any of these until the week starts.</p>
+      <div class="stack" style=${{ gap: 8 }}>
+        <${Btn} block icon="basket" disabled=${!pr.chosen} onClick=${function () { nav.go('shopping-next'); }}>Make my shopping list<//>
+        <${Btn} variant="quiet" size="sm" style=${{ alignSelf: 'center' }} onClick=${function () { setFood({ next: null }); }}>Start again<//>
+      </div>
+      <${Draft} />
+      <${TabBar} active="plan" />
+    </div>`;
+  }
+
+  function PickMeal() {
+    var s = useApp(), parts = String(s.sheet.data || '0:dinner:0').split(':'), day = +parts[0], slot = parts[1], index = +parts[2] || 0;
+    var nx = nextOf(s), p = profileOf(s, 1);
+    if (!nx) return null;
+    var week = nx.week, current = mealAt(week, day, slot, index);
+    var lefts = F.leftoverOptions(week, p, day, slot);
+    var options = F.swapOptions(week, p, day, slot, { n: 4, includeDrafts: true, seed: prefs(s).seed + day });
+    function choose(choice) {
+      set(function (s) { saveNext(s, F.setMeal(nextOf(s).week, profileOf(s, 1), day, slot, choice, index)); s.sheet = null; return s; });
+    }
+    var quick = [];
+    lefts.forEach(function (o) { quick.push({ key: 'l' + o.from, title: 'Leftovers: ' + o.name, detail: 'Cook extra on ' + F.DAYS[o.from], choice: { leftoverFrom: o.from } }); });
+    if (slot === 'dinner') quick.push({ key: 'take', title: 'Takeaway night', detail: 'A night off cooking, planned in', choice: { kind: 'takeaway' } });
+    return html`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+      <span class="grab"></span>
+      <div class="between">
+        <h1 id="pm-title" class="t-heading" style=${{ fontSize: 24, lineHeight: '30px' }}>${F.DAYS[day]}'s ${SLOT_NAME[slot].toLowerCase()}</h1>
+        <button type="button" class="iconbtn" aria-label="Close" onClick=${function () { nav.sheet(null); }}><${Icon} name="close" /></button>
+      </div>
+      <p class="label muted">SUGGESTED FOR YOU</p>
+      <div class="stack" style=${{ gap: 8 }}>${options.map(function (x) {
+        return html`<button key=${x.recipe.id} type="button" class="option" onClick=${function () { choose({ recipe: x.recipe.id }); }}>
+          <span class=${'ico ' + SLOT_TINT[slot]} style=${{ width: 40, height: 40, borderRadius: 9999, display: 'grid', placeItems: 'center', flex: 'none' }}><${Icon} name="meal" size=${18} /></span>
+          <span class="grow" style=${{ display: 'flex', flexDirection: 'column', gap: 2 }}><span style=${{ fontWeight: 800 }}>${x.name}</span><span class="caption muted">${minutes(x.recipe)} · ${protein(s, x.nutrition.protein)}</span></span>
+        </button>`;
+      })}</div>
+      <${Btn} block variant="secondary" onClick=${function () { set(function (s) { s.food.pick = { day: day, slot: slot, index: index, week: 'next' }; s.sheet = null; return s; }); nav.go('recipes'); }}>See all ${SLOT_NAME[slot].toLowerCase()} recipes<//>
+      ${quick.length ? html`<p class="label muted">OR</p><div class="stack" style=${{ gap: 8 }}>${quick.map(function (q) {
+        return html`<button key=${q.key} type="button" class="option" onClick=${function () { choose(q.choice); }}>
+          <span class="grow" style=${{ display: 'flex', flexDirection: 'column', gap: 2 }}><span style=${{ fontWeight: 800 }}>${q.title}</span><span class="caption muted">${q.detail}</span></span></button>`;
+      })}</div>` : null}
+      ${current && current.kind !== 'free' ? html`<${Btn} variant="quiet" size="sm" style=${{ alignSelf: 'center' }} onClick=${function () { choose({ kind: 'free' }); }}>Leave it empty<//>` : null}
     </div>`;
   }
 
@@ -476,11 +601,19 @@
     </button>`;
   }
   function PlanCard() {
-    var s = useApp(), week = weekOf(s), cooks = week.days.filter(function (d) { return d.dinner.kind === 'cook'; }).length;
-    return html`<button type="button" class="card rowcard tint-sky" onClick=${function () { nav.go('meals'); }}>
-      <span class="grow stack" style=${{ gap: 2 }}><span class="label">MEALS THIS WEEK</span><span class="t-heading" style=${{ fontSize: 20 }}>${cooks} dinners, leftovers and a takeaway</span><span class="caption">Recipes, swaps and your shopping list</span></span>
-      <${Icon} name="chevron" size=${20} />
-    </button>`;
+    var s = useApp(), week = weekOf(s), cooks = week.days.filter(function (d) { return d.dinner.kind === 'cook'; }).length, nx = nextOf(s);
+    var pr = nx ? F.progress(nx.week) : null;
+    return html`<div class="stack" style=${{ gap: 12 }}>
+      <button type="button" class="card rowcard tint-sky" onClick=${function () { nav.go('meals'); }}>
+        <span class="grow stack" style=${{ gap: 2 }}><span class="label">MEALS THIS WEEK</span><span class="t-heading" style=${{ fontSize: 20 }}>${cooks} dinners, leftovers and a takeaway</span><span class="caption">Recipes, swaps and your shopping list</span></span>
+        <${Icon} name="chevron" size=${20} />
+      </button>
+      <button type="button" class="card rowcard" onClick=${function () { nav.go('plan-next'); }}>
+        <span style=${{ width: 52, height: 52, borderRadius: 9999, background: 'var(--butter)', display: 'grid', placeItems: 'center', color: 'var(--on-pastel)', flex: 'none' }}><${Icon} name="basket" size=${24} /></span>
+        <span class="grow stack" style=${{ gap: 2 }}><span class="label muted">NEXT WEEK</span><span class="strong" style=${{ fontSize: 16 }}>${nx ? pr.chosen + ' of ' + pr.total + ' meals picked' : 'Pick your meals for next week'}</span><span class="caption muted">${nx ? 'Your shopping list adds it all up' : 'Then get one shopping list for the lot'}</span></span>
+        <${Icon} name="chevron" size=${20} />
+      </button>
+    </div>`;
   }
 
   LP.food = { prefs: prefs, setFood: setFood, profileOf: profileOf, weekOf: weekOf, GoalPicker: GoalPicker, TonightCard: TonightCard, PlanCard: PlanCard, DEFAULTS: DEFAULTS };
@@ -489,9 +622,11 @@
     recipe: { c: Recipe, id: 'M2', title: 'Recipe', group: 'Meals' },
     recipes: { c: Recipes, id: 'M3', title: 'Recipes', group: 'Meals' },
     shopping: { c: Shopping, id: 'M4', title: 'Shopping list', group: 'Meals' },
+    'plan-next': { c: PlanNext, id: 'M7', title: 'Plan next week', group: 'Meals', tab: 'plan' },
+    'shopping-next': { c: ShoppingNext, id: 'M9', title: "Next week's shopping", group: 'Meals' },
     'food-prefs': { c: FoodPrefs, id: 'S7', title: 'Food preferences', group: 'Settings and account' },
     'ob-eating': { c: ObEating, id: 'O7b', title: 'How you eat', group: 'Onboarding' },
     'ob-kitchen': { c: ObKitchen, id: 'O7c', title: 'Your kitchen and your week', group: 'Onboarding' }
   });
-  Object.assign(window.LP.sheets, { 'meal-swap': { c: SwapMeal, id: 'M5', title: 'Swap a meal' }, 'add-meal': { c: AddMeal, id: 'M6', title: 'Add to my week' } });
+  Object.assign(window.LP.sheets, { 'pick-meal': { c: PickMeal, id: 'M8', title: 'Pick a meal for next week' }, 'meal-swap': { c: SwapMeal, id: 'M5', title: 'Swap a meal' }, 'add-meal': { c: AddMeal, id: 'M6', title: 'Add to my week' } });
 })();

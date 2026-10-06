@@ -24,7 +24,8 @@ test panel opens from the dashed **Test panel** button.
 - **The app:** Today, quick log, swap a habit, workouts (overview, a set-by-set session, done), Plan, week detail,
   lesson, Progress (score, weight trend with ranges, weigh-in history with edit and delete, prescriber pack), drift
   nudge, what changed, reset week, meals (this week's plan by day, swap a meal, recipes with swaps and portions, the
-  recipe library with filters, the shopping list, food preferences), the Coach (scripted replies, with the prescriber redirect for any medication
+  recipe library with filters, the shopping list, food preferences, and planning next week meal by meal with a
+  shopping list that adds up each ingredient across dishes), the Coach (scripted replies, with the prescriber redirect for any medication
   question) and every Settings screen down to deleting the account.
 - **Meals:** planned live by `packages/engine` from the onboarding and food-preference answers, so changing the diet,
   allergies, kit or household rebuilds the week. Every recipe is a draft until the dietitian signs it off, and the

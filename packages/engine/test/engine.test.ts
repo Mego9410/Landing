@@ -4,7 +4,7 @@ import { test } from "node:test";
 import { INGREDIENT, RECIPES } from "@landing/content";
 import {
   dayTotals, library, personalise, planWeek, profile, rename, replaceMeal, shoppingList, swapOptions, targets, weekSummary,
-  quantity, type Diet, type Profile, type Week,
+  quantity, emptyWeek, setMeal, leftoverOptions, progress, type Diet, type Profile, type Week,
 } from "../src/index.ts";
 
 const opts = { includeDrafts: true };
@@ -207,4 +207,34 @@ test("a recipe's method limits its swaps", () => {
   assert.equal(burger.ok, false);
   const oats = personalise(RECIPES.find((r) => r.id === "overnight-oats")!, profile({ allergens: ["gluten"] }));
   assert.equal(oats.lines[0].i, "gf-oats");
+});
+
+test("picking a week by hand: the shopping list adds up the same ingredient across dishes", () => {
+  const p = profile({ household: 1 });
+  let w = emptyWeek(p);
+  assert.deepEqual(progress(w), { chosen: 0, total: 7 * (3 + 1) });
+  w = setMeal(w, p, 0, "dinner", { recipe: "chicken-tikka-traybake" }); // 150 g chicken breast a portion
+  w = setMeal(w, p, 3, "dinner", { recipe: "chicken-fajita-tray" }); // 130 g
+  w = setMeal(w, p, 4, "dinner", { kind: "takeaway" });
+  const chicken = shoppingList(w, p).aisles.flatMap((a) => a.items).find((i) => i.id === "chicken-breast")!;
+  assert.equal(chicken.grams, 280);
+  assert.equal(chicken.total, "280 g");
+  assert.deepEqual(chicken.uses.map((u) => [u.day, u.grams]), [[0, 150], [3, 130]]);
+  assert.equal(progress(w).chosen, 3);
+
+  const family = profile({ household: 2 });
+  const two = setMeal(setMeal(emptyWeek(family), family, 0, "dinner", { recipe: "chicken-tikka-traybake" }), family, 3, "dinner", { recipe: "chicken-fajita-tray" });
+  assert.equal(shoppingList(two, family).aisles.flatMap((a) => a.items).find((i) => i.id === "chicken-breast")!.grams, 560);
+});
+
+test("leftovers chosen by hand add portions to the night they're cooked, and only while they keep", () => {
+  const p = profile();
+  let w = setMeal(emptyWeek(p), p, 0, "dinner", { recipe: "turkey-chilli" }); // keeps 3 days
+  assert.deepEqual(leftoverOptions(w, p, 1, "lunch").map((o) => o.from), [0]);
+  assert.deepEqual(leftoverOptions(w, p, 5, "dinner"), [], "too long after Monday");
+  w = setMeal(w, p, 1, "lunch", { leftoverFrom: 0 });
+  w = setMeal(w, p, 2, "dinner", { leftoverFrom: 0 });
+  assert.equal(w.days[0].dinner.cook, 3);
+  w = setMeal(w, p, 0, "dinner", { kind: "free" });
+  assert.equal(w.days[1].lunch.kind, "free", "leftovers of a cleared dinner are cleared too");
 });

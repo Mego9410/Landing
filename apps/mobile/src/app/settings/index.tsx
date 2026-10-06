@@ -7,6 +7,7 @@ import { Button } from "@/components/Button";
 import { Screen } from "@/components/Screen";
 import { Choices, Header, List, Row, Section, ToggleRow } from "@/components/ui";
 import { phaseOf } from "@/data/content";
+import { fmt } from "@/data/dates";
 import { demoState, freshState, replace, set, setWeek, useApp, weekOf } from "@/state/store";
 import { toast } from "@/state/toast";
 import { space } from "@/theme";
@@ -28,6 +29,9 @@ export default function Settings() {
       </Section>
       <Section title="SUPPORT">
         <View style={{ gap: space[3] }}>
+          <List>
+            <Row first title="Health and safety" sub={s.disclaimer ? `You accepted this on ${fmt.dayMonth(s.disclaimer.acceptedAt.slice(0, 10))}` : undefined} onPress={() => router.push({ pathname: "/disclaimer", params: { review: "1" } })} />
+          </List>
           <ToggleRow title="Safe mode" sub="Hides weight and numbers, and keeps the focus on routines" value={s.settings.safeMode} onChange={(v) => { set((st) => { st.settings.safeMode = v; }); toast(v ? "Safe mode is on." : "Safe mode is off."); }} />
           <AppText variant="caption" color="inkMuted">If food or eating feels hard, Beat&apos;s helpline is there to talk to.</AppText>
         </View>

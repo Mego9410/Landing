@@ -53,7 +53,13 @@ export interface AppState {
   settings: { safeMode: boolean; evening: boolean };
   scores: Record<number, number>;
   journal: { questions: string[]; entries: Record<string, JournalEntry> };
+  /** When the person accepted the health information at the start, and which wording they saw. */
+  disclaimer: { acceptedAt: string; version: number } | null;
 }
+
+/** Bump when the wording of the health information changes, so everyone sees and accepts it again. */
+export const DISCLAIMER_VERSION = 1;
+export const needsDisclaimer = (s: AppState) => !s.disclaimer || s.disclaimer.version < DISCLAIMER_VERSION;
 
 export const FOOD_DEFAULTS: FoodPrefs = {
   goal: "steady", diet: "none", allergens: [], lactoseFree: false, aversions: [], kit: ["hob", "oven", "microwave", "kettle"],
@@ -120,6 +126,7 @@ export function demoState(): AppState {
     settings: { safeMode: false, evening: false },
     scores: { 2: 64, 3: 70, 4: 72, 5: 78 },
     journal: { questions: STARTER, entries: seedJournal(weights) },
+    disclaimer: null,
   };
 }
 
@@ -128,7 +135,7 @@ export function freshState(): AppState {
   const s = demoState();
   return { ...s, onboarded: false, protein: {}, weights: s.weights.filter((w) => w.date === TODAY), workouts: { done: {}, feel: null },
     habits: { ids: [], done: {}, today: {}, swappedFrom: null }, coach: { messages: [] }, food: { ...FOOD_DEFAULTS }, lessonsRead: {},
-    journal: { questions: STARTER, entries: {} } };
+    journal: { questions: STARTER, entries: {} }, disclaimer: null };
 }
 
 /* ---------- the store ---------- */

@@ -77,7 +77,8 @@ What the code does today, and what it needs to do.
 | **DPIA and ICO** | A data protection impact assessment for health data, and the ICO data protection fee. | Lawyer or DPO |
 | **Medical device check** | Confirm Landing's intended purpose keeps it a wellness app under MHRA rules: preferences not diagnoses, no reading of biometrics, no medication advice. | Regulatory adviser |
 | **What we say about GLP-1s** | Prescription-only medicines can't be advertised to the public in the UK. Naming Wegovy or Mounjaro in the store listing, screenshots or ads is a risk even if the app is not selling them. Wording about "after the jab" needs a regulatory read (ASA/CAP and MHRA). | Regulatory adviser |
-| **Clinical sign-off** | Recipes, protein guidance, exercises, safe mode, journal questions (the period question and drinking question included) | Dietitian, physio, Beat (food plan section 8) |
+| **Health disclaimer (built)** | Shown before anything else: general guidance not medical advice, no medication advice, when to see a GP first, when to stop exercising, check labels, Beat. Two required ticks (understood, 18 or over), saved with the date and a wording version; readable again from Settings. | Lawyer to check the wording |
+| **Content checks** | Decided 6 October 2026: no ongoing clinical sign-off; the disclaimer covers the plans as general guidance. What a disclaimer can't do: UK law doesn't let a business exclude liability for injury caused by negligence, so the content itself still has to be right. At the least, check allergen tags and swaps on every recipe, and the exercise levels and easier versions, ideally as a one-off paid review. | Team, or a one-off dietitian and physio check |
 | **Safe mode check** | Confirm the new Today ring, the journal insights and the weight comparisons all behave in safe mode, and that nothing reads as a streak or a score to hit. | Beat review |
 
 ---

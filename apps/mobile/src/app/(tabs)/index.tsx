@@ -12,7 +12,7 @@ import { HABITS, phaseOf, PHASES, SESSIONS, TIPS } from "@/data/content";
 import { fmt, TODAY, weekdayIndex } from "@/data/dates";
 import { minutes, px, thisWeek } from "@/state/food";
 import { habitDetail, nextSession, toggleHabit } from "@/state/habits";
-import { useApp, weekOf } from "@/state/store";
+import { needsDisclaimer, useApp, weekOf } from "@/state/store";
 import { headline, todayPlan, type Task } from "@/state/today";
 import { radius, space, useColors } from "@/theme";
 
@@ -117,6 +117,7 @@ function Plans() {
 
 export default function Today() {
   const s = useApp();
+  if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
   if (!s.onboarded) return <Redirect href="/onboarding" />;
   const week = weekOf(s), phase = phaseOf(week), nextPhase = PHASES[PHASES.indexOf(phase) + 1];
   const items = todayPlan(s), done = items.filter((i) => i.done).length;

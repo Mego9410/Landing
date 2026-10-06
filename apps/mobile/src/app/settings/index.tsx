@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { View } from "react-native";
+import { Alert, Platform, View } from "react-native";
 import { LABELS } from "@landing/engine";
 import { castById } from "@landing/motion";
 import { AppText } from "@/components/AppText";
@@ -8,14 +8,33 @@ import { Screen } from "@/components/Screen";
 import { Choices, Header, List, Row, Section, ToggleRow } from "@/components/ui";
 import { phaseOf } from "@/data/content";
 import { fmt } from "@/data/dates";
-import { demoState, freshState, replace, set, setWeek, useApp, weekOf } from "@/state/store";
+import { demoState, freshState, replace, set, setWeek, useApp, weekOf, type Units } from "@/state/store";
 import { toast } from "@/state/toast";
+import { available, connect, disconnect } from "@/state/appleHealth";
+import { deleteEverything, shareExport } from "@/state/data";
 import { space } from "@/theme";
 
 /** S1 Settings, with the demo controls the prototype keeps in its test panel. */
 export default function Settings() {
   const s = useApp();
   const week = weekOf(s);
+  const r = s.settings.reminders;
+  const count = [r.checkIn.on, r.sessions.on, r.planning.on].filter(Boolean).length;
+  const on = count ? `${count} on` : "Off";
+  const healthSub = s.settings.appleHealth ? "Weight and steps" : available() ? "Bring in weight and steps" : "Works in the App Store version";
+  async function toggleHealth() {
+    if (s.settings.appleHealth) { disconnect(); toast("Apple Health disconnected. Weigh-ins already brought in stay."); return; }
+    if (!available()) { toast("Apple Health works in the App Store version of Landing."); return; }
+    await connect().catch(() => toast("Couldn't connect to Apple Health."));
+  }
+  function confirmDelete() {
+    const go = () => { deleteEverything().then(() => router.replace("/disclaimer")); };
+    if (Platform.OS === "web") { if (window.confirm("Delete everything? This clears all your data from this device and can't be undone.")) go(); return; }
+    Alert.alert("Delete everything?", "This clears all your answers, logs, weigh-ins and check-ins from this phone. It can't be undone.", [
+      { text: "Keep my data", style: "cancel" },
+      { text: "Delete everything", style: "destructive", onPress: go },
+    ]);
+  }
   return (
     <Screen contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
       <Header fallback="/" />
@@ -35,6 +54,25 @@ export default function Settings() {
           </List>
           <ToggleRow title="Safe mode" sub="Hides weight and numbers, and keeps the focus on routines" value={s.settings.safeMode} onChange={(v) => { set((st) => { st.settings.safeMode = v; }); toast(v ? "Safe mode is on." : "Safe mode is off."); }} />
           <AppText variant="caption" color="inkMuted">If food or eating feels hard, Beat&apos;s helpline is there to talk to.</AppText>
+        </View>
+      </Section>
+      <Section title="YOUR APP">
+        <View style={{ gap: space[3] }}>
+          <List>
+            <Row first title="Reminders" value={on} onPress={() => router.push("/settings/reminders")} />
+            <Row title="Apple Health" sub={healthSub} onPress={toggleHealth} chevron={false} right={<AppText weight="800" color="apricotInk">{s.settings.appleHealth ? "Disconnect" : available() ? "Connect" : ""}</AppText>} />
+          </List>
+          <AppText weight="700">Units</AppText>
+          <Choices label="Units" value={s.settings.units} onChange={(v) => set((st) => { st.settings.units = v as Units; })} options={[{ id: "kg", label: "Kilograms" }, { id: "stlb", label: "Stones and pounds" }]} />
+        </View>
+      </Section>
+      <Section title="YOUR DATA">
+        <View style={{ gap: space[3] }}>
+          <AppText variant="caption" color="inkMuted">Everything Landing keeps is on this phone. Nothing is sent to us.</AppText>
+          <List>
+            <Row first title="Export my data" sub="A file of everything the app keeps" onPress={() => shareExport().catch(() => toast("Couldn't make the file. Try again."))} />
+            <Row title="Delete everything" sub="Clears this phone and starts again" titleColor="roseInk" onPress={confirmDelete} />
+          </List>
         </View>
       </Section>
       <Section title="ABOUT">

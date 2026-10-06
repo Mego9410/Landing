@@ -7,6 +7,7 @@ import type { Week } from "@landing/engine";
 import { habitsForWeek } from "@/data/content";
 import { addDays, daysBetween, today, weekDates, weekdayIndex, weekStart } from "@/data/dates";
 import { STARTER } from "@/data/journal";
+import { REMINDER_DEFAULTS, type Reminders } from "./reminders";
 
 export type Hungry = "Morning" | "Lunchtime" | "Afternoon" | "Evening" | "Late night";
 
@@ -70,7 +71,7 @@ export interface AppState {
   demos: { who: string; still: boolean; ghost: boolean };
   lessonsRead: Record<number, boolean>;
   coach: { messages: { from: "you" | "coach"; text: string; redirect?: boolean }[] };
-  settings: { safeMode: boolean; units: Units };
+  settings: { safeMode: boolean; units: Units; reminders: Reminders; appleHealth: boolean };
   journal: { questions: string[]; entries: Record<string, JournalEntry> };
   /** When the person accepted the health information at the start, and which wording they saw. */
   disclaimer: { acceptedAt: string; version: number } | null;
@@ -166,7 +167,7 @@ export function demoState(): AppState {
       { from: "you", text: "Yes please. And a quick high-protein lunch?" },
       { from: "coach", text: "Greek yoghurt, berries and a handful of nuts gets you about 30 g in two minutes. Want a savoury one too?" },
     ] },
-    settings: { safeMode: false, units: "kg" },
+    settings: { safeMode: false, units: "kg", reminders: REMINDER_DEFAULTS, appleHealth: false },
     journal: { questions: STARTER, entries: seedJournal(t, weights) },
     disclaimer: null,
     health: { ...HEALTH_DEFAULTS, checkedAt: addDays(t, -35), version: 1 },
@@ -185,7 +186,7 @@ export function freshState(): AppState {
     days: {}, weights: [], workouts: { feel: null },
     demos: { who: "mix", still: false, ghost: true },
     lessonsRead: {}, coach: { messages: [] },
-    settings: { safeMode: false, units: "kg" },
+    settings: { safeMode: false, units: "kg", reminders: REMINDER_DEFAULTS, appleHealth: false },
     journal: { questions: STARTER, entries: {} },
     disclaimer: null,
     health: { ...HEALTH_DEFAULTS },
@@ -194,7 +195,8 @@ export function freshState(): AppState {
 }
 
 /* ---------- the store ---------- */
-const KEY = "landing-app-v2"; // the key stays the same; the saved object carries its own version
+export const STORAGE_KEY = "landing-app-v2"; // the key stays the same; the saved object carries its own version
+const KEY = STORAGE_KEY;
 let state: AppState = freshState();
 let hydrated = false;
 const listeners = new Set<() => void>();

@@ -4,6 +4,7 @@
 import { AppState as RNAppState } from "react-native";
 import { habitsForWeek } from "@/data/content";
 import { today, weekStart } from "@/data/dates";
+import { syncWeights } from "./appleHealth";
 import { saveThisWeek } from "./food";
 import { get, set, weekOf } from "./store";
 
@@ -25,7 +26,8 @@ export function rollover() {
 /** Starts watching for a new day. Returns a function that stops watching. */
 export function watchDay(): () => void {
   rollover();
+  syncWeights().catch(() => {});
   const timer = setInterval(rollover, 60_000);
-  const sub = RNAppState.addEventListener("change", (a) => { if (a === "active") rollover(); });
+  const sub = RNAppState.addEventListener("change", (a) => { if (a === "active") { rollover(); syncWeights().catch(() => {}); } });
   return () => { clearInterval(timer); sub.remove(); };
 }

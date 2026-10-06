@@ -39,6 +39,14 @@
             "image": "./assets/images/splash-icon.png"
           }
         }
+      ],
+      "expo-sharing",
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Landing reads your weight and steps to show your 7-day trend and answer your daily check-in.",
+          "NSHealthUpdateUsageDescription": "Landing saves the weigh-ins you enter to Apple Health, so they're in one place."
+        }
       ]
     ],
     "experiments": {

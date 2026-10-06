@@ -94,7 +94,7 @@ export default function Progress() {
         <View style={{ flex: 1, gap: 2 }}>
           <AppText variant="label" color="inkMuted">YOUR DAY</AppText>
           <AppText weight="800" style={{ fontSize: 16 }}>What shapes your days</AppText>
-          <AppText variant="caption" color="inkMuted">{insights(s).ready.filter((i) => i.lead).length} patterns from {loggedOf(s, 30)} days of check-ins</AppText>
+          <AppText variant="caption" color="inkMuted">{loggedOf(s, 30) ? `${insights(s).ready.filter((i) => i.lead).length} patterns from ${loggedOf(s, 30)} days of check-ins` : "Patterns appear after a few morning check-ins"}</AppText>
         </View>
       </RowCard>
       {safe ? (

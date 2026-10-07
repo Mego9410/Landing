@@ -19,10 +19,7 @@
   },
   "submit": {
     "production": {
-      "ios": {
-        "appleId": "[YOUR APPLE ID EMAIL]",
-        "ascAppId": "[APP STORE CONNECT APP ID]"
-      }
+      "ios": {}
     }
   }
 }

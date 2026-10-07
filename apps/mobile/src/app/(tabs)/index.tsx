@@ -119,8 +119,10 @@ function Plans() {
 
 export default function Today() {
   const s = useApp();
-  if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
+  // New people start at the welcome screen; the health information comes during onboarding. Someone already set up
+  // sees it again here only if its wording has changed.
   if (!s.onboarded) return <Redirect href="/onboarding" />;
+  if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
   const week = weekOf(s), phase = phaseOf(week), nextPhase = PHASES[PHASES.indexOf(phase) + 1];
   const items = todayPlan(s), done = items.filter((i) => i.done).length;
   const up = items.find((i): i is Task => i.kind === "task" && !i.done), habitsLeft = items.some((i) => i.kind === "habit" && !i.done);

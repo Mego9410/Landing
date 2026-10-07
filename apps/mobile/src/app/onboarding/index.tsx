@@ -1,10 +1,10 @@
-import { Redirect, router } from "expo-router";
+import { router } from "expo-router";
 import { Pressable, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Mark } from "@/components/Mark";
 import { Screen } from "@/components/Screen";
-import { demoState, needsDisclaimer, replace, useApp } from "@/state/store";
+import { demoState, replace, useApp } from "@/state/store";
 import { accountsAvailable } from "@/state/account";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
@@ -12,7 +12,6 @@ import { radius, space, useColors } from "@/theme";
 /** O0 Welcome. Holding the picture for three seconds opens the demo (Hannah, six weeks in): for previews and App Review. */
 export default function Welcome() {
   const c = useColors(), s = useApp();
-  if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
   return (
     <Screen contentContainerStyle={{ gap: space[6], paddingBottom: 48, flexGrow: 1 }}>
       <Pressable accessible={false} delayLongPress={3000} onLongPress={() => { replace({ ...demoState(), disclaimer: s.disclaimer }); toast("Demo mode: Hannah, six weeks in."); router.replace("/"); }} style={{ height: 260, borderRadius: radius.xl, backgroundColor: c.sky, overflow: "hidden" }}>

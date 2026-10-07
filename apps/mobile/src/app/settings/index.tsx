@@ -37,11 +37,11 @@ export default function Settings() {
   const backedUp = status === "saving" ? "Backing up…" : status === "offline" ? "Couldn't reach Steadie. It'll try again." : account?.syncedAt ? `Backed up ${when(account.syncedAt)}` : "Backs up once your plan is set up";
   const fail = (e: unknown) => toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
   const confirmDelete = () => confirm("Delete everything?", "This clears all your answers, logs, weigh-ins and check-ins from this phone. It can't be undone.", "Delete everything",
-    () => deleteEverything().then(() => router.replace("/disclaimer")));
+    () => deleteEverything().then(() => router.replace("/onboarding")));
   const confirmSignOut = () => confirm("Sign out?", "Your plan is backed up first, then cleared from this phone. Sign in again to bring it back.", "Sign out",
-    () => signOut().then(() => { toast("Signed out. Your backup is safe."); router.replace("/disclaimer"); }, fail));
+    () => signOut().then(() => { toast("Signed out. Your backup is safe."); router.replace("/onboarding"); }, fail));
   const confirmDeleteAccount = () => confirm("Delete your account?", "This deletes your account and your backup from Steadie's servers, and clears this phone. It can't be undone.", "Delete my account",
-    () => deleteAccount().then(() => { toast("Your account and backup are deleted."); router.replace("/disclaimer"); }, fail));
+    () => deleteAccount().then(() => { toast("Your account and backup are deleted."); router.replace("/onboarding"); }, fail));
   return (
     <Screen header={<Header fallback="/" title="Settings" />} contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">Settings</AppText>

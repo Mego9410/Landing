@@ -10,7 +10,9 @@ import { fmt } from "@/data/dates";
 import { DISCLAIMER_VERSION, set, useApp } from "@/state/store";
 import { space } from "@/theme";
 
-// The wording people accept before using the app. Changing it means bumping DISCLAIMER_VERSION in the store.
+// The wording people accept before their plan is built. Changing the points or the ticks means bumping
+// DISCLAIMER_VERSION in the store; the title and introduction can change freely.
+const TITLE = "Before we build your plan";
 const POINTS: { title: string; text: string }[] = [
   { title: "General guidance, not medical advice", text: "Steadie's meal plans, strength sessions and tips follow general healthy-eating and activity guidance. They aren't personalised to your health and don't replace advice from your GP or another health professional." },
   { title: "Nothing about your medication", text: "Steadie never gives advice about weight-loss medicines, doses or stopping. Those decisions are for your prescriber." },
@@ -20,24 +22,27 @@ const POINTS: { title: string; text: string }[] = [
   { title: "If eating feels hard", text: "Beat, the UK's eating disorder charity, has a helpline you can talk to. Safe mode in Settings hides weight and numbers." },
 ];
 
-/** Health and safety, shown once before anything else and again whenever the wording changes. Readable later from Settings. */
+/** Health and safety: accepted during onboarding, just before the health check, and again whenever the wording changes.
+ *  Readable later from Settings. */
 export default function Disclaimer() {
   const s = useApp();
   const review = useLocalSearchParams<{ review?: string }>().review === "1" && !!s.disclaimer;
   const [understood, setUnderstood] = useState(false), [adult, setAdult] = useState(false);
   const [error, setError] = useState("");
+  const onboarding = !review && !s.onboarded;
 
   function accept() {
     if (!understood || !adult) { setError("Tick both boxes to carry on."); return; }
     set((st) => { st.disclaimer = { acceptedAt: new Date().toISOString(), version: DISCLAIMER_VERSION }; });
-    router.replace(s.onboarded ? "/" : "/onboarding");
+    // During onboarding this sits just before the health check; for someone already set up (new wording), back to Today.
+    router.replace(s.onboarded ? "/" : "/onboarding/health");
   }
 
   return (
-    <Screen header={review ? <Header fallback="/settings" title="Before you start" /> : undefined} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
+    <Screen header={review ? <Header fallback="/settings" title="Health and safety" /> : onboarding ? <Header fallback="/onboarding/start" title={TITLE} /> : undefined} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
-        <AppText variant="title" accessibilityRole="header">Before you start</AppText>
-        <AppText variant="bodyLg" color="inkMuted">A few things to know about how Steadie works and when to talk to a professional.</AppText>
+        <AppText variant="title" accessibilityRole="header">{review ? "Health and safety" : TITLE}</AppText>
+        <AppText variant="bodyLg" color="inkMuted">{review ? "How Steadie works, and when to talk to a professional." : "Steadie gives calm, everyday guidance for the year after your jab. Here's how it works, and when it's worth checking with your GP."}</AppText>
       </View>
       <Card style={{ gap: space[4] }}>
         {POINTS.map((p) => (

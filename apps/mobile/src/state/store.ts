@@ -82,6 +82,8 @@ export interface AppState {
   consent: { healthDataAt: string } | null;
   /** The last known subscription status, so the app opens offline. Only used when billing is on. */
   subscription: { active: boolean; checkedAt: string } | null;
+  /** When this copy last changed, so the newer of two copies wins when a backup and a phone disagree. */
+  savedAt?: string;
 }
 
 export const HEALTH_DEFAULTS: AppState["health"] = { answers: {}, checkedAt: null, version: 0, gpCleared: false, referAgreed: null };
@@ -216,15 +218,18 @@ function save() {
 export function set(fn: (s: AppState) => void) {
   const next: AppState = JSON.parse(JSON.stringify(state));
   fn(next);
+  next.savedAt = new Date().toISOString();
   state = next;
   save();
   emit();
 }
 export function replace(next: AppState) { state = next; save(); emit(); }
 export const get = () => state;
+/** Calls back after every change, for the backup. */
+export function subscribe(l: () => void) { listeners.add(l); return () => { listeners.delete(l); }; }
 
 export function useApp(): AppState {
-  return useSyncExternalStore((l) => { listeners.add(l); return () => { listeners.delete(l); }; }, () => state, () => state);
+  return useSyncExternalStore(subscribe, () => state, () => state);
 }
 
 /** Brings an older save up to date. Version 2 kept today's ticks without dates, so those are dropped. */

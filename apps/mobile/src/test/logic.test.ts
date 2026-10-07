@@ -160,3 +160,20 @@ test("a third session in Settle weeks", async () => {
   s.habits.ids = ["protein", "strength", "pause"];
   assert.equal(nextSession(s), null);
 });
+
+test("backup: an empty phone never replaces a real backup, and two plans that have never met are asked about", async () => {
+  const { decide, forThisPhone } = await import("@/state/merge");
+  const plan = { ...freshState(), onboarded: true, savedAt: "2026-10-01T09:00:00Z" };
+  const blank = freshState();
+  assert.equal(decide(blank, plan, false), "restore");
+  assert.equal(decide(blank, null, false), "none");
+  assert.equal(decide(plan, null, false), "upload");
+  assert.equal(decide(plan, plan, false), "ask");
+  assert.equal(decide({ ...plan, savedAt: "2026-10-02T09:00:00Z" }, plan, true), "upload");
+  assert.equal(decide(plan, { ...plan, savedAt: "2026-10-02T09:00:00Z" }, true), "restore");
+  assert.equal(decide({ ...plan, demo: true }, null, true), "none");
+  // Restoring resets Apple Health (each phone asks permission) and keeps the newer acceptance of the health information.
+  const restored = forThisPhone({ ...plan, settings: { ...plan.settings, appleHealth: true }, disclaimer: null }, { ...blank, disclaimer: { acceptedAt: "2026-10-07", version: 1 } });
+  assert.equal(restored.settings.appleHealth, false);
+  assert.equal(restored.disclaimer?.version, 1);
+});

@@ -7,6 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { Toast } from "@/components/Toast";
+import { startBackup } from "@/state/account";
 import { watchDay } from "@/state/rollover";
 import { startBilling } from "@/state/subscription";
 import { hydrate } from "@/state/store";
@@ -23,9 +24,12 @@ export default function RootLayout() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    let stop: (() => void) | undefined;
-    hydrate().finally(() => { stop = watchDay(); startBilling().catch(() => {}); setReady(true); });
-    return () => stop?.();
+    let stop: (() => void) | undefined, stopBackup: (() => void) | undefined, gone = false;
+    hydrate().finally(() => {
+      stop = watchDay(); startBilling().catch(() => {}); setReady(true);
+      startBackup().then((s) => { if (gone) s(); else stopBackup = s; }).catch(() => {});
+    });
+    return () => { gone = true; stop?.(); stopBackup?.(); };
   }, []);
   useEffect(() => {
     if ((loaded || error) && ready) SplashScreen.hideAsync().catch(() => {});

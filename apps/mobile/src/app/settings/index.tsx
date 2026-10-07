@@ -7,10 +7,11 @@ import { Button } from "@/components/Button";
 import { Screen } from "@/components/Screen";
 import { Choices, Header, List, Row, Section, ToggleRow } from "@/components/ui";
 import { phaseOf } from "@/data/content";
-import { fmt } from "@/data/dates";
+import { fmt, isoDate, today } from "@/data/dates";
 import { demoState, freshState, replace, set, setWeek, useApp, weekOf, type Units } from "@/state/store";
 import { toast } from "@/state/toast";
 import { available, connect, disconnect } from "@/state/appleHealth";
+import { accountsAvailable, AccountError, backUpNow, deleteAccount, signOut, useAccount } from "@/state/account";
 import { deleteEverything, shareExport } from "@/state/data";
 import { space } from "@/theme";
 
@@ -27,14 +28,16 @@ export default function Settings() {
     if (!available()) { toast("Apple Health works in the App Store version of Landing."); return; }
     await connect().catch(() => toast("Couldn't connect to Apple Health."));
   }
-  function confirmDelete() {
-    const go = () => { deleteEverything().then(() => router.replace("/disclaimer")); };
-    if (Platform.OS === "web") { if (window.confirm("Delete everything? This clears all your data from this device and can't be undone.")) go(); return; }
-    Alert.alert("Delete everything?", "This clears all your answers, logs, weigh-ins and check-ins from this phone. It can't be undone.", [
-      { text: "Keep my data", style: "cancel" },
-      { text: "Delete everything", style: "destructive", onPress: go },
-    ]);
-  }
+  const { account, status } = useAccount();
+  const showAccount = accountsAvailable() && !s.demo;
+  const backedUp = status === "saving" ? "Backing up…" : status === "offline" ? "Couldn't reach Landing. It'll try again." : account?.syncedAt ? `Backed up ${when(account.syncedAt)}` : "Backs up once your plan is set up";
+  const fail = (e: unknown) => toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
+  const confirmDelete = () => confirm("Delete everything?", "This clears all your answers, logs, weigh-ins and check-ins from this phone. It can't be undone.", "Delete everything",
+    () => deleteEverything().then(() => router.replace("/disclaimer")));
+  const confirmSignOut = () => confirm("Sign out?", "Your plan is backed up first, then cleared from this phone. Sign in again to bring it back.", "Sign out",
+    () => signOut().then(() => { toast("Signed out. Your backup is safe."); router.replace("/disclaimer"); }, fail));
+  const confirmDeleteAccount = () => confirm("Delete your account?", "This deletes your account and your backup from Landing's servers, and clears this phone. It can't be undone.", "Delete my account",
+    () => deleteAccount().then(() => { toast("Your account and backup are deleted."); router.replace("/disclaimer"); }, fail));
   return (
     <Screen contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
       <Header fallback="/" />
@@ -66,12 +69,31 @@ export default function Settings() {
           <Choices label="Units" value={s.settings.units} onChange={(v) => set((st) => { st.settings.units = v as Units; })} options={[{ id: "kg", label: "Kilograms" }, { id: "stlb", label: "Stones and pounds" }]} />
         </View>
       </Section>
+      {showAccount ? <Section title="ACCOUNT">
+        <View style={{ gap: space[3] }}>
+          {account ? (
+            <List>
+              <Row first title={account.email || "Signed in"} sub={backedUp} chevron={false} />
+              <Row title="Back up now" onPress={() => backUpNow().then((o) => toast(o.kind === "restored" ? "Newer changes from your other phone are here." : "Backed up."), fail)} />
+              <Row title="Sign out" sub="Your backup stays. This phone is cleared." onPress={confirmSignOut} />
+              <Row title="Delete my account" sub="Deletes your backup and clears this phone" titleColor="roseInk" onPress={confirmDeleteAccount} />
+            </List>
+          ) : (
+            <>
+              <AppText variant="caption" color="inkMuted">Your plan is only on this phone. Sign in to back it up, so it comes with you to a new phone.</AppText>
+              <List>
+                <Row first title="Sign in to back up" sub="With Apple or your email" onPress={() => router.push({ pathname: "/onboarding/account", params: { from: "settings" } })} />
+              </List>
+            </>
+          )}
+        </View>
+      </Section> : null}
       <Section title="YOUR DATA">
         <View style={{ gap: space[3] }}>
-          <AppText variant="caption" color="inkMuted">Everything Landing keeps is on this phone. Nothing is sent to us.</AppText>
+          <AppText variant="caption" color="inkMuted">{account ? "Your plan is on this phone and backed up to your Landing account." : "Everything Landing keeps is on this phone. Nothing is sent to us."}</AppText>
           <List>
             <Row first title="Export my data" sub="A file of everything the app keeps" onPress={() => shareExport().catch(() => toast("Couldn't make the file. Try again."))} />
-            <Row title="Delete everything" sub="Clears this phone and starts again" titleColor="roseInk" onPress={confirmDelete} />
+            {account ? null : <Row title="Delete everything" sub="Clears this phone and starts again" titleColor="roseInk" onPress={confirmDelete} />}
           </List>
         </View>
       </Section>
@@ -94,4 +116,16 @@ export default function Settings() {
       <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>Landing 1.0 · preview. Recipes and nutrition are drafts until our dietitian signs them off.</AppText>
     </Screen>
   );
+}
+
+/** Asks before something that can't be undone. */
+function confirm(title: string, message: string, action: string, go: () => void) {
+  if (Platform.OS === "web") { if (window.confirm(`${title} ${message}`)) go(); return; }
+  Alert.alert(title, message, [{ text: "Cancel", style: "cancel" }, { text: action, style: "destructive", onPress: go }]);
+}
+
+/** "today at 09:14" or "3 Oct". */
+function when(iso: string) {
+  const d = new Date(iso), t = today();
+  return isoDate(d) === t ? `today at ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : fmt.dayMonth(isoDate(d));
 }

@@ -1,6 +1,7 @@
 // The app's privacy policy and terms, shared by the app (in-app screens) and the website (public pages Apple needs
-// for the store listing). DRAFTS for a lawyer to review: anything in [brackets] is a detail to fill in, and the
-// wording must match what the app actually does. Plain UK English, like the rest of Landing.
+// for the store listing), and the website's own privacy notice. Anything in [brackets] is a company detail to fill
+// in. The wording must match what the app actually does: check it whenever data handling changes, along with the
+// App Store privacy labels in docs/app-store-privacy.md. Plain UK English, like the rest of Landing.
 
 export interface LegalSection { heading: string; paras: string[] }
 export interface LegalDoc { title: string; updated: string; intro: string; sections: LegalSection[] }
@@ -9,47 +10,108 @@ const COMPANY = "[COMPANY NAME]";
 const CONTACT = "[SUPPORT EMAIL]";
 const PRIVACY_CONTACT = "[PRIVACY EMAIL]";
 
+const UPDATED = "7 October 2026";
+const ADDRESS = "[REGISTERED ADDRESS]";
+const ICO_NUMBER = "[ICO REGISTRATION NUMBER]";
+
 export const APP_PRIVACY: LegalDoc = {
   title: "Privacy policy for the Landing app",
-  updated: "[DATE]",
-  intro: `This policy explains what the Landing app keeps about you, where it's kept and your choices. Landing is made by ${COMPANY}. The short version: what you log is kept on your phone and, if you sign in, in a private backup so it can move to a new phone. We never sell it or use it for advertising.`,
+  updated: UPDATED,
+  intro: `This policy explains what the Landing app keeps about you, why, where it's kept, who else is involved and the choices you have. Landing is made by ${COMPANY} ("we"), which decides how this information is used and is responsible for it. The short version: what you log is kept on your phone and, if you sign in, in a private backup so it comes with you to a new phone. We never sell it, never use it for advertising and never use it to track you.`,
   sections: [
     { heading: "What the app keeps", paras: [
-      "Your first name if you give it, your answers in onboarding and the health check, your food preferences, what you log (protein, habits, strength sessions, weigh-ins and daily check-ins), and your settings.",
-      "If you sign in: your email address (or the private relay address Apple gives us if you sign in with Apple and hide your email), and the date and time of each sign-in and backup.",
-      "Some of this is health information, which the law treats as special category data. We only keep it because you agree to it when you set the app up.",
+      "About you: your first name if you give it, and whether you've stopped, are stopping or are still taking a weight-loss medicine, and roughly when your last injection was.",
+      "Your health check: your answers to the questions about your health (for example heart or joint problems, pregnancy, kidney disease or recent surgery), whether you've checked with your GP, and when you answered.",
+      "What you log: weigh-ins, protein, habits, strength sessions, morning check-ins (sleep, hunger, energy, drinking, eating out and similar), lessons read, and the messages you send to the in-app coach.",
+      "Your preferences: food preferences, including any diet you follow (for example vegetarian, halal or kosher), allergies, foods you avoid, health conditions that affect food, cooking kit, budget and household size. Some of these can suggest religious beliefs.",
+      "Your settings: units, reminders, safe mode, and when you accepted the health information and gave consent.",
+      "Your weight, health check answers, medicine status and check-ins are health information, which the law treats as special category data and protects more strictly.",
+    ] },
+    { heading: "If you sign in", paras: [
+      "Signing in is optional. If you do, we also keep your email address (or the private relay address Apple gives us if you use Sign in with Apple and choose to hide your email), an account ID, and when your account was created.",
+      "For each sign-in we keep the IP address and device type it came from, to keep your account secure. We keep this until you sign out on that phone or delete your account.",
+      "When you ask for a sign-in code, we keep the code for up to 10 minutes, and a short record of recent attempts from your IP address so that nobody can guess codes.",
+      "We keep a backup of everything listed under \"What the app keeps\", with when it was last changed, so you can move to a new phone without losing your plan.",
+    ] },
+    { heading: "Why we use it, and the law that allows it", paras: [
+      "To build and run your plan, and to back it up and restore it if you sign in. This is needed to provide the app you've asked for (contract). Because it includes health information, we also rely on your explicit consent, which you give in the health check when you set up the app.",
+      "To send you sign-in codes and keep your account secure, including limiting repeated attempts. This is needed to provide your account (contract) and is in our legitimate interest in keeping Landing safe.",
+      "To check whether you have an active subscription. This is needed to provide what you've paid for (contract).",
+      "To answer you if you contact us, and to meet our legal obligations.",
+      "We don't use your information for advertising, profiling for marketing, or to train AI models, and we don't sell it or share it with data brokers.",
+    ] },
+    { heading: "How the health check changes your plan", paras: [
+      "Your health check answers change your plan automatically: for example, some answers pause strength sessions until you've checked with your GP, or switch to gentler sessions. This keeps the plan suitable for you; it doesn't have any legal effect on you. If you think an adjustment is wrong, you can redo the health check in Settings or contact us.",
     ] },
     { heading: "Where it's kept", paras: [
-      "On your phone, always. The app works without an account, and then nothing you log is sent to us.",
-      "If you sign in, the app also keeps a backup of everything above on our servers, so you can move to a new phone without losing your plan. It's sent encrypted, stored encrypted, and only used to give you your plan back. It is never sold, never used for advertising and never shared except with the services that run it.",
-      "Those services, which act only on our instructions: [Vercel] (hosting), [Neon] (the database, in [REGION]), and [Resend] (sending sign-in codes). If any of them keeps data outside the UK, it's protected by the UK's approved safeguards.",
+      "On your phone, always. If you don't sign in, what you log stays on your phone and isn't sent to us.",
+      "If you sign in, your backup and account are kept on servers in London, UK. They're sent over an encrypted connection and stored encrypted. The key that keeps you signed in is kept in your iPhone's Keychain.",
       "Your phone's own backups (iCloud, if you use it) also include the app's data, under Apple's terms.",
+    ] },
+    { heading: "Who else is involved", paras: [
+      "We use a small number of service providers. They only act on our instructions, are bound by contract to keep your information safe, and can't use it for their own purposes.",
+      "Vercel: runs Landing's server (in London). Neon: the database that holds accounts and backups (in London). Resend: sends sign-in codes, so it receives your email address and the code. RevenueCat: checks your subscription; it receives an anonymous ID, your App Store purchase details and basic device information such as the app version and your country, never what you log. Expo: delivers app updates; when the app checks for one, Expo sees your IP address, a random ID for this install and the app version, nothing else.",
+      "Apple: handles payments, Sign in with Apple and Apple Health under its own privacy policy.",
+      "Resend, RevenueCat and Expo are based in the US. Where they handle your information outside the UK, it's protected by the UK's approved safeguards (the UK Extension to the EU-US Data Privacy Framework or the UK International Data Transfer Addendum).",
+      "We'll only share your information with anyone else if the law requires it, for example a court order.",
     ] },
     { heading: "Apple Health", paras: [
       "If you switch it on, Landing reads your weight and steps from Apple Health and saves weigh-ins you enter there. It only does this with your permission, which you can change at any time in the Health app.",
       "Weigh-ins and steps brought in from Apple Health become part of your plan, so if you've signed in they're included in your backup. They're only used for your own plan.",
-      "Information from Apple Health is never used for advertising, never sold and never shared.",
-    ] },
-    { heading: "Subscriptions", paras: [
-      "Payments are handled by Apple. We use [RevenueCat] to check whether you have an active subscription. It receives an anonymous ID for your purchase, never what you log.",
+      "Information from Apple Health is never used for advertising, never sold and never shared. Landing doesn't save it to iCloud itself, though your phone's own iCloud backup includes the app's data, as with any app.",
     ] },
     { heading: "Reminders", paras: [
-      "Reminders are scheduled on your phone. Nothing is sent to us to make them work.",
+      "Reminders are scheduled on your phone. Nothing is sent to us to make them work, and they never mention your weight.",
     ] },
-    { heading: "Your choices and rights", paras: [
-      "You can export everything the app keeps in Settings. Without an account, \"Delete everything\" clears it all. With an account, \"Delete my account\" deletes your account and backup from our servers straight away, and clears your phone. Either way, this also withdraws your consent.",
-      "Signing out keeps your backup, so you can sign in again. We keep a backup until you delete your account, or for [24 months] after you last used the app, when we'll email you first.",
-      `Most requests can be done in the app. For anything else, or to ask what we hold about you, email ${PRIVACY_CONTACT}. You can also complain to the Information Commissioner's Office at ico.org.uk.`,
+    { heading: "How long we keep it", paras: [
+      "On your phone: until you delete it, sign out or delete the app.",
+      "Your account and backup: until you delete your account. Deleting it removes your account, backup and sign-in records from our database straight away, and from our database's short-term recovery copies within 7 days.",
+      "Signing out removes your sign-in from that phone and clears the phone, but keeps your backup so you can sign in again.",
+      "If we ever close Landing, we'll tell you in the app and by email first, and delete what we hold.",
     ] },
-    { heading: "Who can use Landing", paras: ["Landing is for adults aged 18 and over."] },
-    { heading: "Changes", paras: ["If this policy changes in a way that matters, the app will tell you before the change applies."] },
-    { heading: "Contact", paras: [`${COMPANY} · [REGISTERED ADDRESS] · ICO registration [NUMBER] · ${PRIVACY_CONTACT}`] },
+    { heading: "Your rights", paras: [
+      "You have the right to see what we hold about you, have it corrected, have it deleted, take a copy with you, object to or limit how we use it, and withdraw your consent at any time. Withdrawing consent doesn't affect what we did before.",
+      "Most of this is in the app. Settings → Export my data gives you a file of everything the app keeps. You can change your answers and preferences at any time. Settings → Delete my account (or Delete everything, if you haven't signed in) deletes it all and withdraws your consent.",
+      `For anything else, email ${PRIVACY_CONTACT}. We'll reply within one month. If you're unhappy with how we've handled your information, you can complain to the Information Commissioner's Office at ico.org.uk or on 0303 123 1113, though we'd like the chance to put it right first.`,
+    ] },
+    { heading: "Keeping it safe", paras: [
+      "We use encryption in transit and at rest, sign-in codes instead of passwords, limits on repeated attempts, and access to the database for only the people who need it to run Landing. If something ever goes wrong that puts your information at risk, we'll tell you and the ICO as the law requires.",
+    ] },
+    { heading: "Who can use Landing", paras: ["Landing is for adults aged 18 and over. We don't knowingly hold information about anyone younger."] },
+    { heading: "Changes to this policy", paras: ["If this policy changes in a way that matters, the app will tell you before the change applies, and ask for your consent again if we need it."] },
+    { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Registered with the Information Commissioner's Office, number ${ICO_NUMBER}. Email ${PRIVACY_CONTACT}.`] },
+  ],
+};
+
+/** The website's own notice: the waitlist, and what the site does and doesn't collect. */
+export const SITE_PRIVACY: LegalDoc = {
+  title: "Privacy notice for this website",
+  updated: UPDATED,
+  intro: `This notice covers the Landing website, including the waitlist. ${COMPANY} ("we") is responsible for it. The app has its own privacy policy.`,
+  sections: [
+    { heading: "Browsing the website", paras: [
+      "The website doesn't use cookies, analytics or advertising trackers. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
+    ] },
+    { heading: "The waitlist", paras: [
+      "If you join the waitlist, we keep your email address, when you joined and gave consent, and, if you choose to tell us, where you are with your weight-loss medicine (stopped, stopping soon or still on it). That last answer is health information, so we only keep it with your explicit consent, which you give by ticking the box.",
+      "We use it to email you when Landing opens and to understand who is waiting for it. We don't use it for anything else, and never sell it or use it for advertising.",
+    ] },
+    { heading: "Who else is involved", paras: [
+      "Vercel hosts the website and Neon holds the waitlist, both in London. When we email you, our email provider Resend handles your address on our behalf; it's based in the US, and your information is protected by the UK's approved safeguards.",
+    ] },
+    { heading: "How long we keep it", paras: [
+      "Until we've emailed you that Landing is open, and no more than 6 months after that, or until you unsubscribe or ask us to remove you, whichever comes first.",
+    ] },
+    { heading: "Your rights", paras: [
+      `You can ask to see, correct or delete your details, or withdraw your consent, at any time by emailing ${PRIVACY_CONTACT}, or by using the unsubscribe link in any email. We'll reply within one month. You can also complain to the Information Commissioner's Office at ico.org.uk or on 0303 123 1113.`,
+    ] },
+    { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Registered with the Information Commissioner's Office, number ${ICO_NUMBER}. Email ${PRIVACY_CONTACT}.`] },
   ],
 };
 
 export const TERMS: LegalDoc = {
   title: "Terms of use",
-  updated: "[DATE]",
+  updated: UPDATED,
   intro: `These terms are the agreement between you and ${COMPANY} for using the Landing app. Please read them with the health information the app shows when you start.`,
   sections: [
     { heading: "Who it's for", paras: ["You need to be 18 or over and live in the UK to use Landing."] },
@@ -76,6 +138,6 @@ export const TERMS: LegalDoc = {
     { heading: "Using Landing fairly", paras: ["Please don't copy, resell or misuse the app or its content."] },
     { heading: "Changes", paras: ["We may update these terms. If a change matters, the app will tell you before it applies."] },
     { heading: "The law", paras: ["These terms are governed by the law of England and Wales. If you live elsewhere in the UK, you can also bring a claim in your local courts."] },
-    { heading: "Contact", paras: [`${COMPANY} · [REGISTERED ADDRESS] · ${CONTACT}`] },
+    { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Email ${CONTACT}.`] },
   ],
 };

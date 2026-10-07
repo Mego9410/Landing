@@ -62,17 +62,19 @@ The app talks to it at `EXPO_PUBLIC_API_URL`. Without that variable, sign-in is 
 
 ## Before launch
 
-- [ ] Fill in `[Vercel]`, `[Neon]`, `[Resend]`, `[REGION]` and the retention period in the privacy policy
-      (`packages/content/src/legal.ts`), and have it reviewed. It now describes the backup.
-- [ ] Update the ICO registration and your record of processing: you now hold health data (special category) on a
-      server. A DPIA (data protection impact assessment) is expected for this.
-- [ ] Sign data processing agreements with Vercel, Neon and Resend (each offers one).
-- [ ] App Store Connect privacy labels: Health & Fitness and Email Address are now **collected** and **linked to the
-      user**, for App Functionality, not tracking.
-- [ ] Decide what happens to inactive accounts (the policy drafts 24 months, with an email first). That clean-up
-      job isn't built yet.
+- [ ] Fill in the company details in `packages/content/src/legal.ts` (`[COMPANY NAME]`, `[REGISTERED ADDRESS]`,
+      `[ICO REGISTRATION NUMBER]`, `[PRIVACY EMAIL]`, `[SUPPORT EMAIL]`). The rest of the privacy policy and the
+      website's privacy notice are written.
+- [ ] Register with the ICO (£52 a year at ico.org.uk) and note that you hold health data.
+- [ ] Write a short DPIA (data protection impact assessment). The ICO's template takes a few hours; the privacy
+      policy already answers most of its questions.
+- [ ] Data processing agreements: Vercel, Neon, Resend and RevenueCat include one in their terms; accept or download
+      each from their dashboards and keep copies.
+- [ ] In Neon, keep the history (point-in-time restore) window at **7 days or less**: the policy says deleted
+      accounts leave the recovery copies within 7 days.
+- [ ] Enter the App Store privacy labels from [`app-store-privacy.md`](app-store-privacy.md).
 - [ ] Optional: link RevenueCat to the account (`Purchases.logIn(userId)`) so a subscription follows the account
-      as well as the Apple ID. Not needed for App Store restores.
+      as well as the Apple ID. If you do, update the privacy labels (Purchase History becomes linked).
 
 ## Testing locally
 

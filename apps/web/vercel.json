@@ -3,5 +3,8 @@
   "framework": "nextjs",
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile --filter @landing/web...",
   "buildCommand": "pnpm run build",
-  "ignoreCommand": "npx turbo-ignore @landing/web --fallback=HEAD^1"
+  "ignoreCommand": "npx turbo-ignore @landing/web --fallback=HEAD^1",
+  "regions": [
+    "lhr1"
+  ]
 }

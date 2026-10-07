@@ -66,7 +66,7 @@ export function WaitlistForm({ tone = "light" }: { tone?: "light" | "apricot" })
       </div>
       <label className={styles.consent}>
         <input type="checkbox" name="consent" required />
-        <span>Email me when Landing opens. You can unsubscribe at any time. See our <Link href="/privacy">privacy notice</Link>.</span>
+        <span>Email me when Landing opens, and keep my answer about my jab if I gave one. You can unsubscribe at any time. See our <Link href="/privacy">privacy notice</Link>.</span>
       </label>
       {/* Honeypot for bots: hidden from people and screen readers. */}
       <div aria-hidden="true" className={styles.honeypot}>

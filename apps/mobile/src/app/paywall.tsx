@@ -6,7 +6,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
-import { buy, plans, restore, type Plan } from "@/state/subscription";
+import { buy, plans, plansProblem, restore, type Plan } from "@/state/subscription";
 import { useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
@@ -26,11 +26,13 @@ export default function Paywall() {
   const [options, setOptions] = useState<Plan[] | null>(null);
   const [pick, setPick] = useState(0);
   const [busy, setBusy] = useState(false);
-  const [failed, setFailed] = useState(false);
-  const lapsed = !!s.subscription && !s.subscription.active;
+  const [failed, setFailed] = useState<{ text: string; detail: string } | null>(null);
+  const lapsed = !!s.subscription?.ended && !s.subscription.active;
   const chosen = options?.[pick];
 
-  useEffect(() => { plans().then(setOptions).catch(() => setFailed(true)); }, []);
+  const fetchPlans = () => plans().then(setOptions).catch((e) => setFailed(plansProblem(e)));
+  const load = () => { setFailed(null); setOptions(null); fetchPlans(); };
+  useEffect(() => { fetchPlans(); }, []);
   useEffect(() => { if (s.subscription?.active) router.replace("/"); }, [s.subscription?.active]);
 
   async function subscribe() {
@@ -66,8 +68,9 @@ export default function Paywall() {
       {failed ? (
         <Card tone="sunk" style={{ gap: 6 }}>
           <AppText weight="800">Plans aren&apos;t loading</AppText>
-          <AppText color="inkMuted">Check your connection and try again.</AppText>
-          <Button label="Try again" variant="secondary" onPress={() => { setFailed(false); plans().then(setOptions).catch(() => setFailed(true)); }} />
+          <AppText color="inkMuted">{failed.text}</AppText>
+          {failed.detail ? <AppText variant="caption" color="inkMuted">{failed.detail}</AppText> : null}
+          <Button label="Try again" variant="secondary" onPress={load} />
         </Card>
       ) : !options ? (
         <ActivityIndicator color={c.ink} />

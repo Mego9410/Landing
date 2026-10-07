@@ -25,7 +25,8 @@ function remember(info: CustomerInfo, askForReminder = false) {
   const e = info.entitlements.active[ENTITLEMENT];
   const trial = e?.periodType?.toUpperCase() === "TRIAL";
   const plan = !e ? null : /annual|year/i.test(e.productIdentifier) ? "yearly" : "monthly";
-  set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false }; });
+  const ended = !e && !!info.entitlements.all[ENTITLEMENT];
+  set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false, ended }; });
   trialReminder(e && trial && e.willRenew ? e.expirationDate : null, askForReminder).catch(() => {});
 }
 
@@ -60,6 +61,7 @@ export async function plans(): Promise<Plan[]> {
   const current = (await Purchases.getOfferings()).current;
   const monthlyPkg = current?.monthly ?? undefined;
   const pkgs = [current?.annual, current?.monthly].filter((p): p is PurchasesPackage => !!p);
+  if (!pkgs.length) throw Object.assign(new Error("The current offering has no annual or monthly package."), { code: "none" });
   const eligible = await Purchases.checkTrialOrIntroductoryPriceEligibility(pkgs.map((p) => p.product.identifier)).catch(() => ({} as Record<string, { status: INTRO_ELIGIBILITY_STATUS }>));
   return pkgs.map((pkg) => {
       const pr = pkg.product, intro = pr.introPrice;
@@ -73,6 +75,20 @@ export async function plans(): Promise<Plan[]> {
         saving: saving > 0 ? `Save ${saving}%` : undefined,
       };
     });
+}
+
+/** Why plans didn't load, in plain words, with the store's own message kept for testing. */
+export function plansProblem(e: unknown): { text: string; detail: string } {
+  const err = e as { code?: string; message?: string; underlyingErrorMessage?: string };
+  const code = String(err?.code ?? "");
+  const detail = [code && `Code ${code}`, err?.underlyingErrorMessage || err?.message].filter(Boolean).join(": ");
+  if (code === PURCHASES_ERROR_CODE.NETWORK_ERROR || code === PURCHASES_ERROR_CODE.OFFLINE_CONNECTION_ERROR) {
+    return { text: "Check your connection and try again.", detail };
+  }
+  if (code === PURCHASES_ERROR_CODE.CONFIGURATION_ERROR || code === "none" || code === PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR) {
+    return { text: "The App Store isn't offering the plans just now. Try again in a little while.", detail };
+  }
+  return { text: "Something went wrong loading the plans. Try again in a moment.", detail };
 }
 
 /** Buys a plan. Returns false if they backed out, which isn't an error. */

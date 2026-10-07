@@ -36,8 +36,9 @@ Use it for previews and give App Review the same instructions.
   off until `EXPO_PUBLIC_REVENUECAT_IOS_KEY` is set.
 
 State lives in `src/state` and is saved on the phone with AsyncStorage: one log per date (`days`), so weekly totals
-come from the logs, and `src/state/rollover.ts` moves things on at midnight and on Mondays. Nothing is sent to a
-server. Screens are in `src/app`, shared pieces in `src/components`. `pnpm --filter @landing/mobile test` runs the
+come from the logs, and `src/state/rollover.ts` moves things on at midnight and on Mondays. Signing in (optional;
+Apple or an emailed code) backs the whole state up to the website's `/api/sync` (`src/state/account.ts`, rules in
+`src/state/merge.ts`); `EXPO_PUBLIC_API_URL` says where the server is, and sign-in is hidden without it. Screens are in `src/app`, shared pieces in `src/components`. `pnpm --filter @landing/mobile test` runs the
 logic tests in `src/test`.
 
 ## What needs a development build

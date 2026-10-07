@@ -11,6 +11,8 @@ import { sendSignInCode } from "./email";
 async function create() {
   const db = await getDb();
   const bundle = process.env.APPLE_BUNDLE_ID;
+  const reviewCode = process.env.REVIEW_CODE ?? "";
+  const review = process.env.REVIEW_EMAIL && /^\d{6}$/.test(reviewCode) ? { email: process.env.REVIEW_EMAIL.toLowerCase(), code: reviewCode } : null;
   const site = process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   return betterAuth({
     appName: "Landing",
@@ -31,7 +33,12 @@ async function create() {
       emailOTP({
         otpLength: 6,
         expiresIn: 600,
-        sendVerificationOTP: async ({ email, otp }) => { await sendSignInCode(email, otp); },
+        // App Review can't receive email, so one review address may have a fixed code (both set in Vercel).
+        generateOTP: ({ email }) => (review && email.toLowerCase() === review.email ? review.code : undefined),
+        sendVerificationOTP: async ({ email, otp }) => {
+          if (review && email.toLowerCase() === review.email) return;
+          await sendSignInCode(email, otp);
+        },
       }),
     ],
   });

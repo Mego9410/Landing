@@ -51,7 +51,7 @@ Built in the app, with tests for the logic:
 
 Still to do in the app: the reset week as its own flow (there's a lesson for it), crash reporting (needs a Sentry
 account), more signed-off recipes, and an accessibility pass on a real phone (VoiceOver, large text).
-Decisions used: phone-only data with no accounts, a subscription with a free trial, the scripted coach, UK only,
+Decisions used: optional accounts with backup from day one (see `docs/accounts.md`), a subscription with a free trial, the scripted coach, UK only,
 iPhone first. Section 2 still applies if any of those change.
 
 ---
@@ -64,7 +64,7 @@ These change what gets built, so they come before the build work. A recommendati
 | --- | --- | --- |
 | **The name** | Keep "Landing" or choose another | Run trademark (UK IPO, EUIPO) and App Store name checks now. The bundle ID, icon, listing and domain all hang off it, and the bundle ID can't change after the first upload. |
 | **Who publishes** | Personal or company developer account | A company account (needs a D-U-N-S number, which can take a couple of weeks). The App Store shows the publisher's name, and a health app reads better from a company. |
-| **Accounts and backend** | (a) Phone only, no account; (b) accounts with backup and sync (Supabase, as the food plan assumes) | (a) for version 1. No account means no password reset, no server holding health data, and simpler privacy. Add iCloud backup of the app's data and an export. Move to (b) when we need sync across devices, a web view or the prescriber pack sent by email. |
+| **Accounts and backend** | (a) Phone only, no account; (b) accounts with backup and sync | **Decided: (b)**, so people can change phones without losing their plan. Optional (encouraged after the welcome screen), Sign in with Apple or an emailed code, Neon Postgres through Vercel and Better Auth on the website. In-app account deletion is built, as Apple requires. See `docs/accounts.md`. |
 | **Business model** | Subscription, one-off purchase, or free during beta | Subscription with a free trial (for example 14 days, then monthly or yearly). Decide prices and whether anything stays free. |
 | **The coach** | Keep scripted replies, build a real AI coach, or hide the tab | Keep it scripted for version 1, labelled as tips rather than a person, with the prescriber redirect. An AI coach needs its own safety review and has a running cost. |
 | **Countries** | UK only, or UK plus Ireland and others | UK only. The content (supermarkets, Beat, NHS, NICE) is UK-specific, and so are the regulatory reviews. |
@@ -120,7 +120,7 @@ rather than Expo Go.
 | --- | --- |
 | **Apple Health** | Read weight and steps (steps could answer the journal's 7,000 steps question). Write weigh-ins entered in the app. Needs the HealthKit capability, clear permission text, and a screen explaining why before Apple's own prompt. Apple doesn't allow HealthKit data to be used for advertising or sold. |
 | **Reminders** | Local notifications (`expo-notifications`): the morning check-in, session days and a gentle weekly nudge. Ask permission at a useful moment, not on first launch. Quiet hours and an off switch in Settings. |
-| **Backup and export** | With no accounts: the app's data in iCloud backup, plus "Export my data" as a file. With accounts later: Supabase, with in-app account deletion, which Apple requires for any app that lets people create an account. |
+| **Backup and export** | Signed in: the plan backs up to Landing's server a few seconds after each change, and restores on a new phone. Not signed in: the phone's iCloud backup. Everyone: "Export my data" as a file. | Built. |
 | **Supermarket hand-off** | Search links and shopping mode for the big five (food plan section 6). Check that each link opens the supermarket's app or site correctly. |
 
 ---

@@ -40,7 +40,7 @@ const TRUST: { icon: IconName; text: string }[] = [
   { icon: "gift", text: "7-day free trial" },
   { icon: "heart", text: "A health check before you start" },
   { icon: "shield", text: "Works alongside your prescriber" },
-  { icon: "lock", text: "Your data stays on your phone" },
+  { icon: "lock", text: "Private backup, never sold" },
   { icon: "phone", text: "Coming to iPhone" },
 ];
 
@@ -86,7 +86,7 @@ const PROMISES: { icon: IconName; title: string; text: string }[] = [
   { icon: "heart", title: "No goal weight", text: "We help you hold steady, and help you reset gently if things drift. Never a telling-off." },
   { icon: "habit", title: "Numbers only if they help", text: "Safe mode hides weight entirely and builds your score from habits and check-ins." },
   { icon: "shield", title: "Your prescriber stays in charge", text: "Landing never gives advice about medication, doses or stopping treatment." },
-  { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, never sold, never used for ads. Export it or delete everything in one tap." },
+  { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, with a private backup if you sign in. Never sold, never used for ads. Export it or delete your account in a tap." },
 ];
 
 const FAQS = [
@@ -97,7 +97,7 @@ const FAQS = [
   { q: "I have a health condition. Can I use Landing?", a: "Landing gives general guidance, not medical advice. A quick health check at the start suggests checking with your GP, midwife or specialist where it matters, pauses strength sessions until you have, and adjusts food and sessions to suit. It asks again every 12 weeks." },
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
-  { q: "Where is my data kept?", a: "On your phone. Landing doesn't have accounts and doesn't send what you log to us. You can export everything or delete it all from Settings. If you connect Apple Health, that information is never used for advertising or shared." },
+  { q: "Where is my data kept?", a: "On your phone. If you sign in, Landing also keeps a private, encrypted backup so your plan moves with you to a new phone. It's never sold or used for ads, and you can export everything or delete your account from Settings. If you connect Apple Health, that information is only used for your own plan, and never for advertising." },
   { q: "When can I use it, and what will it cost?", a: `Landing is coming to iPhone first. It will cost ${PRICE.yearly} a year after a 7-day free trial, or ${PRICE.monthly} a month. Join the waitlist and we'll email you once when it opens.` },
 ];
 

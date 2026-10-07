@@ -30,7 +30,7 @@ export default function About() {
               <li>Protein, strength, routine and sleep make the biggest difference, so that&apos;s what we focus on.</li>
               <li>Numbers should only be there when they help. Safe mode hides weight entirely.</li>
               <li>Your prescriber stays in charge of your medicine. We never advise on it.</li>
-              <li>Your data is yours. It stays on your phone.</li>
+              <li>Your data is yours. It lives on your phone, with a private backup if you sign in, and is never sold.</li>
             </ul>
             <h2>Our guides</h2>
             <p>Our <Link href="/guides">guides</Link> cover what happens when you stop a GLP-1, appetite, protein, strength and keeping weight off, with sources for everything. Read how we write them in our <Link href="/editorial-policy">editorial policy</Link>.</p>

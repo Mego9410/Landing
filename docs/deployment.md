@@ -23,17 +23,17 @@ Two Vercel projects deploy from this one repository, and the iPhone app ships th
    (`app/robots.ts`).
 6. Under **Settings → Domains**, add your domain and follow Vercel's DNS steps.
 
-### Before you collect real sign-ups
+### Accounts, backup and the waitlist
 
-`app/api/waitlist/route.ts` validates sign-ups but stores nothing. Replace `saveSignup()` with your provider (for
-example a Supabase table or a Resend audience), add its keys as Vercel environment variables (server-only, never
-`NEXT_PUBLIC_`), and fill in the bracketed details in `app/privacy/page.tsx`.
+The site also runs the app's accounts and backup, and stores waitlist sign-ups, in Neon Postgres. Add the Neon
+integration and the environment variables in [`docs/accounts.md`](accounts.md) before the first real deploy, and fill
+in the bracketed details in `app/privacy/page.tsx`.
 
 ## Before going live
 
 - [ ] In `apps/web/prelaunch.json`, set `showPrototype` to `false`. This removes the floating **Preview the app**
       button and stops the prototype being published at `/prototype`. Commit and redeploy.
-- [ ] Connect a real waitlist provider in `app/api/waitlist/route.ts` (see above).
+- [ ] Add the Neon database, run the migrations and set the account variables (`docs/accounts.md`).
 - [ ] Fill in the bracketed details on the privacy notice and in the footer.
 - [ ] Set `NEXT_PUBLIC_SITE_URL` to the live domain.
 

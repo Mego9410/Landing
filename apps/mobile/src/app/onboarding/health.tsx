@@ -52,7 +52,7 @@ export default function HealthCheck() {
   function save() {
     if (unanswered) { setError(`Answer each question with yes or no. ${unanswered} to go.`); return; }
     if (refer.length && !referAgreed) { setError("Tick the box under the note to carry on, or close the app and come back after you've checked."); return; }
-    if (!consent) { setError("Tick the box to agree to Landing keeping your health information on this phone."); return; }
+    if (!consent) { setError("Tick the box to agree to Landing keeping your health information."); return; }
     const w = safe || recheck ? { now: null, low: null } : parseWeight();
     if (typeof w === "string") { setError(w); return; }
     set((st2) => {
@@ -130,7 +130,7 @@ export default function HealthCheck() {
 
       {!s.consent ? (
         <View style={{ gap: space[2] }}>
-          <Tick label="I agree to Landing keeping my health information, like my answers, weight and check-ins, on this phone to build my plan" checked={consent} onChange={(v) => { setError(""); setConsent(v); }} />
+          <Tick label="I agree to Landing keeping my health information, like my answers, weight and check-ins, to build my plan: on this phone, and in my private backup if I sign in" checked={consent} onChange={(v) => { setError(""); setConsent(v); }} />
           <Button label="Read the privacy policy" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} style={{ alignSelf: "flex-start", marginLeft: -space[6] }} />
         </View>
       ) : null}
@@ -144,7 +144,7 @@ export default function HealthCheck() {
         <Header close fallback="/settings" />
         <View style={{ gap: space[2] }}>
           <AppText variant="title" accessibilityRole="header">A quick health check</AppText>
-          <AppText color="inkMuted">Every 12 weeks we check nothing has changed, so your plan still fits. Your answers stay on this phone.</AppText>
+          <AppText color="inkMuted">Every 12 weeks we check nothing has changed, so your plan still fits. Your answers stay private to you.</AppText>
         </View>
         {body}
         <Button label="Save" block onPress={save} />
@@ -152,7 +152,7 @@ export default function HealthCheck() {
     );
   }
   return (
-    <Step n={2} title="A quick health check" lede="So your plan fits you. Your answers stay on this phone and nobody else sees them." next={save}>
+    <Step n={2} title="A quick health check" lede="So your plan fits you. Your answers are private to you." next={save}>
       {body}
     </Step>
   );

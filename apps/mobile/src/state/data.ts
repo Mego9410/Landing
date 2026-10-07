@@ -1,6 +1,6 @@
-// Your data: export everything the app keeps as a file, or delete it all. Landing keeps nothing on a server, so these
-// two cover the access and erasure rights in the privacy policy. Deleting also withdraws consent and starts again at
-// the health information screen.
+// Your data: export everything the app keeps as a file, or clear it from this phone. With these and deleting the
+// account (account.ts), the access and erasure rights in the privacy policy can all be done in the app. Deleting also
+// withdraws consent and starts again at the health information screen.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";

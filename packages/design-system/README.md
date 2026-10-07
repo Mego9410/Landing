@@ -4,7 +4,7 @@ Steadie was called Landing in early designs; the visual system carried over.
 
 ## Brand idea
 
-**A gentle touchdown.** The mark is a sun descending in two soft steps and resting on a horizon. Every choice follows from that: round shapes, pastel light, slow transitions, and progress shown as steadiness rather than loss.
+**Steady, not perfect.** The mark is a roly-poly: whatever tips it, its low weight rocks it back upright. Every choice follows from that: round shapes, pastel light, slow transitions, and progress shown as steadiness rather than loss.
 
 Three words to check work against: **soft, steady, on your side.**
 
@@ -30,7 +30,7 @@ The palette is oat neutrals plus six pastels. Pastels are fills; each has a deep
 - Screens sit on `surface` (oat). Cards use `surface-raised` with `shadow-sm` and `radius-lg`. Wells and tracks use `surface-sunk`.
 - Text is `ink`, secondary text is `ink-muted`. Both only on the three surfaces.
 - Text on any pastel fill is `on-pastel`. Never put `ink-muted` or a hue's own `-ink` on a pastel fill; they fail contrast.
-- `apricot` is the brand hue: primary buttons, today's highlight, the sun. Use it once or twice per screen.
+- `apricot` is the brand hue: primary buttons and today's highlight. The logo uses the deeper brand apricot (#DE6F44). Use it once or twice per screen.
 - `sage` = done and steady (ticked habits, the score ring). `lilac` = the coach. `sky` = information, hunger and prescriber notes. `butter` = gentle attention (early warning, reset week). `rose` = destructive actions only.
 - Phases have a colour each: Land `sky`, Settle `sage`, Steady `lilac`.
 - There is no alarm red. Drift and warnings use `butter`, because the app must never shame.
@@ -54,13 +54,22 @@ The palette is oat neutrals plus six pastels. Pastels are fills; each has a deep
 
 - Icons are the original 2px rounded line set in `assets/Icons`, rendered with `currentColor`. Never use emoji as icons.
 - No bathroom scales, tape measures, before/after bodies or syringes, anywhere, including marketing.
-- Illustration, when needed, is built from the mark's shapes: discs, pills and soft horizons in the pastels. People are drawn side-on in profile (nose, ear and hair) with no eyes or mouth, so a face never shows strain. The movement cast in `packages/motion` is the reference.
+- Illustration, when needed, is built from soft shapes: discs, pills and horizons in the pastels, with the roly-poly mark where the brand should show. People are drawn side-on in profile (nose, ear and hair) with no eyes or mouth, so a face never shows strain. The movement cast in `packages/motion` is the reference.
 - Photography (marketing only): warm natural light, real food, everyday movement, people over 30. No gym-mirror shots.
 
 ## Logo
 
-- Use `steadie-lockup.svg` on the waitlist site, App Store screenshots and prescriber pack header; `steadie-mark.svg` alone at small sizes; `app-icon.svg` for the App Store.
-- The wordmark is always lowercase "steadie". Keep clear space equal to the sun's diameter.
+The symbol is the **roly-poly**: a self-righting shape leaning 12° left, its weight dot low down, on a ground line.
+Life will tip you; Steadie helps you settle back. Full spec in [`brand/README.md`](brand/README.md); files in
+`assets/Logos` (see its README).
+
+- `steadie-lockup.svg` on the website header, App Store art and the prescriber summary; `steadie-mark-*.svg` alone at
+  small sizes and on the splash screen; `steadie-app-icon-1024.png` for the App Store.
+- The wordmark is always lowercase "steadie", in Nunito 800 with the "i" dot as the weight dot. Clear space is the
+  width of the mark on every side.
+- Brand colours (apricot #DE6F44, cream #FBF1E4, oat #F5EFE6, ink #2A2530, night #1C1B22) are in
+  `brand/steadie-brand.css` and `.json`. They're for the logo and marketing; they extend the pastels above rather than
+  replace them.
 
 ## Components
 

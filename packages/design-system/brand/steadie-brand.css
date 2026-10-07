@@ -1,0 +1,16 @@
+/* Steadie brand tokens — logo + marketing. Extend, don't fork, the in-app design system. */
+:root{
+  --steadie-apricot:#DE6F44;      /* primary brand / icon tile */
+  --steadie-apricot-soft:#F2A27A; /* mark on dark backgrounds */
+  --steadie-cream:#FBF1E4;        /* mark on apricot, cards on apricot */
+  --steadie-oat:#F5EFE6;          /* light page background */
+  --steadie-ink:#2A2530;          /* headlines, wordmark on light */
+  --steadie-cocoa:#3B2A22;        /* alt wordmark ink */
+  --steadie-night:#1C1B22;        /* dark backgrounds */
+  --steadie-device:#1F1C23;       /* phone bezel in marketing */
+  /* pastel backgrounds used behind marketing screenshots */
+  --steadie-peach:#F8D8C4; --steadie-lilac:#E3DBF2; --steadie-sky:#D3E5EF; --steadie-sage:#D3E6D9; --steadie-butter:#F5E5B5;
+  --steadie-font-wordmark:'Nunito',sans-serif;  /* 800, letter-spacing -0.035em */
+  --steadie-font-display:'Fredoka',sans-serif;  /* 600 marketing headlines */
+  --steadie-font-body:'Nunito',sans-serif;      /* 700 marketing subheads */
+}

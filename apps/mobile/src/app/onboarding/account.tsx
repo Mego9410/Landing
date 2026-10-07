@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Alert, Platform, useColorScheme, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
+import { Mark } from "@/components/Mark";
 import { Screen } from "@/components/Screen";
 import { Banner, Field, Header } from "@/components/ui";
 import { fmt } from "@/data/dates";
@@ -69,7 +70,7 @@ export default function AccountStep() {
     <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48, flexGrow: 1 }} header={<Header onBack={back} title={stage === "code" ? "Check your email" : title} />}>
       <View style={{ height: 140, borderRadius: radius.xl, backgroundColor: c.sage, overflow: "hidden" }}>
         <View style={{ position: "absolute", left: -30, right: -30, bottom: -20, height: 70, borderRadius: 35, backgroundColor: c.sky }} />
-        <View style={{ position: "absolute", right: 60, top: 28, width: 64, height: 64, borderRadius: 32, backgroundColor: c.apricot }} />
+        <View style={{ position: "absolute", right: 56, bottom: 44 }}><Mark height={84} hole={c.sage} /></View>
       </View>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">{stage === "code" ? "Check your email" : title}</AppText>

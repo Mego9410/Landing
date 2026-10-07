@@ -123,7 +123,7 @@
     "android": {
       "package": "com.getsteadieapp.app",
       "adaptiveIcon": {
-        "backgroundColor": "#FBF8F4",
+        "backgroundColor": "#DE6F44",
         "foregroundImage": "./assets/images/adaptive-icon.png"
       }
     },
@@ -137,12 +137,12 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FBF8F4",
+          "backgroundColor": "#DE6F44",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 120,
           "dark": {
-            "backgroundColor": "#1F1C23",
-            "image": "./assets/images/splash-icon.png"
+            "backgroundColor": "#1C1B22",
+            "image": "./assets/images/splash-icon-dark.png"
           }
         }
       ],

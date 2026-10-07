@@ -1,0 +1,51 @@
+{
+  "color": {
+    "apricot": "#DE6F44",
+    "apricotSoft": "#F2A27A",
+    "cream": "#FBF1E4",
+    "oat": "#F5EFE6",
+    "ink": "#2A2530",
+    "cocoa": "#3B2A22",
+    "night": "#1C1B22",
+    "device": "#1F1C23",
+    "peach": "#F8D8C4",
+    "lilac": "#E3DBF2",
+    "sky": "#D3E5EF",
+    "sage": "#D3E6D9",
+    "butter": "#F5E5B5"
+  },
+  "font": {
+    "wordmark": {
+      "family": "Nunito",
+      "weight": 800,
+      "letterSpacing": "-0.035em"
+    },
+    "display": {
+      "family": "Fredoka",
+      "weight": 600,
+      "letterSpacing": "-0.01em"
+    },
+    "body": {
+      "family": "Nunito",
+      "weight": 700
+    }
+  },
+  "mark": {
+    "viewBox": "22 18 56 76",
+    "bodyPath": "M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z",
+    "rotate": "-12deg about (50,80)",
+    "weightDot": {
+      "cx": 50,
+      "cy": 64,
+      "r": 7
+    },
+    "ground": {
+      "x": 31,
+      "y": 85,
+      "w": 38,
+      "h": 5,
+      "rx": 2.5,
+      "opacity": 0.5
+    }
+  }
+}

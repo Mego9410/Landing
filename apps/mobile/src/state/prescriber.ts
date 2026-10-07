@@ -4,6 +4,7 @@
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
+import { LOCKUP_SVG } from "@/data/brand";
 import { addDays, fmt, today, weekDates, weekStart } from "@/data/dates";
 import { weight } from "@/data/units";
 import { HABITS, habitsForWeek } from "@/data/content";
@@ -42,8 +43,10 @@ export function prescriberHtml(s: AppState): string {
     h1 { font-size: 20px; margin: 0 0 4px; } h2 { font-size: 13px; margin: 22px 0 6px; }
     .muted { color: #6E6875; } table { width: 100%; border-collapse: collapse; margin-top: 6px; }
     th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #E6DED4; vertical-align: top; } th { font-size: 11px; color: #6E6875; font-weight: 600; }
+    .brand { margin-bottom: 18px; } .brand svg { display: block; }
     .note { margin-top: 26px; padding: 10px 12px; background: #F4EFE8; border-radius: 8px; font-size: 11px; }
   </style></head><body>
+    <div class="brand">${LOCKUP_SVG}</div>
     <h1>Summary for your prescriber</h1>
     <div class="muted">${name} · made ${fmt.long(t)}</div>
     <h2>About this summary</h2>

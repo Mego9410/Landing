@@ -2,6 +2,7 @@ import { Redirect, router } from "expo-router";
 import { Pressable, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
+import { Mark } from "@/components/Mark";
 import { Screen } from "@/components/Screen";
 import { demoState, needsDisclaimer, replace, useApp } from "@/state/store";
 import { accountsAvailable } from "@/state/account";
@@ -16,7 +17,7 @@ export default function Welcome() {
     <Screen contentContainerStyle={{ gap: space[6], paddingBottom: 48, flexGrow: 1 }}>
       <Pressable accessible={false} delayLongPress={3000} onLongPress={() => { replace({ ...demoState(), disclaimer: s.disclaimer }); toast("Demo mode: Hannah, six weeks in."); router.replace("/"); }} style={{ height: 260, borderRadius: radius.xl, backgroundColor: c.sky, overflow: "hidden" }}>
         <View style={{ position: "absolute", left: -30, bottom: 30, right: -30, height: 90, borderRadius: 45, backgroundColor: c.sage }} />
-        <View style={{ position: "absolute", right: 50, top: 50, width: 90, height: 90, borderRadius: 45, backgroundColor: c.apricot }} />
+        <View style={{ position: "absolute", right: 46, bottom: 104 }}><Mark height={128} hole={c.sky} /></View>
         <View style={{ position: "absolute", left: 40, top: 40, width: 60, height: 28, borderRadius: 14, backgroundColor: c.butter }} />
       </Pressable>
       <View style={{ gap: space[3] }}>

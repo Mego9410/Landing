@@ -1,0 +1,9 @@
+<!-- Steadie wordmark reference implementation (web). The dotless ı + positioned circle replaces the i's tittle with the brand weight dot. -->
+<span class="steadie-wordmark" aria-label="steadie">stead<span class="i">ı<span class="dot"></span></span>e</span>
+<style>
+.steadie-wordmark{font-family:Nunito,sans-serif;font-weight:800;letter-spacing:-0.035em;line-height:1;color:var(--steadie-ink);display:inline-flex;align-items:baseline}
+.steadie-wordmark .i{position:relative;letter-spacing:0;margin-right:-0.035em}
+.steadie-wordmark .dot{position:absolute;left:50%;top:0.1em;width:0.16em;height:0.16em;margin-left:-0.08em;border-radius:50%;background:var(--steadie-apricot)}
+/* on dark: color var(--steadie-oat); dot var(--steadie-apricot-soft). On apricot: color + dot var(--steadie-cream). */
+</style>
+<!-- Lockup: mark height ≈ 1.15 × wordmark font-size, gap ≈ 0.26 × font-size, mark vertically centred on the x-height. -->

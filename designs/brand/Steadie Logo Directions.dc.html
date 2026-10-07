@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@700&family=M+PLUS+Rounded+1c:wght@700&display=swap" rel="stylesheet"><style>body{margin:0;background:#EFE9E0;font-family:Nunito,system-ui,sans-serif;color:#3B2A22}a{color:#B85A33}a:hover{color:#3B2A22}.dv-turn{padding:44px 48px 40px;scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:700 13px/1.2 Nunito,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-direction:column;gap:32px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:600 12px/1.3 Nunito,sans-serif;color:rgba(0,0,0,.6)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#B85A33;color:#fff}.dv-next{margin:28px 0 0;font:13px/1.5 Nunito,sans-serif;color:rgba(0,0,0,.55)}</style></helmet>
+<section class="dv-turn" id="t3" style="border-bottom:1px solid rgba(0,0,0,.08)">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Locked: rounder body, 12° lean, ground line, Nunito 800, apricot (from <a class="dv-oid" href="#2a">2a</a>, <a class="dv-oid" href="#2b">2b</a>, <a class="dv-oid" href="#2c">2c</a>)</span></div>
+<div class="dv-opts">
+<div class="dv-opt" id="3a"><div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Steadie mark and lockup</div>
+<div class="dv-card" style="width:1040px">
+<div style="display:grid;grid-template-columns:300px minmax(0,1fr)">
+<div style="background:#F5EFE6;padding:26px;display:flex;flex-direction:column;align-items:center;gap:12px"><div style="width:248px;height:248px;border-radius:22.4%;overflow:hidden;box-shadow:0 8px 24px rgba(59,42,34,.18)"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#DE6F44"></rect><g transform="translate(0 -5)"><g transform="rotate(-12 50 80)"><path d="M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z" fill="#FBF1E4"></path><circle cx="50" cy="64" r="7" fill="#DE6F44"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="#FBF1E4" opacity=".5"></rect></g></svg></div><div style="font:600 11px/1 Nunito;color:#8A786C">App Store icon · 1024 px</div></div>
+<div style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:1fr 1fr">
+<sc-for list="{{ panels }}" as="p" hint-placeholder-count="2"><div style="background:{{ p.bg }};padding:22px 26px;display:flex;align-items:flex-end;gap:22px;min-height:120px"><sc-for list="{{ sizes }}" as="z" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:{{ z.px }};height:{{ z.px }};border-radius:22.4%;overflow:hidden"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#DE6F44"></rect><g transform="translate(0 -5)"><g transform="rotate(-12 50 80)"><path d="M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z" fill="#FBF1E4"></path><circle cx="50" cy="64" r="7" fill="#DE6F44"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="#FBF1E4" opacity=".5"></rect></g></svg></div><div style="font:600 11px/1 Nunito;color:{{ p.muted }}">{{ z.label }}</div></div></sc-for><div style="margin-left:auto;font:600 11px/1 Nunito;color:{{ p.muted }}">{{ p.name }}</div></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;flex:1">
+<sc-for list="{{ lockFinal }}" as="c" hint-placeholder-count="2"><div style="background:{{ c.bg }};padding:28px;display:flex;align-items:center;justify-content:center;gap:14px;min-height:128px"><svg viewBox="22 18 56 76" width="46" height="62"><g transform="rotate(-12 50 80)"><path d="M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z" fill="{{ c.fg }}"></path><circle cx="50" cy="64" r="7" fill="{{ c.bg }}"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="{{ c.fg }}" opacity=".5"></rect></svg><div style="font-family:Nunito;font-weight:800;font-size:54px;line-height:1;letter-spacing:-0.035em;color:{{ c.text }};display:flex;align-items:baseline;padding-bottom:6px"><span>stead</span><span style="position:relative;letter-spacing:0;margin-right:-0.035em">ı<span style="position:absolute;left:50%;top:0.1em;width:0.16em;height:0.16em;margin-left:-0.08em;border-radius:50%;background:{{ c.fg }}"></span></span><span>e</span></div></div></sc-for>
+</div>
+</div>
+</div>
+<div style="padding:16px 28px;border-top:1px solid #EFE9E0;display:flex;flex-wrap:wrap;gap:8px 28px;font:400 13px/1.5 Nunito;color:#6E5D52"><span><strong style="color:#3B2A22">Apricot</strong> #DE6F44</span><span><strong style="color:#3B2A22">Cream</strong> #FBF1E4</span><span><strong style="color:#3B2A22">Cocoa (wordmark)</strong> #3B2A22</span><span><strong style="color:#3B2A22">Dark-mode mark</strong> #F2A27A</span><span>The icon SVG is saved as <a href="steadie-icon.svg">steadie-icon.svg</a></span></div>
+</div></div>
+</div>
+<p class="dv-next">Try next: "draw the custom wordmark" · "splash-screen animation" · "one-colour version for the doctor report"</p>
+</section>
+<section class="dv-turn" id="t2" style="border-bottom:1px solid rgba(0,0,0,.08)">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Refining <a class="dv-oid" href="#1a">1a</a>: shape, wordmark, colour</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a"><div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Shape: proportions, lean and ground</div>
+<div class="dv-card" style="width:1040px">
+<div style="padding:22px 28px 18px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #EFE9E0"><div style="font:500 24px/1.2 Fredoka;color:#3B2A22">Shape studies</div><div style="font:400 14px/1.5 Nunito;color:#6E5D52;text-wrap:pretty">The lean and weight dot stay. Each tile is shown at 140 px with its 40 px version beside it. The highlighted tile is my pick: the rounder body at 12°, with the ground line. The rounder top is less like an egg and more like a toy, and the ground line is what makes it read as rocking, not falling.</div></div>
+<sc-for list="{{ shapeRows }}" as="row" hint-placeholder-count="3"><div style="padding:18px 28px 22px;border-bottom:1px solid #EFE9E0;display:flex;flex-direction:column;gap:12px"><div style="font:700 11px/1 Nunito;letter-spacing:.1em;text-transform:uppercase;color:#8A786C">{{ row.title }}</div><div style="display:flex;flex-wrap:wrap;gap:20px">
+<sc-for list="{{ row.items }}" as="v" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:12px;background:{{ v.pickBg }};outline:{{ v.pickOutline }}"><div style="display:flex;align-items:flex-end;gap:14px">
+<div style="width:140px;height:140px;border-radius:22.4%;overflow:hidden;box-shadow:0 4px 14px rgba(59,42,34,.16)"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#DE6F44"></rect><g transform="{{ v.shift }}"><g transform="{{ v.rot }}"><path d="{{ v.d }}" fill="#FBF1E4"></path><circle cx="50" cy="{{ v.cy }}" r="7" fill="#DE6F44"></circle></g><sc-if value="{{ v.ground }}" hint-placeholder-val="{{ true }}"><rect x="31" y="85" width="38" height="5" rx="2.5" fill="#FBF1E4" opacity=".5"></rect></sc-if></g></svg></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="width:40px;height:40px;border-radius:22.4%;overflow:hidden"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#DE6F44"></rect><g transform="{{ v.shift }}"><g transform="{{ v.rot }}"><path d="{{ v.d }}" fill="#FBF1E4"></path><circle cx="50" cy="{{ v.cy }}" r="7" fill="#DE6F44"></circle></g><sc-if value="{{ v.ground }}" hint-placeholder-val="{{ true }}"><rect x="31" y="85" width="38" height="5" rx="2.5" fill="#FBF1E4" opacity=".5"></rect></sc-if></g></svg></div><div style="width:40px;height:40px;border-radius:22.4%;overflow:hidden;box-shadow:0 0 0 6px #1C1B22;margin:6px"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#DE6F44"></rect><g transform="{{ v.shift }}"><g transform="{{ v.rot }}"><path d="{{ v.d }}" fill="#FBF1E4"></path><circle cx="50" cy="{{ v.cy }}" r="7" fill="#DE6F44"></circle></g><sc-if value="{{ v.ground }}" hint-placeholder-val="{{ true }}"><rect x="31" y="85" width="38" height="5" rx="2.5" fill="#FBF1E4" opacity=".5"></rect></sc-if></g></svg></div></div>
+</div><div style="font:600 12px/1.3 Nunito;color:#3B2A22">{{ v.label }}</div></div></sc-for>
+</div></div></sc-for>
+</div></div>
+
+<div class="dv-opt" id="2b"><div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Wordmark</div>
+<div class="dv-card" style="width:1040px">
+<div style="padding:22px 28px 18px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #EFE9E0"><div style="font:500 24px/1.2 Fredoka;color:#3B2A22">Rounded, refined</div><div style="font:400 14px/1.5 Nunito;color:#6E5D52;text-wrap:pretty">Four rounded bases, each spaced more tightly than its default. In every one the dot on the “i” is replaced by the apricot weight dot, so the wordmark and the symbol share a detail. Whichever base you pick, I'll redraw it as custom lettering. The heavier weights hold up better small, in the app and on the PDF report.</div></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr))">
+<sc-for list="{{ wordmarks }}" as="w" hint-placeholder-count="4"><div style="padding:26px 28px 22px;border-bottom:1px solid #EFE9E0;border-right:1px solid #EFE9E0;display:flex;flex-direction:column;gap:18px;background:{{ w.pickBg }}">
+<div style="display:flex;align-items:baseline;gap:8px"><span style="font:700 11px/1 Nunito;letter-spacing:.1em;text-transform:uppercase;color:#8A786C">{{ w.name }}</span><span style="font:600 11px/1 Nunito;color:#B85A33">{{ w.pickNote }}</span></div>
+<div style="display:flex;align-items:center;gap:14px"><svg viewBox="22 18 56 76" width="44" height="60"><g transform="rotate(-12 50 80)"><path d="M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z" fill="#DE6F44"></path><circle cx="50" cy="64" r="7" fill="{{ w.dotHole }}"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="#DE6F44" opacity=".5"></rect></svg>
+<div style="font-family:{{ w.family }};font-weight:{{ w.weight }};font-size:54px;line-height:1;letter-spacing:{{ w.ls }};color:#3B2A22;display:flex;align-items:baseline;padding-bottom:6px"><span>stead</span><span style="position:relative;letter-spacing:0;margin-right:{{ w.ls }}">ı<span style="position:absolute;left:50%;top:{{ w.dotTop }};width:{{ w.dotSize }};height:{{ w.dotSize }};margin-left:{{ w.dotShift }};border-radius:50%;background:#DE6F44"></span></span><span>e</span></div></div>
+<div style="display:flex;align-items:center;gap:22px;background:#1C1B22;border-radius:10px;padding:14px 18px"><div style="font-family:{{ w.family }};font-weight:{{ w.weight }};font-size:30px;line-height:1;letter-spacing:{{ w.ls }};color:#F5EFE6;display:flex;align-items:baseline"><span>stead</span><span style="position:relative;letter-spacing:0;margin-right:{{ w.ls }}">ı<span style="position:absolute;left:50%;top:{{ w.dotTop }};width:{{ w.dotSize }};height:{{ w.dotSize }};margin-left:{{ w.dotShift }};border-radius:50%;background:#F2A27A"></span></span><span>e</span></div><div style="font-family:{{ w.family }};font-weight:{{ w.weight }};font-size:16px;line-height:1;letter-spacing:{{ w.ls }};color:#F5EFE6;display:flex;align-items:baseline"><span>stead</span><span style="position:relative;letter-spacing:0;margin-right:{{ w.ls }}">ı<span style="position:absolute;left:50%;top:{{ w.dotTop }};width:{{ w.dotSize }};height:{{ w.dotSize }};margin-left:{{ w.dotShift }};border-radius:50%;background:#F2A27A"></span></span><span>e</span></div><div style="margin-left:auto;font:600 11px/1 Nunito;color:#8F8A99">30 · 16 px</div></div>
+</div></sc-for>
+</div>
+</div></div>
+
+<div class="dv-opt" id="2c"><div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Tile colour</div>
+<div class="dv-card" style="width:1040px">
+<div style="padding:22px 28px 18px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #EFE9E0"><div style="font:500 24px/1.2 Fredoka;color:#3B2A22">Colour variants</div><div style="font:400 14px/1.5 Nunito;color:#6E5D52;text-wrap:pretty">All of these use the refined shape. Apricot is still my pick: it is warm, it is already your brand colour, and almost nothing in Health &amp; Fitness uses it. Terracotta has the most contrast. Cocoa and plum look the most premium, but they get darker and quieter on dark wallpapers.</div></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr))">
+<sc-for list="{{ colours }}" as="k" hint-placeholder-count="6"><div style="display:flex;flex-direction:column;border-right:1px solid #EFE9E0;border-bottom:1px solid #EFE9E0;background:{{ k.pickBg }}">
+<div style="padding:18px 20px 10px;display:flex;align-items:baseline;gap:8px"><span style="font:700 13px/1 Nunito;color:#3B2A22">{{ k.name }}</span><span style="font:600 11px/1 Nunito;color:#B85A33">{{ k.pickNote }}</span></div>
+<div style="display:flex;align-items:flex-end;gap:16px;padding:6px 20px 18px">
+<div style="width:120px;height:120px;border-radius:22.4%;overflow:hidden;box-shadow:0 4px 14px rgba(59,42,34,.16)"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="{{ k.bg }}"></rect><g transform="translate(0 -5)"><g transform="rotate(-12 50 80)"><path d="M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z" fill="{{ k.egg }}"></path><circle cx="50" cy="64" r="7" fill="{{ k.dot }}"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="{{ k.egg }}" opacity=".5"></rect></g></svg></div>
+<div style="width:40px;height:40px;border-radius:22.4%;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.06)"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="{{ k.bg }}"></rect><g transform="translate(0 -5)"><g transform="rotate(-12 50 80)"><path d="M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z" fill="{{ k.egg }}"></path><circle cx="50" cy="64" r="7" fill="{{ k.dot }}"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="{{ k.egg }}" opacity=".5"></rect></g></svg></div>
+</div>
+<div style="background:#1C1B22;padding:14px 20px;display:flex;align-items:center;gap:14px;margin-top:auto"><div style="width:40px;height:40px;border-radius:22.4%;overflow:hidden"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="{{ k.bg }}"></rect><g transform="translate(0 -5)"><g transform="rotate(-12 50 80)"><path d="M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z" fill="{{ k.egg }}"></path><circle cx="50" cy="64" r="7" fill="{{ k.dot }}"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="{{ k.egg }}" opacity=".5"></rect></g></svg></div><div style="width:60px;height:60px;border-radius:22.4%;overflow:hidden"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="{{ k.bg }}"></rect><g transform="translate(0 -5)"><g transform="rotate(-12 50 80)"><path d="M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z" fill="{{ k.egg }}"></path><circle cx="50" cy="64" r="7" fill="{{ k.dot }}"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="{{ k.egg }}" opacity=".5"></rect></g></svg></div><span style="margin-left:auto;font:600 11px/1 Nunito;color:#8F8A99">Dark</span></div>
+</div></sc-for>
+</div>
+</div></div>
+
+</div>
+<p class="dv-next">Try next: "lock the rounder shape and Nunito wordmark" · "try the ground line in a different colour" · "now do the splash animation"</p>
+</section>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Steadie — four logo directions</span></div>
+
+<div style="max-width:1040px;background:#3B2A22;color:#F5EFE6;border-radius:10px;padding:26px 30px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:32px;margin:0 0 32px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="font:700 11px/1 Nunito;letter-spacing:.12em;text-transform:uppercase;color:#F2A27A">Recommendation</div><div style="font:500 30px/1.15 Fredoka;text-wrap:pretty"><a class="dv-oid" href="#1a" style="font-size:14px;vertical-align:middle;background:#F2A27A;color:#3B2A22">1a</a> The roly-poly</div></div>
+<div style="font:400 15px/1.55 Nunito;text-wrap:pretty;color:#EADFD2">It shows the promise as an object: a year with wobbles in it that doesn't tip over. A self-righting toy is friendly and uses no diet, health or scale imagery, so the Health &amp; Fitness grid has nothing like it. The heavy shape still reads at 40 px. On the splash screen it can tip and settle back, which gives Steadie a signature motion. The apricot tile builds on your existing system. What's new is the depth: a burnt apricot instead of a pastel, so it doesn't vanish on white the way the oat sun did.</div>
+</div>
+
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Roly-poly · recommended</div>
+<div class="dv-card" style="width:1040px">
+<div style="padding:22px 28px 18px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #EFE9E0"><div style="font:500 24px/1.2 Fredoka;color:#3B2A22">Wobble, don’t fall</div><div style="font:400 14px/1.5 Nunito;color:#6E5D52;text-wrap:pretty">A self-righting shape, mid-tilt. Its weight sits low (the dot), so whatever nudges it, it rocks back to upright. That is the year after stopping: life will tip you, Steadie helps you settle back.</div></div>
+<div style="display:grid;grid-template-columns:260px minmax(0,1fr);">
+<div style="background:#F5EFE6;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px"><div style="width:220px;height:220px;border-radius:22.4%;overflow:hidden;box-shadow:0 6px 20px rgba(59,42,34,.18)"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#DE6F44"></rect><g transform="translate(0 -4)"><g transform="rotate(-14 50 80)"><path d="M50 20 C65 20 73 42 73 58 C73 71 63 80 50 80 C37 80 27 71 27 58 C27 42 35 20 50 20 Z" fill="#FBF1E4"></path><circle cx="50" cy="64" r="7" fill="#DE6F44"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="#FBF1E4" opacity=".5"></rect></g></svg></div><div style="font:600 11px/1 Nunito;color:#8A786C">1024 px</div></div>
+<div style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:1fr 1fr">
+<sc-for list="{{ panels }}" as="p" hint-placeholder-count="2"><div style="background:{{ p.bg }};padding:20px 24px;display:flex;align-items:flex-end;gap:22px;min-height:110px"><sc-for list="{{ sizes }}" as="z" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:{{ z.px }};height:{{ z.px }};border-radius:22.4%;overflow:hidden"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#DE6F44"></rect><g transform="translate(0 -4)"><g transform="rotate(-14 50 80)"><path d="M50 20 C65 20 73 42 73 58 C73 71 63 80 50 80 C37 80 27 71 27 58 C27 42 35 20 50 20 Z" fill="#FBF1E4"></path><circle cx="50" cy="64" r="7" fill="#DE6F44"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="#FBF1E4" opacity=".5"></rect></g></svg></div><div style="font:600 11px/1 Nunito;color:{{ p.muted }}">{{ z.label }}</div></div></sc-for><div style="margin-left:auto;font:600 11px/1 Nunito;color:{{ p.muted }}">{{ p.name }}</div></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;flex:1">
+<sc-for list="{{ lockA }}" as="c" hint-placeholder-count="2"><div style="background:{{ c.bg }};padding:24px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:110px"><svg viewBox="22 16 56 78" width="44" height="60"><g transform="rotate(-14 50 80)"><path d="M50 20 C65 20 73 42 73 58 C73 71 63 80 50 80 C37 80 27 71 27 58 C27 42 35 20 50 20 Z" fill="{{ c.fg }}"></path><circle cx="50" cy="64" r="7" fill="{{ c.accent }}"></circle></g><rect x="31" y="85" width="38" height="5" rx="2.5" fill="{{ c.fg }}" opacity=".5"></rect></svg><div style="font:500 50px/1 Fredoka;letter-spacing:-.01em;color:{{ c.text }};padding-bottom:6px">steadie</div></div></sc-for>
+</div>
+</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Settling line</div>
+<div class="dv-card" style="width:1040px">
+<div style="padding:22px 28px 18px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #EFE9E0"><div style="font:500 24px/1.2 Fredoka;color:#3B2A22">The wobble settles</div><div style="font:400 14px/1.5 Nunito;color:#6E5D52;text-wrap:pretty">One line that starts wavy and comes to rest flat. It describes the weight graph Steadie wants for you, and the feeling of calm after a big change. Deep plum with butter is unlike anything in the category.</div></div>
+<div style="display:grid;grid-template-columns:260px minmax(0,1fr);">
+<div style="background:#F5EFE6;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px"><div style="width:220px;height:220px;border-radius:22.4%;overflow:hidden;box-shadow:0 6px 20px rgba(59,42,34,.18)"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#3E2443"></rect><path d="M15 50 C21 27 31 27 36 50 C40 67 47 67 51 50 C54 39 59 39 62 50 C64 56 67 55 69 50 L85 50" fill="none" stroke="#F7D88E" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div style="font:600 11px/1 Nunito;color:#8A786C">1024 px</div></div>
+<div style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:1fr 1fr">
+<sc-for list="{{ panels }}" as="p" hint-placeholder-count="2"><div style="background:{{ p.bg }};padding:20px 24px;display:flex;align-items:flex-end;gap:22px;min-height:110px"><sc-for list="{{ sizes }}" as="z" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:{{ z.px }};height:{{ z.px }};border-radius:22.4%;overflow:hidden"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#3E2443"></rect><path d="M15 50 C21 27 31 27 36 50 C40 67 47 67 51 50 C54 39 59 39 62 50 C64 56 67 55 69 50 L85 50" fill="none" stroke="#F7D88E" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div style="font:600 11px/1 Nunito;color:{{ p.muted }}">{{ z.label }}</div></div></sc-for><div style="margin-left:auto;font:600 11px/1 Nunito;color:{{ p.muted }}">{{ p.name }}</div></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;flex:1">
+<sc-for list="{{ lockB }}" as="c" hint-placeholder-count="2"><div style="background:{{ c.bg }};padding:24px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:110px"><svg viewBox="10 22 80 56" width="70" height="49"><path d="M15 50 C21 27 31 27 36 50 C40 67 47 67 51 50 C54 39 59 39 62 50 C64 56 67 55 69 50 L85 50" fill="none" stroke="{{ c.fg }}" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><div style="font:500 50px/1 Fredoka;letter-spacing:-.01em;color:{{ c.text }};padding-bottom:6px">steadie</div></div></sc-for>
+</div>
+</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Held</div>
+<div class="dv-card" style="width:1040px">
+<div style="padding:22px 28px 18px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #EFE9E0"><div style="font:500 24px/1.2 Fredoka;color:#3B2A22">Somewhere soft to land</div><div style="font:400 14px/1.5 Nunito;color:#6E5D52;text-wrap:pretty">A ball resting in a cupped curve, part bowl, part open hand. In physics this is stable equilibrium: push the ball and it rolls back to the middle. Warm cocoa is rare in the category and feels premium.</div></div>
+<div style="display:grid;grid-template-columns:260px minmax(0,1fr);">
+<div style="background:#F5EFE6;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px"><div style="width:220px;height:220px;border-radius:22.4%;overflow:hidden;box-shadow:0 6px 20px rgba(59,42,34,.18)"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#4A2F26"></rect><g transform="translate(50 50) scale(1.2) translate(-50 -66)"><path d="M22 52 A28 28 0 0 0 78 52" fill="none" stroke="#F2A27A" stroke-width="10" stroke-linecap="round"></path><circle cx="50" cy="62" r="13" fill="#F6ECDD"></circle></g></svg></div><div style="font:600 11px/1 Nunito;color:#8A786C">1024 px</div></div>
+<div style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:1fr 1fr">
+<sc-for list="{{ panels }}" as="p" hint-placeholder-count="2"><div style="background:{{ p.bg }};padding:20px 24px;display:flex;align-items:flex-end;gap:22px;min-height:110px"><sc-for list="{{ sizes }}" as="z" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:{{ z.px }};height:{{ z.px }};border-radius:22.4%;overflow:hidden"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#4A2F26"></rect><g transform="translate(50 50) scale(1.2) translate(-50 -66)"><path d="M22 52 A28 28 0 0 0 78 52" fill="none" stroke="#F2A27A" stroke-width="10" stroke-linecap="round"></path><circle cx="50" cy="62" r="13" fill="#F6ECDD"></circle></g></svg></div><div style="font:600 11px/1 Nunito;color:{{ p.muted }}">{{ z.label }}</div></div></sc-for><div style="margin-left:auto;font:600 11px/1 Nunito;color:{{ p.muted }}">{{ p.name }}</div></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;flex:1">
+<sc-for list="{{ lockC }}" as="c" hint-placeholder-count="2"><div style="background:{{ c.bg }};padding:24px;display:flex;align-items:center;justify-content:center;gap:12px;min-height:110px"><svg viewBox="15 45 70 43" width="66" height="41"><path d="M22 52 A28 28 0 0 0 78 52" fill="none" stroke="{{ c.fg }}" stroke-width="10" stroke-linecap="round"></path><circle cx="50" cy="62" r="13" fill="{{ c.accent }}"></circle></svg><div style="font:500 50px/1 Fredoka;letter-spacing:-.01em;color:{{ c.text }};padding-bottom:6px">steadie</div></div></sc-for>
+</div>
+</div>
+</div>
+</div></div>
+
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Twelve</div>
+<div class="dv-card" style="width:1040px">
+<div style="padding:22px 28px 18px;display:flex;flex-direction:column;gap:4px;border-bottom:1px solid #EFE9E0"><div style="font:500 24px/1.2 Fredoka;color:#3B2A22">A year, kept</div><div style="font:400 14px/1.5 Nunito;color:#6E5D52;text-wrap:pretty">A closed ring of twelve soft segments, one for each month of the plan, with this month picked out in butter. It works as a system as well as a logo: the same ring can show progress through the year in the app and on the doctor report.</div></div>
+<div style="display:grid;grid-template-columns:260px minmax(0,1fr);">
+<div style="background:#F5EFE6;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px"><div style="width:220px;height:220px;border-radius:22.4%;overflow:hidden;box-shadow:0 6px 20px rgba(59,42,34,.18)"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#5C4D8C"></rect><circle cx="50" cy="50" r="27" fill="none" stroke="#F6ECDD" stroke-width="10" stroke-dasharray="11.14 3" transform="rotate(-101.8 50 50)"></circle><circle cx="50" cy="50" r="27" fill="none" stroke="#F4C96B" stroke-width="10" stroke-dasharray="11.14 158.51" transform="rotate(-101.8 50 50)"></circle></svg></div><div style="font:600 11px/1 Nunito;color:#8A786C">1024 px</div></div>
+<div style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:1fr 1fr">
+<sc-for list="{{ panels }}" as="p" hint-placeholder-count="2"><div style="background:{{ p.bg }};padding:20px 24px;display:flex;align-items:flex-end;gap:22px;min-height:110px"><sc-for list="{{ sizes }}" as="z" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:{{ z.px }};height:{{ z.px }};border-radius:22.4%;overflow:hidden"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect width="100" height="100" fill="#5C4D8C"></rect><circle cx="50" cy="50" r="27" fill="none" stroke="#F6ECDD" stroke-width="10" stroke-dasharray="11.14 3" transform="rotate(-101.8 50 50)"></circle><circle cx="50" cy="50" r="27" fill="none" stroke="#F4C96B" stroke-width="10" stroke-dasharray="11.14 158.51" transform="rotate(-101.8 50 50)"></circle></svg></div><div style="font:600 11px/1 Nunito;color:{{ p.muted }}">{{ z.label }}</div></div></sc-for><div style="margin-left:auto;font:600 11px/1 Nunito;color:{{ p.muted }}">{{ p.name }}</div></div></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;flex:1">
+<sc-for list="{{ lockD }}" as="c" hint-placeholder-count="2"><div style="background:{{ c.bg }};padding:24px;display:flex;align-items:center;justify-content:center;gap:14px;min-height:110px"><svg viewBox="18 18 64 64" width="50" height="50"><circle cx="50" cy="50" r="27" fill="none" stroke="{{ c.fg }}" stroke-width="10" stroke-dasharray="11.14 3" transform="rotate(-101.8 50 50)"></circle><circle cx="50" cy="50" r="27" fill="none" stroke="{{ c.accent }}" stroke-width="10" stroke-dasharray="11.14 158.51" transform="rotate(-101.8 50 50)"></circle></svg><div style="font:500 50px/1 Fredoka;letter-spacing:-.01em;color:{{ c.text }};padding-bottom:6px">steadie</div></div></sc-for>
+</div>
+</div>
+</div>
+</div></div>
+
+</div>
+
+<div style="max-width:1040px;margin:28px 0 0;font:400 14px/1.55 Nunito;color:#5A4A40;text-wrap:pretty"><strong style="font-weight:700;color:#3B2A22">On the wordmark:</strong> keep it lowercase. Capitals would make it read as a clinic or a brand name stamped on a box, and lowercase fits the friend-not-clinic tone. Fredoka 500 is used here as a stand-in. At refinement I'd draw a custom wordmark, with tighter spacing and a less bubbly “e”, so it looks premium and not childlike next to the mark.</div>
+
+<p class="dv-next">Try next: "refine <a class="dv-oid" href="#1a">1a</a> and animate the splash" · "<a class="dv-oid" href="#1c">1c</a> in the plum from <a class="dv-oid" href="#1b">1b</a>" · "more directions"</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const oat = '#F5EFE6', dark = '#1C1B22';
+    const D = {
+      rounder: 'M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z',
+      balanced: 'M50 20 C65 20 73 42 73 58 C73 71 63 80 50 80 C37 80 27 71 27 58 C27 42 35 20 50 20 Z',
+      taller: 'M50 16 C63 16 71 40 71 57 C71 71 62 80 50 80 C38 80 29 71 29 57 C29 40 37 16 50 16 Z'
+    };
+    const v = (label, d, deg, ground, pick, shift) => ({
+      label, d: D[d], rot: `rotate(-${deg} 50 80)`, cy: 64, ground,
+      shift: shift || (d === 'rounder' ? 'translate(0 -5)' : d === 'taller' ? 'translate(0 -2)' : 'translate(0 -4)'),
+      pickBg: pick ? '#FBF1E4' : 'transparent', pickOutline: pick ? '2px solid #DE6F44' : 'none'
+    });
+    const pk = (p, note) => ({ pickBg: p ? '#FDF8F2' : '#FFFFFF', pickNote: p ? (note || 'Pick') : '' });
+    return {
+      shapeRows: [
+        { title: 'Proportion · 14°', items: [v('Rounder', 'rounder', 14, true), v('Balanced (1a)', 'balanced', 14, true), v('Taller', 'taller', 14, true)] },
+        { title: 'Lean · rounder body', items: [v('10°', 'rounder', 10, true), v('12°', 'rounder', 12, true, true), v('18°', 'rounder', 18, true)] },
+        { title: 'Ground line · rounder, 12°', items: [v('With ground', 'rounder', 12, true), v('Without ground', 'rounder', 12, false, false, 'translate(0 -2)')] }
+      ],
+      wordmarks: [
+        { name: 'Fredoka 500', family: 'Fredoka', weight: 500, ls: '-0.025em', dotTop: '0.09em', dotSize: '0.15em', dotShift: '-0.075em', dotHole: '#FFFFFF', ...pk(false) },
+        { name: 'Nunito 800', family: 'Nunito', weight: 800, ls: '-0.035em', dotTop: '0.1em', dotSize: '0.16em', dotShift: '-0.080em', dotHole: '#FDF8F2', ...pk(true, 'Pick: calmer, less bubbly') },
+        { name: 'Quicksand 700', family: 'Quicksand', weight: 700, ls: '-0.03em', dotTop: '0.1em', dotSize: '0.14em', dotShift: '-0.070em', dotHole: '#FFFFFF', ...pk(false) },
+        { name: 'M PLUS Rounded 700', family: "'M PLUS Rounded 1c'", weight: 700, ls: '-0.03em', dotTop: '0.08em', dotSize: '0.15em', dotShift: '-0.075em', dotHole: '#FFFFFF', ...pk(false) }
+      ],
+      colours: [
+        { name: 'Apricot', bg: '#DE6F44', egg: '#FBF1E4', dot: '#DE6F44', ...pk(true) },
+        { name: 'Terracotta', bg: '#C2532F', egg: '#FBF1E4', dot: '#C2532F', ...pk(false) },
+        { name: 'Peach', bg: '#F2A27A', egg: '#FFF8EF', dot: '#D9683D', ...pk(false) },
+        { name: 'Cocoa', bg: '#4A2F26', egg: '#F2A27A', dot: '#4A2F26', ...pk(false) },
+        { name: 'Plum', bg: '#3E2443', egg: '#F2A27A', dot: '#3E2443', ...pk(false) },
+        { name: 'Butter', bg: '#F4C96B', egg: '#C2532F', dot: '#F4C96B', ...pk(false) }
+      ],
+      panels: [
+        { bg: '#FFFFFF', muted: '#8A786C', name: 'App Store (light)' },
+        { bg: dark, muted: '#8F8A99', name: 'Dark wallpaper' }
+      ],
+      sizes: [{ px: '60px', label: '60' }, { px: '40px', label: '40' }],
+      lockFinal: [
+        { bg: oat, fg: '#DE6F44', text: '#3B2A22' },
+        { bg: dark, fg: '#F2A27A', text: oat }
+      ],
+      lockA: [
+        { bg: oat, fg: '#DE6F44', accent: oat, text: '#3B2A22' },
+        { bg: dark, fg: '#F2A27A', accent: dark, text: oat }
+      ],
+      lockB: [
+        { bg: oat, fg: '#3E2443', text: '#3E2443' },
+        { bg: dark, fg: '#F7D88E', text: oat }
+      ],
+      lockC: [
+        { bg: oat, fg: '#DE6F44', accent: '#4A2F26', text: '#4A2F26' },
+        { bg: dark, fg: '#F2A27A', accent: '#F6ECDD', text: oat }
+      ],
+      lockD: [
+        { bg: oat, fg: '#5C4D8C', accent: '#E0A23A', text: '#3B2A22' },
+        { bg: dark, fg: '#CFC4F0', accent: '#F4C96B', text: oat }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

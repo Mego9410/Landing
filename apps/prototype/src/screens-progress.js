@@ -380,7 +380,7 @@
       </div>
       <${Choices} sm label="Time range" options=${['Last 4 weeks', 'Last 12 weeks', 'Since stopping']} value=${range} onChange=${setRange} />
       <div style=${{ background: '#FFFFFF', color: '#2E2A33', borderRadius: 12, boxShadow: 'var(--shadow-lg)', padding: 18, display: 'flex', flexDirection: 'column', gap: 12, fontSize: 12, lineHeight: '16px' }}>
-        <div class="between"><img src=${LP.ASSETS.lockup} alt="steadie" style=${{ width: 92, height: 21 }} /><span style=${{ fontWeight: 700, color: '#6A6371' }}>${LP.fmt.dmy(LP.TODAY)}</span></div>
+        <div class="between"><img src=${LP.ASSETS.lockup} alt="steadie" style=${{ width: 92, height: 25 }} /><span style=${{ fontWeight: 700, color: '#6A6371' }}>${LP.fmt.dmy(LP.TODAY)}</span></div>
         <div style=${{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600 }}>Summary for your prescriber</div>
         ${grid(rowsA)}
         <svg viewBox="0 0 300 70" width="100%" height="70" role="img" aria-label=${'Weight trend, ' + range.toLowerCase()}>

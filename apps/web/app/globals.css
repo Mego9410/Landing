@@ -6,7 +6,9 @@
   --font-body: var(--font-nunito), "SF Pro Rounded", ui-rounded, system-ui, sans-serif;
   --content: 1120px;
   --gutter: 20px;
+  --brand-mark: #DE6F44; /* Steadie apricot, for the logo (packages/design-system/brand) */
 }
+@media (prefers-color-scheme: dark) { :root { --brand-mark: #F2A27A; } }
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }

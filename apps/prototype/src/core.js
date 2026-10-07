@@ -9,7 +9,7 @@
 
   /* ---------- assets (the build swaps these for data URIs) ---------- */
   var ASSETS = Object.assign({
-    mark: '../../packages/design-system/assets/Logos/steadie-mark.svg',
+    mark: '../../packages/design-system/assets/Logos/steadie-mark-apricot.svg',
     lockup: '../../packages/design-system/assets/Logos/steadie-lockup.svg'
   }, window.LANDING_ASSETS || {});
 

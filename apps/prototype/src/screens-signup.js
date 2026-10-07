@@ -18,8 +18,7 @@
     return html`<div class="scr plain edge" style=${{ minHeight: '100%', justifyContent: 'center' }}>
       <button type="button" class="linkish" aria-label="Continue to Welcome" onClick=${function () { nav.go('welcome'); }}
         style=${{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: 'var(--ink)', width: '100%' }}>
-        <img src=${LP.ASSETS.mark} alt="" style=${{ width: 112, height: 98 }} />
-        <span style=${{ fontFamily: 'var(--font-display)', fontSize: 44, lineHeight: '48px', fontWeight: 600, letterSpacing: '-.01em' }}>landing</span>
+        <img src=${LP.ASSETS.lockup} alt="steadie" style=${{ width: 240, height: 64 }} />
       </button>
       <p class="caption muted" style=${{ position: 'absolute', left: 0, right: 0, bottom: 48, textAlign: 'center' }}>Keep what you've worked for.</p>
       <${Skip} label="Skip to the app" onClick=${skipToApp} />
@@ -30,7 +29,7 @@
   function Welcome() {
     return html`<div class="scr plain">
       <${Skip} label="Skip to the app" onClick=${skipToApp} />
-      <img src=${LP.ASSETS.lockup} alt="steadie" style=${{ width: 150, height: 35 }} />
+      <img src=${LP.ASSETS.lockup} alt="steadie" style=${{ width: 150, height: 40 }} />
       <${Art} height=${250} shapes=${[
         { left: 24, top: 10, width: 96, height: 150, borderRadius: 48, background: 'var(--lilac)' },
         { right: -30, top: 0, width: 120, height: 96, borderRadius: 32, background: 'var(--sky)' },
@@ -390,7 +389,7 @@
         <p class="body muted">Short, kind reminders for your habits. Never about your weight.</p>
       </div>
       <div class="card" style=${{ flexDirection: 'row', gap: 12, alignItems: 'flex-start', boxShadow: 'var(--shadow-lg)' }}>
-        <img src=${LP.ASSETS.mark} alt="" style=${{ width: 36, height: 32, flex: 'none', marginTop: 2 }} />
+        <img src=${LP.ASSETS.mark} alt="" style=${{ width: 24, height: 32, flex: 'none', marginTop: 2 }} />
         <div class="grow"><div class="between"><span class="label">STEADIE</span><span class="caption muted">now</span></div>
           <p class="body">Afternoon dip? A protein snack now takes the edge off later.</p></div>
       </div>
@@ -414,7 +413,7 @@
     var items = ['Counting from your last injection', "Picking this week's three habits", 'Fitting strength sessions to your week'];
     return html`<div class="scr plain" style=${{ justifyContent: 'center', alignItems: 'center', gap: 28 }}>
       <${Skip} onClick=${function () { nav.go('ob-plan', { replace: true }); }} />
-      <img src=${LP.ASSETS.mark} alt="" style=${{ width: 104, height: 91 }} />
+      <img src=${LP.ASSETS.mark} alt="" style=${{ width: 67, height: 91 }} />
       <h1 class="t-title" style=${{ textAlign: 'center' }}>Building your Steadie plan</h1>
       <div class="card" style=${{ width: '100%', gap: 14 }} role="status" aria-live="polite">
         ${items.map(function (t, i) {
@@ -485,7 +484,7 @@
     return html`<div class="scr plain" style=${{ gap: 18 }}>
       <${Skip} label="Skip payment" onClick=${function () { set(function (s) { s.sub.status = 'trial'; return s; }); nav.go('youre-in'); }} />
       <div class="topbar">
-        <img src=${LP.ASSETS.mark} alt="" style=${{ width: 40, height: 35 }} />
+        <img src=${LP.ASSETS.mark} alt="" style=${{ width: 26, height: 35 }} />
         <${Btn} variant="quiet" size="sm" onClick=${function () { toast('No purchases to restore on this Apple ID. In the app, a match unlocks Steadie.'); }}>Restore<//>
       </div>
       <div class="stack" style=${{ gap: 8 }}>
@@ -538,7 +537,7 @@
     var s = useApp();
     var week = LP.weekOf(s);
     return html`<div class="scr plain">
-      <div class="topbar"><img src=${LP.ASSETS.mark} alt="" style=${{ width: 40, height: 35 }} /><${U.Avatar} /></div>
+      <div class="topbar"><img src=${LP.ASSETS.mark} alt="" style=${{ width: 26, height: 35 }} /><${U.Avatar} /></div>
       <div class="stack">
         <h1 class="t-title">Your subscription has ended</h1>
         <p class="body-lg muted">Your plan and everything you've logged are safe. Pick up exactly where you left off.</p>

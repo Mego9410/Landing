@@ -15,7 +15,7 @@
     "build:preview": "eas build --platform ios --profile preview",
     "web:export": "expo export --platform web --output-dir dist",
     "web:phone": "expo export --platform web --output-dir dist && node scripts/pack-web.mjs dist dist/steadie-app.html",
-    "update:preview": "eas update --branch preview --message \"Preview\"",
+    "update:preview": "eas update --branch preview --environment preview --clear-cache --message \"Preview\"",
     "build:dev": "eas build --profile development",
     "test": "tsx --tsconfig tsconfig.json --test src/test/*.test.ts"
   },

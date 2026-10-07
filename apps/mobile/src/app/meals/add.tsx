@@ -14,8 +14,7 @@ export default function AddMeal() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const x = px(s, id), slot = x.recipe.slot, week = thisWeek(s);
   return (
-    <Screen contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
-      <Header close fallback="/meals" />
+    <Screen header={<Header close fallback="/meals" title="Which day?" />} contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <AppText variant="title">Which day?</AppText>
       <AppText color="inkMuted">{x.name} replaces that day&apos;s {SLOT_NAME[slot].toLowerCase()}.</AppText>
       <List>

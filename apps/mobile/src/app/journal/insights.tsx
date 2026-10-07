@@ -60,8 +60,7 @@ export default function JournalInsights() {
   const s = useApp();
   const { ready, learning } = insights(s);
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header fallback="/progress" />
+    <Screen header={<Header fallback="/progress" title="What shapes your days" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">What shapes your days</AppText>
         <AppText color="inkMuted">From your morning check-ins. These are patterns, not causes, and they get clearer the more days you log.</AppText>

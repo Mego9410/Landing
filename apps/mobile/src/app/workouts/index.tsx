@@ -15,8 +15,7 @@ import { space } from "@/theme";
 export default function Sessions() {
   const s = useApp();
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header fallback="/" />
+    <Screen header={<Header fallback="/" title="This week's sessions" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">This week&apos;s sessions</AppText>
       <AppText color="inkMuted">Two short strength sessions at home. Most moves have an easier version.</AppText>
       <SessionHealth paused={sessionsPaused(s)} notes={sessionNotes(s)} onCleared={() => { set((st) => { st.health.gpCleared = true; }); toast("Thanks. Your sessions are ready."); }} />

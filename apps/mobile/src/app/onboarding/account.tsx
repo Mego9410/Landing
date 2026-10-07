@@ -4,7 +4,7 @@ import { Alert, Platform, useColorScheme, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Screen } from "@/components/Screen";
-import { Banner, Field, IconButton } from "@/components/ui";
+import { Banner, Field, Header } from "@/components/ui";
 import { fmt } from "@/data/dates";
 import { AccountError, appleAvailable, choose, sendCode, signInWithApple, verifyCode, type Outcome } from "@/state/account";
 import { toast } from "@/state/toast";
@@ -66,8 +66,7 @@ export default function AccountStep() {
     : "Sign in and Landing backs up your plan, logs and check-ins as you go, so they come with you to a new phone.";
 
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48, flexGrow: 1 }}>
-      <IconButton icon="back" label="Back" flat onPress={back} />
+    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48, flexGrow: 1 }} header={<Header onBack={back} title={stage === "code" ? "Check your email" : title} />}>
       <View style={{ height: 140, borderRadius: radius.xl, backgroundColor: c.sage, overflow: "hidden" }}>
         <View style={{ position: "absolute", left: -30, right: -30, bottom: -20, height: 70, borderRadius: 35, backgroundColor: c.sky }} />
         <View style={{ position: "absolute", right: 60, top: 28, width: 64, height: 64, borderRadius: 32, backgroundColor: c.apricot }} />

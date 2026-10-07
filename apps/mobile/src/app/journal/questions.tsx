@@ -19,8 +19,7 @@ export default function JournalQuestions() {
     setQuestions(YES_NO.map((q) => q.id).filter((x) => (x === id ? v : on.includes(x))));
   }
   return (
-    <Screen contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
-      <Header fallback="/journal/insights" />
+    <Screen header={<Header fallback="/journal/insights" title="Your questions" />} contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">Your questions</AppText>
         <AppText color="inkMuted">Pick the things you&apos;d like to understand. Fewer questions keep it quick; around six works well.</AppText>

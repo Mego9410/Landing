@@ -51,8 +51,7 @@ export default function QuickLog() {
   }
 
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header close fallback="/" />
+    <Screen header={<Header close fallback="/" title="Quick log" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <AppText variant="title">Quick log</AppText>
       <View style={{ gap: space[2] }}>
         <AppText weight="700">Meal</AppText>

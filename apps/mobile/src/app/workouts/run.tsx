@@ -35,8 +35,7 @@ export default function InSession() {
     router.replace({ pathname: "/workouts/done", params: { id } });
   }
   return (
-    <Screen contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
-      <Header close fallback="/" middle={<AppText variant="caption" color="inkMuted">{session.name} · move {move + 1} of {session.moves.length}</AppText>} />
+    <Screen header={<Header close fallback="/" middle={<AppText variant="caption" color="inkMuted">{session.name} · move {move + 1} of {session.moves.length}</AppText>} />} contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <Meter value={doneSteps} max={steps} label="Session progress" />
       <View style={{ borderRadius: radius.lg, backgroundColor: c.sky, overflow: "hidden" }}>
         <ExerciseAnimation id={anim} who={who} paused={paused || s.demos.still} />

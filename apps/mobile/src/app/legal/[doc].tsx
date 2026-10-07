@@ -11,8 +11,7 @@ export default function Legal() {
   const { doc: id } = useLocalSearchParams<{ doc: string }>();
   const doc = id === "terms" ? TERMS : APP_PRIVACY;
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header fallback="/settings" />
+    <Screen header={<Header fallback="/settings" title={doc.title} />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">{doc.title}</AppText>
         <AppText variant="caption" color="inkMuted">Last updated {doc.updated}</AppText>

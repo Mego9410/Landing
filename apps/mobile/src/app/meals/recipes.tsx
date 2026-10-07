@@ -36,8 +36,7 @@ export default function Recipes() {
   });
   const suits = lib.filter((x) => x.ok).length;
   return (
-    <Screen contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
-      <Header fallback="/meals" right={<AppText variant="caption" color="inkMuted">{suits} of {lib.length} suit you</AppText>} />
+    <Screen header={<Header fallback="/meals" right={<AppText variant="caption" color="inkMuted">{suits} of {lib.length} suit you</AppText>} title={picking ? `Choose ${SLOT_NAME[q.slot!].toLowerCase()} for ${which === "next" ? "next " : ""}${dayName(Number(q.day))}` : "Recipes"} />} contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">{picking ? `Choose ${SLOT_NAME[q.slot!].toLowerCase()} for ${which === "next" ? "next " : ""}${dayName(Number(q.day))}` : "Recipes"}</AppText>
       <TextInput accessibilityLabel="Search recipes" value={query} onChangeText={setQuery} placeholder="Try chilli, salmon or no-cook" placeholderTextColor={c.inkMuted}
         style={[textStyle("bodyLg"), { height: 52, borderRadius: radius.md, paddingHorizontal: space[4], backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line, color: c.ink }]} />

@@ -27,8 +27,7 @@ export default function Reminders() {
   }
 
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header fallback="/settings" />
+    <Screen header={<Header fallback="/settings" title="Reminders" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">Reminders</AppText>
         <AppText color="inkMuted">A gentle nudge at a time that suits you. They never mention weight, and you can turn them off whenever you like.</AppText>

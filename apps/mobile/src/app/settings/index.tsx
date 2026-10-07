@@ -39,8 +39,7 @@ export default function Settings() {
   const confirmDeleteAccount = () => confirm("Delete your account?", "This deletes your account and your backup from Landing's servers, and clears this phone. It can't be undone.", "Delete my account",
     () => deleteAccount().then(() => { toast("Your account and backup are deleted."); router.replace("/disclaimer"); }, fail));
   return (
-    <Screen contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
-      <Header fallback="/" />
+    <Screen header={<Header fallback="/" title="Settings" />} contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">Settings</AppText>
       <Section title="YOUR PLAN">
         <List>

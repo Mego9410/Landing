@@ -41,8 +41,7 @@ export default function Recipe() {
   }
 
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header fallback="/meals" middle={<Pill label={SLOT_NAME[r.slot]} tone={SLOT_TONE[r.slot]} />} />
+    <Screen header={<Header fallback="/meals" middle={<Pill label={SLOT_NAME[r.slot]} tone={SLOT_TONE[r.slot]} />} title={x.name} />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: 6 }}>
         <AppText variant="title" accessibilityRole="header">{x.name}</AppText>
         <AppText variant="bodyLg" color="inkMuted">{r.blurb}</AppText>

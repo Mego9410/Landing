@@ -18,8 +18,7 @@ export default function Week() {
   const s = useApp();
   const week = weekOf(s), phase = phaseOf(week), lesson = lessonFor(week);
   return (
-    <Screen contentContainerStyle={{ gap: space[5] }}>
-      <Header fallback="/plan" middle={<Chip label={`${phase.name} · week ${week}`} tone={phase.tone} />} />
+    <Screen header={<Header fallback="/plan" middle={<Chip label={`${phase.name} · week ${week}`} tone={phase.tone} />} title={lesson.week} />} contentContainerStyle={{ gap: space[5] }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="display" style={{ fontSize: 36, lineHeight: 40 }}>{lesson.week}</AppText>
         <AppText variant="bodyLg" color="inkMuted">{lesson.blurb}</AppText>

@@ -3,10 +3,11 @@
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import type { ReactNode } from "react";
-import { Pressable, Switch, TextInput, View, type TextInputProps, type ViewStyle } from "react-native";
+import { Animated, Pressable, Switch, TextInput, View, type TextInputProps, type ViewStyle } from "react-native";
 import { radius, space, textStyle, useColors, type Colors } from "@/theme";
 import { AppText } from "./AppText";
 import { Icon, type IconName } from "./Icon";
+import { useScrollY } from "./Screen";
 
 type Tone = "apricot" | "sage" | "lilac" | "sky" | "butter" | "rose" | "sunk";
 const bgFor = (c: Colors, t: Tone) => (t === "sunk" ? c.surfaceSunk : c[t]);
@@ -23,12 +24,24 @@ export function IconButton({ icon, label, onPress, flat }: { icon: IconName; lab
   );
 }
 
-/** Back button with an optional middle and right. Falls back to a route when there's nothing to go back to. */
-export function Header({ middle, right, fallback = "/", close }: { middle?: ReactNode; right?: ReactNode; fallback?: string; close?: boolean }) {
+/** Back button with an optional middle and right. Falls back to a route when there's nothing to go back to. Inside a
+ *  <Screen header>, `title` fades into the middle once the page's own title has scrolled under the bar. */
+export function Header({ middle, right, fallback = "/", close, title, titleAfter = 36, onBack }: { middle?: ReactNode; right?: ReactNode; fallback?: string; close?: boolean; title?: string; titleAfter?: number; onBack?: () => void }) {
+  const y = useScrollY();
+  // The middle fades out over the first half, then the title fades in, so the two never sit on top of each other.
+  const show = y && title ? y.interpolate({ inputRange: [titleAfter + 18, titleAfter + 36], outputRange: [0, 1], extrapolate: "clamp" }) : null;
+  const hide = y && title ? y.interpolate({ inputRange: [titleAfter, titleAfter + 18], outputRange: [1, 0], extrapolate: "clamp" }) : null;
   return (
     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 44, gap: space[3] }}>
-      <IconButton icon={close ? "close" : "back"} label={close ? "Close" : "Back"} flat={!close} onPress={() => (router.canGoBack() ? router.back() : router.replace(fallback as never))} />
-      <View style={{ flex: 1, alignItems: "center" }}>{middle}</View>
+      <IconButton icon={close ? "close" : "back"} label={close ? "Close" : "Back"} flat={!close} onPress={onBack ?? (() => (router.canGoBack() ? router.back() : router.replace(fallback as never)))} />
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", alignSelf: "stretch" }}>
+        {hide ? <Animated.View style={{ opacity: hide, alignSelf: "stretch", alignItems: "center" }}>{middle}</Animated.View> : middle}
+        {show ? (
+          <Animated.View pointerEvents="none" importantForAccessibility="no-hide-descendants" accessibilityElementsHidden style={{ position: "absolute", left: 0, right: 0, opacity: show }}>
+            <AppText weight="800" numberOfLines={1} style={{ textAlign: "center" }}>{title}</AppText>
+          </Animated.View>
+        ) : null}
+      </View>
       <View style={{ minWidth: 44, alignItems: "flex-end" }}>{right}</View>
     </View>
   );

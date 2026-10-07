@@ -17,8 +17,7 @@ export default function Demos() {
   const who = whoFor(s, "preview");
   const pick = (v: string) => set((st) => { st.demos.who = v; });
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header fallback="/settings" />
+    <Screen header={<Header fallback="/settings" title="Exercise demos" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">Exercise demos</AppText>
       <View style={{ borderRadius: radius.lg, backgroundColor: c.sky, overflow: "hidden" }}>
         <ExerciseAnimation id="squat-2" who={who} paused={s.demos.still} />

@@ -17,8 +17,7 @@ export default function SwapHabit() {
   const options = HABIT_SWAPS.filter((o) => !s.habits.ids.includes(o.id));
   const [pick, setPick] = useState(options[0]?.id ?? "walk");
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header close fallback="/" />
+    <Screen header={<Header close fallback="/" title="Swap a habit" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <AppText variant="title">Swap a habit</AppText>
       {replacing ? (
         <Card tone="sunk" style={{ gap: 2 }}>

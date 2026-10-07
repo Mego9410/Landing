@@ -24,8 +24,7 @@ export default function PlanNext() {
   );
   if (!nx) {
     return (
-      <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-        <Header fallback="/meals" />
+      <Screen header={<Header fallback="/meals" title="Plan next week" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
         {head}
         <Options label="How to start" value={start} onChange={setStart} options={[
           { id: "blank", title: "Pick every meal myself", detail: "Start with an empty week and choose each meal" },
@@ -37,8 +36,7 @@ export default function PlanNext() {
   }
   const pr = progress(nx.week);
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header fallback="/meals" right={<AppText variant="caption" color="inkMuted">{pr.chosen} of {pr.total} chosen</AppText>} />
+    <Screen header={<Header fallback="/meals" right={<AppText variant="caption" color="inkMuted">{pr.chosen} of {pr.total} chosen</AppText>} title="Plan next week" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       {head}
       <Meter value={pr.chosen} max={pr.total} label="Meals chosen" />
       {nx.week.days.map((d) => (

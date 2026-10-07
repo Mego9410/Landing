@@ -77,8 +77,7 @@ export default function Journal() {
   const DAYS = choosable();
   const [day, setDay] = useState(params.day && DAYS.includes(params.day) ? params.day : yesterday());
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <Header close fallback="/" />
+    <Screen header={<Header close fallback="/" title={`How was ${day === yesterday() ? "yesterday" : fmt.long(day)}?`} />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">How was {day === yesterday() ? "yesterday" : fmt.long(day)}?</AppText>
         <AppText color="inkMuted">About a minute. Over a few weeks it shows what goes with your fuller, steadier days.</AppText>

@@ -140,8 +140,7 @@ export default function HealthCheck() {
 
   if (recheck) {
     return (
-      <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-        <Header close fallback="/settings" />
+      <Screen header={<Header close fallback="/settings" title="A quick health check" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
         <View style={{ gap: space[2] }}>
           <AppText variant="title" accessibilityRole="header">A quick health check</AppText>
           <AppText color="inkMuted">Every 12 weeks we check nothing has changed, so your plan still fits. Your answers stay private to you.</AppText>

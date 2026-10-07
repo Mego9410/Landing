@@ -12,8 +12,7 @@ import { space } from "@/theme";
 export default function FoodPreferences() {
   const s = useApp();
   return (
-    <Screen contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
-      <Header fallback="/meals" />
+    <Screen header={<Header fallback="/meals" title="Food preferences" />} contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
       <View style={{ gap: 6 }}>
         <AppText variant="title" accessibilityRole="header">Food preferences</AppText>
         <AppText color="inkMuted">Your meal plan and recipe swaps follow these. Changing them builds a fresh week.</AppText>

@@ -22,8 +22,7 @@ export default function SessionOverview() {
   const [open, setOpen] = useState(0);
   const move = session.moves[open], who = whoFor(s, `${move.anim}-${id}`);
   return (
-    <Screen contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
-      <Header fallback="/workouts" />
+    <Screen header={<Header fallback="/workouts" title={session.name} />} contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">{session.name}</AppText>
       <AppText color="inkMuted">{session.minutes} minutes at home · {session.moves.length} exercises · level {session.level} of 3</AppText>
       <SessionHealth paused={sessionsPaused(s)} notes={sessionNotes(s)} onCleared={() => { set((st) => { st.health.gpCleared = true; }); toast("Thanks. Your sessions are ready."); }} />

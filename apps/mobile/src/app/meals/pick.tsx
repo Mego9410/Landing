@@ -42,8 +42,7 @@ export default function Pick() {
     router.back();
   }
   return (
-    <Screen contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
-      <Header close fallback="/meals" />
+    <Screen header={<Header close fallback="/meals" title={`${which === "next" ? "Next " : ""}${dayName(day)}'s ${SLOT_NAME[slot].toLowerCase()}`} />} contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <AppText variant="title">{which === "next" ? "Next " : ""}{dayName(day)}&apos;s {SLOT_NAME[slot].toLowerCase()}</AppText>
       {current?.recipe ? (
         <Card tone="sunk" style={{ gap: 2 }}>

@@ -27,8 +27,7 @@ export default function Meals() {
   const cooks = week.days.filter((d) => d.dinner.kind === "cook").length;
   const isToday = day === weekdayIndex(dateToday());
   return (
-    <Screen contentContainerStyle={{ gap: space[5] }}>
-      <Header fallback="/plan" middle={<Chip label={`Week ${weekOf(s)} · ${PHASE_NAME[t.phase]}`} tone="apricot" />} />
+    <Screen header={<Header fallback="/plan" middle={<Chip label={`Week ${weekOf(s)} · ${PHASE_NAME[t.phase]}`} tone="apricot" />} title="This week's meals" />} contentContainerStyle={{ gap: space[5] }}>
       <View style={{ gap: 6 }}>
         <AppText variant="title" accessibilityRole="header">This week&apos;s meals</AppText>
         <AppText color="inkMuted">{cooks} dinners to cook, leftovers, a takeaway night and a free night. Planned {GOAL_LINE[p.goal]}.</AppText>

@@ -34,8 +34,7 @@ export default function Disclaimer() {
   }
 
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      {review ? <Header fallback="/settings" /> : null}
+    <Screen header={review ? <Header fallback="/settings" title="Before you start" /> : undefined} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">Before you start</AppText>
         <AppText variant="bodyLg" color="inkMuted">A few things to know about how Landing works and when to talk to a professional.</AppText>

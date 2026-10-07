@@ -22,8 +22,7 @@ export default function Shopping() {
   const week = weekFor(s, which);
   if (!week) {
     return (
-      <Screen>
-        <Header fallback="/meals" />
+      <Screen header={<Header fallback="/meals" title="Nothing picked yet" />}>
         <AppText variant="title">Nothing picked yet</AppText>
         <Button label="Plan next week" onPress={() => router.replace("/meals/next")} />
       </Screen>
@@ -37,8 +36,7 @@ export default function Shopping() {
     if (t[id]) delete t[id]; else t[id] = true;
   });
   return (
-    <Screen contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
-      <Header fallback="/meals" right={<AppText variant="caption" color="inkMuted">{done} of {total} ticked</AppText>} />
+    <Screen header={<Header fallback="/meals" right={<AppText variant="caption" color="inkMuted">{done} of {total} ticked</AppText>} title={which === "next" ? "Next week's shopping" : "Shopping list"} />} contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <View style={{ gap: 6 }}>
         <AppText variant="title" accessibilityRole="header">{which === "next" ? "Next week's shopping" : "Shopping list"}</AppText>
         <AppText color="inkMuted">

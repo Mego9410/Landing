@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Lockup } from "./lockup";
+import { APP_STORE_URL } from "./site";
 import styles from "./page.module.css";
 
 // The header and footer for every page. On the home page the section links are in-page anchors; elsewhere they point
@@ -20,7 +21,7 @@ export function SiteHeader({ home = false }: { home?: boolean }) {
   return (
     <>
       <aside className={styles.announce} aria-label="Announcement">
-        <span>Coming soon to iPhone.</span> <a href={at("join")}>Join the waitlist for early access</a>
+        <span>Now on iPhone.</span> <a href={APP_STORE_URL}>Try it free for 7 days</a>
       </aside>
       <header className={styles.header}>
         <div className={`${styles.wrap} ${styles.headerInner}`}>
@@ -30,7 +31,7 @@ export function SiteHeader({ home = false }: { home?: boolean }) {
             <Link href="/guides">Guides</Link>
             {SECTIONS.slice(2).map(([id, label]) => <a key={id} href={at(id)}>{label}</a>)}
           </nav>
-          <a className={styles.navCta} href={at("join")}>Join the waitlist</a>
+          <a className={styles.navCta} href={APP_STORE_URL}>Download</a>
         </div>
       </header>
     </>
@@ -58,7 +59,7 @@ export function SiteFooter({ home = false }: { home?: boolean }) {
         <nav aria-label="Legal">
           <p className={styles.footerHead}>Legal</p>
           <Link href="/editorial-policy">Editorial policy</Link>
-          <Link href="/privacy">Waitlist privacy notice</Link>
+          <Link href="/privacy">Website privacy notice</Link>
           <Link href="/app-privacy">App privacy policy</Link>
           <Link href="/terms">Terms of use</Link>
         </nav>

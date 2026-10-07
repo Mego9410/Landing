@@ -83,27 +83,22 @@ export const APP_PRIVACY: LegalDoc = {
   ],
 };
 
-/** The website's own notice: the waitlist, and what the site does and doesn't collect. */
+/** The website's own notice: what the site does and doesn't collect, and the pre-launch waitlist. */
 export const SITE_PRIVACY: LegalDoc = {
   title: "Privacy notice for this website",
   updated: UPDATED,
-  intro: `This notice covers the Steadie website, including the waitlist. ${COMPANY} ("we") is responsible for it. The app has its own privacy policy.`,
+  intro: `This notice covers the Steadie website. ${COMPANY} ("we") is responsible for it. The app has its own privacy policy.`,
   sections: [
     { heading: "Browsing the website", paras: [
-      "The website doesn't use cookies, analytics or advertising trackers. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
+      "The website doesn't use cookies, analytics or advertising trackers, and doesn't ask you for any details. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
+      "Download links take you to Apple's App Store, which has its own privacy policy.",
     ] },
-    { heading: "The waitlist", paras: [
-      "If you join the waitlist, we keep your email address, when you joined and gave consent, and, if you choose to tell us, where you are with your weight-loss medicine (stopped, stopping soon or still on it). That last answer is health information, so we only keep it with your explicit consent, which you give by ticking the box.",
-      "We use it to email you when Steadie opens and to understand who is waiting for it. We don't use it for anything else, and never sell it or use it for advertising.",
-    ] },
-    { heading: "Who else is involved", paras: [
-      "Vercel hosts the website and Neon holds the waitlist, both in London. When we email you, our email provider Resend handles your address on our behalf; it's based in the US, and your information is protected by the UK's approved safeguards.",
-    ] },
-    { heading: "How long we keep it", paras: [
-      "Until we've emailed you that Steadie is open, and no more than 6 months after that, or until you unsubscribe or ask us to remove you, whichever comes first.",
+    { heading: "If you joined our waitlist", paras: [
+      "Before launch, people could join a waitlist with their email address, the date they gave consent and, if they chose, where they were with their weight-loss medicine (stopped, stopping soon or still on it). That last answer is health information, kept only with explicit consent.",
+      "We only use the list to email you once to say Steadie is available. We delete it within 6 months of launch, or sooner if you unsubscribe or ask us to. It's held by Neon in London, and our email provider Resend sends on our behalf; Resend is based in the US, with the UK's approved safeguards.",
     ] },
     { heading: "Your rights", paras: [
-      `You can ask to see, correct or delete your details, or withdraw your consent, at any time by emailing ${PRIVACY_CONTACT}, or by using the unsubscribe link in any email. We'll reply within one month. You can also complain to the Information Commissioner's Office at ico.org.uk or on 0303 123 1113.`,
+      `You can ask to see, correct or delete anything we hold about you, or withdraw your consent, at any time by emailing ${PRIVACY_CONTACT}, or by using the unsubscribe link in any email. We'll reply within one month. You can also complain to the Information Commissioner's Office at ico.org.uk or on 0303 123 1113.`,
     ] },
     { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Registered with the Information Commissioner's Office, number ${ICO_NUMBER}. Email ${PRIVACY_CONTACT}.`] },
   ],

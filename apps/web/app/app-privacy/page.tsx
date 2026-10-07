@@ -4,7 +4,7 @@ import { LegalPage } from "../legal-doc";
 
 export const metadata: Metadata = { title: "App privacy policy", description: "How the Steadie app handles your information." };
 
-// The URL for the App Store listing's privacy policy. The waitlist keeps its own notice at /privacy.
+// The URL for the App Store listing's privacy policy. The website has its own notice at /privacy.
 export default function AppPrivacy() {
   return <LegalPage doc={APP_PRIVACY} />;
 }

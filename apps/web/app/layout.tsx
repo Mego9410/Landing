@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: "Steadie: keep weight off after weight-loss jabs", template: "%s · Steadie" },
   applicationName: "Steadie",
+  // Safari shows a banner offering the app (App Store Connect app ID).
+  itunes: { appId: "6820083153" },
   keywords: ["coming off weight loss injections", "life after GLP-1", "keep weight off after stopping weight loss jab", "weight maintenance after GLP-1", "protein and strength after weight loss injections"],
   category: "health",
   description,

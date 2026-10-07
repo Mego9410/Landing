@@ -8,7 +8,7 @@ import { GUIDES } from "@/content/guides";
 import { SiteFooter, SiteHeader } from "./site-chrome";
 import { abs, ldJson, ORGANIZATION, SITE_NAME } from "./site";
 import { PrototypeLink } from "./prototype-link";
-import { WaitlistForm } from "./waitlist-form";
+import { AppStoreButton } from "./app-store";
 
 // Pricing from the paywall design. Confirm before launch; the page says so under the plan.
 const PRICE = { yearly: "£69.99", weekly: "£1.35", monthly: "£12.99" };
@@ -98,7 +98,7 @@ const FAQS = [
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
   { q: "Where is my data kept?", a: "On your phone. If you sign in, Steadie also keeps a private, encrypted backup so your plan moves with you to a new phone. It's never sold or used for ads, and you can export everything or delete your account from Settings. If you connect Apple Health, that information is only used for your own plan, and never for advertising." },
-  { q: "When can I use it, and what will it cost?", a: `Steadie is coming to iPhone first. Both plans start with a 7-day free trial: then ${PRICE.yearly} a year, or ${PRICE.monthly} a month. Join the waitlist and we'll email you once when it opens.` },
+  { q: "When can I use it, and what will it cost?", a: `Now, on iPhone: download Steadie from the App Store. Both plans start with a 7-day free trial: then ${PRICE.yearly} a year, or ${PRICE.monthly} a month. Cancel any time in your iPhone settings.` },
 ];
 
 // STEP 1 trial extension (reference 1): mean change in body weight from the start of treatment.
@@ -154,7 +154,10 @@ export default function Home() {
             <p className={styles.pill}><span className={styles.pillDot} aria-hidden="true" />For life after weight-loss jabs</p>
             <h1 id="hero-title" className={styles.display}>Keep what you&apos;ve worked&nbsp;for.</h1>
             <p className={styles.lede}>The 12-month plan for the year after you stop a weight-loss jab. Strength, protein and steady habits to keep the weight off, with support on your side.</p>
-            <div id="join" className={styles.heroForm}><WaitlistForm /></div>
+            <div id="download" className={styles.heroCta}>
+              <AppStoreButton />
+              <p className={styles.storeNote}>7 days free, then {PRICE.yearly} a year or {PRICE.monthly} a month. For iPhone.</p>
+            </div>
           </div>
           <div className={styles.heroArt} aria-hidden="true">
             <span className={styles.shapeLilac} />
@@ -359,8 +362,8 @@ export default function Home() {
                   <li key={x}><Icon name="check" size={18} />{x}</li>
                 ))}
               </ul>
-              <a className={styles.btnPrimary} href="#join">Join the waitlist</a>
-              <p className={styles.fine}>Prices are confirmed at launch.</p>
+              <AppStoreButton />
+              <p className={styles.fine}>Prices in the UK, including VAT. Charged through your Apple account.</p>
             </div>
           </div>
         </section>
@@ -398,8 +401,9 @@ export default function Home() {
         <section className={styles.cta} aria-labelledby="cta-title">
           <div className={`${styles.wrap} ${styles.ctaInner}`}>
             <h2 id="cta-title" className={styles.display}>Make this year your steady one</h2>
-            <p className={styles.lede}>Join the waitlist. One email when Steadie opens, nothing else.</p>
-            <WaitlistForm />
+            <p className={styles.lede}>Try the full plan free for 7 days, on either plan.</p>
+            <AppStoreButton />
+            <p className={styles.storeNote}>Then {PRICE.yearly} a year or {PRICE.monthly} a month. Cancel any time in your iPhone settings.</p>
           </div>
         </section>
       </main>

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { GUIDES, guideBySlug, relatedGuides } from "@/content/guides";
 import home from "../../page.module.css";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
-import { abs, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
+import { abs, APP_STORE_URL, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
 import styles from "../guides.module.css";
 import { anchor, Blocks, plain } from "../rich";
 
@@ -129,8 +129,8 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               </nav>
               <div className={styles.cta}>
                 <strong>A 12-month plan for the year after</strong>
-                <span>Small habits, short strength sessions and easy meals, on your side. Coming soon to iPhone.</span>
-                <Link className={styles.ctaButton} href="/#join">Join the waitlist</Link>
+                <span>Small habits, short strength sessions and easy meals, on your side. On iPhone, with 7 days free.</span>
+                <a className={styles.ctaButton} href={APP_STORE_URL}>Download Steadie</a>
               </div>
             </aside>
           </div>

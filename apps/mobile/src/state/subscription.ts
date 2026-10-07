@@ -55,13 +55,13 @@ export interface Plan {
 /** The plans on offer, yearly first. A trial is only offered to people Apple will give it to (one per Apple ID, per
  *  subscription group); when RevenueCat can't tell, the plain price is shown, as Apple and RevenueCat advise. */
 export async function plans(): Promise<Plan[]> {
-  const offerings = await Purchases.getOfferings();
-  const pkgs = (offerings.current?.availablePackages ?? []).filter((p) => p.packageType === "ANNUAL" || p.packageType === "MONTHLY");
-  const monthlyPkg = pkgs.find((p) => p.packageType === "MONTHLY");
+  // The current offering ("default" in RevenueCat): its annual and monthly packages, picked by type rather than by the
+  // order the dashboard lists them in, with yearly first.
+  const current = (await Purchases.getOfferings()).current;
+  const monthlyPkg = current?.monthly ?? undefined;
+  const pkgs = [current?.annual, current?.monthly].filter((p): p is PurchasesPackage => !!p);
   const eligible = await Purchases.checkTrialOrIntroductoryPriceEligibility(pkgs.map((p) => p.product.identifier)).catch(() => ({} as Record<string, { status: INTRO_ELIGIBILITY_STATUS }>));
-  return pkgs
-    .sort((a) => (a.packageType === "ANNUAL" ? -1 : 1))
-    .map((pkg) => {
+  return pkgs.map((pkg) => {
       const pr = pkg.product, intro = pr.introPrice;
       const yearly = pkg.packageType === "ANNUAL";
       const saving = yearly && monthlyPkg ? Math.round((1 - pr.price / (monthlyPkg.product.price * 12)) * 100) : 0;

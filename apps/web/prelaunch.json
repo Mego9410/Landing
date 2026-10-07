@@ -1,4 +1,4 @@
 {
   "//": "Before going live, set showPrototype to false. That removes the 'Preview the app' button and stops /prototype being published. See docs/deployment.md.",
-  "showPrototype": true
+  "showPrototype": false
 }

@@ -2,7 +2,7 @@
   "name": "@landing/web",
   "version": "1.0.0",
   "private": true,
-  "description": "The Steadie waitlist site.",
+  "description": "The Steadie website: brand, guides, legal pages and the app's account API.",
   "scripts": {
     "dev": "node scripts/copy-prototype.mjs && next dev",
     "build": "node scripts/copy-prototype.mjs && next build",

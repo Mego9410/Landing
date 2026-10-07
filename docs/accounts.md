@@ -51,6 +51,9 @@ The app talks to it at `EXPO_PUBLIC_API_URL`. Without that variable, sign-in is 
    - `BETTER_AUTH_URL`: the live URL, for example `https://www.getsteadieapp.com`.
    - `RESEND_API_KEY` and `EMAIL_FROM` (for example `Steadie <hello@getsteadieapp.com>`). Verify the domain in Resend
      first. Without these the site refuses to send codes in production.
+   - `EMAIL_REPLY_TO`: a mailbox that receives mail (for example support@ on a real inbox). Sign-in emails set it as
+     Reply-To, because hello@getsteadieapp.com can't receive replies. The sign-in email uses the Resend template
+     `steadie-sign-in-code` (variable `CODE`), with a plain fallback if the template can't be used.
    - `APPLE_BUNDLE_ID`: the app's bundle ID (the same as `ios.bundleIdentifier` in `apps/mobile/app.json`). This
      turns on Sign in with Apple. Also tick **Sign in with Apple** for that App ID in the Apple Developer portal.
    - `REVIEW_EMAIL` and `REVIEW_CODE` (six digits): App Review can't receive email, so this one address signs in

@@ -1,10 +1,10 @@
 # App Store screenshots
 
-Nine screenshots for the App Store listing, at **1290 × 2796** (iPhone 6.9" display). App Store Connect scales them
-down for smaller iPhones, so this one set is enough. Upload them in this order under **App Store → iOS App → Previews
-and Screenshots → iPhone 6.9" Display**.
+Nine plain app screenshots at **1290 × 2796** (iPhone 6.9" display), with an iOS status bar and nothing else, for
+framing and captioning elsewhere. App Store Connect scales 6.9" screenshots down for smaller iPhones. The captions
+below are suggestions.
 
-| # | File | Caption |
+| # | File | Suggested caption |
 | --- | --- | --- |
 | 1 | `01-today.png` | Keep what you've worked for. A calm plan for the year after your weight-loss jab. |
 | 2 | `02-meals.png` | Easy meals, planned for you. High-protein dinners, leftovers and a takeaway night. |
@@ -21,5 +21,5 @@ screenshots show the app in use; they do. Captions avoid weight-loss promises an
 brand rules and UK advertising rules for health products.
 
 To remake them after the app changes: build the web app (`pnpm --filter @landing/mobile web:export`), open it in demo
-mode (hold the welcome picture for three seconds), capture each screen at 390 × 797 points at 3x, and frame them as
-these are (caption on oat, pastel shapes, phone frame with a 9:41 status bar).
+mode (hold the welcome picture for three seconds), capture each screen at 430 × 878 points at 3x, and add a 162 px
+iOS status bar (9:41) on top to make 1290 × 2796.

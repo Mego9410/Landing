@@ -29,8 +29,8 @@ All files are saved without an alpha channel: App Store Connect rejects screensh
 
 ### Check before uploading
 
-- **Slide 10, "Try it free for 7 days":** only true if the subscription in App Store Connect and RevenueCat has a
-  7-day free trial. Change the slide if the offer differs.
+- **Slide 10, "Try it free for 7 days":** true once both subscriptions have their 1-week free introductory offer in
+  App Store Connect (see `docs/payments.md`).
 - **Slide 10, "Your data stays yours: Kept on your phone":** since accounts, people who sign in also have a private
   backup. Consider "Kept private. Never sold, never used for ads." so it matches the privacy policy.
 

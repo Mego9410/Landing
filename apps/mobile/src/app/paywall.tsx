@@ -28,15 +28,16 @@ export default function Paywall() {
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
   const lapsed = !!s.subscription && !s.subscription.active;
+  const chosen = options?.[pick];
 
   useEffect(() => { plans().then(setOptions).catch(() => setFailed(true)); }, []);
   useEffect(() => { if (s.subscription?.active) router.replace("/"); }, [s.subscription?.active]);
 
   async function subscribe() {
-    const plan = options?.[pick];
+    const plan = chosen;
     if (!plan) return;
     setBusy(true);
-    try { if (await buy(plan)) toast("You're all set. Welcome to Steadie."); }
+    try { if (await buy(plan)) toast(plan.trial ? "Your free trial has started. Welcome to Steadie." : "You're all set. Welcome to Steadie."); }
     catch { toast("That didn't go through. You haven't been charged. Try again in a moment."); }
     finally { setBusy(false); }
   }
@@ -80,7 +81,7 @@ export default function Paywall() {
                 <View style={{ width: 24, height: 24, borderRadius: radius.full, borderWidth: on ? 7 : 2, borderColor: on ? c.onPastel : c.inkMuted, backgroundColor: c.surfaceRaised }} />
                 <View style={{ flex: 1, gap: 2 }}>
                   <AppText weight="800" color={on ? "onPastel" : "ink"}>{o.title} · {o.price} {o.per}</AppText>
-                  {o.trial && !lapsed ? <AppText variant="caption" color={on ? "onPastel" : "inkMuted"}>{o.trial}</AppText> : null}
+                  <AppText variant="caption" color={on ? "onPastel" : "inkMuted"}>{[o.trial ? `${o.trial} free` : null, o.monthly].filter(Boolean).join(" · ") || (o.pkg.packageType === "ANNUAL" ? "Billed yearly" : "Billed monthly")}</AppText>
                 </View>
                 {o.saving ? <AppText variant="caption" weight="800" color={on ? "onPastel" : "sageInk"}>{o.saving}</AppText> : null}
               </Pressable>
@@ -89,10 +90,14 @@ export default function Paywall() {
         </View>
       )}
 
+      {chosen?.trial ? <TrialSteps plan={chosen} /> : null}
+
       <View style={{ gap: space[2] }}>
-        <Button label={busy ? "One moment…" : options?.[pick]?.trial && !lapsed ? "Start my free trial" : "Subscribe"} block disabled={busy || !options?.length} onPress={subscribe} />
+        <Button label={busy ? "One moment…" : chosen?.trial ? `Start my ${chosen.trial} free` : "Subscribe"} block disabled={busy || !options?.length} onPress={subscribe} />
         <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>
-          Renews automatically until you cancel. Cancel any time in your Apple account settings, at least a day before it renews.
+          {chosen?.trial
+            ? `${chosen.trial} free, then ${chosen.price} ${chosen.per}. Cancel at least 24 hours before the trial ends and you won't be charged. Renews automatically until you cancel in your Apple account settings.`
+            : "Renews automatically until you cancel. Cancel any time in your Apple account settings, at least 24 hours before it renews."}
         </AppText>
       </View>
       <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
@@ -102,5 +107,32 @@ export default function Paywall() {
       </View>
       {lapsed ? <Button label="Settings, export or delete your data" variant="secondary" block onPress={() => router.push("/settings")} /> : null}
     </Screen>
+  );
+}
+
+/** How the free trial works, day by day, so nobody is surprised by a charge. */
+function TrialSteps({ plan }: { plan: Plan }) {
+  const c = useColors();
+  const days = parseInt(plan.trial ?? "7", 10) || 7;
+  const steps = [
+    { when: "Today", what: "Full access to your plan. Nothing to pay." },
+    { when: `Day ${Math.max(1, days - 2)}`, what: "We remind you the trial is ending, if you allow notifications." },
+    { when: `Day ${days}`, what: `Your ${plan.title.toLowerCase()} plan starts at ${plan.price} ${plan.per}, unless you cancel before.` },
+  ];
+  return (
+    <Card tone="sunk" style={{ gap: space[3] }}>
+      {steps.map((st, i) => (
+        <View key={st.when} style={{ flexDirection: "row", gap: space[3] }}>
+          <View style={{ alignItems: "center" }}>
+            <View style={{ width: 12, height: 12, borderRadius: 6, marginTop: 5, backgroundColor: i === 0 ? c.apricotInk : c.inkMuted }} />
+            {i < steps.length - 1 ? <View style={{ width: 2, flex: 1, minHeight: 18, backgroundColor: c.line, marginTop: 4 }} /> : null}
+          </View>
+          <View style={{ flex: 1, gap: 2, paddingBottom: i < steps.length - 1 ? space[1] : 0 }}>
+            <AppText weight="800">{st.when}</AppText>
+            <AppText variant="caption" color="inkMuted">{st.what}</AppText>
+          </View>
+        </View>
+      ))}
+    </Card>
   );
 }

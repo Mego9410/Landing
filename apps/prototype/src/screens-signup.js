@@ -477,7 +477,7 @@
     var s = useApp();
     var a = s.sub.plan === 'yearly';
     function buy() {
-      set(function (s) { s.sub.status = a ? 'trial' : 'active'; return s; });
+      set(function (s) { s.sub.status = 'trial'; return s; });
       nav.go('youre-in');
     }
     var feats = ['Your 12-month plan, three habits a week', 'Weekly steady score and early warnings', 'Strength sessions for home or the gym', 'A coach for habits, food swaps and bad days'];
@@ -496,14 +496,14 @@
       </div>
       <${Options} label="Plan" value=${s.sub.plan} style=${{ padding: '16px 18px' }} onChange=${function (v) { set(function (s) { s.sub.plan = v; return s; }); }} options=${[
         { id: 'yearly', title: html`<span class="between" style=${{ width: '100%' }}><span style=${{ fontSize: 16 }}>Yearly</span><span class="pill-tag" style=${{ background: 'var(--surface-raised)', color: 'var(--ink)' }}>7 days free</span></span>`, detail: '£69.99 a year · about £1.35 a week' },
-        { id: 'monthly', title: html`<span style=${{ fontSize: 16 }}>Monthly</span>`, detail: '£12.99 a month · no free trial' }]} />
+        { id: 'monthly', title: html`<span class="between" style=${{ width: '100%' }}><span style=${{ fontSize: 16 }}>Monthly</span><span class="pill-tag" style=${{ background: 'var(--surface-raised)', color: 'var(--ink)' }}>7 days free</span></span>`, detail: '£12.99 a month' }]} />
       <div class="card tint-sunk" style=${{ gap: 6, padding: '14px 16px' }}>
         <div class="between"><span class="label">Today</span><span class="caption muted">Full access starts</span></div>
-        <div class="between"><span class="label">Day 5</span><span class="caption muted">${a ? 'We remind you the trial is ending' : 'No trial on monthly'}</span></div>
-        <div class="between"><span class="label">Day 7</span><span class="caption muted">${a ? '£69.99 for the year, unless you cancel' : 'Monthly plans start straight away'}</span></div>
+        <div class="between"><span class="label">Day 5</span><span class="caption muted">We remind you the trial is ending</span></div>
+        <div class="between"><span class="label">Day 7</span><span class="caption muted">${a ? '£69.99 for the year, unless you cancel' : '£12.99 a month, unless you cancel'}</span></div>
       </div>
       <div class="foot">
-        <${Btn} block onClick=${buy}>${a ? 'Start my free week' : 'Subscribe for £12.99 a month'}<//>
+        <${Btn} block onClick=${buy}>Start my 7 days free<//>
         <p class="caption muted" style=${{ textAlign: 'center' }}>Cancel any time in your App Store settings. Terms · Privacy</p>
       </div>
     </div>`;

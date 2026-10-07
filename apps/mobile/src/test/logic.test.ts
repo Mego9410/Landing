@@ -177,3 +177,12 @@ test("backup: an empty phone never replaces a real backup, and two plans that ha
   assert.equal(restored.settings.appleHealth, false);
   assert.equal(restored.disclaimer?.version, 1);
 });
+
+test("subscription periods read in words, trials in days", async () => {
+  const { period } = await import("@/data/period");
+  assert.equal(period("P1W"), "7 days");
+  assert.equal(period("P3D"), "3 days");
+  assert.equal(period("P1M"), "1 month");
+  assert.equal(period("P1Y"), "1 year");
+  assert.equal(period(null), "");
+});

@@ -98,7 +98,7 @@ const FAQS = [
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
   { q: "Where is my data kept?", a: "On your phone. If you sign in, Steadie also keeps a private, encrypted backup so your plan moves with you to a new phone. It's never sold or used for ads, and you can export everything or delete your account from Settings. If you connect Apple Health, that information is only used for your own plan, and never for advertising." },
-  { q: "When can I use it, and what will it cost?", a: `Steadie is coming to iPhone first. It will cost ${PRICE.yearly} a year after a 7-day free trial, or ${PRICE.monthly} a month. Join the waitlist and we'll email you once when it opens.` },
+  { q: "When can I use it, and what will it cost?", a: `Steadie is coming to iPhone first. Both plans start with a 7-day free trial: then ${PRICE.yearly} a year, or ${PRICE.monthly} a month. Join the waitlist and we'll email you once when it opens.` },
 ];
 
 // STEP 1 trial extension (reference 1): mean change in body weight from the start of treatment.
@@ -347,13 +347,13 @@ export default function Home() {
             <div className={styles.splitCopy}>
               <p className={styles.eyebrow}>Pricing</p>
               <h2 id="price-title" className={styles.h2Light}>One membership, everything included</h2>
-              <p className={styles.sectionLede}>Try everything free for 7 days. Cancel any time in your iPhone settings.</p>
+              <p className={styles.sectionLede}>Try everything free for 7 days, on either plan. We remind you before the trial ends, and you can cancel any time in your iPhone settings.</p>
             </div>
             <div className={styles.priceCard}>
               <span className={styles.badge}>7 days free</span>
               <p className={styles.priceName}>Yearly</p>
               <p className={styles.price}>{PRICE.yearly}<span> a year</span></p>
-              <p className={styles.muted}>About {PRICE.weekly} a week. Or {PRICE.monthly} a month, with no free trial.</p>
+              <p className={styles.muted}>About {PRICE.weekly} a week. Or {PRICE.monthly} a month. Both start with 7 days free.</p>
               <ul className={styles.priceList}>
                 {["Your 12-month plan, with a lesson each week", "Strength sessions that step up as you do", "Easy meals, swaps and shopping lists", "A morning check-in and your weekly steady score", "A coach for tricky days", "A summary for your prescriber", "Reminders and Apple Health"].map((x) => (
                   <li key={x}><Icon name="check" size={18} />{x}</li>

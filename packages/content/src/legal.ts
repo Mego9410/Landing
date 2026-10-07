@@ -125,7 +125,9 @@ export const TERMS: LegalDoc = {
       "Recipes, nutrition and allergen information are a guide. Always check food labels, especially if you have an allergy.",
     ] },
     { heading: "Subscriptions", paras: [
-      "Some of Steadie needs a subscription, bought through the App Store. Prices and any free trial are shown before you buy. A subscription renews automatically until you cancel it in your Apple account settings, at least 24 hours before it renews.",
+      "Steadie needs a subscription, bought through the App Store: monthly or yearly. Prices are shown before you buy and are charged to your Apple account.",
+      "Both plans start with a 7-day free trial for new subscribers. If you don't cancel at least 24 hours before the trial ends, the subscription starts and you're charged. The app reminds you two days before, if you allow notifications. You can have one free trial per Apple ID.",
+      "A subscription renews automatically at the same price and length until you cancel it in your Apple account settings, at least 24 hours before it renews. Refunds are handled by Apple.",
       "If your subscription ends, what you've logged stays on your phone and in your backup, and you can still export it.",
     ] },
     { heading: "Our responsibility to you", paras: [

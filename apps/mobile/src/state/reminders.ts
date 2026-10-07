@@ -1,6 +1,6 @@
 // Gentle reminders, scheduled on the phone (nothing goes to a server): the morning check-in, strength session days,
 // and a Sunday nudge to plan next week's meals. All off until someone turns them on in Settings; permission is asked
-// then, not on first launch. The wording never mentions weight.
+// then, not on first launch. A free trial also gets one reminder two days before it ends. The wording never mentions weight.
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { sessionsPaused } from "./health";
@@ -21,14 +21,40 @@ export async function ensurePermission(): Promise<boolean> {
   return asked.granted;
 }
 
+/** Cancels everything scheduled, including the trial reminder. */
 export async function cancelReminders() {
   if (supported) await Notifications.cancelAllScheduledNotificationsAsync();
+}
+
+const TRIAL_ID = "trial-ending";
+/** The reminders set in Settings: everything except the trial reminder, which has its own schedule. */
+async function cancelPlanReminders() {
+  const all = await Notifications.getAllScheduledNotificationsAsync();
+  await Promise.all(all.filter((n) => n.identifier !== TRIAL_ID).map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)));
+}
+
+/** A reminder two days before a free trial ends, so nobody is charged by surprise. `until` null cancels it. Only
+ *  schedules if notifications are allowed; `ask` asks for permission first (when someone has just started a trial). */
+export async function trialReminder(until: string | null, ask = false) {
+  if (!supported) return;
+  await Notifications.cancelScheduledNotificationAsync(TRIAL_ID).catch(() => {});
+  if (!until) return;
+  const when = new Date(new Date(until).getTime() - 2 * 24 * 60 * 60 * 1000);
+  if (when.getTime() < Date.now() + 60 * 1000) return;
+  const allowed = ask ? await ensurePermission() : (await Notifications.getPermissionsAsync()).granted;
+  if (!allowed) return;
+  const day = new Date(until).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  await Notifications.scheduleNotificationAsync({
+    identifier: TRIAL_ID,
+    content: { title: "Your free trial ends in two days", body: `It ends on ${day}. If you're staying, there's nothing to do. If not, you can cancel in Settings.` },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when },
+  });
 }
 
 /** Replaces whatever is scheduled with the reminders as set now. */
 export async function applyReminders(s: AppState) {
   if (!supported) return;
-  await cancelReminders();
+  await cancelPlanReminders();
   const r = s.settings.reminders;
   const { DAILY, WEEKLY } = Notifications.SchedulableTriggerInputTypes;
   if (r.checkIn.on) {

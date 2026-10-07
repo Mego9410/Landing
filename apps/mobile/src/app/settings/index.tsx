@@ -13,6 +13,7 @@ import { toast } from "@/state/toast";
 import { available, connect, disconnect } from "@/state/appleHealth";
 import { accountsAvailable, AccountError, backUpNow, deleteAccount, signOut, useAccount } from "@/state/account";
 import { deleteEverything, shareExport } from "@/state/data";
+import { billingEnabled, manageSubscription, restore } from "@/state/subscription";
 import { space } from "@/theme";
 
 /** S1 Settings, with the demo controls the prototype keeps in its test panel. */
@@ -29,6 +30,9 @@ export default function Settings() {
     await connect().catch(() => toast("Couldn't connect to Apple Health."));
   }
   const { account, status } = useAccount();
+  const sub = s.subscription;
+  const until = sub?.until ? fmt.dayMonth(isoDate(new Date(sub.until))) : null;
+  const subLine = !sub?.active ? "Your logs stay yours either way" : sub.trial ? (sub.willRenew ? `Free trial ends ${until}` : `Free trial ends ${until}, then stops`) : sub.willRenew ? `Renews ${until}` : `Ends ${until}`;
   const showAccount = accountsAvailable() && !s.demo;
   const backedUp = status === "saving" ? "Backing up…" : status === "offline" ? "Couldn't reach Steadie. It'll try again." : account?.syncedAt ? `Backed up ${when(account.syncedAt)}` : "Backs up once your plan is set up";
   const fail = (e: unknown) => toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
@@ -68,6 +72,14 @@ export default function Settings() {
           <Choices label="Units" value={s.settings.units} onChange={(v) => set((st) => { st.settings.units = v as Units; })} options={[{ id: "kg", label: "Kilograms" }, { id: "stlb", label: "Stones and pounds" }]} />
         </View>
       </Section>
+      {billingEnabled() && !s.demo ? <Section title="SUBSCRIPTION">
+        <List>
+          <Row first title={sub?.active ? (sub.plan === "yearly" ? "Yearly plan" : sub.plan === "monthly" ? "Monthly plan" : "Your plan") : "Not subscribed"} sub={subLine} chevron={false} />
+          <Row title="Manage subscription" sub="Change plan or cancel, in your Apple account" onPress={() => manageSubscription().catch(() => toast("Couldn't open your Apple subscriptions."))} />
+          <Row title="Restore purchases" onPress={() => restore().then((ok) => toast(ok ? "Your subscription is back." : "We couldn't find a subscription for this Apple ID."), () => toast("Couldn't restore just now. Try again in a moment."))} />
+          {sub?.active ? null : <Row title="See plans" sub="7 days free, then monthly or yearly" onPress={() => router.push("/paywall")} />}
+        </List>
+      </Section> : null}
       {showAccount ? <Section title="ACCOUNT">
         <View style={{ gap: space[3] }}>
           {account ? (

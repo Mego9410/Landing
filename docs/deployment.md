@@ -77,9 +77,9 @@ true }` on that profile first. Then `pnpm dev:mobile` starts the development ser
      `{ "policy": "appVersion" }`. The SDK policy is what lets updates open in Expo Go; store builds include native
      modules Expo Go doesn't have (Apple Health), so their updates must be tied to the app version instead.
    - Apple Health's permission text and the iOS privacy manifest are already in `app.json`.
-   - To charge, create the subscription products in App Store Connect and RevenueCat (entitlement `plan`), then set
-     `EXPO_PUBLIC_REVENUECAT_IOS_KEY` (RevenueCat's public iOS key) in the EAS `production` environment. Without
-     it there's no paywall, which suits a free TestFlight beta.
+   - To charge, follow [`docs/payments.md`](payments.md): the subscriptions in App Store Connect (monthly £12.99 and yearly
+     £69.99, each with a 7-day free trial), RevenueCat, and `EXPO_PUBLIC_REVENUECAT_IOS_KEY` in the EAS `production`
+     environment. Without it there's no paywall, which suits a free TestFlight beta.
    - In App Store Connect, use `https://www.getsteadieapp.com/app-privacy` as the privacy policy URL and link
      `https://www.getsteadieapp.com/terms` in the description. Both pages are on the website, from the same text the app
      shows.

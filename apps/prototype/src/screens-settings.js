@@ -96,7 +96,7 @@
     var s = useApp();
     var st = s.sub.status, yearly = s.sub.plan === 'yearly';
     var tag = st === 'trial' ? 'Free trial' : st === 'active' ? 'Active' : st === 'lapsed' ? 'Ended' : 'None';
-    var text = st === 'trial' ? 'Your trial ends on ' + LP.fmt.long(s.sub.trialEnds) + '. Then £69.99 a year, renewing each October.'
+    var text = st === 'trial' ? 'Your trial ends on ' + LP.fmt.long(s.sub.trialEnds) + (yearly ? '. Then £69.99 a year, renewing each October.' : '. Then £12.99 a month.')
       : st === 'active' ? (yearly ? '£69.99 a year, renewing each October.' : '£12.99 a month, renewing on the 5th.')
       : st === 'lapsed' ? 'Your subscription has ended. Your plan and logs are safe.' : 'You don’t have a subscription yet.';
     return html`<div class="scr plain">

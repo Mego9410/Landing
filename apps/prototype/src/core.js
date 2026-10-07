@@ -1,16 +1,16 @@
-/* Landing prototype core: state, dummy data, navigation and shared UI pieces.
-   Plain scripts, no build: React, ReactDOM, window.Landing (the design system bundle)
+/* Steadie prototype core: state, dummy data, navigation and shared UI pieces.
+   Plain scripts, no build: React, ReactDOM, window.Steadie (the design system bundle)
    and htm are globals loaded before this file. */
 (function () {
   'use strict';
   var h = React.createElement;
   var html = htm.bind(h);
-  var L = window.Landing;
+  var L = window.Steadie;
 
   /* ---------- assets (the build swaps these for data URIs) ---------- */
   var ASSETS = Object.assign({
-    mark: '../../packages/design-system/assets/Logos/landing-mark.svg',
-    lockup: '../../packages/design-system/assets/Logos/landing-lockup.svg'
+    mark: '../../packages/design-system/assets/Logos/steadie-mark.svg',
+    lockup: '../../packages/design-system/assets/Logos/steadie-lockup.svg'
   }, window.LANDING_ASSETS || {});
 
   /* ---------- icons: the design system's 2px rounded line set plus the screens' extras ---------- */

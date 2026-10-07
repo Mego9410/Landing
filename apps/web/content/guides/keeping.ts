@@ -118,7 +118,7 @@ export const KEEPING: Guide[] = [
         "Pick a small range, for example up to 2% above your lowest weight. While your 7-day average sits inside it, you're holding steady, whatever single days say. If the average sits above it for a couple of weeks, that's your cue to go back to basics for a week, not to panic. See [how to keep weight off](/guides/keep-weight-off-after-glp-1).",
       ] },
       { heading: "If you'd rather not weigh yourself", blocks: [
-        "You don't have to. How your clothes fit, how hungry you feel, your energy and whether your routines are holding are all useful signals. Landing's safe mode hides weight completely and builds your weekly score from habits and check-ins instead.",
+        "You don't have to. How your clothes fit, how hungry you feel, your energy and whether your routines are holding are all useful signals. Steadie's safe mode hides weight completely and builds your weekly score from habits and check-ins instead.",
         { note: "If thoughts about your weight or food feel overwhelming, Beat, the UK's eating disorder charity, has a helpline you can talk to.", tone: "sky" },
       ] },
     ],
@@ -233,7 +233,7 @@ export const KEEPING: Guide[] = [
       ] },
       { heading: "Takeaways", blocks: [
         "Takeaway portions can vary enormously: Nesta's testing found the same \"regular\" pizza ranged from 600 to 2,300 calories between shops. Sharing a main, adding a side salad or saving half for tomorrow are easy wins.",
-        "A homemade fakeaway (chicken tikka with microwave rice, a quick egg-fried rice with prawns, a lean beef burger) is often faster than delivery and higher in protein. Landing's meal plan includes takeaway nights and fakeaways for exactly this.",
+        "A homemade fakeaway (chicken tikka with microwave rice, a quick egg-fried rice with prawns, a lean beef burger) is often faster than delivery and higher in protein. Steadie's meal plan includes takeaway nights and fakeaways for exactly this.",
       ] },
     ],
     faqs: [

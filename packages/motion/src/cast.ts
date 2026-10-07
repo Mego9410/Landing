@@ -1,7 +1,7 @@
 // The movement cast: six adults drawn from a few rounded shapes (pill limbs, mitten hands, a soft torso with a real
 // profile, a big round head in profile with one calm eye and a soft smile), each with their own body shape, skin, hair and kit. Any of them can
 // be drawn on any solved skeleton, so one set of exercise keyframes animates the whole cast.
-// Designs: the "Landing movement cast" canvas in Claude Design.
+// Designs: the "Steadie movement cast" canvas in Claude Design.
 import { FLOOR, type Pt, type Skeleton } from "./rig.ts";
 
 export type CastId = "maya" | "dev" | "sue" | "amira" | "tom" | "grace";

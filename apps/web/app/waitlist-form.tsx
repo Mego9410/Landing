@@ -40,7 +40,7 @@ export function WaitlistForm({ tone = "light" }: { tone?: "light" | "apricot" })
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
         </span>
         <span>
-          <strong>You&apos;re on the list.</strong> We&apos;ll email you once when Landing opens, and that&apos;s it.
+          <strong>You&apos;re on the list.</strong> We&apos;ll email you once when Steadie opens, and that&apos;s it.
         </span>
       </div>
     );
@@ -66,7 +66,7 @@ export function WaitlistForm({ tone = "light" }: { tone?: "light" | "apricot" })
       </div>
       <label className={styles.consent}>
         <input type="checkbox" name="consent" required />
-        <span>Email me when Landing opens, and keep my answer about my jab if I gave one. You can unsubscribe at any time. See our <Link href="/privacy">privacy notice</Link>.</span>
+        <span>Email me when Steadie opens, and keep my answer about my jab if I gave one. You can unsubscribe at any time. See our <Link href="/privacy">privacy notice</Link>.</span>
       </label>
       {/* Honeypot for bots: hidden from people and screen readers. */}
       <div aria-hidden="true" className={styles.honeypot}>

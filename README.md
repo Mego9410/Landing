@@ -1,8 +1,8 @@
-# Landing
+# Steadie
 
-**Keep what you've worked for.** Landing helps people keep weight off in the year after they stop a GLP-1 jab:
-a 12-month habit plan, a weekly landing score, short strength sessions and a coach, built to feel calm and on
-their side. "Landing" is a working name.
+**Keep what you've worked for.** Steadie helps people keep weight off in the year after they stop a GLP-1 jab:
+a 12-month habit plan, a weekly steady score, short strength sessions and a coach, built to feel calm and on
+their side.
 
 ## What's in this repository
 
@@ -49,7 +49,7 @@ ships through EAS. Step by step in [docs/deployment.md](docs/deployment.md).
 Start with [packages/design-system/README.md](packages/design-system/README.md): voice and copy rules, colour,
 type, shape, imagery and the logo. Colours, type and spacing live in `packages/design-system/tokens.json`; run
 `pnpm tokens` after changing it, and every app picks the change up. The design system and the screens were imported
-from the [Landing design system](https://claude.ai/artifact/SEV6vLBwGSNQc7iw6bVPs2) and the
-[Landing App Screens canvas](https://claude.ai/artifact/7QFUpd1hnCxoRoH7HG12V2).
+from the [Steadie design system](https://claude.ai/artifact/SEV6vLBwGSNQc7iw6bVPs2) and the
+[Steadie App Screens canvas](https://claude.ai/artifact/7QFUpd1hnCxoRoH7HG12V2).
 
-Landing is a general wellness app. It never gives advice about medication, doses or stopping treatment.
+Steadie is a general wellness app. It never gives advice about medication, doses or stopping treatment.

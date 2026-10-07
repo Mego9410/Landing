@@ -34,8 +34,8 @@ export default function Reminders() {
       </View>
       {denied ? (
         <Card tone="butter" style={{ gap: space[2] }}>
-          <AppText weight="800" color="onPastel">Notifications are off for Landing</AppText>
-          <AppText color="onPastel">To get reminders, allow notifications for Landing in your phone&apos;s Settings.</AppText>
+          <AppText weight="800" color="onPastel">Notifications are off for Steadie</AppText>
+          <AppText color="onPastel">To get reminders, allow notifications for Steadie in your phone&apos;s Settings.</AppText>
           <Button label="Open Settings" variant="secondary" onPress={() => Linking.openSettings()} />
         </Card>
       ) : null}

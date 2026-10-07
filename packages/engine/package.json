@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Landing's planning logic, shared by the app, the prototype and the web: meal plans, swaps and shopping lists.",
+  "description": "Steadie's planning logic, shared by the app, the prototype and the web: meal plans, swaps and shopping lists.",
   "exports": {
     ".": "./src/index.ts",
     "./browser": "./src/browser.ts",

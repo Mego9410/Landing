@@ -26,12 +26,12 @@
       <sc-for list="{{status}}" as="s" hint-placeholder-count="3"><button type="button" class="{{s.cls}}" onClick="{{s.pick}}">{{s.label}}</button></sc-for>
     </div>
   </div>
-  <x-import component-from-global-scope="Landing.TextField" label="Last injection" default-value="31 August 2026"></x-import>
+  <x-import component-from-global-scope="Steadie.TextField" label="Last injection" default-value="31 August 2026"></x-import>
   <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
-    <x-import component-from-global-scope="Landing.TextField" label="Weight at start" suffix="kg" default-value="96.2"></x-import>
-    <x-import component-from-global-scope="Landing.TextField" label="Lowest weight" suffix="kg" default-value="78.0"></x-import>
-    <x-import component-from-global-scope="Landing.TextField" label="Height" suffix="cm" default-value="168"></x-import>
-    <x-import component-from-global-scope="Landing.TextField" label="Training days" suffix="a week" default-value="2"></x-import>
+    <x-import component-from-global-scope="Steadie.TextField" label="Weight at start" suffix="kg" default-value="96.2"></x-import>
+    <x-import component-from-global-scope="Steadie.TextField" label="Lowest weight" suffix="kg" default-value="78.0"></x-import>
+    <x-import component-from-global-scope="Steadie.TextField" label="Height" suffix="cm" default-value="168"></x-import>
+    <x-import component-from-global-scope="Steadie.TextField" label="Training days" suffix="a week" default-value="2"></x-import>
   </div>
   <p class="caption muted">Changing your last injection date moves you to a different week of the plan.</p>
 </div>

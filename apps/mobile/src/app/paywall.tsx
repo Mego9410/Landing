@@ -16,7 +16,7 @@ const INCLUDED = [
   "Two short strength sessions a week at home, with easier versions",
   "Easy meals planned for your week, and one shopping list",
   "Your morning check-in and what shapes your days",
-  "Your trend, landing score and a summary for your prescriber",
+  "Your trend, steady score and a summary for your prescriber",
 ];
 
 /** The subscription screen: what's included, the plans with honest trial wording, restore, and the legal links.
@@ -36,7 +36,7 @@ export default function Paywall() {
     const plan = options?.[pick];
     if (!plan) return;
     setBusy(true);
-    try { if (await buy(plan)) toast("You're all set. Welcome to Landing."); }
+    try { if (await buy(plan)) toast("You're all set. Welcome to Steadie."); }
     catch { toast("That didn't go through. You haven't been charged. Try again in a moment."); }
     finally { setBusy(false); }
   }

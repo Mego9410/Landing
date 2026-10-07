@@ -2,7 +2,7 @@
   "name": "@landing/design-system",
   "version": "1.0.0",
   "private": true,
-  "description": "Landing brand: tokens, logos, icons and the reference React components.",
+  "description": "Steadie brand: tokens, logos, icons and the reference React components.",
   "type": "module",
   "exports": {
     "./tokens.css": "./tokens.css",

@@ -2,7 +2,7 @@
   "name": "@landing/prototype",
   "version": "1.0.0",
   "private": true,
-  "description": "Clickable HTML prototype of the Landing app, with dummy data and a test panel.",
+  "description": "Clickable HTML prototype of the Steadie app, with dummy data and a test panel.",
   "type": "module",
   "scripts": {
     "dev": "npx --yes serve ../.. -l 3001",

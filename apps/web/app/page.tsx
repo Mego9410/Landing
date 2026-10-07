@@ -48,17 +48,17 @@ const SUPPORT: { icon: IconName; tone: string; title: string; text: string }[] =
   { icon: "strength", tone: "sky", title: "Strength for every body", text: "Twenty-five-minute sessions at home that step up gently as you get stronger, with easier versions a tap away." },
   { icon: "meal", tone: "apricot", title: "Meals easier than a takeaway", text: "Fifteen minutes hands-on, six ingredients, one pan. Swaps for every diet and a shopping list for your supermarket." },
   { icon: "habit", tone: "sage", title: "Three small habits a week", text: "Protein at breakfast, a session, a pause before seconds, with a short lesson each week. Swap one if it doesn't suit your week." },
-  { icon: "sun", tone: "sky", title: "A one-minute morning check-in", text: "A few questions about yesterday. Over a few weeks, Landing shows what goes with your fuller, steadier days." },
-  { icon: "score", tone: "butter", title: "A weekly landing score", text: "It rewards steady habits, not weight loss, and notices drift early, kindly." },
+  { icon: "sun", tone: "sky", title: "A one-minute morning check-in", text: "A few questions about yesterday. Over a few weeks, Steadie shows what goes with your fuller, steadier days." },
+  { icon: "score", tone: "butter", title: "A weekly steady score", text: "It rewards steady habits, not weight loss, and notices drift early, kindly." },
   { icon: "coach", tone: "lilac", title: "A coach for tricky days", text: "Ideas for meals out, high-protein swaps and a calm word when a day doesn't go to plan." },
-  { icon: "doc", tone: "rose", title: "A summary for your prescriber", text: "A one-page update to take to appointments. Landing never gives advice about doses or stopping." },
+  { icon: "doc", tone: "rose", title: "A summary for your prescriber", text: "A one-page update to take to appointments. Steadie never gives advice about doses or stopping." },
   { icon: "bell", tone: "butter", title: "Gentle reminders, and Apple Health", text: "Nudges at times that suit you, never about weight. Bring in your weight and steps from Apple Health if you like." },
 ];
 
 const STEPS = [
   { title: "Answer a few questions", text: "A few minutes on when you stopped, a quick health check, and how you like to eat. No weigh-in needed." },
   { title: "Get your 12-month plan", text: "Three phases, three small habits a week and short strength sessions that fit your week and your body." },
-  { title: "Keep it, with support", text: "A morning check-in, a weekly landing score and a coach for tricky days, with a calm plan if things start to drift." },
+  { title: "Keep it, with support", text: "A morning check-in, a weekly steady score and a coach for tricky days, with a calm plan if things start to drift." },
 ];
 
 const PHASES = [
@@ -85,20 +85,20 @@ const SAFETY: { icon: IconName; title: string; text: string }[] = [
 const PROMISES: { icon: IconName; title: string; text: string }[] = [
   { icon: "heart", title: "No goal weight", text: "We help you hold steady, and help you reset gently if things drift. Never a telling-off." },
   { icon: "habit", title: "Numbers only if they help", text: "Safe mode hides weight entirely and builds your score from habits and check-ins." },
-  { icon: "shield", title: "Your prescriber stays in charge", text: "Landing never gives advice about medication, doses or stopping treatment." },
+  { icon: "shield", title: "Your prescriber stays in charge", text: "Steadie never gives advice about medication, doses or stopping treatment." },
   { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, with a private backup if you sign in. Never sold, never used for ads. Export it or delete your account in a tap." },
 ];
 
 const FAQS = [
-  { q: "Who is Landing for?", a: "Adults who have stopped a weight-loss jab such as Wegovy or Mounjaro, are stopping soon, or want a plan ready for when they do." },
-  { q: "Is Landing medical advice?", a: "No. Landing is a general wellness app for building food, activity and eating habits. It doesn't diagnose or treat anything, and decisions about medication are always for your prescriber." },
+  { q: "Who is Steadie for?", a: "Adults who have stopped a weight-loss jab such as Wegovy or Mounjaro, are stopping soon, or want a plan ready for when they do." },
+  { q: "Is Steadie medical advice?", a: "No. Steadie is a general wellness app for building food, activity and eating habits. It doesn't diagnose or treat anything, and decisions about medication are always for your prescriber." },
   { q: "I'm still on my jab. Can I start now?", a: "Yes. Many people start building the habits before their last injection, so the routines are in place when appetite returns." },
   { q: "Do I have to weigh myself?", a: "No. Weigh-ins are optional, and safe mode hides weight completely. Your weekly score can come from habits and your morning check-ins alone." },
-  { q: "I have a health condition. Can I use Landing?", a: "Landing gives general guidance, not medical advice. A quick health check at the start suggests checking with your GP, midwife or specialist where it matters, pauses strength sessions until you have, and adjusts food and sessions to suit. It asks again every 12 weeks." },
+  { q: "I have a health condition. Can I use Steadie?", a: "Steadie gives general guidance, not medical advice. A quick health check at the start suggests checking with your GP, midwife or specialist where it matters, pauses strength sessions until you have, and adjusts food and sessions to suit. It asks again every 12 weeks." },
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
-  { q: "Where is my data kept?", a: "On your phone. If you sign in, Landing also keeps a private, encrypted backup so your plan moves with you to a new phone. It's never sold or used for ads, and you can export everything or delete your account from Settings. If you connect Apple Health, that information is only used for your own plan, and never for advertising." },
-  { q: "When can I use it, and what will it cost?", a: `Landing is coming to iPhone first. It will cost ${PRICE.yearly} a year after a 7-day free trial, or ${PRICE.monthly} a month. Join the waitlist and we'll email you once when it opens.` },
+  { q: "Where is my data kept?", a: "On your phone. If you sign in, Steadie also keeps a private, encrypted backup so your plan moves with you to a new phone. It's never sold or used for ads, and you can export everything or delete your account from Settings. If you connect Apple Health, that information is only used for your own plan, and never for advertising." },
+  { q: "When can I use it, and what will it cost?", a: `Steadie is coming to iPhone first. It will cost ${PRICE.yearly} a year after a 7-day free trial, or ${PRICE.monthly} a month. Join the waitlist and we'll email you once when it opens.` },
 ];
 
 // STEP 1 trial extension (reference 1): mean change in body weight from the start of treatment.
@@ -171,7 +171,7 @@ export default function Home() {
             </div>
             <div className={`${styles.float} ${styles.floatA}`}>
               <span className={styles.scoreNum}>78</span>
-              <span><strong>Landing score</strong><br /><span className={styles.muted}>A steady week</span></span>
+              <span><strong>Steady score</strong><br /><span className={styles.muted}>A steady week</span></span>
             </div>
             <div className={`${styles.float} ${styles.floatB}`}>
               <span className={styles.habitTick}><Icon name="check" size={16} /></span>
@@ -183,7 +183,7 @@ export default function Home() {
 
 
       <main>
-        <ul className={styles.trust} aria-label="Why people trust Landing">
+        <ul className={styles.trust} aria-label="Why people trust Steadie">
           {TRUST.map((t) => <li key={t.text}><Icon name={t.icon} size={18} />{t.text}</li>)}
         </ul>
         <section className={styles.pillars} aria-labelledby="pillars-title">
@@ -355,7 +355,7 @@ export default function Home() {
               <p className={styles.price}>{PRICE.yearly}<span> a year</span></p>
               <p className={styles.muted}>About {PRICE.weekly} a week. Or {PRICE.monthly} a month, with no free trial.</p>
               <ul className={styles.priceList}>
-                {["Your 12-month plan, with a lesson each week", "Strength sessions that step up as you do", "Easy meals, swaps and shopping lists", "A morning check-in and your weekly landing score", "A coach for tricky days", "A summary for your prescriber", "Reminders and Apple Health"].map((x) => (
+                {["Your 12-month plan, with a lesson each week", "Strength sessions that step up as you do", "Easy meals, swaps and shopping lists", "A morning check-in and your weekly steady score", "A coach for tricky days", "A summary for your prescriber", "Reminders and Apple Health"].map((x) => (
                   <li key={x}><Icon name="check" size={18} />{x}</li>
                 ))}
               </ul>
@@ -398,7 +398,7 @@ export default function Home() {
         <section className={styles.cta} aria-labelledby="cta-title">
           <div className={`${styles.wrap} ${styles.ctaInner}`}>
             <h2 id="cta-title" className={styles.display}>Make this year your steady one</h2>
-            <p className={styles.lede}>Join the waitlist. One email when Landing opens, nothing else.</p>
+            <p className={styles.lede}>Join the waitlist. One email when Steadie opens, nothing else.</p>
             <WaitlistForm />
           </div>
         </section>

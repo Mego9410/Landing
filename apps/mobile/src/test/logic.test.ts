@@ -1,5 +1,5 @@
 /// <reference types="node" />
-// The app's pure logic: dates, units, the landing score, today's plan, journal maths, the health check and saved-data
+// The app's pure logic: dates, units, the steady score, today's plan, journal maths, the health check and saved-data
 // migration. Run with `pnpm --filter @landing/mobile test`.
 import assert from "node:assert/strict";
 import { test } from "node:test";
@@ -47,7 +47,7 @@ test("the plan week counts calendar weeks from the last injection", () => {
   assert.equal(weekOf(s), 3);
 });
 
-test("landing score: full marks for a steady week, and none of it is a target", () => {
+test("steady score: full marks for a steady week, and none of it is a target", () => {
   const s = freshState();
   const monday = addDays(weekStart(today()), -7);
   s.ob.lastInjection = addDays(monday, -35);

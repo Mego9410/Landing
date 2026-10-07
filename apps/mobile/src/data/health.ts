@@ -30,8 +30,8 @@ export const HEALTH_QUESTIONS: HealthQuestion[] = [
 
 /** Who to talk to, by referral. */
 export const REFER = {
-  pregnant: { who: "midwife or GP", note: "Pregnancy and the weeks after birth change what's right for food and exercise. Landing will keep weight features and protein targets off, hide numbers, and use pregnancy-safe food filters." },
-  kidney: { who: "kidney team or GP", note: "With kidney disease, protein and salt need care. Landing will turn protein targets off and use low-salt cooking, but your kidney team's advice comes first." },
+  pregnant: { who: "midwife or GP", note: "Pregnancy and the weeks after birth change what's right for food and exercise. Steadie will keep weight features and protein targets off, hide numbers, and use pregnancy-safe food filters." },
+  kidney: { who: "kidney team or GP", note: "With kidney disease, protein and salt need care. Steadie will turn protein targets off and use low-salt cooking, but your kidney team's advice comes first." },
 } as const;
 
 export const NOTES: Partial<Record<string, string>> = {

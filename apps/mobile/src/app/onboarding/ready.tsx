@@ -8,7 +8,7 @@ import { habitsForWeek, phaseOf, PHASES } from "@/data/content";
 import { set, useApp, weekOf } from "@/state/store";
 import { space } from "@/theme";
 
-/** O12 Your landing plan. */
+/** O12 Your Steadie plan. */
 export default function Ready() {
   const s = useApp();
   const week = weekOf(s), phase = phaseOf(week);

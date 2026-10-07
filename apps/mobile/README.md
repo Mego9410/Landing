@@ -1,4 +1,4 @@
-# Landing iPhone app
+# Steadie iPhone app
 
 Expo (SDK 57) with Expo Router, ported from the clickable prototype (`apps/prototype`). It runs on the phone's real
 date. A new install starts at the health information, then onboarding, with nothing logged.
@@ -26,7 +26,7 @@ Use it for previews and give App Review the same instructions.
   13, nudged by "Too easy" or "Tough" after each session. In Settle, an optional third session.
 - **Your day:** the morning check-in on yesterday and "what shapes your days" (a pattern shows after seven days
   with and seven without). Steps answer themselves from Apple Health when it's connected.
-- **Progress:** the landing score (worked out from the logs, `src/state/score.ts`), habit days and sessions, the
+- **Progress:** the steady score (worked out from the logs, `src/state/score.ts`), habit days and sessions, the
   7-day trend and steady zone, recent weigh-ins, and the prescriber pack (a one-page PDF, `src/state/prescriber.ts`).
   Safe mode hides weight.
 - **Coach:** scripted replies, with the prescriber redirect and the summary for any medication question.
@@ -50,7 +50,7 @@ the PDF and RevenueCat's preview mode all work in Expo Go.
 ## Run it
 
 - `pnpm dev:mobile` from the repo root, then open it in Expo Go or a development build.
-- `pnpm --filter @landing/mobile web:phone` makes `dist/landing-app.html`, one self-contained page you can open on a
+- `pnpm --filter @landing/mobile web:phone` makes `dist/steadie-app.html`, one self-contained page you can open on a
   phone's browser. Handy for a quick look without Expo.
 
 ## Expo

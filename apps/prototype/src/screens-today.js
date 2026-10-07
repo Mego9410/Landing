@@ -45,7 +45,7 @@
       </div>
       <${OfflineBanner} />
       ${s.flags.weekSummary ? html`<button type="button" class="card rowcard tint-sage" onClick=${function () { nav.go('week-summary'); }}>
-        <span class="grow" style=${{ display: 'flex', flexDirection: 'column' }}><span class="label">YOUR WEEK IS READY</span><span class="strong">Week ${week - 1} landing score: ${LP.lastScore(s)}</span></span><${Icon} name="chevron" size=${20} /></button>` : null}
+        <span class="grow" style=${{ display: 'flex', flexDirection: 'column' }}><span class="label">YOUR WEEK IS READY</span><span class="strong">Week ${week - 1} steady score: ${LP.lastScore(s)}</span></span><${Icon} name="chevron" size=${20} /></button>` : null}
       <div class="row">
         <${L.Chip} tone=${phase.tone} onClick=${function () { nav.go('week'); }}>Week ${week} · ${phase.name}<//>
         <span class="caption muted">${untilNext(week)}</span>
@@ -55,7 +55,7 @@
       ${first ? html`
         <div class="card hero" style=${{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
           <span style=${{ width: 84, height: 84, borderRadius: 9999, boxShadow: 'inset 0 0 0 10px var(--surface-sunk)', display: 'grid', placeItems: 'center', flex: 'none', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--ink-muted)' }}>–</span>
-          <span class="grow stack" style=${{ gap: 4 }}><span class="strong">Your first landing score arrives on Sunday</span><span class="caption muted">It builds from the habits and logs you add this week.</span></span>
+          <span class="grow stack" style=${{ gap: 4 }}><span class="strong">Your first steady score arrives on Sunday</span><span class="caption muted">It builds from the habits and logs you add this week.</span></span>
         </div>
         <div class="card hero tint-apricot" style=${{ gap: 10 }}>
           <span class="label">START HERE</span>

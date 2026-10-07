@@ -15,7 +15,7 @@ every loop with any of the cast.
 | Tom | 47 | Slim | Receding auburn hair, sky tee, watch |
 | Grace | 57 | Fuller | Natural hair with a headband, rose tee |
 
-Names and ages are briefs for the illustration and copy, not real people. The designs live on the "Landing movement
+Names and ages are briefs for the illustration and copy, not real people. The designs live on the "Steadie movement
 cast" canvas in Claude Design.
 
 ```

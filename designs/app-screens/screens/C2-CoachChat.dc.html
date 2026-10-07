@@ -20,19 +20,19 @@
     <a class="avatar" href="S1-Settings.dc.html" aria-label="Settings">H</a>
   </div>
   <div class="stack" style="gap: 10px">
-    <x-import component-from-global-scope="Landing.CoachBubble" from="you">Should I go back on a lower dose?</x-import>
-    <x-import component-from-global-scope="Landing.CoachBubble" redirect="{{yes}}">That's a decision for your prescriber, so I can't help with doses. I can make a one-page summary of your trend and habits to take with you.</x-import>
+    <x-import component-from-global-scope="Steadie.CoachBubble" from="you">Should I go back on a lower dose?</x-import>
+    <x-import component-from-global-scope="Steadie.CoachBubble" redirect="{{yes}}">That's a decision for your prescriber, so I can't help with doses. I can make a one-page summary of your trend and habits to take with you.</x-import>
     <a class="card tint-sunk" href="PR6-PrescriberPack.dc.html" style="flex-direction: row; align-items: center; gap: 10px; padding: 10px 14px; max-width: 300px; text-decoration: none; color: var(--ink)">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3.5h7l4 4v13H7z"></path><path d="M14 3.5v4h4"></path></svg>
       <span class="grow" style="font-weight: 800; font-size: 14px">Open prescriber pack</span>
     </a>
-    <x-import component-from-global-scope="Landing.CoachBubble" from="you">Yes please. And a quick high-protein lunch?</x-import>
-    <x-import component-from-global-scope="Landing.CoachBubble">Greek yoghurt, berries and a handful of nuts gets you about 30 g in two minutes. Want a savoury one too?</x-import>
+    <x-import component-from-global-scope="Steadie.CoachBubble" from="you">Yes please. And a quick high-protein lunch?</x-import>
+    <x-import component-from-global-scope="Steadie.CoachBubble">Greek yoghurt, berries and a handful of nuts gets you about 30 g in two minutes. Want a savoury one too?</x-import>
   </div>
   <div style="position: absolute; left: 0; right: 0; bottom: 116px; padding: 0 20px; display: flex; flex-direction: column; gap: 10px">
     <div class="row" style="gap: 8px; overflow: hidden">
-      <x-import component-from-global-scope="Landing.Chip" tone="lilac">Savoury lunch ideas</x-import>
-      <x-import component-from-global-scope="Landing.Chip" tone="lilac">I'm hungry tonight</x-import>
+      <x-import component-from-global-scope="Steadie.Chip" tone="lilac">Savoury lunch ideas</x-import>
+      <x-import component-from-global-scope="Steadie.Chip" tone="lilac">I'm hungry tonight</x-import>
     </div>
     <div class="row" style="gap: 8px; background: var(--surface-raised); border-radius: 9999px; padding: 6px 6px 6px 18px; box-shadow: var(--shadow-sm)">
       <label for="coach-msg" class="grow" style="display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden">Message</span><input id="coach-msg" placeholder="Ask about food, habits or a hard day" style="width: 100%; border: 0; outline: 0; background: transparent; font: inherit; color: var(--ink)"></label>

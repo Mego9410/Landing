@@ -1,6 +1,6 @@
 # @landing/engine
 
-Landing's planning logic in plain TypeScript, shared by the Expo app, the prototype and the web. Today it holds the
+Steadie's planning logic in plain TypeScript, shared by the Expo app, the prototype and the web. Today it holds the
 food side of [the plan](../../docs/plan-movement-food-shopping.md) (§5). Session building and progression join it
 later (§7.1).
 

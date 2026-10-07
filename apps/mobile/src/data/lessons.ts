@@ -1,4 +1,4 @@
-// A short lesson for each of the 52 weeks. General guidance in Landing's voice: kind, plain, never about medication,
+// A short lesson for each of the 52 weeks. General guidance in Steadie's voice: kind, plain, never about medication,
 // never about willpower. Each has a title, a two-word week name for the Plan screen, a one-line blurb, two short
 // paragraphs and two things to try. Land is weeks 1 to 8, Settle 9 to 26, Steady 27 to 52.
 

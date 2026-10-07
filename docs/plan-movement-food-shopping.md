@@ -1,6 +1,6 @@
 # Plan: movement, food and shopping
 
-How Landing will offer strength sessions that suit everyone, easy meals that beat a takeaway, and a path from "I'll
+How Steadie will offer strength sessions that suit everyone, easy meals that beat a takeaway, and a path from "I'll
 have that meal" to a supermarket basket. Written 5 October 2026 from three research briefs, and updated the same day
 with the decisions in section 10:
 
@@ -21,7 +21,7 @@ must sign off the content before launch (section 8).
    joint load, impact, noise and position, so the app can build a session for anyone and swap any exercise in one tap.
    About 150 exercises at launch covers 11 training settings, from a chair at home to a full gym.
 2. **Injuries and conditions become comfort preferences, not diagnoses.** "Go easy on my knees" filters out deep
-   bending and kneeling; it does not create a "knee arthritis programme". This keeps Landing a wellness app under MHRA
+   bending and kneeling; it does not create a "knee arthritis programme". This keeps Steadie a wellness app under MHRA
    rules and still gives people a plan that fits their body. A short screen sends a few people to their GP first and
    puts others on a gentler track; nobody is simply turned away.
 3. **Every meal meets an "easier than a takeaway" standard:** 15 minutes hands-on or less, 6 shopping ingredients or
@@ -52,10 +52,10 @@ must sign off the content before launch (section 8).
   month, roughly four times faster than after diet and activity programmes. Some people do hold their loss (about 1 in
   6 in SURMOUNT-4). Tone: "this is biology, not willpower".
 - **NICE says people should get at least 12 months of support after a weight-loss medicine ends** (QS212, August 2025),
-  including routines and an action plan for when weight starts to return. That is Landing's scope exactly. Many NHS
+  including routines and an action plan for when weight starts to return. That is Steadie's scope exactly. Many NHS
   users stop because of a rule (the 2-year limit, or under 5% loss at 6 months), not by choice.
 - **Strength:** 2 sessions a week, 1 to 3 sets, stopping 1 to 3 reps short of failure, is enough (UK CMO guidance, ACSM
-  2026). Once built, strength holds with 1 to 2 sessions a week at the same effort. Landing's 2 × 25 minutes fits.
+  2026). Once built, strength holds with 1 to 2 sessions a week at the same effort. Steadie's 2 × 25 minutes fits.
 - **Walking does the heavy lifting for weight.** Maintenance needs roughly 200 to 300 minutes of activity a week, so
   steps and brisk minutes belong in the plan, not as an extra.
 - **Food:** protein at each meal (about 25 to 30 g, or 1.0 to 1.2 g/kg a day), fibre built up gradually towards 30 g,
@@ -192,7 +192,7 @@ what protect people; the checkbox records an informed choice.
 - **Steps:** take a week's baseline from Apple Health, then suggest +500 to 1,000 a day each week towards about
   7,000 to 10,000 (6,000 to 8,000 for over-60s), plus brisk 10-minute bouts.
 - **Classes:** "log something else" with type, length and effort. Circuits or bodypump count as a strength session
-  and replace one Landing session that week; Pilates counts as core; yoga, tai chi and dance count as balance.
+  and replace one Steadie session that week; Pilates counts as core; yoga, tai chi and dance count as balance.
   Copy: "Your Thursday Pilates counts. We've moved your core work into it."
 
 ### 4.7 Safety copy
@@ -346,7 +346,7 @@ link formats must be tested on each site and in each supermarket's app before la
 ### 6.2 What the person sees
 
 1. In settings: "Where do you usually shop?" (one main supermarket, optional second).
-2. On a meal: **Add ingredients**. The ingredients go into Landing's weekly list, merged with the rest of the week,
+2. On a meal: **Add ingredients**. The ingredients go into Steadie's weekly list, merged with the rest of the week,
    rounded to packs, with pantry items they already have left off.
 3. On the list: **Shop at [supermarket]**. What happens depends on the supermarket:
    - **Tesco, Sainsbury's and Asda, at launch:** shopping mode. The list stays on screen and each item opens that

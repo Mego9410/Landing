@@ -177,7 +177,7 @@
         <button type="button" class="banner tint-sky" onClick=${function () { nav.go('support'); }}><${Icon} name="lock" size=${18} /><span class="body grow">Safe mode is on. Weight is hidden.</span><span class="caption">Change</span></button>
         <button type="button" class="card hero rowcard" style=${{ gap: 16 }} onClick=${function () { nav.go('score'); }}>
           <${L.ScoreRing} score=${score} size=${112} label="This week" />
-          <span class="grow stack" style=${{ gap: 4 }}><span class="label muted">LANDING SCORE</span><span class="body" style=${{ fontWeight: 700 }}>Built from your habits and hunger.</span><span class="caption" style=${{ color: 'var(--sage-ink)' }}>Your steadiest week yet</span></span>
+          <span class="grow stack" style=${{ gap: 4 }}><span class="label muted">STEADY SCORE</span><span class="body" style=${{ fontWeight: 700 }}>Built from your habits and hunger.</span><span class="caption" style=${{ color: 'var(--sage-ink)' }}>Your steadiest week yet</span></span>
         </button>
         <div class="card hero" style=${{ gap: 12 }}>
           <div class="between"><h2 class="t-heading">Hunger this week</h2><span class="caption muted" style=${{ textAlign: 'right' }}>1 very hungry · 5 comfortably full</span></div>
@@ -197,7 +197,7 @@
       <button type="button" class="card hero rowcard" style=${{ gap: 16 }} onClick=${function () { nav.go('score'); }}>
         <${L.ScoreRing} score=${score} size=${112} label="This week" />
         <span class="grow stack" style=${{ gap: 4 }}>
-          <span class="label muted">LANDING SCORE</span>
+          <span class="label muted">STEADY SCORE</span>
           <span class="body" style=${{ fontWeight: 700 }}>Habits carried you this week.</span>
           <span class="caption" style=${{ color: 'var(--sage-ink)' }}>${delta >= 0 ? 'Up ' + delta + ' on last week' : 'A little lower than last week'}</span>
           <span class="caption muted">How it's worked out ›</span>
@@ -380,7 +380,7 @@
       </div>
       <${Choices} sm label="Time range" options=${['Last 4 weeks', 'Last 12 weeks', 'Since stopping']} value=${range} onChange=${setRange} />
       <div style=${{ background: '#FFFFFF', color: '#2E2A33', borderRadius: 12, boxShadow: 'var(--shadow-lg)', padding: 18, display: 'flex', flexDirection: 'column', gap: 12, fontSize: 12, lineHeight: '16px' }}>
-        <div class="between"><img src=${LP.ASSETS.lockup} alt="landing" style=${{ width: 92, height: 21 }} /><span style=${{ fontWeight: 700, color: '#6A6371' }}>${LP.fmt.dmy(LP.TODAY)}</span></div>
+        <div class="between"><img src=${LP.ASSETS.lockup} alt="steadie" style=${{ width: 92, height: 21 }} /><span style=${{ fontWeight: 700, color: '#6A6371' }}>${LP.fmt.dmy(LP.TODAY)}</span></div>
         <div style=${{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600 }}>Summary for your prescriber</div>
         ${grid(rowsA)}
         <svg viewBox="0 0 300 70" width="100%" height="70" role="img" aria-label=${'Weight trend, ' + range.toLowerCase()}>
@@ -388,7 +388,7 @@
           <path d=${path} fill="none" stroke="#2E2A33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
         ${grid(rowsB)}
-        <div style=${{ borderTop: '1px solid #E6DED5', paddingTop: 8, color: '#6A6371' }}>Made with Landing, a general wellness app. It records habits only and gives no medical advice.</div>
+        <div style=${{ borderTop: '1px solid #E6DED5', paddingTop: 8, color: '#6A6371' }}>Made with Steadie, a general wellness app. It records habits only and gives no medical advice.</div>
       </div>
       <div class="foot"><${Btn} block onClick=${function () { toast('In the app this opens the iPhone share sheet with the PDF.'); }}>Share PDF<//></div>
     </div>`;

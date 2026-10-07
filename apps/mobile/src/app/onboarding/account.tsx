@@ -63,7 +63,7 @@ export default function AccountStep() {
   };
   const title = existing ? "Welcome back" : fromSettings ? "Back up your plan" : "Keep your plan safe";
   const lede = existing ? "Sign in with the same Apple ID or email as before, and your plan, logs and check-ins come to this phone."
-    : "Sign in and Landing backs up your plan, logs and check-ins as you go, so they come with you to a new phone.";
+    : "Sign in and Steadie backs up your plan, logs and check-ins as you go, so they come with you to a new phone.";
 
   return (
     <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48, flexGrow: 1 }} header={<Header onBack={back} title={stage === "code" ? "Check your email" : title} />}>

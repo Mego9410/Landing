@@ -3,9 +3,9 @@
 // app uses as @font-face rules with data URIs (same family names expo-font registers), and the router started at "/".
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-const [dir = "dist", out = "dist/landing-app.html"] = process.argv.slice(2);
+const [dir = "dist", out = "dist/steadie-app.html"] = process.argv.slice(2);
 let html = readFileSync(join(dir, "index.html"), "utf8");
-if (!/<title>/.test(html)) html = html.replace("</head>", "<title>Landing app preview</title></head>");
+if (!/<title>/.test(html)) html = html.replace("</head>", "<title>Steadie app preview</title></head>");
 const m = html.match(/<script src="(\/_expo\/static\/js\/web\/entry-[^"]+\.js)" defer><\/script>/);
 if (!m) throw new Error("no entry script");
 let js = readFileSync(join(dir, m[1]), "utf8").replace(/<\/script/gi, "<\\/script");

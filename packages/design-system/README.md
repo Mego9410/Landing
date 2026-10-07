@@ -1,6 +1,6 @@
-Landing helps people keep weight off for the year after they stop a GLP-1 jab. The people using it have often paid a lot, worked hard and feel anxious about regain. The brand's job is to feel like a soft place to land: calm, warm, round and on their side. Nothing in it should feel clinical, punishing or like a diet app.
+Steadie helps people keep weight off for the year after they stop a GLP-1 jab. The people using it have often paid a lot, worked hard and feel anxious about regain. The brand's job is to feel like a soft place to land: calm, warm, round and on their side. Nothing in it should feel clinical, punishing or like a diet app.
 
-"Landing" is a working name until trademark and App Store checks are done.
+Steadie was called Landing in early designs; the visual system carried over.
 
 ## Brand idea
 
@@ -18,7 +18,7 @@ Three words to check work against: **soft, steady, on your side.**
 - Numbers are calm: weight to one decimal in kg (stones and pounds as a setting), score as a whole number, no red or green on weight changes.
 - Promise line: **Keep what you've worked for.**
 
-Words to use: steady, settle, routine, swap, reset week, landing score, your prescriber.
+Words to use: steady, settle, routine, swap, reset week, steady score, your prescriber.
 Words never to use: cheat, fail, bad food, guilt, willpower, streak lost, burn, slip-up, "back on track", "goal weight" in safe mode.
 
 Medication is out of scope. Never write dose, taper, stop or restart advice. When a person asks, use the redirect wording from the `CoachBubble` guidelines and offer the prescriber pack.
@@ -40,7 +40,7 @@ The palette is oat neutrals plus six pastels. Pastels are fills; each has a deep
 
 - Headlines and numbers in **Fredoka** (`display`, `title`, `heading`, `numeral`). Everything else in **Nunito** (`body-lg`, `body`, `label`, `caption`). Both are free on Google Fonts; the stacks fall back to SF Pro Rounded on iPhone.
 - Use `display` once per screen at most. Weekly lessons and coach replies use `body-lg` for comfortable reading.
-- The landing score uses `numeral` with tabular figures.
+- The steady score uses `numeral` with tabular figures.
 
 ## Shape, space and depth
 
@@ -59,9 +59,9 @@ The palette is oat neutrals plus six pastels. Pastels are fills; each has a deep
 
 ## Logo
 
-- Use `landing-lockup.svg` on the waitlist site, App Store screenshots and prescriber pack header; `landing-mark.svg` alone at small sizes; `app-icon.svg` for the App Store.
-- The wordmark is always lowercase "landing". Keep clear space equal to the sun's diameter.
+- Use `steadie-lockup.svg` on the waitlist site, App Store screenshots and prescriber pack header; `steadie-mark.svg` alone at small sizes; `app-icon.svg` for the App Store.
+- The wordmark is always lowercase "steadie". Keep clear space equal to the sun's diameter.
 
 ## Components
 
-Ten components cover the v1 screens: `Button`, `Chip`, `Card`, `HabitCheck`, `ScoreRing`, `HungerScale`, `NudgeCard`, `CoachBubble`, `TextField` and `TabBar`. They live in `components/bundle.js` as `window.Landing` (React 18). For the Expo app, port the same tokens and shapes to React Native StyleSheets; the CSS here is the reference.
+Ten components cover the v1 screens: `Button`, `Chip`, `Card`, `HabitCheck`, `ScoreRing`, `HungerScale`, `NudgeCard`, `CoachBubble`, `TextField` and `TabBar`. They live in `components/bundle.js` as `window.Steadie` (React 18). For the Expo app, port the same tokens and shapes to React Native StyleSheets; the CSS here is the reference.

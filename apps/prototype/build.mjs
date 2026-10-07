@@ -15,14 +15,14 @@ const scripts = [...index.matchAll(/<script src="([^"]+)"><\/script>/g)].map((m)
 const isReact = (src) => /components\/lib\/react/.test(src);
 
 const svg = (p) => 'data:image/svg+xml;base64,' + Buffer.from(read(p)).toString('base64');
-const assets = `window.LANDING_ASSETS = ${JSON.stringify({ mark: svg('../../packages/design-system/assets/Logos/landing-mark.svg'), lockup: svg('../../packages/design-system/assets/Logos/landing-lockup.svg') })};`;
+const assets = `window.LANDING_ASSETS = ${JSON.stringify({ mark: svg('../../packages/design-system/assets/Logos/steadie-mark.svg'), lockup: svg('../../packages/design-system/assets/Logos/steadie-lockup.svg') })};`;
 
 const inline = (code) => {
   if (/<\/script/i.test(code)) throw new Error('A script contains "</script", which would end the inline tag early.');
   return `<script>\n${code}\n</script>`;
 };
 const appScripts = [inline(assets), ...scripts.filter((s) => !isReact(s)).map((s) => inline(read(s)))].join('\n');
-const head = `<title>Landing Prototype</title>\n<meta name="robots" content="noindex">\n<style>\n${css}\n</style>`;
+const head = `<title>Steadie Prototype</title>\n<meta name="robots" content="noindex">\n<style>\n${css}\n</style>`;
 const body = `<div id="root"></div>`;
 
 mkdirSync(join(dir, 'dist'), { recursive: true });

@@ -6,13 +6,13 @@ import { SiteFooter, SiteHeader } from "../site-chrome";
 import { abs, ldJson, ORGANIZATION, SITE_NAME } from "../site";
 
 export const metadata: Metadata = {
-  title: { absolute: `About Landing · ${SITE_NAME}` },
-  description: "Landing is a UK wellness app with a 12-month plan for the year after stopping a GLP-1 weight-loss medicine. Who we are and what we believe.",
+  title: { absolute: `About Steadie · ${SITE_NAME}` },
+  description: "Steadie is a UK wellness app with a 12-month plan for the year after stopping a GLP-1 weight-loss medicine. Who we are and what we believe.",
   alternates: { canonical: "/about" },
 };
 
 export default function About() {
-  const ld = { "@context": "https://schema.org", "@graph": [ORGANIZATION, { "@type": "AboutPage", url: abs("/about"), name: "About Landing", about: { "@id": ORGANIZATION["@id"] } }] };
+  const ld = { "@context": "https://schema.org", "@graph": [ORGANIZATION, { "@type": "AboutPage", url: abs("/about"), name: "About Steadie", about: { "@id": ORGANIZATION["@id"] } }] };
   return (
     <>
       <SiteHeader />
@@ -23,7 +23,7 @@ export default function About() {
             <p className={styles.kicker}>About us</p>
             <h1 className={styles.title}>A soft place to land after the jab</h1>
             <p>Weight-loss injections like Wegovy and Mounjaro have helped many people. But when they stop, appetite comes back, and in trials most people regained a good share of the weight within a year. That&apos;s biology, not a lack of effort. NICE says people should be offered at least a year of support afterwards.</p>
-            <p>Landing is that year of support, in an app: a 12-month plan of small weekly habits, short strength sessions at home, easy high-protein meals, a one-minute morning check-in, and a calm weekly score that rewards steady routines rather than weight loss.</p>
+            <p>Steadie is that year of support, in an app: a 12-month plan of small weekly habits, short strength sessions at home, easy high-protein meals, a one-minute morning check-in, and a calm weekly score that rewards steady routines rather than weight loss.</p>
             <h2>What we believe</h2>
             <ul>
               <li>Keeping weight steady is hard for biological reasons, and nobody should feel ashamed when it is.</li>

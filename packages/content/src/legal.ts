@@ -1,7 +1,7 @@
 // The app's privacy policy and terms, shared by the app (in-app screens) and the website (public pages Apple needs
 // for the store listing), and the website's own privacy notice. Anything in [brackets] is a company detail to fill
 // in. The wording must match what the app actually does: check it whenever data handling changes, along with the
-// App Store privacy labels in docs/app-store-privacy.md. Plain UK English, like the rest of Landing.
+// App Store privacy labels in docs/app-store-privacy.md. Plain UK English, like the rest of Steadie.
 
 export interface LegalSection { heading: string; paras: string[] }
 export interface LegalDoc { title: string; updated: string; intro: string; sections: LegalSection[] }
@@ -15,9 +15,9 @@ const ADDRESS = "[REGISTERED ADDRESS]";
 const ICO_NUMBER = "[ICO REGISTRATION NUMBER]";
 
 export const APP_PRIVACY: LegalDoc = {
-  title: "Privacy policy for the Landing app",
+  title: "Privacy policy for the Steadie app",
   updated: UPDATED,
-  intro: `This policy explains what the Landing app keeps about you, why, where it's kept, who else is involved and the choices you have. Landing is made by ${COMPANY} ("we"), which decides how this information is used and is responsible for it. The short version: what you log is kept on your phone and, if you sign in, in a private backup so it comes with you to a new phone. We never sell it, never use it for advertising and never use it to track you.`,
+  intro: `This policy explains what the Steadie app keeps about you, why, where it's kept, who else is involved and the choices you have. Steadie is made by ${COMPANY} ("we"), which decides how this information is used and is responsible for it. The short version: what you log is kept on your phone and, if you sign in, in a private backup so it comes with you to a new phone. We never sell it, never use it for advertising and never use it to track you.`,
   sections: [
     { heading: "What the app keeps", paras: [
       "About you: your first name if you give it, and whether you've stopped, are stopping or are still taking a weight-loss medicine, and roughly when your last injection was.",
@@ -35,7 +35,7 @@ export const APP_PRIVACY: LegalDoc = {
     ] },
     { heading: "Why we use it, and the law that allows it", paras: [
       "To build and run your plan, and to back it up and restore it if you sign in. This is needed to provide the app you've asked for (contract). Because it includes health information, we also rely on your explicit consent, which you give in the health check when you set up the app.",
-      "To send you sign-in codes and keep your account secure, including limiting repeated attempts. This is needed to provide your account (contract) and is in our legitimate interest in keeping Landing safe.",
+      "To send you sign-in codes and keep your account secure, including limiting repeated attempts. This is needed to provide your account (contract) and is in our legitimate interest in keeping Steadie safe.",
       "To check whether you have an active subscription. This is needed to provide what you've paid for (contract).",
       "To answer you if you contact us, and to meet our legal obligations.",
       "We don't use your information for advertising, profiling for marketing, or to train AI models, and we don't sell it or share it with data brokers.",
@@ -50,15 +50,15 @@ export const APP_PRIVACY: LegalDoc = {
     ] },
     { heading: "Who else is involved", paras: [
       "We use a small number of service providers. They only act on our instructions, are bound by contract to keep your information safe, and can't use it for their own purposes.",
-      "Vercel: runs Landing's server (in London). Neon: the database that holds accounts and backups (in London). Resend: sends sign-in codes, so it receives your email address and the code. RevenueCat: checks your subscription; it receives an anonymous ID, your App Store purchase details and basic device information such as the app version and your country, never what you log. Expo: delivers app updates; when the app checks for one, Expo sees your IP address, a random ID for this install and the app version, nothing else.",
+      "Vercel: runs Steadie's server (in London). Neon: the database that holds accounts and backups (in London). Resend: sends sign-in codes, so it receives your email address and the code. RevenueCat: checks your subscription; it receives an anonymous ID, your App Store purchase details and basic device information such as the app version and your country, never what you log. Expo: delivers app updates; when the app checks for one, Expo sees your IP address, a random ID for this install and the app version, nothing else.",
       "Apple: handles payments, Sign in with Apple and Apple Health under its own privacy policy.",
       "Resend, RevenueCat and Expo are based in the US. Where they handle your information outside the UK, it's protected by the UK's approved safeguards (the UK Extension to the EU-US Data Privacy Framework or the UK International Data Transfer Addendum).",
       "We'll only share your information with anyone else if the law requires it, for example a court order.",
     ] },
     { heading: "Apple Health", paras: [
-      "If you switch it on, Landing reads your weight and steps from Apple Health and saves weigh-ins you enter there. It only does this with your permission, which you can change at any time in the Health app.",
+      "If you switch it on, Steadie reads your weight and steps from Apple Health and saves weigh-ins you enter there. It only does this with your permission, which you can change at any time in the Health app.",
       "Weigh-ins and steps brought in from Apple Health become part of your plan, so if you've signed in they're included in your backup. They're only used for your own plan.",
-      "Information from Apple Health is never used for advertising, never sold and never shared. Landing doesn't save it to iCloud itself, though your phone's own iCloud backup includes the app's data, as with any app.",
+      "Information from Apple Health is never used for advertising, never sold and never shared. Steadie doesn't save it to iCloud itself, though your phone's own iCloud backup includes the app's data, as with any app.",
     ] },
     { heading: "Reminders", paras: [
       "Reminders are scheduled on your phone. Nothing is sent to us to make them work, and they never mention your weight.",
@@ -67,7 +67,7 @@ export const APP_PRIVACY: LegalDoc = {
       "On your phone: until you delete it, sign out or delete the app.",
       "Your account and backup: until you delete your account. Deleting it removes your account, backup and sign-in records from our database straight away, and from our database's short-term recovery copies within 7 days.",
       "Signing out removes your sign-in from that phone and clears the phone, but keeps your backup so you can sign in again.",
-      "If we ever close Landing, we'll tell you in the app and by email first, and delete what we hold.",
+      "If we ever close Steadie, we'll tell you in the app and by email first, and delete what we hold.",
     ] },
     { heading: "Your rights", paras: [
       "You have the right to see what we hold about you, have it corrected, have it deleted, take a copy with you, object to or limit how we use it, and withdraw your consent at any time. Withdrawing consent doesn't affect what we did before.",
@@ -75,9 +75,9 @@ export const APP_PRIVACY: LegalDoc = {
       `For anything else, email ${PRIVACY_CONTACT}. We'll reply within one month. If you're unhappy with how we've handled your information, you can complain to the Information Commissioner's Office at ico.org.uk or on 0303 123 1113, though we'd like the chance to put it right first.`,
     ] },
     { heading: "Keeping it safe", paras: [
-      "We use encryption in transit and at rest, sign-in codes instead of passwords, limits on repeated attempts, and access to the database for only the people who need it to run Landing. If something ever goes wrong that puts your information at risk, we'll tell you and the ICO as the law requires.",
+      "We use encryption in transit and at rest, sign-in codes instead of passwords, limits on repeated attempts, and access to the database for only the people who need it to run Steadie. If something ever goes wrong that puts your information at risk, we'll tell you and the ICO as the law requires.",
     ] },
-    { heading: "Who can use Landing", paras: ["Landing is for adults aged 18 and over. We don't knowingly hold information about anyone younger."] },
+    { heading: "Who can use Steadie", paras: ["Steadie is for adults aged 18 and over. We don't knowingly hold information about anyone younger."] },
     { heading: "Changes to this policy", paras: ["If this policy changes in a way that matters, the app will tell you before the change applies, and ask for your consent again if we need it."] },
     { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Registered with the Information Commissioner's Office, number ${ICO_NUMBER}. Email ${PRIVACY_CONTACT}.`] },
   ],
@@ -87,20 +87,20 @@ export const APP_PRIVACY: LegalDoc = {
 export const SITE_PRIVACY: LegalDoc = {
   title: "Privacy notice for this website",
   updated: UPDATED,
-  intro: `This notice covers the Landing website, including the waitlist. ${COMPANY} ("we") is responsible for it. The app has its own privacy policy.`,
+  intro: `This notice covers the Steadie website, including the waitlist. ${COMPANY} ("we") is responsible for it. The app has its own privacy policy.`,
   sections: [
     { heading: "Browsing the website", paras: [
       "The website doesn't use cookies, analytics or advertising trackers. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
     ] },
     { heading: "The waitlist", paras: [
       "If you join the waitlist, we keep your email address, when you joined and gave consent, and, if you choose to tell us, where you are with your weight-loss medicine (stopped, stopping soon or still on it). That last answer is health information, so we only keep it with your explicit consent, which you give by ticking the box.",
-      "We use it to email you when Landing opens and to understand who is waiting for it. We don't use it for anything else, and never sell it or use it for advertising.",
+      "We use it to email you when Steadie opens and to understand who is waiting for it. We don't use it for anything else, and never sell it or use it for advertising.",
     ] },
     { heading: "Who else is involved", paras: [
       "Vercel hosts the website and Neon holds the waitlist, both in London. When we email you, our email provider Resend handles your address on our behalf; it's based in the US, and your information is protected by the UK's approved safeguards.",
     ] },
     { heading: "How long we keep it", paras: [
-      "Until we've emailed you that Landing is open, and no more than 6 months after that, or until you unsubscribe or ask us to remove you, whichever comes first.",
+      "Until we've emailed you that Steadie is open, and no more than 6 months after that, or until you unsubscribe or ask us to remove you, whichever comes first.",
     ] },
     { heading: "Your rights", paras: [
       `You can ask to see, correct or delete your details, or withdraw your consent, at any time by emailing ${PRIVACY_CONTACT}, or by using the unsubscribe link in any email. We'll reply within one month. You can also complain to the Information Commissioner's Office at ico.org.uk or on 0303 123 1113.`,
@@ -112,12 +112,12 @@ export const SITE_PRIVACY: LegalDoc = {
 export const TERMS: LegalDoc = {
   title: "Terms of use",
   updated: UPDATED,
-  intro: `These terms are the agreement between you and ${COMPANY} for using the Landing app. Please read them with the health information the app shows when you start.`,
+  intro: `These terms are the agreement between you and ${COMPANY} for using the Steadie app. Please read them with the health information the app shows when you start.`,
   sections: [
-    { heading: "Who it's for", paras: ["You need to be 18 or over and live in the UK to use Landing."] },
-    { heading: "What Landing is", paras: [
-      "Landing is a general wellness app. Its meal plans, strength sessions, lessons and tips follow general healthy-eating and activity guidance. They aren't medical advice and aren't tailored to your health by a clinician.",
-      "Landing never gives advice about weight-loss medicines, doses or stopping them. Those decisions are for your prescriber.",
+    { heading: "Who it's for", paras: ["You need to be 18 or over and live in the UK to use Steadie."] },
+    { heading: "What Steadie is", paras: [
+      "Steadie is a general wellness app. Its meal plans, strength sessions, lessons and tips follow general healthy-eating and activity guidance. They aren't medical advice and aren't tailored to your health by a clinician.",
+      "Steadie never gives advice about weight-loss medicines, doses or stopping them. Those decisions are for your prescriber.",
     ] },
     { heading: "Looking after yourself", paras: [
       "Answer the health check honestly, and check with your GP, midwife or specialist where the app suggests it. If you choose to carry on after a referral, the app keeps its adjustments on for you, and you agree that you've been told to seek advice first.",
@@ -125,17 +125,17 @@ export const TERMS: LegalDoc = {
       "Recipes, nutrition and allergen information are a guide. Always check food labels, especially if you have an allergy.",
     ] },
     { heading: "Subscriptions", paras: [
-      "Some of Landing needs a subscription, bought through the App Store. Prices and any free trial are shown before you buy. A subscription renews automatically until you cancel it in your Apple account settings, at least 24 hours before it renews.",
+      "Some of Steadie needs a subscription, bought through the App Store. Prices and any free trial are shown before you buy. A subscription renews automatically until you cancel it in your Apple account settings, at least 24 hours before it renews.",
       "If your subscription ends, what you've logged stays on your phone and in your backup, and you can still export it.",
     ] },
     { heading: "Our responsibility to you", paras: [
-      "We work to keep Landing accurate and safe, but we can't promise it will always be available or error-free.",
+      "We work to keep Steadie accurate and safe, but we can't promise it will always be available or error-free.",
       "Nothing in these terms limits our liability for death or personal injury caused by our negligence, for fraud, or for anything else that can't be limited by law. Your rights as a consumer are not affected.",
     ] },
     { heading: "Your account", paras: [
       "An account is optional. If you make one, keep access to your email or Apple ID safe, as that's how you sign in. You can delete your account at any time in Settings.",
     ] },
-    { heading: "Using Landing fairly", paras: ["Please don't copy, resell or misuse the app or its content."] },
+    { heading: "Using Steadie fairly", paras: ["Please don't copy, resell or misuse the app or its content."] },
     { heading: "Changes", paras: ["We may update these terms. If a change matters, the app will tell you before it applies."] },
     { heading: "The law", paras: ["These terms are governed by the law of England and Wales. If you live elsewhere in the UK, you can also bring a claim in your local courts."] },
     { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Email ${CONTACT}.`] },

@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Landing",
+    "name": "Steadie",
     "slug": "landing",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "landing",
+    "scheme": "steadie",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.yourcompany.landing",
+      "bundleIdentifier": "com.getsteadieapp.app",
       "supportsTablet": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -121,7 +121,7 @@
       "usesAppleSignIn": true
     },
     "android": {
-      "package": "com.yourcompany.landing",
+      "package": "com.getsteadieapp.app",
       "adaptiveIcon": {
         "backgroundColor": "#FBF8F4",
         "foregroundImage": "./assets/images/adaptive-icon.png"
@@ -150,8 +150,8 @@
       [
         "@kingstinct/react-native-healthkit",
         {
-          "NSHealthShareUsageDescription": "Landing reads your weight and steps to show your 7-day trend and answer your daily check-in.",
-          "NSHealthUpdateUsageDescription": "Landing saves the weigh-ins you enter to Apple Health, so they're in one place."
+          "NSHealthShareUsageDescription": "Steadie reads your weight and steps to show your 7-day trend and answer your daily check-in.",
+          "NSHealthUpdateUsageDescription": "Steadie saves the weigh-ins you enter to Apple Health, so they're in one place."
         }
       ],
       "expo-secure-store",

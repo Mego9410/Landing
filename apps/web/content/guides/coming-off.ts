@@ -58,7 +58,7 @@ export const COMING_OFF: Guide[] = [
       ] },
     ],
     faqs: [
-      { q: "How do I come off a GLP-1 safely?", a: "Talk to your prescriber. They'll tell you how and when to stop based on your dose, your health and any other medicines. Landing doesn't give advice about stopping or changing doses, but can help with the food, movement and habits around it." },
+      { q: "How do I come off a GLP-1 safely?", a: "Talk to your prescriber. They'll tell you how and when to stop based on your dose, your health and any other medicines. Steadie doesn't give advice about stopping or changing doses, but can help with the food, movement and habits around it." },
       { q: "Will I put weight back on after stopping?", a: "Many people do regain some weight: in trials, around two-thirds of the weight lost came back within a year on average. Some people hold most of it. Protein, strength exercise, regular meals and activity give you the best chance." },
       { q: "How long does it take for appetite to come back?", a: "Usually within a few weeks of the last dose, as the medicine leaves your body. Semaglutide and tirzepatide take several weeks to clear completely." },
       { q: "Is there support after stopping on the NHS?", a: "NICE says people should be offered at least 12 months of support after a weight-loss medicine ends. Ask your prescriber or GP what's available locally." },
@@ -129,7 +129,7 @@ export const COMING_OFF: Guide[] = [
     sections: [
       { heading: "Why people stop Wegovy", blocks: [
         "Some people reach the end of an NHS course, which NICE limits to up to two years. Others stop because of cost, side effects, pregnancy plans, or because they and their prescriber decide it's time. Whatever the reason, the decision and the way you stop are for you and your prescriber.",
-        { note: "Wegovy is a trademark of Novo Nordisk. Landing isn't connected with Novo Nordisk and doesn't give advice about medication.", tone: "sky" },
+        { note: "Wegovy is a trademark of Novo Nordisk. Steadie isn't connected with Novo Nordisk and doesn't give advice about medication.", tone: "sky" },
       ] },
       { heading: "The first weeks after your last dose", blocks: [
         "Semaglutide stays in the body for about a week after each dose and takes several weeks to clear completely. As it does, most people notice their appetite and interest in food returning. Having easy, protein-rich meals ready before this happens makes it much easier. See [appetite after stopping](/guides/appetite-after-stopping-glp-1).",
@@ -172,7 +172,7 @@ export const COMING_OFF: Guide[] = [
     sections: [
       { heading: "About Mounjaro", blocks: [
         "Tirzepatide acts on two gut hormone signals, GLP-1 and GIP, which reduce appetite. It stays in the body for about five days between doses and clears over a few weeks after the last one.",
-        { note: "Mounjaro is a trademark of Eli Lilly. Landing isn't connected with Eli Lilly and doesn't give advice about medication.", tone: "sky" },
+        { note: "Mounjaro is a trademark of Eli Lilly. Steadie isn't connected with Eli Lilly and doesn't give advice about medication.", tone: "sky" },
       ] },
       { heading: "What SURMOUNT-4 found", blocks: [
         "After 36 weeks on tirzepatide, people were split into two groups. Those who carried on lost a further 5.5% of their weight over the next year. Those switched to a placebo regained about 14%. But about one in six of the people who stopped regained less than a quarter of what they'd lost, and their health markers stayed largely steady.",
@@ -194,7 +194,7 @@ export const COMING_OFF: Guide[] = [
     faqs: [
       { q: "How quickly does appetite come back after Mounjaro?", a: "Usually within a few weeks of the last dose, as tirzepatide clears from the body." },
       { q: "Do you gain weight after stopping Mounjaro?", a: "Many people regain some weight. In SURMOUNT-4 the average was about 14% of body weight over a year, but about one in six people regained much less." },
-      { q: "Should I reduce my Mounjaro dose before stopping?", a: "That's a question for your prescriber. Landing doesn't give advice about doses or stopping medicines." },
+      { q: "Should I reduce my Mounjaro dose before stopping?", a: "That's a question for your prescriber. Steadie doesn't give advice about doses or stopping medicines." },
     ],
     sources: [S.surmount4, S.surmount4Acc, S.niceTa1026, S.niceQs212, S.nhsTirzepatide],
     related: ["coming-off-glp-1", "what-happens-when-you-stop-weight-loss-injections", "cravings-after-stopping-glp-1", "strength-training-after-glp-1"],
@@ -216,7 +216,7 @@ export const COMING_OFF: Guide[] = [
     sections: [
       { heading: "Ozempic and Wegovy: the same medicine, different uses", blocks: [
         "Both contain semaglutide. Ozempic is licensed in the UK to treat type 2 diabetes; Wegovy is licensed for weight management, at a different dose. People often use the name Ozempic for both.",
-        { note: "Ozempic and Wegovy are trademarks of Novo Nordisk. Landing isn't connected with Novo Nordisk and doesn't give advice about medication.", tone: "sky" },
+        { note: "Ozempic and Wegovy are trademarks of Novo Nordisk. Steadie isn't connected with Novo Nordisk and doesn't give advice about medication.", tone: "sky" },
       ] },
       { heading: "If you have diabetes", blocks: [
         "Stopping a diabetes medicine can change your blood sugar. Please talk to your GP, diabetes nurse or prescriber before stopping, so they can plan any changes to your treatment and how you'll check your levels.",
@@ -259,7 +259,7 @@ export const COMING_OFF: Guide[] = [
       ] },
       { heading: "Support after treatment", blocks: [
         "NICE's quality standard on overweight and obesity says people should be offered support for at least a year after a weight-loss medicine or programme ends. That includes regular feedback, help building routines, and a plan for if weight starts to return. Ask your GP or weight service what's available near you.",
-        "Landing is built to be that kind of support: a 12-month plan of small habits, short strength sessions and easy meals, alongside your NHS care, never instead of it.",
+        "Steadie is built to be that kind of support: a 12-month plan of small habits, short strength sessions and easy meals, alongside your NHS care, never instead of it.",
       ] },
     ],
     faqs: [
@@ -306,7 +306,7 @@ export const COMING_OFF: Guide[] = [
         ] },
       ] },
       { heading: "Take your own notes", blocks: [
-        "It helps to bring a short summary of how things have gone: your weight trend, habits and how hungry you've felt. Landing makes a one-page summary for your prescriber from what you log. It never gives medical advice; it just helps the conversation.",
+        "It helps to bring a short summary of how things have gone: your weight trend, habits and how hungry you've felt. Steadie makes a one-page summary for your prescriber from what you log. It never gives medical advice; it just helps the conversation.",
       ] },
     ],
     faqs: [
@@ -347,7 +347,7 @@ export const COMING_OFF: Guide[] = [
       ] },
     ],
     faqs: [
-      { q: "Can I start Landing while I'm still on my jab?", a: "Yes. Many people start building routines before their last dose, so they're in place when appetite returns." },
+      { q: "Can I start Steadie while I'm still on my jab?", a: "Yes. Many people start building routines before their last dose, so they're in place when appetite returns." },
     ],
     sources: [S.niceQs212, S.bdaResource, S.lundgren],
     related: ["coming-off-glp-1", "protein-after-glp-1", "strength-training-after-glp-1", "questions-to-ask-before-stopping-weight-loss-injections"],

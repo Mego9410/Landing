@@ -25,18 +25,18 @@ export default function Settings() {
   const healthSub = s.settings.appleHealth ? "Weight and steps" : available() ? "Bring in weight and steps" : "Works in the App Store version";
   async function toggleHealth() {
     if (s.settings.appleHealth) { disconnect(); toast("Apple Health disconnected. Weigh-ins already brought in stay."); return; }
-    if (!available()) { toast("Apple Health works in the App Store version of Landing."); return; }
+    if (!available()) { toast("Apple Health works in the App Store version of Steadie."); return; }
     await connect().catch(() => toast("Couldn't connect to Apple Health."));
   }
   const { account, status } = useAccount();
   const showAccount = accountsAvailable() && !s.demo;
-  const backedUp = status === "saving" ? "Backing up…" : status === "offline" ? "Couldn't reach Landing. It'll try again." : account?.syncedAt ? `Backed up ${when(account.syncedAt)}` : "Backs up once your plan is set up";
+  const backedUp = status === "saving" ? "Backing up…" : status === "offline" ? "Couldn't reach Steadie. It'll try again." : account?.syncedAt ? `Backed up ${when(account.syncedAt)}` : "Backs up once your plan is set up";
   const fail = (e: unknown) => toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
   const confirmDelete = () => confirm("Delete everything?", "This clears all your answers, logs, weigh-ins and check-ins from this phone. It can't be undone.", "Delete everything",
     () => deleteEverything().then(() => router.replace("/disclaimer")));
   const confirmSignOut = () => confirm("Sign out?", "Your plan is backed up first, then cleared from this phone. Sign in again to bring it back.", "Sign out",
     () => signOut().then(() => { toast("Signed out. Your backup is safe."); router.replace("/disclaimer"); }, fail));
-  const confirmDeleteAccount = () => confirm("Delete your account?", "This deletes your account and your backup from Landing's servers, and clears this phone. It can't be undone.", "Delete my account",
+  const confirmDeleteAccount = () => confirm("Delete your account?", "This deletes your account and your backup from Steadie's servers, and clears this phone. It can't be undone.", "Delete my account",
     () => deleteAccount().then(() => { toast("Your account and backup are deleted."); router.replace("/disclaimer"); }, fail));
   return (
     <Screen header={<Header fallback="/" title="Settings" />} contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
@@ -89,7 +89,7 @@ export default function Settings() {
       </Section> : null}
       <Section title="YOUR DATA">
         <View style={{ gap: space[3] }}>
-          <AppText variant="caption" color="inkMuted">{account ? "Your plan is on this phone and backed up to your Landing account." : "Everything Landing keeps is on this phone. Nothing is sent to us."}</AppText>
+          <AppText variant="caption" color="inkMuted">{account ? "Your plan is on this phone and backed up to your Steadie account." : "Everything Steadie keeps is on this phone. Nothing is sent to us."}</AppText>
           <List>
             <Row first title="Export my data" sub="A file of everything the app keeps" onPress={() => shareExport().catch(() => toast("Couldn't make the file. Try again."))} />
             {account ? null : <Row title="Delete everything" sub="Clears this phone and starts again" titleColor="roseInk" onPress={confirmDelete} />}
@@ -112,7 +112,7 @@ export default function Settings() {
           <Button label="Reset to Hannah, week 6" variant="quiet" onPress={() => { replace({ ...demoState(), disclaimer: s.disclaimer }); toast("Back to Hannah in week 6."); router.dismissTo("/"); }} style={{ alignSelf: "center" }} />
         </View>
       </Section> : null}
-      <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>Landing 1.0 · preview. Recipes and nutrition are drafts until our dietitian signs them off.</AppText>
+      <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>Steadie 1.0 · preview. Recipes and nutrition are drafts until our dietitian signs them off.</AppText>
     </Screen>
   );
 }

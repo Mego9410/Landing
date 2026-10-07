@@ -12,12 +12,12 @@ import { freshState, get, replace, STORAGE_KEY } from "./store";
 /** Everything the app keeps, as readable JSON with a short note at the top. */
 export function exportJson(): string {
   const s = get();
-  return JSON.stringify({ exportedOn: today(), note: "Everything the Landing app keeps about you. Weights are in kilograms.", data: s }, null, 2);
+  return JSON.stringify({ exportedOn: today(), note: "Everything the Steadie app keeps about you. Weights are in kilograms.", data: s }, null, 2);
 }
 
 /** Saves the export to a file and opens the share sheet, so it can go to Files, email or anywhere else. */
 export async function shareExport(): Promise<void> {
-  const json = exportJson(), name = `landing-data-${today()}.json`;
+  const json = exportJson(), name = `steadie-data-${today()}.json`;
   if (Platform.OS === "web") {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
@@ -29,9 +29,9 @@ export async function shareExport(): Promise<void> {
     const file = new File(Paths.cache, name);
     if (file.exists) file.delete();
     file.write(json);
-    await Sharing.shareAsync(file.uri, { mimeType: "application/json", UTI: "public.json", dialogTitle: "Your Landing data" });
+    await Sharing.shareAsync(file.uri, { mimeType: "application/json", UTI: "public.json", dialogTitle: "Your Steadie data" });
   } else {
-    await Share.share({ message: json, title: "Your Landing data" });
+    await Share.share({ message: json, title: "Your Steadie data" });
   }
 }
 

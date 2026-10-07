@@ -5,7 +5,7 @@
 <body>
 <div id="root" class="ld-stack"></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
     h(L.TextField, { label: "Today's weight", suffix: 'kg', inputMode: 'decimal', defaultValue: '78.4', hint: 'Synced from Apple Health · 7:42' }),
     h(L.TextField, { label: 'Protein at lunch', suffix: 'g', inputMode: 'numeric', defaultValue: '300', error: 'That looks high for one meal. Check the number and try again.' })));

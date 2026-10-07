@@ -1,6 +1,6 @@
-# Landing prototype
+# Steadie prototype
 
-A clickable HTML version of the whole Landing app, built from the [app screen designs](../designs/app-screens/)
+A clickable HTML version of the whole Steadie app, built from the [app screen designs](../designs/app-screens/)
 with the [design system](../../packages/design-system/). Use it to get the brand and the flows right before building in Expo.
 It uses dummy data: Hannah, who stopped her jab on 31 August, is in week 6 of her plan and today is Monday 5 October 2026.
 
@@ -53,7 +53,7 @@ A link ending in a screen name opens that screen, for example `index.html#progre
 ## How it's built
 
 No build step and no npm: React 18 (the copy in `packages/design-system/components/lib`), the design system's components
-(`window.Landing`) and [htm](https://github.com/developit/htm) (`vendor/`, Apache 2.0) for JSX-like templates.
+(`window.Steadie`) and [htm](https://github.com/developit/htm) (`vendor/`, Apache 2.0) for JSX-like templates.
 
 - `src/core.js`: state, dummy data, dates, navigation and shared UI pieces
 - `src/screens-*.js`: the screens, grouped as in the designs
@@ -64,5 +64,5 @@ No build step and no npm: React 18 (the copy in `packages/design-system/componen
   from `packages/design-system/tokens.css`, so changing a token changes the prototype.
 
 Screen copy follows the designs. Where the designs leave something open, the prototype keeps their placeholders
-(screening questions 1, 3, 4 and 5, `[YOUR DOMAIN]`, `[YOUR COMPANY NAME]`) and invents nothing medical. Lesson text and
+(screening questions 1, 3, 4 and 5, `www.getsteadieapp.com`, `[YOUR COMPANY NAME]`) and invents nothing medical. Lesson text and
 habits for Settle and Steady, the coach's replies and Strength A's exercises are dummy content to check before Expo.

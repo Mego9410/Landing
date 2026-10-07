@@ -1,4 +1,4 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-10-05T14:06:18Z"},"title":"Landing App Screens","launch":{"view":"canvas"},"pages":[],
+{"v":3,"createdOnFiles":{"v":1,"at":"2026-10-05T14:06:18Z"},"title":"Steadie App Screens","launch":{"view":"canvas"},"pages":[],
 "boards":{
 "Main.dc.html":{"x":0,"y":0,"w":390,"h":844,"title":"A1 Launch","is_interactive":true,"radius":40},
 "A2-Welcome.dc.html":{"x":470,"y":0,"w":390,"h":844,"title":"A2 Welcome","is_interactive":true,"radius":40},
@@ -15,7 +15,7 @@
 "O9-AppleHealth.dc.html":{"x":3760,"y":1244,"w":390,"h":844,"title":"O9 Connect Apple Health","is_interactive":true,"radius":40},
 "O10-Reminders.dc.html":{"x":4230,"y":1244,"w":390,"h":844,"title":"O10 Reminders","is_interactive":true,"radius":40},
 "O11-Building.dc.html":{"x":4700,"y":1244,"w":390,"h":844,"title":"O11 Building your plan","is_interactive":true,"radius":40},
-"O12-PlanReveal.dc.html":{"x":5170,"y":1244,"w":390,"h":960,"title":"O12 Your landing plan","is_interactive":true,"radius":40},
+"O12-PlanReveal.dc.html":{"x":5170,"y":1244,"w":390,"h":960,"title":"O12 Your Steadie plan","is_interactive":true,"radius":40},
 "P1-Paywall.dc.html":{"x":0,"y":2604,"w":390,"h":920,"title":"P1 Start your free week","is_interactive":true,"radius":40},
 "P2-YoureIn.dc.html":{"x":470,"y":2604,"w":390,"h":844,"title":"P2 You're in","is_interactive":true,"radius":40},
 "P3-Lapsed.dc.html":{"x":940,"y":2604,"w":390,"h":844,"title":"P3 Subscription ended","is_interactive":true,"radius":40},
@@ -70,5 +70,5 @@
 "states":{"x":0,"y":12118,"text":"Shared states","kind":"title1","maxW":1800},
 "parts":{"x":0,"y":13698,"text":"Shared parts","kind":"title1","maxW":1500}
 },
-"designSystems":[{"title":"Landing","namespace":"landing","artifact":"https://claude.ai/artifact/SEV6vLBwGSNQc7iw6bVPs2","version":"1791207854-3beb","copiedAt":"2026-10-05T14:06:18Z"}]
+"designSystems":[{"title":"Steadie","namespace":"landing","artifact":"https://claude.ai/artifact/SEV6vLBwGSNQc7iw6bVPs2","version":"1791207854-3beb","copiedAt":"2026-10-05T14:06:18Z"}]
 }

@@ -39,7 +39,7 @@ export interface Weight { date: string; kg: number; source: string }
 /** One day's journal, kept under the day it describes. Scales run 1 to 5; fullness 1 is "Very hungry". */
 export interface JournalEntry { yes: Record<string, boolean>; fullness?: number; energy?: number }
 
-/** What happened on one day. Kept by date, so weekly totals and the landing score are worked out from these. */
+/** What happened on one day. Kept by date, so weekly totals and the steady score are worked out from these. */
 export interface DayLog {
   /** Grams of protein by meal: Breakfast, Lunch, Dinner, Snack. */
   protein?: Record<string, number>;
@@ -201,7 +201,9 @@ export function freshState(): AppState {
 }
 
 /* ---------- the store ---------- */
-export const STORAGE_KEY = "landing-app-v2"; // the key stays the same; the saved object carries its own version
+// Named before the app was renamed to Steadie. Never change it: everyone's saved plan is under this key. The saved
+// object carries its own version.
+export const STORAGE_KEY = "landing-app-v2";
 const KEY = STORAGE_KEY;
 let state: AppState = freshState();
 let hydrated = false;

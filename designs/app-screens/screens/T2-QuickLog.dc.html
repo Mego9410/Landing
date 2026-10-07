@@ -27,17 +27,17 @@
       <a class="iconbtn" href="T1-Today.dc.html" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
     </div>
     <div class="row" style="gap: 12px; align-items: flex-start">
-      <x-import component-from-global-scope="Landing.TextField" label="Weight" suffix="kg" input-mode="decimal" default-value="78.4" style="flex: 1"></x-import>
-      <x-import component-from-global-scope="Landing.TextField" label="Protein, this meal" suffix="g" input-mode="numeric" default-value="30" style="flex: 1"></x-import>
+      <x-import component-from-global-scope="Steadie.TextField" label="Weight" suffix="kg" input-mode="decimal" default-value="78.4" style="flex: 1"></x-import>
+      <x-import component-from-global-scope="Steadie.TextField" label="Protein, this meal" suffix="g" input-mode="numeric" default-value="30" style="flex: 1"></x-import>
     </div>
     <div class="wrap">
       <sc-for list="{{meals}}" as="m" hint-placeholder-count="4"><button type="button" class="{{m.cls}}" onClick="{{m.pick}}" style="height: 34px; padding: 0 14px; font-size: 13px">{{m.label}}</button></sc-for>
     </div>
     <div class="stack" style="gap: 8px">
       <span class="label">How hungry are you right now?</span>
-      <x-import component-from-global-scope="Landing.HungerScale" value="{{hunger}}" on-change="{{setHunger}}"></x-import>
+      <x-import component-from-global-scope="Steadie.HungerScale" value="{{hunger}}" on-change="{{setHunger}}"></x-import>
     </div>
-    <x-import component-from-global-scope="Landing.TextField" label="Cravings note (optional)" placeholder="e.g. wanted something sweet after lunch"></x-import>
+    <x-import component-from-global-scope="Steadie.TextField" label="Cravings note (optional)" placeholder="e.g. wanted something sweet after lunch"></x-import>
     <a class="ld-btn ld-btn--primary ld-btn--md ld-btn--block" href="T1-Today.dc.html">Save</a>
   </div>
 </div>

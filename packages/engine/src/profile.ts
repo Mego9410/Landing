@@ -17,7 +17,7 @@ export type Condition = "type-2-diabetes" | "high-blood-pressure" | "reflux" | "
 export interface Profile {
   /** Weeks since the last injection (1 is the first week off). 0 while still on the jab. */
   weeksSinceLastDose: number;
-  /** Weeks since joining Landing, for the fibre ramp. */
+  /** Weeks since joining Steadie, for the fibre ramp. */
   weeksOnPlan: number;
   goal: Goal;
   diet: Diet;

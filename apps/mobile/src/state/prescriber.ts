@@ -34,7 +34,7 @@ export function summaryWeeks(s: AppState): WeekRow[] {
 
 export function prescriberHtml(s: AppState): string {
   const weeks = summaryWeeks(s), safe = s.settings.safeMode, t = today();
-  const name = s.name ? esc(s.name) : "Landing user";
+  const name = s.name ? esc(s.name) : "Steadie user";
   const rows = weeks.map((w, i) => `<tr><td>${i === 0 ? "This week so far" : `Week of ${fmt.dayMonth(w.from)}`}</td>${safe ? "" : `<td>${esc(w.weight)}</td>`}<td>${esc(w.habits)}</td><td>${w.sessions}</td><td>${w.checkIns}</td><td>${w.hunger}</td><td>${w.energy}</td></tr>`).join("");
   const status = s.ob.status === "stopped" ? `Last injection around ${fmt.dayMonth(s.ob.lastInjection)} (week ${weekOf(s)} of the plan)` : s.ob.status === "soon" ? "Planning to stop soon" : "Still taking it";
   return `<!doctype html><html><head><meta charset="utf-8"><style>
@@ -47,11 +47,11 @@ export function prescriberHtml(s: AppState): string {
     <h1>Summary for your prescriber</h1>
     <div class="muted">${name} · made ${fmt.long(t)}</div>
     <h2>About this summary</h2>
-    <div>${esc(status)}. These figures are what ${name === "Landing user" ? "this person" : name} logged in the Landing app over the last four weeks.</div>
+    <div>${esc(status)}. These figures are what ${name === "Steadie user" ? "this person" : name} logged in the Steadie app over the last four weeks.</div>
     <h2>Week by week</h2>
     <table><tr><th>Week</th>${safe ? "" : "<th>7-day average weight</th>"}<th>Habits</th><th>Strength sessions</th><th>Morning check-ins</th><th>Hunger (1 very hungry, 5 comfortably full)</th><th>Energy (1 to 5)</th></tr>${rows}</table>
     ${safe ? `<div class="muted" style="margin-top:8px">Weight isn't included because safe mode is on.</div>` : ""}
-    <div class="note">Self-logged in Landing, a general wellness app. Not a clinical record. Landing gives no advice about medication, doses or stopping treatment; those decisions are for the prescriber.</div>
+    <div class="note">Self-logged in Steadie, a general wellness app. Not a clinical record. Steadie gives no advice about medication, doses or stopping treatment; those decisions are for the prescriber.</div>
   </body></html>`;
 }
 

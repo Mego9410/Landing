@@ -2,7 +2,7 @@
   "name": "@landing/mobile",
   "version": "1.0.0",
   "private": true,
-  "description": "The Landing iPhone app (Expo).",
+  "description": "The Steadie iPhone app (Expo).",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
@@ -14,7 +14,7 @@
     "build:ios": "eas build --platform ios --profile production",
     "build:preview": "eas build --platform ios --profile preview",
     "web:export": "expo export --platform web --output-dir dist",
-    "web:phone": "expo export --platform web --output-dir dist && node scripts/pack-web.mjs dist dist/landing-app.html",
+    "web:phone": "expo export --platform web --output-dir dist && node scripts/pack-web.mjs dist dist/steadie-app.html",
     "update:preview": "eas update --branch preview --message \"Preview\"",
     "build:dev": "eas build --profile development",
     "test": "tsx --tsconfig tsconfig.json --test src/test/*.test.ts"

@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Landing design system</title>
+<title>Steadie design system</title>
 <link rel="stylesheet" href="tokens.css">
 <link rel="stylesheet" href="components/bundle.css">
 <style>
@@ -21,7 +21,7 @@
 <html lang=&quot;en&quot;>
 <head><link rel=&quot;stylesheet&quot; href=&quot;tokens.css&quot;><link rel=&quot;stylesheet&quot; href=&quot;components/bundle.css&quot;><script src=&quot;components/lib/react.production.min.js&quot;></script><script src=&quot;components/lib/react-dom.production.min.js&quot;></script><script src=&quot;components/bundle.js&quot;></script>
 <meta charset=&quot;utf-8&quot;>
-<title>Landing</title>
+<title>Steadie</title>
 <link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Fredoka:wght@600&amp;family=Nunito:wght@500;600&amp;display=swap&quot;>
 <style>
   html, body { margin:0; height:100%; }
@@ -62,7 +62,7 @@
 </svg>
 </div>
 <div class=&quot;words&quot;>
-<h1 class=&quot;name&quot;>Landing</h1>
+<h1 class=&quot;name&quot;>Steadie</h1>
 <p class=&quot;tag&quot;>Keep what you've worked for.</p>
 </div>
 </div>
@@ -76,7 +76,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stage&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
     h(L.Button, null, 'Start my plan'),
     h(L.Button, { variant: 'secondary', icon: 'reset' }, 'Start a reset week'),
@@ -93,7 +93,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stack&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
     h(L.Card, null, h('h3', null, &quot;This week's lesson&quot;), h('p', null, 'Hunger often returns in the late afternoon. A protein snack at 4pm takes the edge off.')),
     h(L.Card, { tone: 'sky' }, h('h3', null, 'Prescriber pack ready'), h('p', null, 'A one-page summary of your trend and habits to share at your next appointment.'))));
@@ -108,7 +108,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stage&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   function Demo() {
     var s = React.useState('Settle'), v = s[0], set = s[1];
     return h(React.Fragment, null,
@@ -129,7 +129,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stack&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
     h(L.CoachBubble, { from: 'you' }, 'Should I go back on a lower dose?'),
     h(L.CoachBubble, { redirect: true }, &quot;That's a decision for your prescriber, so I can't help with doses. I can make a one-page summary of your trend and habits to take with you.&quot;),
@@ -146,7 +146,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stack&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   function Demo() {
     var a = React.useState(true), b = React.useState(false), c = React.useState(false);
     return h(React.Fragment, null,
@@ -166,7 +166,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stage&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   function Demo() {
     var s = React.useState(3);
     return h(L.HungerScale, { value: s[0], onChange: s[1] });
@@ -183,7 +183,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stack&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(
     h(L.NudgeCard, { title: 'Things shifted a little this week', actionLabel: 'Start a reset week' },
       &quot;That's common around week 10. A lighter week with simpler habits usually settles it.&quot;));
@@ -198,7 +198,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stage&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
     h(L.ScoreRing, { score: 78 }),
     h(L.ScoreRing, { score: 52, size: 120, label: 'This week' })));
@@ -213,7 +213,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stage&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   function Demo() {
     var s = React.useState('today');
     return h(L.TabBar, { active: s[0], onChange: s[1] });
@@ -230,7 +230,7 @@
 <body>
 <div id=&quot;root&quot; class=&quot;ld-stack&quot;></div>
 <script>
-  var L = window.Landing, h = React.createElement;
+  var L = window.Steadie, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
     h(L.TextField, { label: &quot;Today's weight&quot;, suffix: 'kg', inputMode: 'decimal', defaultValue: '78.4', hint: 'Synced from Apple Health · 7:42' }),
     h(L.TextField, { label: 'Protein at lunch', suffix: 'g', inputMode: 'numeric', defaultValue: '300', error: 'That looks high for one meal. Check the number and try again.' })));

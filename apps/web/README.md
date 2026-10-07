@@ -1,6 +1,6 @@
-# Landing waitlist site
+# Steadie waitlist site
 
-Next.js (App Router) site at the root of the Landing domain: the brand, the plan in three phases and a waitlist
+Next.js (App Router) site at the root of the Steadie domain: the brand, the plan in three phases and a waitlist
 form. Colours, type and spacing come from `@landing/design-system/tokens.css`, so it follows the brand and the
 device's dark mode.
 

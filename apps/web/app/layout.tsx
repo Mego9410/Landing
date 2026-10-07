@@ -11,13 +11,13 @@ const description = "A 12-month plan for the year after you stop a GLP-1 weight-
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: { default: "Landing: keep weight off after weight-loss jabs", template: "%s · Landing" },
-  applicationName: "Landing",
+  title: { default: "Steadie: keep weight off after weight-loss jabs", template: "%s · Steadie" },
+  applicationName: "Steadie",
   keywords: ["coming off weight loss injections", "life after GLP-1", "keep weight off after stopping weight loss jab", "weight maintenance after GLP-1", "protein and strength after weight loss injections"],
   category: "health",
   description,
-  openGraph: { title: "Landing: keep what you've worked for", description, url: "/", siteName: "Landing", locale: "en_GB", type: "website", images: ["/og.png"] },
-  twitter: { card: "summary_large_image", title: "Landing: keep what you've worked for", description, images: ["/og.png"] },
+  openGraph: { title: "Steadie: keep what you've worked for", description, url: "/", siteName: "Steadie", locale: "en_GB", type: "website", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", title: "Steadie: keep what you've worked for", description, images: ["/og.png"] },
   alternates: { canonical: "/", types: { "application/rss+xml": "/guides/feed.xml" } },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
 };

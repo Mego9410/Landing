@@ -1,4 +1,4 @@
-// The Landing figure: a side-view character built from the brand's shapes (rounded pill limbs, a disc head, no
+// The Steadie figure: a side-view character built from the brand's shapes (rounded pill limbs, a disc head, no
 // face), posed by a few targets per keyframe. Elbows and knees are solved with two-bone IK, so an exercise is
 // authored as where the hips, hands and feet go, and the limbs follow.
 //

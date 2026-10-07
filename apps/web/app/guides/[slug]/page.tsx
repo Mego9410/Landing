@@ -87,7 +87,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
             <article className={styles.body}>
               <p className={styles.kicker}>{g.category}</p>
               <h1 className={styles.title}>{g.title}</h1>
-              <p className={styles.meta}>By the Landing team · Updated <time dateTime={g.updated}>{long(g.updated)}</time> · {minutes} minute read</p>
+              <p className={styles.meta}>By the Steadie team · Updated <time dateTime={g.updated}>{long(g.updated)}</time> · {minutes} minute read</p>
               <div className={styles.summary}>
                 <p>The short version</p>
                 <ul>{g.summary.map((s) => <li key={s}>{s}</li>)}</ul>
@@ -111,7 +111,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                 <ol className={styles.sources}>{g.sources.map((s) => <li key={s.url}><a href={s.url} rel="noopener">{s.label}</a></li>)}</ol>
               </section>
               <p className={styles.disclaimer}>
-                This guide is general information, not medical advice. Landing never gives advice about medication, doses or stopping treatment: talk to your prescriber, GP or pharmacist about those. In an emergency, call 999. Read how we write guides in our <Link href="/editorial-policy">editorial policy</Link>.
+                This guide is general information, not medical advice. Steadie never gives advice about medication, doses or stopping treatment: talk to your prescriber, GP or pharmacist about those. In an emergency, call 999. Read how we write guides in our <Link href="/editorial-policy">editorial policy</Link>.
               </p>
               {related.length ? (
                 <section className={styles.related} aria-labelledby="related">

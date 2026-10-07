@@ -1,4 +1,4 @@
-# Deploying Landing
+# Deploying Steadie
 
 Two Vercel projects deploy from this one repository, and the iPhone app ships through Expo's build service (EAS).
 
@@ -17,7 +17,7 @@ Two Vercel projects deploy from this one repository, and the iPhone app ships th
 3. `apps/web/vercel.json` already sets the install command (installs only the web app and what it uses, from the
    repo root), the build command and a skip rule so commits that don't touch the site don't rebuild it.
 4. Under **Settings → Environment Variables** add:
-   - `NEXT_PUBLIC_SITE_URL`: the production URL, for example `https://[YOUR DOMAIN]`. Add it for Production; for
+   - `NEXT_PUBLIC_SITE_URL`: the production URL, for example `https://www.getsteadieapp.com`. Add it for Production; for
      Preview you can use the preview URL or leave it out.
 5. Deploy. Every pull request gets a preview URL. Preview deployments are kept out of search engines automatically
    (`app/robots.ts`).
@@ -71,8 +71,8 @@ true }` on that profile first. Then `pnpm dev:mobile` starts the development ser
 
 **Store builds:**
 
-1. In `apps/mobile/app.json`, change `ios.bundleIdentifier` and `android.package` from `com.yourcompany.landing` to
-   your own reverse domain. This can't change after the first App Store build.
+1. The bundle ID is `com.getsteadieapp.app` (`ios.bundleIdentifier` in `apps/mobile/app.json`). It can't change
+   after the first App Store build. Register it in the Apple Developer portal with Sign in with Apple and HealthKit.
    - Before the first store build, change `runtimeVersion` from `{ "policy": "sdkVersion" }` to
      `{ "policy": "appVersion" }`. The SDK policy is what lets updates open in Expo Go; store builds include native
      modules Expo Go doesn't have (Apple Health), so their updates must be tied to the app version instead.
@@ -80,8 +80,8 @@ true }` on that profile first. Then `pnpm dev:mobile` starts the development ser
    - To charge, create the subscription products in App Store Connect and RevenueCat (entitlement `plan`), then set
      `EXPO_PUBLIC_REVENUECAT_IOS_KEY` (RevenueCat's public iOS key) in the EAS `production` environment. Without
      it there's no paywall, which suits a free TestFlight beta.
-   - In App Store Connect, use `https://[YOUR DOMAIN]/app-privacy` as the privacy policy URL and link
-     `https://[YOUR DOMAIN]/terms` in the description. Both pages are on the website, from the same text the app
+   - In App Store Connect, use `https://www.getsteadieapp.com/app-privacy` as the privacy policy URL and link
+     `https://www.getsteadieapp.com/terms` in the description. Both pages are on the website, from the same text the app
      shows.
    - In the review notes, explain demo mode: hold the picture on the welcome screen for three seconds.
 2. `pnpm --filter @landing/mobile build:preview` makes an internal build to install on your phone.

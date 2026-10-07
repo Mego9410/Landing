@@ -52,7 +52,7 @@
         <${Btn} variant="secondary" size="sm" onClick=${function () { set(function (s) { s.auth.signedIn = false; return s; }); nav.reset('welcome'); toast('Signed out. Your plan is saved for when you sign back in.'); }}>Sign out<//>
         <${Btn} variant="quiet" size="sm" style=${{ color: 'var(--rose-ink)' }} onClick=${function () { nav.go('delete'); }}>Delete account<//>
       </div>
-      <p class="caption muted" style=${{ textAlign: 'center' }}>Landing 1.0 (1) · prototype</p>
+      <p class="caption muted" style=${{ textAlign: 'center' }}>Steadie 1.0 (1) · prototype</p>
     </div>`;
   }
 
@@ -151,7 +151,7 @@
         <${Row} title="Steps" value=${on ? 'Reading' : 'Off'} />
         <${Row} title="Workouts" value=${on ? 'Reading and saving' : 'Off'} />
       </div>
-      <p class="caption muted">To change what Landing can see, open the Health app, then Sharing, then Apps.</p>
+      <p class="caption muted">To change what Steadie can see, open the Health app, then Sharing, then Apps.</p>
       <div class="foot">
         ${on ? html`<${Btn} block onClick=${function () { toast('Synced. Nothing new since 7:42.'); }}>Sync now<//>
           <${Btn} block variant="secondary" onClick=${function () { connect(false); }}>Disconnect<//>`
@@ -232,7 +232,7 @@
       </div>
       <div class="stack" style=${{ gap: 8 }}>
         <p class="label muted">HELP WITH THE APP</p>
-        <div class="card" style=${{ gap: 2 }}><span class="strong">Email us</span><span class="body muted">help@[YOUR DOMAIN] · we reply within 2 working days</span></div>
+        <div class="card" style=${{ gap: 2 }}><span class="strong">Email us</span><span class="body muted">help@getsteadieapp.com · we reply within 2 working days</span></div>
       </div>
     </div>`;
   }
@@ -252,7 +252,7 @@
         </div>
       </div>
       ${withdraw ? html`<div class="card tint-butter" style=${{ gap: 10 }} role="status">
-        <p class="body">Without this permission Landing can't keep your logs, so your plan stops. Your data is deleted after 30 days unless you agree again.</p>
+        <p class="body">Without this permission Steadie can't keep your logs, so your plan stops. Your data is deleted after 30 days unless you agree again.</p>
         <div class="row"><${Btn} variant="secondary" size="sm" style=${{ flex: 1 }} onClick=${function () { setWithdraw(false); toast('In the app this withdraws consent and pauses your plan.'); }}>Withdraw anyway<//><${Btn} size="sm" style=${{ flex: 1 }} onClick=${function () { setWithdraw(false); }}>Keep it<//></div>
       </div>` : null}
       <div class="card" style=${{ gap: 8 }}>
@@ -260,7 +260,7 @@
         <span class="caption muted">Every weigh-in, log, habit and score, as a file you can keep.</span>
         <${Btn} variant="secondary" size="sm" style=${{ alignSelf: 'flex-start' }} onClick=${function () { toast('In the app this prepares a file of ' + s.weights.length + ' weigh-ins and all your logs.'); }}>Export my data<//>
       </div>
-      <p class="caption muted">To run Landing we use Supabase (storage), RevenueCat (subscriptions), Anthropic (coach), PostHog (anonymous usage) and Sentry (crash reports). None of them may use your data for advertising.</p>
+      <p class="caption muted">To run Steadie we use Supabase (storage), RevenueCat (subscriptions), Anthropic (coach), PostHog (anonymous usage) and Sentry (crash reports). None of them may use your data for advertising.</p>
       <div class="foot"><${Btn} variant="quiet" size="sm" style=${{ alignSelf: 'center', color: 'var(--rose-ink)' }} onClick=${function () { nav.go('delete'); }}>Delete my account and data<//></div>
     </div>`;
   }
@@ -306,8 +306,8 @@
       <${Head} />
       <h1 class="t-title">Legal</h1>
       <div class="card hero tint-sky" style=${{ gap: 8 }}>
-        <span class="label">WHAT LANDING IS</span>
-        <p class="body">Landing is a general wellness app that helps adults build nutrition, activity and eating-habit routines to maintain a healthy weight. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment. Decisions about medication are for your prescriber.</p>
+        <span class="label">WHAT STEADIE IS</span>
+        <p class="body">Steadie is a general wellness app that helps adults build nutrition, activity and eating-habit routines to maintain a healthy weight. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment. Decisions about medication are for your prescriber.</p>
       </div>
       <div class="list">
         ${['Terms of use', 'Privacy policy', 'Open-source licences'].map(function (t) { return html`<${Row} key=${t} title=${t} onClick=${function () { toast('In the app this opens the ' + t.toLowerCase() + '.'); }} />`; })}

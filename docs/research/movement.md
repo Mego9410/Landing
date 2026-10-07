@@ -1,6 +1,6 @@
-# Landing — Exercise & Strength Research Brief
+# Steadie — Exercise & Strength Research Brief
 
-**Purpose:** Evidence base for the strength/movement layer of Landing, a UK general-wellness iPhone app helping adults keep weight off in the 12 months after stopping a GLP-1 medicine (semaglutide/Wegovy, tirzepatide/Mounjaro).
+**Purpose:** Evidence base for the strength/movement layer of Steadie, a UK general-wellness iPhone app helping adults keep weight off in the 12 months after stopping a GLP-1 medicine (semaglutide/Wegovy, tirzepatide/Mounjaro).
 **Prepared:** 5 October 2026
 **Method note:** Research was done via web search. Direct page fetching was blocked by the network proxy for most domains (gov.uk, nhs.uk, pubmed, pmc, acsm.org), so figures below come from search-indexed abstracts, publisher press releases and official summaries. Every claim has an inline URL. Items marked **[UNCERTAIN]** should be checked against the primary source before they go into in-app copy. Nothing here is medical advice. It is input for product design, and a qualified clinician (physio or exercise physiologist) should review the final library and screening wording.
 
@@ -11,10 +11,10 @@
 1. **Why strength matters after GLP-1:** after stopping, weight comes back fast. STEP 1 participants regained about two-thirds of their lost weight within a year ([UCL/DOM 2022](https://discovery.ucl.ac.uk/id/eprint/10149199/1/Diabetes%20Obesity%20Metabolism%20-%202022%20-%20Wilding%20-%20Weight%20regain%20and%20cardiometabolic%20effects%20after%20withdrawal%20of%20semaglutide%20.pdf)). A 2025 BMJ meta-analysis found people regain ~0.4 kg/month on average, and ~0.8 kg/month after semaglutide/tirzepatide ([BMJ Group](https://bmjgroup.com/stopping-weight-loss-drugs-linked-to-weight-regain-and-reversal-of-heart-health-markers/)). In one RCT, people who had exercised during treatment kept more weight off after stopping than people who had taken the drug alone ([Lundgren NEJM 2021 via PubMed](https://pubmed.ncbi.nlm.nih.gov/33951361/); [McMaster summary](https://www.mcmasteroptimalaging.org/full-article/plus/healthy-weight-loss-maintenance-exercise-liraglutide-combined-98902)).
 2. **Lean mass:** roughly 25–40% of weight lost on these drugs shows up as "lean mass" on DXA, a measure that includes more than muscle ([Healio](https://www.healio.com/news/endocrinology/20250313/about-31-of-weight-lost-by-adults-during-glp1-therapy-comes-from-lean-mass); [Acibadem summary](https://acibademinternational.com/blog/muscle-loss-on-glp-1-medicines-how-much-is-lean-mass-and-how-to-protect-it/)). In older adults who were dieting, resistance training prevented most of the diet-induced lean-mass loss ([Sardeli 2018](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5946208/)).
 3. **Dose:** train all major muscle groups ≥2 days/week. Use 1–3 sets per exercise, moderate loads, and stop 1–3 reps short of failure. The biggest gain is going from none to some ([ACSM 2026 position stand coverage](https://www.newswise.com/articles/acsm-unveils-landmark-2026-resistance-training-guidelines-first-update-in-17-years); [2 Minute Medicine](https://www.2minutemedicine.com/landmark-acsm-mcmaster-guidelines-simplify-resistance-training-for-longevity/)). This fits UK CMO guidance (strength ≥2 days, 150 min moderate activity, balance for older adults) ([GOV.UK infographic text](https://www.gov.uk/government/publications/physical-activity-guidelines-adults-and-older-adults/physical-activity-for-adults-and-older-adults-19-and-over-text-of-the-infographic)).
-4. **Landing's plan (2 × 25 min, adding an optional third) sits within the evidence.** Once strength is built, one or two sessions a week can maintain it, provided effort stays the same ([Spiering 2021](https://pubmed.ncbi.nlm.nih.gov/33629972/)). That supports the "Steady" phase.
+4. **Steadie's plan (2 × 25 min, adding an optional third) sits within the evidence.** Once strength is built, one or two sessions a week can maintain it, provided effort stays the same ([Spiering 2021](https://pubmed.ncbi.nlm.nih.gov/33629972/)). That supports the "Steady" phase.
 5. **Design principle:** build the library on **movement patterns**, with each exercise tagged by setting/equipment, joint load, impact, floor need, noise and position (standing, seated, floor). Substitution then becomes a lookup.
 6. **Safety:** use a short PAR-Q+-style screen. A "yes" leads to "check with your GP first" or to a gentler track, never to exclusion. Use a traffic-light pain rule (0–2 green, 3–5 amber if it settles within 24 h, >5 red). Show red-flag lists for 999/111/GP. Under UK consensus, benefits outweigh risks for people with stable long-term conditions, and routine medical clearance is not needed ([Reid et al. BJSM 2022](https://bjsm.bmj.com/content/56/8/427)).
-7. **Regulatory:** keep Landing's intended purpose as general fitness and wellbeing. Do not diagnose, treat or rehabilitate named conditions, and do not personalise exercise "for your knee osteoarthritis". Disclaimers alone do not get an app out of medical device regulation ([MHRA guidance PDF](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1105233/Medical_device_stand-alone_software_including_apps.pdf); [CMS law summary](https://cms.law/en/gbr/legal-updates/mhra-releases-updated-guidance-on-medical-device-software-and-apps)).
+7. **Regulatory:** keep Steadie's intended purpose as general fitness and wellbeing. Do not diagnose, treat or rehabilitate named conditions, and do not personalise exercise "for your knee osteoarthritis". Disclaimers alone do not get an app out of medical device regulation ([MHRA guidance PDF](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1105233/Medical_device_stand-alone_software_including_apps.pdf); [CMS law summary](https://cms.law/en/gbr/legal-updates/mhra-releases-updated-guidance-on-medical-device-software-and-apps)).
 
 ---
 
@@ -56,7 +56,7 @@
 
 **Short sessions work.** Resistance "exercise snacking" (short home bouts, sometimes several times a day) was feasible in older adults, with 81–97% adherence and 2 minor adverse events in 1,317 sessions ([Deakin pilot RCT](https://dro.deakin.edu.au/articles/journal_contribution/Feasibility_and_acceptability_of_a_remotely_delivered_home-based_pragmatic_resistance_exercise_snacking_intervention_in_community-dwelling_older_adults_a_pilot_randomised_controlled_trial/20584815); [Deakin IPAN](https://ipan.deakin.edu.au/project/exploring-the-possible-benefits-of-exercise-snacking-for-older-adults/)).
 
-### 1.4 Recommended Landing prescription (synthesis — for clinician review)
+### 1.4 Recommended Steadie prescription (synthesis — for clinician review)
 
 | Phase | Sessions/wk | Structure (25 min) | Sets × reps | Effort | Progression |
 |---|---|---|---|---|---|
@@ -88,10 +88,10 @@ Onboarding should ask "Where will you usually move?" (multi-select) and "What do
 | 10 | **Walking / step-based (NEAT)** | Phone/watch | Brisk walks (NHS Active 10: 10-min brisk bouts) ([App Store](https://apps.apple.com/gb/app/nhs-active-10-walking-tracker/id1204295312)), stairs, gardening, carrying shopping, Couch to 5K for those who want to run | Most accessible. Large energy-balance contribution. Mortality benefit plateaus around **6,000–8,000 steps/day for ≥60s** and 8,000–10,000 for younger adults ([Paluch 2022, Lancet Public Health](https://discovery.ucl.ac.uk/id/eprint/10170017/1/1-s2.0-S2468266721003029-main.pdf)) | Does not build much muscle in most people | +500–1,000 steps/day per week from personal baseline, then add brisk minutes and hills |
 | 11 | **Class-based** (Pilates, yoga, circuits, aqua, tai chi, dance, ESCAPE-pain) | Leisure centre/community | — | Social, supervised. Tai chi may reduce falls ~19% ([Cochrane 2019](https://www.cochrane.org/news/new-cochrane-review-assesses-benefits-and-harms-exercise-preventing-falls-older-people-living)). NICE lists mind–body (Pilates/yoga) group programmes as an option for back pain ([NG59 summary](https://www.iatrox.com/shared/6a6018ea524dee74d26876c1/what-are-the-most-effective-types-of-exercise-programmes-for-patients-with-)) | Variable load. Pilates/yoga alone may not progressively load big muscle groups | See below |
 
-**How Landing could account for classes:**
+**How Steadie could account for classes:**
 - Let users **log an external session** with type + duration + perceived effort.
 - Map the type to patterns credited: circuits/bodypump = full strength session; Pilates = core + partial strength; yoga = mobility + balance (+ light strength for flows); aqua = strength-lite + aerobic; tai chi/dance = balance + aerobic.
-- If a class counts as a strength session, the app removes one Landing session that week instead of stacking extra load.
+- If a class counts as a strength session, the app removes one Steadie session that week instead of stacking extra load.
 - If the class is low-load (yoga), the app keeps the strength session but may shorten it.
 - Credit balance minutes for ≥65s.
 - Tone: "Your Thursday Pilates counts — we've moved your core work into it."
@@ -136,7 +136,7 @@ These tags let the app filter for **condition flags** (e.g., `wrist_flag` → ex
 
 ### 4.1 Overarching evidence and principles
 - **Benefits outweigh risks.** The UK Moving Medicine consensus (BJSM 2022) concluded that for people with long-term conditions, "the benefits of increasing activity levels far outweigh the risks". When activity increases gradually, serious adverse events are very rare, and **pre-participation medical clearance is not necessary for stable long-term conditions**. It includes symptom-specific statements on MSK pain, fatigue, breathlessness, cardiac chest pain, palpitations, dysglycaemia, cognitive impairment and falls ([BJSM](https://bjsm.bmj.com/content/56/8/427); [Moving Medicine](https://movingmedicine.ac.uk/riskconsensus)).
-- **Language.** The CSP's "Love Activity, Hate Exercise?" research found the word "exercise" triggers strong negative emotions in 40–70-year-olds with long-term conditions, while people talk warmly about activities they enjoy ([CSP](https://csp.org.uk/node/1251204); [ARMA](https://arma.uk.net/?p=23981)). Landing's gentle tone fits; prefer "movement", "strength sessions", "activity".
+- **Language.** The CSP's "Love Activity, Hate Exercise?" research found the word "exercise" triggers strong negative emotions in 40–70-year-olds with long-term conditions, while people talk warmly about activities they enjoy ([CSP](https://csp.org.uk/node/1251204); [ARMA](https://arma.uk.net/?p=23981)). Steadie's gentle tone fits; prefer "movement", "strength sessions", "activity".
 - **Pain-monitoring (traffic-light) model**, adapted from Thomeé 1997 and widely used by physios ([Physiotutors](https://www.physiotutors.com/?p=8188); [AAU PDF](https://vbn.aau.dk/ws/files/310039257/907.full.pdf)):
   - **Green 0–2/10:** carry on.
   - **Amber 3–5/10:** acceptable, if it settles back to usual by the next morning (within 24 h) and is not worse week on week. Keep the same level.
@@ -201,7 +201,7 @@ These tags let the app filter for **condition flags** (e.g., `wrist_flag` → ex
 | **Fibromyalgia** | Start very low; progress slowly; avoid boom-and-bust. Pool is well tolerated | Aerobic + strengthening (land or water), 2–3×/week | Worsening symptoms for days after (scale back) | EULAR: exercise is the only "strong for" recommendation ([Aberdeen](https://www.abdn.ac.uk/iahs/academic/epidemiology/our-research/plain-language-summaries/fibromyalgia-management/); [Moving Medicine](https://movingmedicine.ac.uk/slide_extra/dyk-msk-eular-fibromyalgia/)) |
 | **ME/CFS / long COVID with post-exertional malaise** | **Do not apply the standard progression.** NICE NG206 says don't offer programmes with fixed incremental increases (e.g., graded exercise therapy). Activity must stay within energy limits, overseen by an ME/CFS specialist team. **Recommend exclusion from the progression engine; offer "pace-only" mode or refer** | — | Any worsening after activity | NICE NG206 ([P3 Pharmacy](https://www.p3pharmacy.co.uk/news/813707-nice-publishes-delayed-guideline-on-me-cfs); [Technology Networks](https://www.technologynetworks.com/proteomics/news/health-body-scraps-graded-exercise-therapy-recommendation-for-mecfs-355265)) |
 
-### 4.4 Pre-exercise screening for Landing
+### 4.4 Pre-exercise screening for Steadie
 
 **Background:**
 - PAR-Q+ is the standard self-screen. It starts with 7 yes/no questions, and a "yes" leads to follow-up questions ([PAR-Q+ 2025 form](https://southlake.ca/wp-content/uploads/2025/02/PARQPlus2025-Form-fillable.pdf)). The core seven cover:
@@ -217,7 +217,7 @@ These tags let the app filter for **condition flags** (e.g., `wrist_flag` → ex
 - ACSM's 2015 screening algorithm focuses on current activity level, signs/symptoms or known cardiovascular/metabolic/renal disease, and desired intensity. It dropped risk-factor counting because it led to too many GP referrals ([ACSM blog](https://www.acsm.org/blog-detail/acsm-certified-blog/2018/02/01/exercise-preparticipation-screening-removing-barriers-initiating-exercise); [URI](https://digitalcommons.uri.edu/kinesiology_facpubs/180)).
 - The UK consensus says routine clearance isn't needed for stable conditions ([Reid BJSM 2022](https://bjsm.bmj.com/content/56/8/427)).
 
-**Recommended Landing flow (≈90 seconds):**
+**Recommended Steadie flow (≈90 seconds):**
 1. **"Stop and check first" questions.** Any YES → show "Please check with your GP (or cardiac/diabetes team) before starting the strength sessions. You can still use the habits." Offer to remind them in 1–2 weeks.
    - Chest pain/discomfort with activity or at rest, or unexplained breathlessness.
    - Fainting or blackouts, or dizziness that made you lose balance, in the last 12 months.
@@ -246,18 +246,18 @@ These tags let the app filter for **condition flags** (e.g., `wrist_flag` → ex
 - **Future / Caliber** use human coaches who write and modify plans based on logged progress, with chat and weekly reviews ([TechCrunch on Caliber](https://techcrunch.com/2020/10/13/caliber-with-2-2-million-in-seed-funding-launches-a-fitness-coaching-platform); [Garage Gym Reviews](https://www.garagegymreviews.com/equipment/caliber-strength-training)). **[UNCERTAIN—Future's specific adaptation mechanics not retrieved]**
 - **Apple Fitness+** is a video library filtered by trainer, time (5–45 min), workout type and music, with many no/low-equipment strength classes. There's no individual progression engine ([Apple Newsroom](https://www.apple.com/newsroom/2020/12/apple-fitness-plus-the-future-of-fitness-launches-december-14/); [iMore](https://imore.com/how-filter-workouts-apple-fitness-plus)).
 - **Joe Wicks / The Body Coach** offers low-impact, 10-min over-60s and chair workouts, with cues to swap moves (e.g., marching instead of jumping) and to shorten work intervals ([Fit&Well](https://www.fitandwell.com/news/joe-wicks-10-minute-joint-friendly-workout-is-perfect-for-active-seniors); [Fit&Well chair](https://fitandwell.com/news/over-60-build-upper-body-strength-with-this-10-minute-chair-workout)).
-- **NHS Active 10** tracks brisk minutes in 10-minute units ([App Store](https://apps.apple.com/gb/app/nhs-active-10-walking-tracker/id1204295312)). **NHS Couch to 5K** is 3 runs/week over 9 weeks, and users are explicitly told it is fine to repeat a week ([Dudley ICB](https://dudleyci.co.uk/services/nhs-better-health-get-active-app); [HealthUnlocked C25K community](https://healthunlocked.com/couchto5k/posts/144009269/week-1-advice)). This "repeat a week, no shame" model fits Landing's tone.
+- **NHS Active 10** tracks brisk minutes in 10-minute units ([App Store](https://apps.apple.com/gb/app/nhs-active-10-walking-tracker/id1204295312)). **NHS Couch to 5K** is 3 runs/week over 9 weeks, and users are explicitly told it is fine to repeat a week ([Dudley ICB](https://dudleyci.co.uk/services/nhs-better-health-get-active-app); [HealthUnlocked C25K community](https://healthunlocked.com/couchto5k/posts/144009269/week-1-advice)). This "repeat a week, no shame" model fits Steadie's tone.
 - **Missed-session handling in newer apps:** iFIT eases users back with easier sessions after a missed week. Trainwell/MyoAdapt replan rather than pushing the calendar ([Trainwell blog](https://www.trainwell.net/blog/the-best-fitness-app-for-people-who-keep-quitting-workout-programs-2026); [iFIT TechCrunch](https://techcrunch.com/?p=2662804)).
 
 ### 5.2 UK GLP-1 provider programmes with exercise
 - **Juniper (UK, launched 2022).** "Weight Reset Programme" with a **Strength Program** built on three pillars: Fuel (high protein), Burn (Zone 2 walking + short Zone 4), and Build (low-impact strength from 10 min/day), in a 10-level framework ([Eucalyptus blog](https://eucalyptus.health/blog/moving-beyond-weight-loss); [Second Nature comparison](https://www.secondnature.io/guides/weight-loss-programmes/juniper-vs-second-nature)).
 - **Voy.** Health coaching (diet, exercise, lifestyle) plus app habit tracking. No dedicated strength programme was found ([Voy](https://start.joinvoy.com/how-it-works)). **[UNCERTAIN]**
 - **Numan.** One-to-one coaching, with coaches who may be exercise physiologists. Knowledge Hub includes exercise content ([Numan help](https://help.numan.com/en/articles/11509962-what-s-included-in-numan-s-health-coaching); [Numan app](https://help.numan.com/en/articles/9925361-what-can-you-do-in-the-numan-app)).
-- **Boots Online Doctor.** Coach App (with Liva Healthcare) offering nutrition and fitness coaching, plus a **free 12-month aftercare programme for people who have stopped medication**. This is the closest direct competitor to Landing's positioning ([Boots newsroom](https://www.boots-uk.com/newsroom/news/boots-online-doctor-launches-specialist-coaching-app-to-support-a-long-term-healthy-lifestyle/); [Kamcity](https://www.kamcity.com/namnews/uk-and-ireland/healthbeauty/boots-introduces-weight-loss-clinics/)).
+- **Boots Online Doctor.** Coach App (with Liva Healthcare) offering nutrition and fitness coaching, plus a **free 12-month aftercare programme for people who have stopped medication**. This is the closest direct competitor to Steadie's positioning ([Boots newsroom](https://www.boots-uk.com/newsroom/news/boots-online-doctor-launches-specialist-coaching-app-to-support-a-long-term-healthy-lifestyle/); [Kamcity](https://www.kamcity.com/namnews/uk-and-ireland/healthbeauty/boots-introduces-weight-loss-clinics/)).
 - **Second Nature.** Habit coaching with registered dietitians, including "movement" guidance ([Second Nature](https://www.secondnature.io/weight-loss-medication)).
-- **Gap:** none of these appear to offer a **setting-aware, joint-aware, pattern-based strength progression for the 12 months after stopping**. Landing's niche looks defensible. **[UNCERTAIN—based on public marketing pages]**
+- **Gap:** none of these appear to offer a **setting-aware, joint-aware, pattern-based strength progression for the 12 months after stopping**. Steadie's niche looks defensible. **[UNCERTAIN—based on public marketing pages]**
 
-### 5.3 Autoregulation, deloads, session length, missed sessions — Landing rules
+### 5.3 Autoregulation, deloads, session length, missed sessions — Steadie rules
 
 **Effort scale (in-app wording).** "How many more could you have done with good form?"
 - "Lots (5+)" = too easy → next time go up a level or add reps.
@@ -268,7 +268,7 @@ RIR-based RPE scales were validated by Zourdos/Helms. Novices are less accurate,
 
 **Double progression.** Each exercise has a rep range (e.g., 8–12). When all sets hit 12 with "a few left", the next session adds load or moves up a level and restarts at 8.
 
-**Deloads.** Coaches typically deload every 4–6 weeks for ~1 week with fewer sets and reps ([Bell et al. 2023 Delphi, Sports Med Open](https://shura.shu.ac.uk/32417/1/s40798-023-00633-0.pdf)). Those coaches work with athletes. For Landing's novices, the suggestions are:
+**Deloads.** Coaches typically deload every 4–6 weeks for ~1 week with fewer sets and reps ([Bell et al. 2023 Delphi, Sports Med Open](https://shura.shu.ac.uk/32417/1/s40798-023-00633-0.pdf)). Those coaches work with athletes. For Steadie's novices, the suggestions are:
 - an "easier week" (1 set, same exercises) every ~6–8 weeks in Settle/Steady;
 - an automatic easier week after illness, a red-zone pain report, or a missed week. **[Design judgement, not trial evidence]**
 
@@ -305,14 +305,14 @@ The evidence supports "something beats nothing" ([Newswise ACSM](https://www.new
 - **Disclaimers** such as "not a medical device" do not get an app out of regulation if its function and claims are medical ([CMS](https://cms.law/en/gbr/legal-updates/mhra-releases-updated-guidance-on-medical-device-software-and-apps)).
 - Indicative words that push towards device status include "diagnose", "monitors", "calculates", "detects", "alarms", "interpret" and "treat" ([BSI](https://compliancenavigator.bsigroup.com/en/medicaldeviceblog/uk-guidance-on-stand-alone-medical-device-software-including-apps-issued)).
 
-**Implications for Landing:**
+**Implications for Steadie:**
 1. **Do not** market it as preventing weight regain *as a treatment for obesity*, or as managing any condition (OA, diabetes, hypertension, osteoporosis). **[UNCERTAIN—"obesity" is a disease; claims like "helps prevent weight regain after Wegovy" may be borderline. Get a regulatory opinion. Safer framing: "build habits and strength for life after GLP-1s".]**
 2. **Do not** generate exercise plans described as *rehabilitation* for a named diagnosis (e.g., "your knee OA programme"). Personalising exercises to a diagnosed condition in order to alleviate it is a medical purpose.
    - Instead, use **comfort preferences** ("Knees: go easy on deep bending and kneeling"), applied as generic filters.
    - Any condition-specific education should be non-personalised and signpost NHS or charity resources (Versus Arthritis, ROS, BHF, Diabetes UK).
 3. **Do not** interpret biometrics: no "your BP is too high to train", no glucose thresholds, no heart-rate zone medical alerts. Screening should **signpost** ("check with your GP"), not decide clinical eligibility from measurements.
 4. **Do not** adjust or advise on medication, including stopping or restarting GLP-1s.
-5. **Advertising.** The CAP Code allows medical claims only for licensed medicines or conformity-marked devices. The ASA has acted against health apps for implied medical claims, and against BetterMe for exaggerating what an exercise programme could do ([ASA HealthTracker ruling](https://www.asa.org.uk/rulings/healthtracker-apps-a26-1327464-healthtracker-apps.html); [ASA Novabeyond ruling](https://www.asa.org.uk/rulings/novabeyond-ltd-a26-1327482-novabeyond-ltd.html); [Osborne Clarke on BetterMe](https://marketinglaw.osborneclarke.com/advertising-regulation/betterme-seek-better-ads-for-a-healthier-marketing-strategy/); [ASA healthcare claims advice](https://www.asa.org.uk/advice-online/healthcare-medicinal-claims.html)). Avoid "preserve your muscle", "stop regain" and percentage outcome claims without robust evidence for *Landing itself*.
+5. **Advertising.** The CAP Code allows medical claims only for licensed medicines or conformity-marked devices. The ASA has acted against health apps for implied medical claims, and against BetterMe for exaggerating what an exercise programme could do ([ASA HealthTracker ruling](https://www.asa.org.uk/rulings/healthtracker-apps-a26-1327464-healthtracker-apps.html); [ASA Novabeyond ruling](https://www.asa.org.uk/rulings/novabeyond-ltd-a26-1327482-novabeyond-ltd.html); [Osborne Clarke on BetterMe](https://marketinglaw.osborneclarke.com/advertising-regulation/betterme-seek-better-ads-for-a-healthier-marketing-strategy/); [ASA healthcare claims advice](https://www.asa.org.uk/advice-online/healthcare-medicinal-claims.html)). Avoid "preserve your muscle", "stop regain" and percentage outcome claims without robust evidence for *Steadie itself*.
 6. **Clinical safety.** DCB0129/DCB0160 apply to health IT used in NHS settings. They probably don't apply to a consumer wellness app, but a lightweight hazard log is good practice. **[UNCERTAIN—check if pursuing NHS partnerships]**
 
 ### 6.2 Suggested wording
@@ -329,7 +329,7 @@ The evidence supports "something beats nothing" ([Newswise ACSM](https://www.new
 | "Diagnose / monitor / detect" | "Track / note / notice" |
 
 **Standard in-app safety footer (draft):**
-> Landing offers general fitness and wellbeing guidance, not medical advice. If you have a health condition, are pregnant, have recently had surgery, or are unsure whether exercise is right for you, check with your GP first. Stop and call 999 if you have chest pain, severe breathlessness or feel faint. For other worrying symptoms, contact NHS 111.
+> Steadie offers general fitness and wellbeing guidance, not medical advice. If you have a health condition, are pregnant, have recently had surgery, or are unsure whether exercise is right for you, check with your GP first. Stop and call 999 if you have chest pain, severe breathlessness or feel faint. For other worrying symptoms, contact NHS 111.
 
 ---
 

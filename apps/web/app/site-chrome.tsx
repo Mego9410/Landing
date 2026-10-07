@@ -24,7 +24,7 @@ export function SiteHeader({ home = false }: { home?: boolean }) {
       </aside>
       <header className={styles.header}>
         <div className={`${styles.wrap} ${styles.headerInner}`}>
-          <Link href="/" aria-label="Landing home" className={styles.logo}><Lockup /></Link>
+          <Link href="/" aria-label="Steadie home" className={styles.logo}><Lockup /></Link>
           <nav className={styles.navLinks} aria-label="Main">
             {SECTIONS.slice(0, 2).map(([id, label]) => <a key={id} href={at(id)}>{label}</a>)}
             <Link href="/guides">Guides</Link>
@@ -46,8 +46,8 @@ export function SiteFooter({ home = false }: { home?: boolean }) {
           <Lockup />
           <p className={styles.muted}>Keep what you&apos;ve worked for.</p>
         </div>
-        <nav aria-label="Landing">
-          <p className={styles.footerHead}>Landing</p>
+        <nav aria-label="Steadie">
+          <p className={styles.footerHead}>Steadie</p>
           {SECTIONS.map(([id, label]) => <a key={id} href={at(id)}>{label}</a>)}
           <Link href="/about">About us</Link>
         </nav>
@@ -64,7 +64,7 @@ export function SiteFooter({ home = false }: { home?: boolean }) {
         </nav>
       </div>
       <div className={`${styles.wrap} ${styles.footerSmall}`}>
-        <p>Landing is a general wellness app. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment. Wegovy and Ozempic are trademarks of Novo Nordisk, and Mounjaro of Eli Lilly; Landing isn&apos;t connected with either company.</p>
+        <p>Steadie is a general wellness app. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment. Wegovy and Ozempic are trademarks of Novo Nordisk, and Mounjaro of Eli Lilly; Steadie isn&apos;t connected with either company.</p>
         {home ? <p id="ref-1">1. Wilding JPH, et al. Weight regain and cardiometabolic effects after withdrawal of semaglutide: the STEP 1 trial extension. Diabetes, Obesity and Metabolism. 2022;24(8):1553–1564.</p> : null}
         <p>© {new Date().getFullYear()} [YOUR COMPANY NAME]</p>
       </div>

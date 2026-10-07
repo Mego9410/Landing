@@ -10,7 +10,7 @@ export type Shape =
   | { id: string; kind: "rect"; x: number; y: number; w: number; h: number; rx: number; fill: string }
   | PathShape;
 
-// Landing palette (light values from the design system tokens).
+// Steadie palette (light values from the design system tokens).
 export const COLOR = {
   near: "#5A4A8E", // lilac-ink: torso and near limbs
   far: "#BFB0E4", // lilac, deepened: far limbs

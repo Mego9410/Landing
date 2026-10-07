@@ -1,4 +1,4 @@
-// Guides: Landing's articles for people coming off GLP-1 weight-loss medicines, written for search and for reading.
+// Guides: Steadie's articles for people coming off GLP-1 weight-loss medicines, written for search and for reading.
 //
 // House rules for every guide (they follow the brand guide and the medicines rules):
 // - Never tell anyone how or when to stop, taper or change a medicine. That's for their prescriber; say so plainly.

@@ -1,5 +1,5 @@
 /* Waitlist page. Layout follows the conventions of UK health-subscription sites (illustrated hero, trust strip, frosted
-   cards, a dark proof band, carousels, an app showcase, a gradient sign-off) in the Landing brand: every colour, radius
+   cards, a dark proof band, carousels, an app showcase, a gradient sign-off) in the Steadie brand: every colour, radius
    and shadow is a design-system token except the deep plum band, which stays dark in both themes. */
 
 .wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding-inline: var(--gutter); }

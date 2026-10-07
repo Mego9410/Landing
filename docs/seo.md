@@ -1,6 +1,6 @@
 # SEO: guides and search
 
-Landing's website is built to be found by people searching for help coming off GLP-1 weight-loss medicines
+Steadie's website is built to be found by people searching for help coming off GLP-1 weight-loss medicines
 (Wegovy, Mounjaro, Ozempic) and keeping the weight off afterwards. This page covers what's in place, the rules for
 health content, how to add a guide and what to do at launch.
 
@@ -75,7 +75,7 @@ These follow the brand guide and Google's standards for health ("your money or y
 - [ ] Fill in `[YOUR COMPANY NAME]`, `[EDITORIAL EMAIL]`, `[SUPPORT EMAIL]` and the address on About, the editorial
       policy and the footer.
 - [ ] Verify the domain in [Google Search Console](https://search.google.com/search-console) and Bing Webmaster
-      Tools, and submit `https://[YOUR DOMAIN]/sitemap.xml`.
+      Tools, and submit `https://www.getsteadieapp.com/sitemap.xml`.
 - [ ] Test a few guides in the Rich Results Test.
 - [ ] Turn off the prototype link (`apps/web/prelaunch.json`) so `/prototype` isn't published.
 

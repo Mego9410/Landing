@@ -1,6 +1,6 @@
 # Plan: from demo to the App Store
 
-What's left to build, decide and sign off before Landing can go live on the App Store. Written 6 October 2026 from a
+What's left to build, decide and sign off before Steadie can go live on the App Store. Written 6 October 2026 from a
 read of the repository as it stands. It sits alongside the [movement, food and shopping plan](plan-movement-food-shopping.md),
 which covers content and clinical sign-off in depth; this plan covers everything around it. Apple's rules are
 summarised from memory of the App Store Review Guidelines, so check each one against the current guidelines before
@@ -11,7 +11,7 @@ relying on it.
 ## 1. The short version
 
 The app looks and feels close to finished, but underneath it is still a demo. It opens as Hannah on a fixed date,
-keeps everything on the phone, and several things it mentions (Apple Health, the landing score, the prescriber pack)
+keeps everything on the phone, and several things it mentions (Apple Health, the steady score, the prescriber pack)
 are pictures of features rather than features. Getting to the App Store needs five kinds of work:
 
 1. **Make it real.** A real clock, data kept day by day, a fresh start for every new person, and the demo tucked away
@@ -36,7 +36,7 @@ Built in the app, with tests for the logic:
 | --- | --- |
 | Real dates and a log for each day; weekly totals and rollover | Done |
 | Fresh start for new people; demo hidden behind a long press | Done |
-| Landing score worked out from the logs | Done |
+| Steady score worked out from the logs | Done |
 | Units (kg or stones and pounds) | Done |
 | Health disclaimer, 18+ tick, health check with GP pause, referrals and gentler track, 12-weekly re-check | Done |
 | Consent for health data; app privacy policy and terms (drafts) in the app and on the website | Done, wording for the lawyer |
@@ -62,7 +62,7 @@ These change what gets built, so they come before the build work. A recommendati
 
 | Decision | Options | Recommendation |
 | --- | --- | --- |
-| **The name** | Keep "Landing" or choose another | Run trademark (UK IPO, EUIPO) and App Store name checks now. The bundle ID, icon, listing and domain all hang off it, and the bundle ID can't change after the first upload. |
+| **The name** | Keep "Steadie" or choose another | Run trademark (UK IPO, EUIPO) and App Store name checks now. The bundle ID, icon, listing and domain all hang off it, and the bundle ID can't change after the first upload. |
 | **Who publishes** | Personal or company developer account | A company account (needs a D-U-N-S number, which can take a couple of weeks). The App Store shows the publisher's name, and a health app reads better from a company. |
 | **Accounts and backend** | (a) Phone only, no account; (b) accounts with backup and sync | **Decided: (b)**, so people can change phones without losing their plan. Optional (encouraged after the welcome screen), Sign in with Apple or an emailed code, Neon Postgres through Vercel and Better Auth on the website. In-app account deletion is built, as Apple requires. See `docs/accounts.md`. |
 | **Business model** | Subscription, one-off purchase, or free during beta | Subscription with a free trial (for example 14 days, then monthly or yearly). Decide prices and whether anything stays free. |
@@ -79,10 +79,10 @@ What the code does today, and what it needs to do.
 | Area | Today | Needed |
 | --- | --- | --- |
 | **Dates** | `TODAY` is fixed at Monday 5 October 2026 (`src/data/dates.ts`) and used in 11 files | The real date, a new day starting at midnight local time, and a new week starting on Monday. Today's habits, protein and sessions reset when the day or week turns over. |
-| **Data model** | Protein is stored by meal, not by date; habit ticks have no date; sessions are stored by weekday name | One log per day (protein by meal, habits ticked, session done, weigh-in, journal), kept by date. Weekly totals and the landing score are worked out from these logs. Add a version number and a migration for saved data. |
+| **Data model** | Protein is stored by meal, not by date; habit ticks have no date; sessions are stored by weekday name | One log per day (protein by meal, habits ticked, session done, weigh-in, journal), kept by date. Weekly totals and the steady score are worked out from these logs. Add a version number and a migration for saved data. |
 | **First run** | Opens as Hannah with six weeks of demo data | A new person starts empty at onboarding. Hannah stays available only in a hidden demo mode for testing and App Review. |
 | **Settings** | Has demo controls (change the week, evening, reset) | Remove them from the release build, or put them behind a hidden gesture. Add units (kg or stones and pounds, promised in the brand guide), reminders, Apple Health, export and delete my data. |
-| **Landing score** | Hard-coded weekly numbers | Work it out from habits, sessions and (outside safe mode) the weight trend, as Progress already describes. The formula needs writing down and checking. |
+| **Steady score** | Hard-coded weekly numbers | Work it out from habits, sessions and (outside safe mode) the weight trend, as Progress already describes. The formula needs writing down and checking. |
 | **Weigh-ins** | Labelled "Apple Health", but there is no Apple Health connection | Real Apple Health reads (section 5), plus manual entry. The 7-day average and steady zone carry on as they are. |
 | **Prescriber pack** | Promised in the coach's medication reply; not built | A one-page PDF of the trend and habits to share, or change the wording until it exists. |
 | **Plan content by week** | Lessons and habits for three phases; sessions A and B only | A lesson and habits for each of the 52 weeks, session progression (movement plan 4.5), and the reset week. |
@@ -103,7 +103,7 @@ What the code does today, and what it needs to do.
 | **Privacy policy for the app** | Separate from the waitlist notice. What's collected, where it's kept, Apple Health use, retention, rights. Needs a public URL. | Lawyer |
 | **Terms and health disclaimer** | Including "not medical advice", the refer-on checkbox, and subscription terms. Needs a public URL. | Lawyer |
 | **DPIA and ICO** | A data protection impact assessment for health data, and the ICO data protection fee. | Lawyer or DPO |
-| **Medical device check** | Confirm Landing's intended purpose keeps it a wellness app under MHRA rules: preferences not diagnoses, no reading of biometrics, no medication advice. | Regulatory adviser |
+| **Medical device check** | Confirm Steadie's intended purpose keeps it a wellness app under MHRA rules: preferences not diagnoses, no reading of biometrics, no medication advice. | Regulatory adviser |
 | **What we say about GLP-1s** | Prescription-only medicines can't be advertised to the public in the UK. Naming Wegovy or Mounjaro in the store listing, screenshots or ads is a risk even if the app is not selling them. Wording about "after the jab" needs a regulatory read (ASA/CAP and MHRA). | Regulatory adviser |
 | **Health disclaimer (built)** | Shown before anything else: general guidance not medical advice, no medication advice, when to see a GP first, when to stop exercising, check labels, Beat. Two required ticks (understood, 18 or over), saved with the date and a wording version; readable again from Settings. | Lawyer to check the wording |
 | **Content checks** | Decided 6 October 2026: no ongoing clinical sign-off; the disclaimer covers the plans as general guidance. What a disclaimer can't do: UK law doesn't let a business exclude liability for injury caused by negligence, so the content itself still has to be right. At the least, check allergen tags and swaps on every recipe, and the exercise levels and easier versions, ideally as a one-off paid review. | Team, or a one-off dietitian and physio check |
@@ -120,7 +120,7 @@ rather than Expo Go.
 | --- | --- |
 | **Apple Health** | Read weight and steps (steps could answer the journal's 7,000 steps question). Write weigh-ins entered in the app. Needs the HealthKit capability, clear permission text, and a screen explaining why before Apple's own prompt. Apple doesn't allow HealthKit data to be used for advertising or sold. |
 | **Reminders** | Local notifications (`expo-notifications`): the morning check-in, session days and a gentle weekly nudge. Ask permission at a useful moment, not on first launch. Quiet hours and an off switch in Settings. |
-| **Backup and export** | Signed in: the plan backs up to Landing's server a few seconds after each change, and restores on a new phone. Not signed in: the phone's iCloud backup. Everyone: "Export my data" as a file. | Built. |
+| **Backup and export** | Signed in: the plan backs up to Steadie's server a few seconds after each change, and restores on a new phone. Not signed in: the phone's iCloud backup. Everyone: "Export my data" as a file. | Built. |
 | **Supermarket hand-off** | Search links and shopping mode for the big five (food plan section 6). Check that each link opens the supermarket's app or site correctly. |
 
 ---
@@ -142,7 +142,7 @@ rather than Expo Go.
 | Item | Notes |
 | --- | --- |
 | **Apple Developer Program** | Enrol the company (yearly fee). Add team members. |
-| **Identity** | Final name, bundle ID (`ios.bundleIdentifier` in `app.json`, currently `com.yourcompany.landing`), final app icon and splash, and the Apple IDs in `eas.json` `submit`. |
+| **Identity** | Final name, bundle ID (`ios.bundleIdentifier` in `app.json`, set to `com.getsteadieapp.app`), final app icon and splash, and the Apple IDs in `eas.json` `submit`. |
 | **Builds** | `eas build --profile production`, `eas submit`. Keep EAS Update for fixes that don't change native code, with the runtime version moved from the SDK version to the app version once off Expo Go. |
 | **Privacy manifest** | Check the iOS privacy manifest covers AsyncStorage and any SDKs added (Sentry, RevenueCat). Expo generates most of it; add what's missing in `app.json`. |
 | **App Privacy answers** | App Store Connect's privacy "nutrition label": health and fitness data, linked or not to the person, used for app function only. Must match the privacy policy. |
@@ -161,7 +161,7 @@ Weeks from now (6 October 2026). The people-dependent work runs alongside the bu
 | Weeks | Product and build | People and paperwork |
 | --- | --- | --- |
 | 1 to 2 | Decide section 2. Real dates and the day-by-day data model. Fresh start and hidden demo mode. | Trademark search and name. Company developer account and D-U-N-S. Book the lawyer, regulatory adviser, physio, dietitian and Beat. |
-| 3 to 6 | Safety screen, age check and consent in onboarding. Apple Health. Reminders. Landing score. Settings (units, export, delete). Development builds replace Expo Go. | Lawyer drafts the privacy policy, terms and DPIA. Regulatory read of positioning. Content review starts (food plan weeks 3 to 8). |
+| 3 to 6 | Safety screen, age check and consent in onboarding. Apple Health. Reminders. Steady score. Settings (units, export, delete). Development builds replace Expo Go. | Lawyer drafts the privacy policy, terms and DPIA. Regulatory read of positioning. Content review starts (food plan weeks 3 to 8). |
 | 7 to 10 | 52 weeks of lessons and habits, session progression, reset week. In-app purchase and paywall. Crash reporting. Prescriber pack, or reword the promise. | Clinical fixes. Final icon. Paid Apps agreement, bank and tax. |
 | 11 to 14 | Accessibility and dark mode pass. Tests for the day rollover, score and journal. Recipes to 120 as they're signed off. | Beat review of safe mode. Store listing, screenshots and review notes drafted and read by the regulatory adviser. |
 | 15 to 18 | TestFlight beta, about 50 people. Fix what they find. | Support page and FAQ. ICO fee. |

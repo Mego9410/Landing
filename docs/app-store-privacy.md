@@ -11,7 +11,7 @@ Accounts are optional, but the labels describe the app as a whole, so everything
 
 | Question | Answer |
 | --- | --- |
-| Privacy policy URL | `https://[YOUR DOMAIN]/app-privacy` |
+| Privacy policy URL | `https://www.getsteadieapp.com/app-privacy` |
 | Do you or your third-party partners collect data from this app? | **Yes** |
 | Do you or your third-party partners use data for tracking? | **No** (no advertising, no data brokers, no IDFA, no tracking SDKs) |
 

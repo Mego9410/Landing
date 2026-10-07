@@ -30,7 +30,7 @@
   function Welcome() {
     return html`<div class="scr plain">
       <${Skip} label="Skip to the app" onClick=${skipToApp} />
-      <img src=${LP.ASSETS.lockup} alt="landing" style=${{ width: 150, height: 35 }} />
+      <img src=${LP.ASSETS.lockup} alt="steadie" style=${{ width: 150, height: 35 }} />
       <${Art} height=${250} shapes=${[
         { left: 24, top: 10, width: 96, height: 150, borderRadius: 48, background: 'var(--lilac)' },
         { right: -30, top: 0, width: 120, height: 96, borderRadius: 32, background: 'var(--sky)' },
@@ -115,7 +115,7 @@
         { id: 'stopped', title: "I've stopped", detail: 'My last injection has been and gone' },
         { id: 'soon', title: "I'm stopping soon", detail: 'I want a plan ready before I do' },
         { id: 'on', title: "I'm still on it", detail: "I'm planning ahead, no date yet" }]} />
-      <p class="caption muted">Landing never gives advice about doses or stopping. That's for your prescriber.</p>
+      <p class="caption muted">Steadie never gives advice about doses or stopping. That's for your prescriber.</p>
       <div class="foot"><${Btn} block onClick=${function () { nav.go('ob-stopdate'); }}>Continue<//></div>
     </div>`;
   }
@@ -250,7 +250,7 @@
       <div class="topbar"><${Back} /><div class="steps"><span style=${{ width: '44%' }}></span></div><span class="caption muted">4 of 9</span></div>
       <div class="stack">
         <h1 class="t-title">Thank you for telling us</h1>
-        <p class="body-lg">We'll keep Landing focused on routines, food and energy, and leave the numbers out.</p>
+        <p class="body-lg">We'll keep Steadie focused on routines, food and energy, and leave the numbers out.</p>
       </div>
       <div class="card hero tint-sky" style=${{ gap: 12 }}>
         <p class="label">WHAT CHANGES IN SAFE MODE</p>
@@ -345,7 +345,7 @@
         <p class="body muted">Weight, food and hunger logs count as health data. We need your permission to keep them.</p>
       </div>
       <div class="list">${rows.map(function (r) { return html`<${Row} key=${r[2]} icon=${r[0]} tint=${r[1]} title=${r[2]} sub=${r[3]} />`; })}</div>
-      ${declined ? html`<div class="banner tint-butter" role="status"><p class="body">Landing can't build your plan without this. You can agree whenever you're ready.</p></div>` : null}
+      ${declined ? html`<div class="banner tint-butter" role="status"><p class="body">Steadie can't build your plan without this. You can agree whenever you're ready.</p></div>` : null}
       <div class="foot">
         <${Btn} block onClick=${agree}>Agree and continue<//>
         <${Btn} variant="quiet" size="sm" style=${{ alignSelf: 'center' }} onClick=${function () { setDeclined(true); }}>Not now<//>
@@ -363,7 +363,7 @@
       <div style=${{ width: 96, height: 96, borderRadius: 9999, background: 'var(--rose)', display: 'grid', placeItems: 'center', color: 'var(--on-pastel)', marginTop: 8 }}><${Icon} name="heart" size=${40} w=${1.8} /></div>
       <div class="stack">
         <h1 class="t-title">Connect Apple Health</h1>
-        <p class="body-lg muted">Less typing. If you already weigh in or track steps there, Landing picks it up.</p>
+        <p class="body-lg muted">Less typing. If you already weigh in or track steps there, Steadie picks it up.</p>
       </div>
       <div class="list">
         <${Row} title="Weight" right=${html`<span class="pill-tag tint-sky">Read</span>`} />
@@ -391,7 +391,7 @@
       </div>
       <div class="card" style=${{ flexDirection: 'row', gap: 12, alignItems: 'flex-start', boxShadow: 'var(--shadow-lg)' }}>
         <img src=${LP.ASSETS.mark} alt="" style=${{ width: 36, height: 32, flex: 'none', marginTop: 2 }} />
-        <div class="grow"><div class="between"><span class="label">LANDING</span><span class="caption muted">now</span></div>
+        <div class="grow"><div class="between"><span class="label">STEADIE</span><span class="caption muted">now</span></div>
           <p class="body">Afternoon dip? A protein snack now takes the edge off later.</p></div>
       </div>
       <div class="stack"><p class="label">WHEN SHOULD WE REMIND YOU?</p>
@@ -415,7 +415,7 @@
     return html`<div class="scr plain" style=${{ justifyContent: 'center', alignItems: 'center', gap: 28 }}>
       <${Skip} onClick=${function () { nav.go('ob-plan', { replace: true }); }} />
       <img src=${LP.ASSETS.mark} alt="" style=${{ width: 104, height: 91 }} />
-      <h1 class="t-title" style=${{ textAlign: 'center' }}>Building your landing plan</h1>
+      <h1 class="t-title" style=${{ textAlign: 'center' }}>Building your Steadie plan</h1>
       <div class="card" style=${{ width: '100%', gap: 14 }} role="status" aria-live="polite">
         ${items.map(function (t, i) {
           var done = i < step;
@@ -428,7 +428,7 @@
     </div>`;
   }
 
-  /* O12 Your landing plan */
+  /* O12 Your Steadie plan */
   function ObPlan() {
     var s = useApp();
     var week = Math.max(1, LP.weekOf(s)), phase = LP.phaseOf(week), ids = LP.habitsForWeek(week);
@@ -452,7 +452,7 @@
     return html`<div class="scr plain">
       <${Skip} onClick=${start} />
       <div class="stack">
-        <p class="eyebrow">YOUR LANDING PLAN</p>
+        <p class="eyebrow">YOUR STEADIE PLAN</p>
         <h1 class="t-display" style=${{ fontSize: 36, lineHeight: '40px' }}>12 months to make it stick</h1>
         <p class="body muted">Three phases, a few small habits at a time. ${starting}</p>
       </div>
@@ -481,12 +481,12 @@
       set(function (s) { s.sub.status = a ? 'trial' : 'active'; return s; });
       nav.go('youre-in');
     }
-    var feats = ['Your 12-month plan, three habits a week', 'Weekly landing score and early warnings', 'Strength sessions for home or the gym', 'A coach for habits, food swaps and bad days'];
+    var feats = ['Your 12-month plan, three habits a week', 'Weekly steady score and early warnings', 'Strength sessions for home or the gym', 'A coach for habits, food swaps and bad days'];
     return html`<div class="scr plain" style=${{ gap: 18 }}>
       <${Skip} label="Skip payment" onClick=${function () { set(function (s) { s.sub.status = 'trial'; return s; }); nav.go('youre-in'); }} />
       <div class="topbar">
         <img src=${LP.ASSETS.mark} alt="" style=${{ width: 40, height: 35 }} />
-        <${Btn} variant="quiet" size="sm" onClick=${function () { toast('No purchases to restore on this Apple ID. In the app, a match unlocks Landing.'); }}>Restore<//>
+        <${Btn} variant="quiet" size="sm" onClick=${function () { toast('No purchases to restore on this Apple ID. In the app, a match unlocks Steadie.'); }}>Restore<//>
       </div>
       <div class="stack" style=${{ gap: 8 }}>
         <h1 class="t-title">Try your plan free for 7 days</h1>
@@ -546,7 +546,7 @@
       <div class="card hero tint-sage" style=${{ gap: 12 }}>
         <span class="label">WHERE YOU ARE</span>
         <span class="t-heading">Week ${week} · ${LP.phaseOf(week).name}</span>
-        <div class="between"><span class="body">Last landing score</span><span class="t-num-md">${LP.lastScore(s)}</span></div>
+        <div class="between"><span class="body">Last steady score</span><span class="t-num-md">${LP.lastScore(s)}</span></div>
       </div>
       <div class="foot">
         <${Btn} block onClick=${function () { nav.go('paywall'); }}>Resubscribe<//>
@@ -573,7 +573,7 @@
     'ob-health': { c: ObHealth, id: 'O9', title: 'Connect Apple Health', group: 'Onboarding' },
     'ob-reminders': { c: ObReminders, id: 'O10', title: 'Reminders', group: 'Onboarding' },
     'ob-building': { c: ObBuilding, id: 'O11', title: 'Building your plan', group: 'Onboarding' },
-    'ob-plan': { c: ObPlan, id: 'O12', title: 'Your landing plan', group: 'Onboarding' },
+    'ob-plan': { c: ObPlan, id: 'O12', title: 'Your Steadie plan', group: 'Onboarding' },
     paywall: { c: Paywall, id: 'P1', title: 'Start your free week', group: 'Paywall' },
     'youre-in': { c: YoureIn, id: 'P2', title: "You're in", group: 'Paywall' },
     lapsed: { c: Lapsed, id: 'P3', title: 'Subscription ended', group: 'Paywall' }

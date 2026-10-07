@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Enter an email address like name@example.com." }, { status: 422 });
   }
   if (body.consent !== true) {
-    return NextResponse.json({ error: "Tick the box so we can email you about Landing." }, { status: 422 });
+    return NextResponse.json({ error: "Tick the box so we can email you about Steadie." }, { status: 422 });
   }
 
   const status = typeof body.status === "string" && ["stopped", "soon", "on"].includes(body.status) ? body.status : undefined;

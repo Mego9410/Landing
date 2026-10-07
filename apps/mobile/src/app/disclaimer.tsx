@@ -12,8 +12,8 @@ import { space } from "@/theme";
 
 // The wording people accept before using the app. Changing it means bumping DISCLAIMER_VERSION in the store.
 const POINTS: { title: string; text: string }[] = [
-  { title: "General guidance, not medical advice", text: "Landing's meal plans, strength sessions and tips follow general healthy-eating and activity guidance. They aren't personalised to your health and don't replace advice from your GP or another health professional." },
-  { title: "Nothing about your medication", text: "Landing never gives advice about weight-loss medicines, doses or stopping. Those decisions are for your prescriber." },
+  { title: "General guidance, not medical advice", text: "Steadie's meal plans, strength sessions and tips follow general healthy-eating and activity guidance. They aren't personalised to your health and don't replace advice from your GP or another health professional." },
+  { title: "Nothing about your medication", text: "Steadie never gives advice about weight-loss medicines, doses or stopping. Those decisions are for your prescriber." },
   { title: "Check with your GP first if you", text: "are pregnant or breastfeeding; have a heart, lung, kidney or liver condition, diabetes or high blood pressure; have an injury or joint problem, or have had recent surgery; have, or have had, an eating disorder." },
   { title: "Listen to your body", text: "Stop exercising if you feel pain, dizziness, chest pain or breathlessness that worries you, and get medical help. In an emergency, call 999." },
   { title: "Check labels", text: "Recipes, nutrition and allergen information are a guide. Always check the labels on what you buy, especially if you have an allergy." },
@@ -37,7 +37,7 @@ export default function Disclaimer() {
     <Screen header={review ? <Header fallback="/settings" title="Before you start" /> : undefined} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">Before you start</AppText>
-        <AppText variant="bodyLg" color="inkMuted">A few things to know about how Landing works and when to talk to a professional.</AppText>
+        <AppText variant="bodyLg" color="inkMuted">A few things to know about how Steadie works and when to talk to a professional.</AppText>
       </View>
       <Card style={{ gap: space[4] }}>
         {POINTS.map((p) => (
@@ -51,7 +51,7 @@ export default function Disclaimer() {
         <AppText variant="caption" color="inkMuted">You accepted this on {fmt.long(s.disclaimer!.acceptedAt.slice(0, 10))}.</AppText>
       ) : (
         <View style={{ gap: space[3] }}>
-          <Tick label="I understand Landing gives general guidance, not medical advice, and I'll check with my GP if I'm unsure" checked={understood} onChange={(v) => { setError(""); setUnderstood(v); }} />
+          <Tick label="I understand Steadie gives general guidance, not medical advice, and I'll check with my GP if I'm unsure" checked={understood} onChange={(v) => { setError(""); setUnderstood(v); }} />
           <Tick label="I'm 18 or over" checked={adult} onChange={(v) => { setError(""); setAdult(v); }} />
           {error ? <AppText variant="caption" color="roseInk">{error}</AppText> : null}
           <Button label="Continue" block onPress={accept} />

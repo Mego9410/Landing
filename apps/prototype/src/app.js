@@ -151,7 +151,7 @@
     React.useEffect(function () { applyTheme(s.theme); }, [s.theme]);
     React.useEffect(function () {
       try { if (location.hash.slice(1) !== name) history.replaceState(null, '', '#' + name); } catch (e) {}
-      document.title = meta.title === 'Launch' ? 'Landing Prototype' : meta.title + ' · Landing Prototype';
+      document.title = meta.title === 'Launch' ? 'Steadie Prototype' : meta.title + ' · Steadie Prototype';
     }, [name]);
     React.useEffect(function () {
       function onKey(e) { if (e.key === 'Escape' && LP.get().sheet) nav.sheet(null); }
@@ -160,7 +160,7 @@
     }, []);
     var tab = meta.tab || (name === 'lapsed' ? null : null);
     return html`<div class="proto">
-      <main class="device" aria-label="Landing app">
+      <main class="device" aria-label="Steadie app">
         <div class="viewport"><div class="screen-enter" key=${name + ':' + s.nav.stack.length} style=${{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}><${Screen} /></div></div>
         ${tab ? html`<div class="tabslot"><${L.TabBar} active=${tab} onChange=${nav.tab} /></div>` : null}
         ${sheet ? html`<div class="sheet-layer"><button type="button" class="dim" aria-label="Close" onClick=${function () { nav.sheet(null); }}></button><${sheet.c} key=${s.sheet.name + (s.sheet.data || '')} /></div>` : null}

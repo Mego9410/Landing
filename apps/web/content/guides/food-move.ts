@@ -127,7 +127,7 @@ export const FOOD_MOVE: Guide[] = [
       ] },
       { heading: "Check first if…", blocks: [
         { note: "If you have chest pain, unexplained breathlessness, a heart condition diagnosed or changed recently, recent surgery, very high blood pressure that isn't controlled, or you've fainted recently, check with your GP before starting strength exercise.", tone: "butter" },
-        "Landing asks a short health check before you start and adjusts sessions for sore joints, falls and fatigue, starting with easier versions and stepping up gently.",
+        "Steadie asks a short health check before you start and adjusts sessions for sore joints, falls and fatigue, starting with easier versions and stepping up gently.",
       ] },
     ],
     faqs: [

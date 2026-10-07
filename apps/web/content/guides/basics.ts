@@ -29,7 +29,7 @@ export const BASICS: Guide[] = [
           "**Mounjaro:** tirzepatide, licensed for weight management and type 2 diabetes.",
           "**Saxenda:** liraglutide, an older daily injection.",
         ] },
-        { note: "Wegovy, Ozempic and Saxenda are trademarks of Novo Nordisk; Mounjaro of Eli Lilly. Landing isn't connected with either company and doesn't give advice about medication.", tone: "sky" },
+        { note: "Wegovy, Ozempic and Saxenda are trademarks of Novo Nordisk; Mounjaro of Eli Lilly. Steadie isn't connected with either company and doesn't give advice about medication.", tone: "sky" },
       ] },
       { heading: "Why the year after matters", blocks: [
         "Because these medicines work while you take them, appetite and weight often return after stopping. That's why NICE says people should get at least a year of support afterwards. See [coming off a GLP-1](/guides/coming-off-glp-1) and [what happens when you stop](/guides/what-happens-when-you-stop-weight-loss-injections).",

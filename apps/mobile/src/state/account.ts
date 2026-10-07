@@ -1,5 +1,5 @@
 // Accounts and backup. The app works without an account; signing in (Apple or an emailed code) backs the whole plan
-// up to Landing's server so it moves to a new phone. The phone stays the working copy: every change is saved on the
+// up to Steadie's server so it moves to a new phone. The phone stays the working copy: every change is saved on the
 // phone first and backed up a few seconds later, and the backup is checked for newer changes when the app opens.
 // Nothing is uploaded until onboarding is finished, so an empty phone can never replace a real backup.
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -13,6 +13,7 @@ import { applyReminders } from "./reminders";
 import { get, migrate, replace, subscribe, type AppState } from "./store";
 
 const API = (process.env.EXPO_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+// Named before the app was renamed to Steadie. Keep them: changing them would sign everyone out.
 const TOKEN_KEY = "landing-token";
 const META_KEY = "landing-account";
 const PUSH_DELAY = 4000;
@@ -58,12 +59,12 @@ export class AccountError extends Error {}
 async function call(path: string, init: RequestInit = {}, token?: string | null): Promise<Response> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   // A browser sets Origin itself; the app says where it's from so the server's cross-site check accepts it.
-  if (!web) headers.Origin = "landing://";
+  if (!web) headers.Origin = "steadie://";
   if (token) headers.Authorization = `Bearer ${token}`;
   try {
     return await fetch(API + path, { ...init, headers: { ...headers, ...(init.headers as Record<string, string>) } });
   } catch {
-    throw new AccountError("Couldn't reach Landing. Check your connection and try again.");
+    throw new AccountError("Couldn't reach Steadie. Check your connection and try again.");
   }
 }
 
@@ -192,7 +193,7 @@ function reconcile(): Promise<Outcome> {
       return { kind: "none" as const };
     } catch (e) {
       status = "offline"; emit();
-      throw e instanceof AccountError ? e : new AccountError("Couldn't reach Landing. Your plan is safe on this phone.");
+      throw e instanceof AccountError ? e : new AccountError("Couldn't reach Steadie. Your plan is safe on this phone.");
     }
   });
 }
@@ -256,7 +257,7 @@ export async function signOut(): Promise<void> {
   await deleteEverything();
 }
 
-/** Deletes the account and the backup on Landing's server, then clears this phone. */
+/** Deletes the account and the backup on Steadie's server, then clears this phone. */
 export async function deleteAccount(): Promise<void> {
   const token = await readToken();
   if (token) {

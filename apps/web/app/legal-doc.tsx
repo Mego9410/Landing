@@ -7,7 +7,7 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
   return (
     <main className={styles.section}>
       <div className={`${styles.wrap} ${styles.narrow}`} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-        <Link href="/">← Back to Landing</Link>
+        <Link href="/">← Back to Steadie</Link>
         <h1 className={styles.h2}>{doc.title}</h1>
         <p className={styles.muted}>Last updated {doc.updated}.</p>
         <p>{doc.intro}</p>

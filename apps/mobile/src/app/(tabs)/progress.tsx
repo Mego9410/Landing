@@ -43,7 +43,7 @@ function TrendChart({ s }: { s: AppState }) {
   );
 }
 
-/** PR1 Progress: the landing score, the weight trend (hidden in safe mode) and recent weigh-ins. */
+/** PR1 Progress: the steady score, the weight trend (hidden in safe mode) and recent weigh-ins. */
 export default function Progress() {
   const s = useApp(), c = useColors();
   const week = weekOf(s), safe = s.settings.safeMode;
@@ -66,7 +66,7 @@ export default function Progress() {
             <AppText variant="numeral" style={{ fontSize: 28, lineHeight: 32 }}>{last.score}</AppText>
           </View>
           <View style={{ flex: 1, gap: 2 }}>
-            <AppText variant="label" color="onPastel">LANDING SCORE · {lastWeek >= 1 ? `WEEK ${lastWeek}` : "LAST WEEK"}</AppText>
+            <AppText variant="label" color="onPastel">STEADY SCORE · {lastWeek >= 1 ? `WEEK ${lastWeek}` : "LAST WEEK"}</AppText>
             <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>{!before || last.score >= before.score ? "A steady week" : "A wobblier week, and that's fine"}</AppText>
             <AppText variant="caption" color="onPastel">
               {before ? (last.score >= before.score ? `Up ${last.score - before.score} on the week before. ` : `Down ${before.score - last.score} on the week before. `) : ""}
@@ -76,7 +76,7 @@ export default function Progress() {
         </Card>
       ) : (
         <Card tone="sage" hero style={{ gap: 4 }}>
-          <AppText variant="label" color="onPastel">LANDING SCORE</AppText>
+          <AppText variant="label" color="onPastel">STEADY SCORE</AppText>
           <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>Your first score arrives on Monday</AppText>
           <AppText variant="caption" color="onPastel">It&apos;s built each week from your habits, sessions and {safe ? "check-ins" : "trend"}. There&apos;s no target to hit.</AppText>
         </Card>

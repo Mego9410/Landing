@@ -42,4 +42,4 @@ export declare function TextField(props: TextFieldProps): React.ReactElement;
 export interface TabBarProps { items?: { key: string; label: string }[]; active?: string; onChange?: (key: string) => void }
 export declare function TabBar(props: TabBarProps): React.ReactElement;
 
-declare global { interface Window { Landing: { Button: typeof Button; Chip: typeof Chip; Card: typeof Card; HabitCheck: typeof HabitCheck; ScoreRing: typeof ScoreRing; HungerScale: typeof HungerScale; NudgeCard: typeof NudgeCard; CoachBubble: typeof CoachBubble; TextField: typeof TextField; TabBar: typeof TabBar } } }
+declare global { interface Window { Steadie: { Button: typeof Button; Chip: typeof Chip; Card: typeof Card; HabitCheck: typeof HabitCheck; ScoreRing: typeof ScoreRing; HungerScale: typeof HungerScale; NudgeCard: typeof NudgeCard; CoachBubble: typeof CoachBubble; TextField: typeof TextField; TabBar: typeof TabBar } } }

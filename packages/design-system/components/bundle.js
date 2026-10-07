@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Landing","components":[{"name":"Button"},{"name":"Chip"},{"name":"Card"},{"name":"HabitCheck"},{"name":"ScoreRing"},{"name":"HungerScale"},{"name":"NudgeCard"},{"name":"CoachBubble"},{"name":"TextField"},{"name":"TabBar"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Steadie","components":[{"name":"Button"},{"name":"Chip"},{"name":"Card"},{"name":"HabitCheck"},{"name":"ScoreRing"},{"name":"HungerScale"},{"name":"NudgeCard"},{"name":"CoachBubble"},{"name":"TextField"},{"name":"TabBar"}]} */
 (function () {
   var React = window.React, h = React.createElement;
   function cx() { return Array.prototype.filter.call(arguments, Boolean).join(' '); }
@@ -46,13 +46,13 @@
   function ScoreRing(p) {
     var size = p.size || 168, stroke = Math.round(size / 11), r = (size - stroke) / 2, c = 2 * Math.PI * r;
     var score = Math.max(0, Math.min(100, Math.round(p.score || 0)));
-    return h('div', { className: 'ld-score', style: { width: size, height: size }, role: 'img', 'aria-label': (p.label || 'Landing score') + ': ' + score + ' out of 100' },
+    return h('div', { className: 'ld-score', style: { width: size, height: size }, role: 'img', 'aria-label': (p.label || 'Steady score') + ': ' + score + ' out of 100' },
       h('svg', { width: size, height: size, viewBox: '0 0 ' + size + ' ' + size, 'aria-hidden': true },
         h('circle', { className: 'ld-score__track', cx: size / 2, cy: size / 2, r: r, strokeWidth: stroke, fill: 'none' }),
         h('circle', { className: 'ld-score__arc', cx: size / 2, cy: size / 2, r: r, strokeWidth: stroke, fill: 'none', strokeLinecap: 'round', strokeDasharray: c, strokeDashoffset: c * (1 - score / 100), transform: 'rotate(-90 ' + size / 2 + ' ' + size / 2 + ')' })),
       h('div', { className: 'ld-score__center' },
         h('span', { className: 'ld-score__num' }, score),
-        h('span', { className: 'ld-score__label' }, p.label || 'Landing score')));
+        h('span', { className: 'ld-score__label' }, p.label || 'Steady score')));
   }
 
   function HungerScale(p) {
@@ -103,5 +103,5 @@
     }));
   }
 
-  window.Landing = Object.assign(window.Landing || {}, { Button: Button, Chip: Chip, Card: Card, HabitCheck: HabitCheck, ScoreRing: ScoreRing, HungerScale: HungerScale, NudgeCard: NudgeCard, CoachBubble: CoachBubble, TextField: TextField, TabBar: TabBar });
+  window.Steadie = Object.assign(window.Steadie || {}, { Button: Button, Chip: Chip, Card: Card, HabitCheck: HabitCheck, ScoreRing: ScoreRing, HungerScale: HungerScale, NudgeCard: NudgeCard, CoachBubble: CoachBubble, TextField: TextField, TabBar: TabBar });
 })();

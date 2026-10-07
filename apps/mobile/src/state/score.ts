@@ -1,4 +1,4 @@
-// The landing score: one whole number a week, out of 100, for how steady the week's routines were. Built from:
+// The steady score: one whole number a week, out of 100, for how steady the week's routines were. Built from:
 //   habits   40  each non-session habit's days ticked, up to its target, averaged
 //   sessions 30  strength sessions done, out of 2
 //   trend    30  where the 7-day average ended the week against the steady zone (full marks inside it, easing off

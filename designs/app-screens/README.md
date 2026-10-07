@@ -1,7 +1,7 @@
-# Landing app screens
+# Steadie app screens
 
-55 screen designs for the Landing iPhone app, imported from the
-[Landing App Screens canvas](https://claude.ai/artifact/7QFUpd1hnCxoRoH7HG12V2). They use the
+55 screen designs for the Steadie iPhone app, imported from the
+[Steadie App Screens canvas](https://claude.ai/artifact/7QFUpd1hnCxoRoH7HG12V2). They use the
 [design system](../../packages/design-system/) and are the visual reference for building the app.
 
 Open [`index.html`](index.html) in a browser to see them all, grouped by flow.
@@ -38,7 +38,7 @@ Screens link to each other the way the app flows. Each screen's links are the `h
 | O9 Connect Apple Health | [O9-AppleHealth.png](renders/O9-AppleHealth.png) | [O9-AppleHealth.dc.html](screens/O9-AppleHealth.dc.html) |
 | O10 Reminders | [O10-Reminders.png](renders/O10-Reminders.png) | [O10-Reminders.dc.html](screens/O10-Reminders.dc.html) |
 | O11 Building your plan | [O11-Building.png](renders/O11-Building.png) | [O11-Building.dc.html](screens/O11-Building.dc.html) |
-| O12 Your landing plan | [O12-PlanReveal.png](renders/O12-PlanReveal.png) | [O12-PlanReveal.dc.html](screens/O12-PlanReveal.dc.html) |
+| O12 Your Steadie plan | [O12-PlanReveal.png](renders/O12-PlanReveal.png) | [O12-PlanReveal.dc.html](screens/O12-PlanReveal.dc.html) |
 
 ## Paywall
 

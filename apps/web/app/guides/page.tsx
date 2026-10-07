@@ -48,7 +48,7 @@ export default function Guides() {
         <div className={home.wrap}>
           <nav aria-label="Breadcrumb" className={styles.crumbs}><Link href="/">Home</Link><span aria-hidden="true">›</span><span aria-current="page">Guides</span></nav>
           <header className={styles.hubHead}>
-            <p className={styles.kicker}>Landing guides</p>
+            <p className={styles.kicker}>Steadie guides</p>
             <h1 className={styles.hubTitle}>Life after weight-loss injections</h1>
             <p className={styles.hubLede}>Clear, kind guides for coming off a GLP-1 like Wegovy or Mounjaro and keeping what you&apos;ve worked for. Based on published research and UK guidance. Decisions about your medicine are always for your prescriber.</p>
           </header>

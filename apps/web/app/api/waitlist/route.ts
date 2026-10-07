@@ -1,16 +1,18 @@
 import { NextResponse } from "next/server";
+import { getDb, schema } from "@/lib/db";
 
-// Waitlist sign-ups. This is a stub: it validates the request and logs a masked address, and stores nothing.
-// To go live, replace saveSignup() with a real provider (a Supabase table, a Resend audience or similar),
-// keeping the address server-side. Never log full email addresses.
+// Waitlist sign-ups, saved to the database (Neon in production). Signing up again updates the jab status and keeps
+// the original date. Never log full email addresses.
+export const runtime = "nodejs";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 type Signup = { email: string; status?: string; consent: boolean };
 
 async function saveSignup(signup: Signup) {
-  const [name, domain] = signup.email.split("@");
-  console.info("waitlist signup (stub, not stored)", { email: `${name.slice(0, 1)}***@${domain}`, status: signup.status ?? null });
+  const db = await getDb();
+  await db.insert(schema.waitlist).values({ email: signup.email, status: signup.status ?? null, consentAt: new Date() })
+    .onConflictDoUpdate({ target: schema.waitlist.email, set: { status: signup.status ?? null } });
 }
 
 export async function POST(request: Request) {

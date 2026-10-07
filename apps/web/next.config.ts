@@ -10,6 +10,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // The embedded Postgres for local work loads its own WebAssembly files, so it stays out of the bundle.
+  serverExternalPackages: ["@electric-sql/pglite"],
   // Workspace packages: the design system ships plain CSS; motion and content ship TypeScript source.
   transpilePackages: ["@landing/content", "@landing/design-system", "@landing/motion"],
   async headers() {

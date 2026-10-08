@@ -240,19 +240,62 @@
   .section, .pillars { padding-block: 64px; }
 }
 @media (max-width: 640px) {
-  .glassGrid, .statGrid, .promises { grid-template-columns: minmax(0, 1fr); }
-  .glass { min-height: 300px; }
-  .hero { padding-block: 32px 56px; }
-  .heroArt { height: 580px; }
-  .phone { width: 220px; top: 56px; }
+  /* Phones: tighter sections, and side-scrolling rows instead of long stacks of cards, so the page is about half as
+     long. Rows bleed to the screen edge so the next card peeks in, which says "swipe". */
+  .section, .pillars { padding-block: 52px; }
+  .dark { padding-block: 60px 68px; }
+  .cta { padding-block: 72px; }
+  .head { margin-bottom: 28px; }
+  .headRow { margin-bottom: 20px; }
+
+  .hero { padding-block: 28px 40px; }
+  .heroCopy { gap: 18px; }
+  .heroCta, .heroCta .storeBtn { align-self: stretch; align-items: stretch; text-align: center; }
+  .heroCta .storeNote { text-align: center; }
+  .heroArt { height: 520px; }
+  .phone { width: 210px; top: 52px; }
   .floatA { right: auto; left: 0; top: 0; }
   .floatB { display: none; }
-  .floatLoop { right: 0; left: auto; width: 144px; bottom: 0; }
+  .floatLoop { right: 0; left: auto; width: 140px; bottom: 0; }
+
+  .trust { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; padding-block: 18px; font-size: 13px; }
+  .trust li { align-items: flex-start; }
+
+  .glassGrid, .guideGrid { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 80%; gap: 12px;
+    margin-inline: calc(-1 * var(--gutter)); padding: 4px var(--gutter) 18px; overflow-x: auto; scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+  .glassGrid::-webkit-scrollbar, .guideGrid::-webkit-scrollbar { display: none; }
+  .glassGrid > *, .guideGrid > li { scroll-snap-align: start; }
+  .glassWide { grid-column: auto; }
+  .glass { min-height: 0; gap: 14px; padding: 18px; }
+  .glass:hover { transform: none; }
+  .glassArt, .mealArt, .ringArt { height: 180px; }
+
+  .statGrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .statCard { padding: 18px; gap: 6px; }
+  .statChart { padding: 20px; }
+  .statCard:last-child { grid-column: 1 / -1; }
+  .statBig { font-size: 48px; }
+  .statCard:not(.statChart) .statNote { font-size: 14px; line-height: 20px; }
   .chartAxis { font-size: 13px; }
   .chartLabel { font-size: 16px; }
-  .track { grid-auto-columns: 78%; }
-  .carouselNav { position: static; justify-content: flex-end; margin-bottom: 12px; }
-  .footerGrid { grid-template-columns: minmax(0, 1fr); }
+
+  .track { grid-auto-columns: 80%; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); }
+  .slideArt { height: 200px; }
+  .carouselNav { display: none; }
+
+  .step, .phase, .expert { padding: 20px; }
+  .steps, .phases, .experts { gap: 12px; }
+  .experts { margin-bottom: 28px; }
+  .promises { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+
+  .priceCard { padding: 22px; }
+  .price { font-size: 48px; }
+  .faq summary { padding: 18px 0; font-size: 17px; }
+
+  .footer { padding-block: 44px 32px; }
+  .footerGrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px 20px; }
+  .footerBrand { grid-column: 1 / -1; }
   .button { width: 100%; }
   .navCta { padding: 8px 14px; font-size: 14px; }
 }

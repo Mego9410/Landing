@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Lockup } from "./lockup";
-import { APP_STORE_URL } from "./site";
+import { APP_STORE_URL, ORG_NAME } from "./site";
 import styles from "./page.module.css";
 
 // The header and footer for every page. On the home page the section links are in-page anchors; elsewhere they point
@@ -67,7 +67,7 @@ export function SiteFooter({ home = false }: { home?: boolean }) {
       <div className={`${styles.wrap} ${styles.footerSmall}`}>
         <p>Steadie is a general wellness app. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment. Wegovy and Ozempic are trademarks of Novo Nordisk, and Mounjaro of Eli Lilly; Steadie isn&apos;t connected with either company.</p>
         {home ? <p id="ref-1">1. Wilding JPH, et al. Weight regain and cardiometabolic effects after withdrawal of semaglutide: the STEP 1 trial extension. Diabetes, Obesity and Metabolism. 2022;24(8):1553–1564.</p> : null}
-        <p>© {new Date().getFullYear()} [YOUR COMPANY NAME]</p>
+        <p>© {new Date().getFullYear()} {ORG_NAME}</p>
       </div>
     </footer>
   );

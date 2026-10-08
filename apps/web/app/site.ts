@@ -2,7 +2,8 @@
 const LIVE = "https://www.getsteadieapp.com";
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_ENV === "production" ? LIVE : "http://localhost:3000")).replace(/\/$/, "");
 export const SITE_NAME = "Steadie";
-export const ORG_NAME = "[YOUR COMPANY NAME]";
+export const ORG_NAME = "Oliver Acton, trading as Steadie";
+export const CONTACT_EMAIL = "hello@getsteadieapp.com";
 /** The app on the App Store (App Store Connect app ID 6820083153). */
 export const APP_STORE_ID = "6820083153";
 export const APP_STORE_URL = `https://apps.apple.com/gb/app/steadie/id${APP_STORE_ID}`;

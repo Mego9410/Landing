@@ -65,9 +65,11 @@ The app talks to it at `EXPO_PUBLIC_API_URL`. Without that variable, sign-in is 
 
 ## Before launch
 
-- [ ] Fill in the company details in `packages/content/src/legal.ts` (`[COMPANY NAME]`, `[REGISTERED ADDRESS]`,
-      `[ICO REGISTRATION NUMBER]`, `[PRIVACY EMAIL]`, `[SUPPORT EMAIL]`). The rest of the privacy policy and the
-      website's privacy notice are written.
+- [x] Company details in `packages/content/src/legal.ts`: Oliver Acton, trading as Steadie, hello@getsteadieapp.com.
+- [ ] Make hello@getsteadieapp.com receive mail (forward it to a real inbox, for example with Cloudflare Email Routing
+      or ImprovMX). The policies give it as the contact for privacy requests.
+- [ ] Add a contact address (`ADDRESS` in `legal.ts`; a virtual office address is fine) and, once registered, the ICO
+      number (`ICO_NUMBER`). Both then appear in each policy's Contact section.
 - [ ] Register with the ICO (£52 a year at ico.org.uk) and note that you hold health data.
 - [ ] Write a short DPIA (data protection impact assessment). The ICO's template takes a few hours; the privacy
       policy already answers most of its questions.

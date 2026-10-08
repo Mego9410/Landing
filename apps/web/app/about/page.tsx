@@ -3,7 +3,7 @@ import Link from "next/link";
 import home from "../page.module.css";
 import styles from "../guides/guides.module.css";
 import { SiteFooter, SiteHeader } from "../site-chrome";
-import { abs, ldJson, ORGANIZATION, SITE_NAME } from "../site";
+import { abs, CONTACT_EMAIL, ldJson, ORG_NAME, ORGANIZATION, SITE_NAME } from "../site";
 
 export const metadata: Metadata = {
   title: { absolute: `About Steadie · ${SITE_NAME}` },
@@ -35,7 +35,7 @@ export default function About() {
             <h2>Our guides</h2>
             <p>Our <Link href="/guides">guides</Link> cover what happens when you stop a GLP-1, appetite, protein, strength and keeping weight off, with sources for everything. Read how we write them in our <Link href="/editorial-policy">editorial policy</Link>.</p>
             <h2>Contact</h2>
-            <p>[YOUR COMPANY NAME] · [REGISTERED ADDRESS] · [SUPPORT EMAIL]</p>
+            <p>{ORG_NAME} · <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
           </article>
         </div>
       </main>

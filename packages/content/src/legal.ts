@@ -1,23 +1,26 @@
 // The app's privacy policy and terms, shared by the app (in-app screens) and the website (public pages Apple needs
-// for the store listing), and the website's own privacy notice. Anything in [brackets] is a company detail to fill
-// in. The wording must match what the app actually does: check it whenever data handling changes, along with the
+// for the store listing), and the website's own privacy notice. The wording must match what the app actually does: check it whenever data handling changes, along with the
 // App Store privacy labels in docs/app-store-privacy.md. Plain UK English, like the rest of Steadie.
 
 export interface LegalSection { heading: string; paras: string[] }
 export interface LegalDoc { title: string; updated: string; intro: string; sections: LegalSection[] }
 
-const COMPANY = "[COMPANY NAME]";
-const CONTACT = "[SUPPORT EMAIL]";
-const PRIVACY_CONTACT = "[PRIVACY EMAIL]";
+const COMPANY = "Oliver Acton, trading as Steadie";
+const CONTACT = "hello@getsteadieapp.com";
+const PRIVACY_CONTACT = "hello@getsteadieapp.com";
 
-const UPDATED = "7 October 2026";
-const ADDRESS = "[REGISTERED ADDRESS]";
-const ICO_NUMBER = "[ICO REGISTRATION NUMBER]";
+const UPDATED = "8 October 2026";
+// Add these when there are some: they then appear in each document's Contact section.
+const ADDRESS = "";
+const ICO_NUMBER = "";
+
+const CONTACT_LINE = [COMPANY, ADDRESS].filter(Boolean).join(", ") + "."
+  + (ICO_NUMBER ? ` Registered with the Information Commissioner's Office, number ${ICO_NUMBER}.` : "");
 
 export const APP_PRIVACY: LegalDoc = {
   title: "Privacy policy for the Steadie app",
   updated: UPDATED,
-  intro: `This policy explains what the Steadie app keeps about you, why, where it's kept, who else is involved and the choices you have. Steadie is made by ${COMPANY} ("we"), which decides how this information is used and is responsible for it. The short version: what you log is kept on your phone and, if you sign in, in a private backup so it comes with you to a new phone. We never sell it, never use it for advertising and never use it to track you.`,
+  intro: `This policy explains what the Steadie app keeps about you, why, where it's kept, who else is involved and the choices you have. Steadie is made by ${COMPANY} ("we"), who decides how this information is used and is responsible for it. The short version: what you log is kept on your phone and, if you sign in, in a private backup so it comes with you to a new phone. We never sell it, never use it for advertising and never use it to track you.`,
   sections: [
     { heading: "What the app keeps", paras: [
       "About you: your first name if you give it, and whether you've stopped, are stopping or are still taking a weight-loss medicine, and roughly when your last injection was.",
@@ -79,7 +82,7 @@ export const APP_PRIVACY: LegalDoc = {
     ] },
     { heading: "Who can use Steadie", paras: ["Steadie is for adults aged 18 and over. We don't knowingly hold information about anyone younger."] },
     { heading: "Changes to this policy", paras: ["If this policy changes in a way that matters, the app will tell you before the change applies, and ask for your consent again if we need it."] },
-    { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Registered with the Information Commissioner's Office, number ${ICO_NUMBER}. Email ${PRIVACY_CONTACT}.`] },
+    { heading: "Contact", paras: [`${CONTACT_LINE} Email ${PRIVACY_CONTACT}.`] },
   ],
 };
 
@@ -100,7 +103,7 @@ export const SITE_PRIVACY: LegalDoc = {
     { heading: "Your rights", paras: [
       `You can ask to see, correct or delete anything we hold about you, or withdraw your consent, at any time by emailing ${PRIVACY_CONTACT}, or by using the unsubscribe link in any email. We'll reply within one month. You can also complain to the Information Commissioner's Office at ico.org.uk or on 0303 123 1113.`,
     ] },
-    { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Registered with the Information Commissioner's Office, number ${ICO_NUMBER}. Email ${PRIVACY_CONTACT}.`] },
+    { heading: "Contact", paras: [`${CONTACT_LINE} Email ${PRIVACY_CONTACT}.`] },
   ],
 };
 
@@ -135,6 +138,6 @@ export const TERMS: LegalDoc = {
     { heading: "Using Steadie fairly", paras: ["Please don't copy, resell or misuse the app or its content."] },
     { heading: "Changes", paras: ["We may update these terms. If a change matters, the app will tell you before it applies."] },
     { heading: "The law", paras: ["These terms are governed by the law of England and Wales. If you live elsewhere in the UK, you can also bring a claim in your local courts."] },
-    { heading: "Contact", paras: [`${COMPANY}, ${ADDRESS}. Email ${CONTACT}.`] },
+    { heading: "Contact", paras: [`${CONTACT_LINE} Email ${CONTACT}.`] },
   ],
 };

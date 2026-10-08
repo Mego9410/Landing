@@ -72,8 +72,8 @@ These follow the brand guide and Google's standards for health ("your money or y
 ## At launch
 
 - [ ] Set `NEXT_PUBLIC_SITE_URL` to the live domain (canonicals, sitemap and structured data use it).
-- [ ] Fill in `[YOUR COMPANY NAME]`, `[EDITORIAL EMAIL]`, `[SUPPORT EMAIL]` and the address on About, the editorial
-      policy and the footer.
+- [x] Company name and contact email on About, the editorial policy and the footer (`ORG_NAME` and `CONTACT_EMAIL`
+      in `apps/web/app/site.ts`).
 - [ ] Verify the domain in [Google Search Console](https://search.google.com/search-console) and Bing Webmaster
       Tools, and submit `https://www.getsteadieapp.com/sitemap.xml`.
 - [ ] Test a few guides in the Rich Results Test.

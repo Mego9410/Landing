@@ -3,7 +3,7 @@ import Link from "next/link";
 import home from "../page.module.css";
 import styles from "../guides/guides.module.css";
 import { SiteFooter, SiteHeader } from "../site-chrome";
-import { SITE_NAME } from "../site";
+import { CONTACT_EMAIL, SITE_NAME } from "../site";
 
 export const metadata: Metadata = {
   title: { absolute: `Editorial policy · ${SITE_NAME}` },
@@ -33,7 +33,7 @@ export default function EditorialPolicy() {
             <h2>Brand names</h2>
             <p>We use names like Wegovy, Ozempic and Mounjaro so people can find information about the medicine they took. They are trademarks of their owners (Novo Nordisk and Eli Lilly). Steadie isn&apos;t connected with either company and doesn&apos;t promote any medicine.</p>
             <h2>Updates and corrections</h2>
-            <p>Each guide shows when it was last updated. We review guides when new research or guidance is published. If you spot something wrong, email [EDITORIAL EMAIL] and we&apos;ll put it right.</p>
+            <p>Each guide shows when it was last updated. We review guides when new research or guidance is published. If you spot something wrong, email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we&apos;ll put it right.</p>
             <p><Link href="/guides">Read the guides</Link> · <Link href="/about">About Steadie</Link></p>
           </article>
         </div>

@@ -27,7 +27,7 @@ export default function Paywall() {
   const [pick, setPick] = useState(0);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState<{ text: string; detail: string } | null>(null);
-  const lapsed = !!s.subscription?.ended && !s.subscription.active;
+  const lapsed = !!s.subscription?.ended && !s.subscription.active; // had the plan before, so "welcome back"
   const chosen = options?.[pick];
 
   const fetchPlans = () => plans().then(setOptions).catch((e) => setFailed(plansProblem(e)));
@@ -108,7 +108,7 @@ export default function Paywall() {
         <Button label="Terms" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "terms" } })} />
         <Button label="Privacy" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />
       </View>
-      {lapsed ? <Button label="Settings, export or delete your data" variant="secondary" block onPress={() => router.push("/settings")} /> : null}
+      <Button label="Settings: sign out, export or delete your data" variant="quiet" onPress={() => router.push("/settings")} style={{ alignSelf: "center" }} />
     </Screen>
   );
 }

@@ -36,8 +36,20 @@ export default function Settings() {
   const showAccount = accountsAvailable() && !s.demo;
   const backedUp = status === "saving" ? "Backing up…" : status === "offline" ? "Couldn't reach Steadie. It'll try again." : account?.syncedAt ? `Backed up ${when(account.syncedAt)}` : "Backs up once your plan is set up";
   const fail = (e: unknown) => toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
-  const confirmDelete = () => confirm("Delete everything?", "This clears all your answers, logs, weigh-ins and check-ins from this phone. It can't be undone.", "Delete everything",
-    () => deleteEverything().then(() => router.replace("/onboarding")));
+  // Without an account, signing out means deleting: there's no backup to come back to, so the warning says so plainly
+  // and offers to back up first.
+  const confirmDelete = () => {
+    const title = "Sign out and delete your data?";
+    const message = "You're not signed in, so your plan isn't backed up. This permanently deletes everything on this phone: your answers, plan, logs, weigh-ins and check-ins. It can't be undone.\n\nAny subscription carries on until you cancel it in your Apple account settings.";
+    const go = () => deleteEverything().then(() => { toast("Your data has been deleted."); router.replace("/onboarding"); });
+    const backUp = () => router.push({ pathname: "/onboarding/account", params: { from: "settings" } });
+    if (Platform.OS === "web") { if (window.confirm(`${title}\n\n${message}`)) go(); return; }
+    Alert.alert(title, message, [
+      { text: "Cancel", style: "cancel" },
+      ...(showAccount ? [{ text: "Back up first", onPress: backUp }] : []),
+      { text: "Delete and sign out", style: "destructive" as const, onPress: go },
+    ]);
+  };
   const confirmSignOut = () => confirm("Sign out?", "Your plan is backed up first, then cleared from this phone. Sign in again to bring it back.", "Sign out",
     () => signOut().then(() => { toast("Signed out. Your backup is safe."); router.replace("/onboarding"); }, fail));
   const confirmDeleteAccount = () => confirm("Delete your account?", "This deletes your account and your backup from Steadie's servers, and clears this phone. It can't be undone.", "Delete my account",
@@ -94,6 +106,7 @@ export default function Settings() {
               <AppText variant="caption" color="inkMuted">Your plan is only on this phone. Sign in to back it up, so it comes with you to a new phone.</AppText>
               <List>
                 <Row first title="Sign in to back up" sub="With Apple or your email" onPress={() => router.push({ pathname: "/onboarding/account", params: { from: "settings" } })} />
+                <Row title="Sign out and delete my data" sub="You're not signed in, so this can't be undone" titleColor="roseInk" onPress={confirmDelete} />
               </List>
             </>
           )}
@@ -104,7 +117,7 @@ export default function Settings() {
           <AppText variant="caption" color="inkMuted">{account ? "Your plan is on this phone and backed up to your Steadie account." : "Everything Steadie keeps is on this phone. Nothing is sent to us."}</AppText>
           <List>
             <Row first title="Export my data" sub="A file of everything the app keeps" onPress={() => shareExport().catch(() => toast("Couldn't make the file. Try again."))} />
-            {account ? null : <Row title="Delete everything" sub="Clears this phone and starts again" titleColor="roseInk" onPress={confirmDelete} />}
+            {account || showAccount ? null : <Row title="Delete everything" sub="Clears this phone and starts again" titleColor="roseInk" onPress={confirmDelete} />}
           </List>
         </View>
       </Section>

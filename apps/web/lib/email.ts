@@ -1,9 +1,28 @@
-// Sends the sign-in code through Resend. In production it uses the published Resend template "steadie-sign-in-code"
-// (with the variable CODE), which loads the logo from /email/steadie-lockup.png on this site. If the template can't be
-// used, it falls back to a plain email so nobody is locked out. Set RESEND_API_KEY, EMAIL_FROM (an address on a
-// domain verified in Resend) and EMAIL_REPLY_TO (a mailbox that receives mail: hello@ can't). Locally, with no key, the
-// code is printed to the server's console instead, so sign-in can be tried without sending email.
-const SIGN_IN_TEMPLATE = "steadie-sign-in-code";
+// Sends the sign-in code through Resend. The email is built here, code and all, rather than from a Resend template:
+// a template's variable name or sample value can drift from what we send, and then the email shows a code that
+// doesn't work. Set RESEND_API_KEY, EMAIL_FROM (an address on a domain verified in Resend) and EMAIL_REPLY_TO (a
+// mailbox that receives mail: hello@ can't). Locally, with no key, the code is printed to the server's console instead,
+// so sign-in can be tried without sending email.
+import { SITE_URL } from "@/app/site";
+
+/** The email for a sign-in code: subject, plain text and branded HTML, all carrying the same code. */
+export function signInEmail(code: string) {
+  const subject = `${code} is your Steadie code`;
+  const text = `Your Steadie sign-in code is ${code}.\n\nIt works for 10 minutes. If you didn't ask for it, you can ignore this email.`;
+  const font = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+  const html = `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${subject}</title></head>
+<body style="margin:0;padding:0;background:#F5EFE6;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0">Your code works for 10 minutes.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5EFE6;"><tr><td align="center" style="padding:28px 16px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;">
+<tr><td style="padding:0 4px 20px;"><img src="${SITE_URL}/email/steadie-lockup.png" width="140" alt="Steadie" style="display:block;border:0;width:140px;height:auto;"></td></tr>
+<tr><td style="background:#FFFFFF;border-radius:20px;padding:32px 28px;font-family:${font};color:#2A2530;">
+<p style="margin:0 0 12px;font-size:17px;line-height:24px;">Your sign-in code is</p>
+<p style="margin:0 0 18px;font-size:36px;line-height:44px;font-weight:700;letter-spacing:8px;">${code}</p>
+<p style="margin:0;font-size:15px;line-height:22px;color:#6A6371;">It works for 10 minutes. If you didn't ask for it, you can ignore this email.</p>
+</td></tr></table></td></tr></table></body></html>`;
+  return { subject, text, html };
+}
 
 export async function sendSignInCode(email: string, code: string) {
   const key = process.env.RESEND_API_KEY;
@@ -12,27 +31,15 @@ export async function sendSignInCode(email: string, code: string) {
     console.info(`[dev] Steadie sign-in code for ${email}: ${code}`);
     return;
   }
-  const base = {
-    from: process.env.EMAIL_FROM || "Steadie <hello@getsteadieapp.com>",
-    to: email,
-    ...(process.env.EMAIL_REPLY_TO ? { reply_to: process.env.EMAIL_REPLY_TO } : {}),
-  };
-  const send = (body: object) => fetch("https://api.resend.com/emails", {
+  const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      from: process.env.EMAIL_FROM || "Steadie <hello@getsteadieapp.com>",
+      to: email,
+      ...(process.env.EMAIL_REPLY_TO ? { reply_to: process.env.EMAIL_REPLY_TO } : {}),
+      ...signInEmail(code),
+    }),
   });
-
-  // The template sets the subject and design; `id` takes the template's alias.
-  const templated = await send({ ...base, template: { id: SIGN_IN_TEMPLATE, variables: { CODE: code } } });
-  if (templated.ok) return;
-  console.error(`sign-in email template failed (${templated.status}), sending the plain version`);
-
-  const plain = await send({
-    ...base,
-    subject: `${code} is your Steadie code`,
-    text: `Your Steadie sign-in code is ${code}.\n\nIt works for 10 minutes. If you didn't ask for it, you can ignore this email.`,
-    html: `<p style="font-family:system-ui,sans-serif;font-size:16px">Your Steadie sign-in code is</p><p style="font-family:system-ui,sans-serif;font-size:32px;font-weight:700;letter-spacing:6px">${code}</p><p style="font-family:system-ui,sans-serif;font-size:14px;color:#6A6371">It works for 10 minutes. If you didn't ask for it, you can ignore this email.</p>`,
-  });
-  if (!plain.ok) throw new Error(`Resend refused the email (${plain.status}).`);
+  if (!res.ok) throw new Error(`Resend refused the sign-in email (${res.status}).`);
 }

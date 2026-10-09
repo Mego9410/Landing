@@ -5,6 +5,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Step } from "@/components/Onboarding";
 import { Choices } from "@/components/ui";
+import { track } from "@/state/events";
 import { ensurePermission } from "@/state/reminders";
 import { set, useApp } from "@/state/store";
 import { space } from "@/theme";
@@ -23,6 +24,7 @@ export default function Reminder() {
   async function turnOn() {
     setBusy(true);
     const ok = await ensurePermission().catch(() => false);
+    track(ok ? "notification_permission_granted" : "notification_permission_denied", { where: "onboarding" });
     set((st) => { st.settings.reminders.checkIn = { on: ok, hour, minute: 0 }; });
     setBusy(false);
     router.push("/onboarding/ready");

@@ -3,9 +3,11 @@
 // plan week's set (ending any swap) and, if next week's meals were picked, makes them this week's plan.
 import { AppState as RNAppState } from "react-native";
 import { habitsForWeek } from "@/data/content";
-import { today, weekStart } from "@/data/dates";
+import { daysBetween, today, weekStart } from "@/data/dates";
 import { syncWeights } from "./appleHealth";
 import { saveThisWeek } from "./food";
+import { track } from "./events";
+import { install, updateInstall } from "./install";
 import { refreshReminders } from "./reminders";
 import { get, set, weekOf } from "./store";
 
@@ -22,6 +24,9 @@ export function rollover() {
     }
     st.lastSeen = t;
   });
+  // A full week since onboarding finished: counted once per install.
+  const started = get().startedOn;
+  if (started && daysBetween(started, t) >= 7) install(started).then((i) => { if (!i.week1Sent) { updateInstall({ week1Sent: true }); track("week_1_completed"); } }).catch(() => {});
 }
 
 /** Starts watching for a new day. Returns a function that stops watching. */

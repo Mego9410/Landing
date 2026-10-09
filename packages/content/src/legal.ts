@@ -41,11 +41,18 @@ export const APP_PRIVACY: LegalDoc = {
       "If you do, we add your email address to our mailing list with Resend, which sends the emails, and keep whether you've unsubscribed. Resend also records whether emails are delivered, opened or clicked, which we only use to check the emails are working and useful. Nothing you log in the app goes into these emails or to the mailing list.",
       "You can stop them at any time with the unsubscribe link in every email or in Settings. If you unsubscribe, we keep your address marked as unsubscribed so we don't email you again. Deleting your account removes it from the list completely.",
     ] },
+    { heading: "How the app is used", paras: [
+      "To see where people get stuck and what helps, the app sends us a short note when certain things happen: the app is opened for the first time, setting up is started or finished, consent is given, the plans are seen, a trial or subscription starts or is restored, a check-in is done, the first week is complete, notifications are allowed or not, and an account is deleted.",
+      "Each note has a random ID made for this install of the app (not your Apple ID or device ID), what happened and when, and sometimes a short label such as which plan. It never includes your answers, weight or anything else you log or type. If you're signed in, it's linked to your account. This happens whether or not you sign in, and is never shared or used for advertising.",
+      "If you cancel your subscription, the app may ask why, with a few options and an optional note. Answering is up to you. We keep your answer, linked to your account if you're signed in, to make Steadie better.",
+      "If the app crashes or hits an error, it sends a crash report to Sentry: what went wrong in the code, the app and iOS version and the type of iPhone. Personal information is removed first: no email address, no health information and nothing you've typed.",
+    ] },
     { heading: "Why we use it, and the law that allows it", paras: [
       "To build and run your plan, and to back it up and restore it if you sign in. This is needed to provide the app you've asked for (contract). Because it includes health information, we also rely on your explicit consent, which you give in the health check when you set up the app.",
       "To send you sign-in codes and keep your account secure, including limiting repeated attempts. This is needed to provide your account (contract) and is in our legitimate interest in keeping Steadie safe.",
       "To check whether you have an active subscription. This is needed to provide what you've paid for (contract).",
       "To send you guide emails, only if you ask for them (consent). You can withdraw it at any time.",
+      "To understand how the app is used, learn why people cancel and fix crashes, so we can improve Steadie. This is in our legitimate interest, and it uses the least information we can: no health information goes into it. You can object by emailing us.",
       "To answer you if you contact us, and to meet our legal obligations.",
       "We don't use your information for advertising, profiling, or to train AI models, and we don't sell it or share it with data brokers. Guide emails are the same for everyone who gets them.",
     ] },
@@ -60,9 +67,9 @@ export const APP_PRIVACY: LegalDoc = {
     ] },
     { heading: "Who else is involved", paras: [
       "We use a small number of service providers. They only act on our instructions, are bound by contract to keep your information safe, and can't use it for their own purposes.",
-      "Vercel: runs Steadie's server (in London). Neon: the database that holds accounts and backups (in London). Resend: sends sign-in codes, so it receives your email address and the code, and, if you ask for them, guide emails. RevenueCat: checks your subscription; it receives an anonymous ID, your App Store purchase details and basic device information such as the app version and your country, never what you log. Expo: delivers app updates; when the app checks for one, Expo sees your IP address, a random ID for this install and the app version, nothing else.",
+      "Vercel: runs Steadie's server (in London). Neon: the database that holds accounts and backups (in London). Resend: sends sign-in codes, so it receives your email address and the code, and, if you ask for them, guide emails. RevenueCat: checks your subscription; it receives an anonymous ID, your App Store purchase details and basic device information such as the app version and your country, never what you log. Expo: delivers app updates; when the app checks for one, Expo sees your IP address, a random ID for this install and the app version, nothing else. Sentry: receives crash reports, with personal information removed.",
       "Apple: handles payments, Sign in with Apple and Apple Health under its own privacy policy.",
-      "Resend, RevenueCat and Expo are based in the US. Where they handle your information outside the UK, it's protected by the UK's approved safeguards (the UK Extension to the EU-US Data Privacy Framework or the UK International Data Transfer Addendum).",
+      "Resend, RevenueCat, Expo and Sentry are based in the US. Where they handle your information outside the UK, it's protected by the UK's approved safeguards (the UK Extension to the EU-US Data Privacy Framework or the UK International Data Transfer Addendum).",
       "We'll only share your information with anyone else if the law requires it, for example a court order.",
     ] },
     { heading: "Apple Health", paras: [
@@ -78,6 +85,7 @@ export const APP_PRIVACY: LegalDoc = {
       "Guide emails: your address stays on the mailing list until you delete your account; if you unsubscribe, it's kept only as unsubscribed so you aren't emailed again.",
       "Your account and backup: until you delete your account. Deleting it removes your account, backup and sign-in records from our database straight away, and from our database's short-term recovery copies within 7 days.",
       "Signing out removes your sign-in from that phone and clears the phone, but keeps your backup so you can sign in again.",
+      "How the app is used, and answers about why you cancelled: up to two years, then deleted. If you delete your account, they're kept without the link to it. Crash reports: 90 days.",
       "If we ever close Steadie, we'll tell you in the app and by email first, and delete what we hold.",
     ] },
     { heading: "Your rights", paras: [

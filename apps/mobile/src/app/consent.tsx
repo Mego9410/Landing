@@ -6,6 +6,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Header, Tick } from "@/components/ui";
+import { track } from "@/state/events";
 import { CONSENT_VERSION, set, useApp } from "@/state/store";
 import { space } from "@/theme";
 
@@ -25,6 +26,7 @@ export default function Consent() {
   const [agreed, setAgreed] = useState(false);
   function agree() {
     set((st) => { st.consent = { healthDataAt: new Date().toISOString(), version: CONSENT_VERSION, backupOffAt: null }; });
+    track("consent_given");
     router.replace(s.onboarded ? "/" : "/onboarding/health");
   }
   return (

@@ -9,6 +9,9 @@ export interface Install {
   /** Set on a fresh install, so app_first_open is counted once. */
   isNew?: boolean;
   reviewAskedAt?: string | null;
+  /** Funnel events sent once per install. */
+  paidSent?: boolean;
+  week1Sent?: boolean;
 }
 
 const KEY = "steadie.install.v1";

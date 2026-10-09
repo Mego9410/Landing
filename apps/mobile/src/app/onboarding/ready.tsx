@@ -5,6 +5,7 @@ import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
 import { Step } from "@/components/Onboarding";
 import { habitsForWeek, phaseOf, PHASES } from "@/data/content";
+import { track } from "@/state/events";
 import { refreshReminders } from "@/state/reminders";
 import { get, set, useApp, weekOf } from "@/state/store";
 import { space } from "@/theme";
@@ -23,6 +24,7 @@ export default function Ready() {
       st.food.plan = null;
     });
     refreshReminders(get()); // the check-in reminder, if turned on, starts tomorrow
+    track("onboarding_completed", { week });
     router.replace("/");
   }
   return (

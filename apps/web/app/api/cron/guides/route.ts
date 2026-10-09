@@ -1,10 +1,13 @@
 import { revalidatePath } from "next/cache";
 import { ALL_GUIDES, guideBySlug, londonToday } from "@/content/guides";
+import { sql } from "drizzle-orm";
+import { getDb } from "@/lib/db";
+import { ensureExtraTables } from "@/lib/db/extra";
 import { broadcastNames, digestEmail, guideEmail, hasSubscribers, sendOnce, type Email } from "@/lib/newsletter";
 
 // The daily guides job, run by Vercel Cron (vercel.json) every morning. It refreshes the site so any guide due today
 // is live, emails each guide published in the last few days that hasn't gone out yet, and on Sundays sends the weekly
-// digest. Emails only send when GUIDE_EMAILS is "on" (or true/yes/1); until then it reports what it would have sent.
+// digest. It also deletes funnel events and cancellation answers older than two years. Emails only send when GUIDE_EMAILS is "on" (or true/yes/1); until then it reports what it would have sent.
 //
 // Vercel calls it with "Authorization: Bearer $CRON_SECRET". With the same header you can also open:
 //   /api/cron/guides?dry=1                 what would send today, without sending
@@ -16,6 +19,13 @@ export const maxDuration = 60;
 
 /** How far back to look for guides whose email hasn't gone out, in case a day's run was missed. */
 const CATCH_UP_DAYS = 3;
+
+async function pruneOld() {
+  await ensureExtraTables();
+  const db = await getDb();
+  await db.execute(sql`delete from events where created_at < now() - interval '2 years'`);
+  await db.execute(sql`delete from lapse_feedback where created_at < now() - interval '2 years'`);
+}
 
 export async function GET(request: Request) {
   // Trimmed, so a stray space or newline pasted into Vercel doesn't lock the job out.
@@ -42,6 +52,8 @@ export async function GET(request: Request) {
 
   // Pages refresh hourly anyway; this makes today's guide appear straight away.
   revalidatePath("/", "layout");
+  // Funnel events and cancellation answers are kept for two years (privacy policy).
+  if (!url.searchParams.has("dry")) await pruneOld().catch((e) => console.error("guides cron: couldn't prune old events", e));
 
   const since = new Date(Date.parse(today + "T12:00:00Z") - CATCH_UP_DAYS * 86400000).toISOString().slice(0, 10);
   const emails: Email[] = ALL_GUIDES.filter((g) => g.published > since && g.published <= today).map(guideEmail);

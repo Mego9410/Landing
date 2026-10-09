@@ -8,6 +8,7 @@ import { Choices, Header, ToggleRow } from "@/components/ui";
 import { DAYS } from "@landing/engine";
 import { sessionsPaused } from "@/state/health";
 import { applyReminders, ensurePermission, notificationsDenied, type Reminders as R } from "@/state/reminders";
+import { track } from "@/state/events";
 import { get, set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { space } from "@/theme";
@@ -23,7 +24,11 @@ export default function Reminders() {
   useEffect(() => { notificationsDenied().then((d) => { if (d) setDenied(true); }, () => {}); }, []);
 
   async function change(fn: (r: R) => void, turningOn: boolean) {
-    if (turningOn && !(await ensurePermission())) { setDenied(true); return; }
+    if (turningOn) {
+      const ok = await ensurePermission();
+      track(ok ? "notification_permission_granted" : "notification_permission_denied", { where: "settings" });
+      if (!ok) { setDenied(true); return; }
+    }
     set((st) => fn(st.settings.reminders));
     await applyReminders(get()).catch(() => toast("Reminders couldn't be set on this phone."));
   }

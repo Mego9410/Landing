@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { adminFrom, guideSchedule, loadDownloads, loadEmails, loadMembers, loadRevenue, setupChecks, type Loaded, type RcMetric } from "@/lib/admin";
+import { adminFrom, guideSchedule, loadDownloads, loadEmails, loadFunnel, loadMembers, loadRevenue, setupChecks, type Loaded, type RcMetric } from "@/lib/admin";
 import { getAuth } from "@/lib/auth";
 import styles from "./admin.module.css";
 import { DailyBars } from "./chart";
@@ -15,6 +15,8 @@ const n = (v: number) => v.toLocaleString("en-GB");
 const pct = (v?: number) => (v === undefined || v === null ? "–" : `${Math.round(v * (v <= 1 ? 100 : 1))}%`);
 const when = (iso: string) => new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
 const day = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+
+const pctText = (p: number | null) => (p == null ? "–" : `${p}%`);
 
 function Tile({ label, value, note }: { label: string; value: string; note?: string }) {
   return <div className={styles.tile}><span className={styles.tileLabel}>{label}</span><span className={styles.tileValue}>{value}</span>{note ? <span className={styles.tileNote}>{note}</span> : null}</div>;
@@ -33,7 +35,7 @@ export default async function Admin() {
     return <main className={styles.page}><AdminLogin signedInAs={session?.user.email} /></main>;
   }
 
-  const [members, emails, revenue, downloads] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads()]);
+  const [members, emails, revenue, downloads, funnel] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads(), loadFunnel()]);
   const guides = guideSchedule();
   const rc = revenue.ok ? revenue.data : [];
   const dl = downloads.ok ? downloads.data : [];
@@ -59,6 +61,31 @@ export default async function Admin() {
           <Tile label="Email subscribers" value={emails.ok ? n(emails.data.subscribed) : "–"} note={emails.ok ? `${n(emails.data.unsubscribed)} unsubscribed` : "Guide emails"} />
           <Tile label="Guides live" value={n(guides.live)} note={`${guides.scheduled} scheduled`} />
         </div>
+
+        <section className={styles.section} aria-labelledby="funnel">
+          <div className={styles.sectionHead}><h2 id="funnel" className={styles.h2}>Funnel</h2><span className={styles.muted}>From the app, everyone (signed in or not): installs reaching each step{funnel.ok ? ` · ${n(funnel.data.installs)} installs active in 30 days` : ""}</span></div>
+          <Notice loaded={funnel} />
+          {funnel.ok ? (
+            <div className={styles.grid2}>
+              {funnel.data.windows.map((w) => (
+                <div key={w.days} className={styles.scroll}>
+                  <p className={styles.muted} style={{ marginBottom: 8 }}>Last {w.days} days</p>
+                  <table className={styles.table}>
+                    <thead><tr><th>Step</th><th className={styles.num}>Installs</th><th className={styles.num}>Of opens</th><th className={styles.num}>Of step before</th></tr></thead>
+                    <tbody>{w.steps.map((st) => (
+                      <tr key={st.label}><td>{st.label}</td><td className={styles.num}>{n(st.n)}</td><td className={styles.num}>{pctText(st.ofFirst)}</td><td className={styles.num}>{pctText(st.ofPrev)}</td></tr>
+                    ))}</tbody>
+                  </table>
+                </div>
+              ))}
+              <div className={styles.stats}>
+                {funnel.data.retention.map((r) => (
+                  <div key={r.label} className={styles.stat}><strong>{pctText(r.pct)}</strong><span>{r.label} check-in retention ({n(r.kept)} of {n(r.eligible)})</span></div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+        </section>
 
         <section className={styles.section} aria-labelledby="members">
           <div className={styles.sectionHead}><h2 id="members" className={styles.h2}>Members</h2><span className={styles.muted}>People with a Steadie account (signing in is optional, so this isn&apos;t everyone using the app)</span></div>

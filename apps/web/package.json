@@ -12,7 +12,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --experimental-strip-types scripts/migrate.ts",
     "test:auth": "tsx --tsconfig tsconfig.json scripts/test-auth.mts",
-    "test:sync": "tsx --tsconfig tsconfig.json scripts/test-sync.mts"
+    "test:sync": "tsx --tsconfig tsconfig.json scripts/test-sync.mts",
+    "test:events": "tsx --tsconfig tsconfig.json scripts/test-events.mts"
   },
   "dependencies": {
     "@better-auth/expo": "1.7.7",

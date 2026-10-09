@@ -23,7 +23,7 @@
 .table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
 .table th { text-align: left; font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-muted); padding: 6px 8px 8px 0; border-bottom: 1px solid var(--line); }
 .table td { padding: 9px 8px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-.table td.num, .table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.num, .table td.num, .table th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .scroll { overflow-x: auto; }
 .pill { display: inline-block; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: var(--radius-full); background: var(--sage); color: var(--on-pastel); }
 .pillOff { background: var(--rose); }

@@ -4,6 +4,7 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Mark } from "@/components/Mark";
 import { Screen } from "@/components/Screen";
+import { track } from "@/state/events";
 import { demoState, replace, useApp } from "@/state/store";
 import { accountsAvailable } from "@/state/account";
 import { toast } from "@/state/toast";
@@ -24,7 +25,7 @@ export default function Welcome() {
         <AppText variant="bodyLg" color="inkMuted">The 12-month plan for the year after your jab. Strength, protein and steady habits, with support on your side.</AppText>
       </View>
       <View style={{ gap: space[2], marginTop: "auto" }}>
-        <Button label="Get started" block onPress={() => router.push(accountsAvailable() ? "/onboarding/account" : "/onboarding/start")} />
+        <Button label="Get started" block onPress={() => { track("onboarding_started"); router.push(accountsAvailable() ? "/onboarding/account" : "/onboarding/start"); }} />
         {accountsAvailable() ? <Button label="I already have an account" variant="quiet" onPress={() => router.push({ pathname: "/onboarding/account", params: { existing: "1" } })} style={{ alignSelf: "center" }} /> : null}
       </View>
     </Screen>

@@ -9,6 +9,7 @@ import { useSyncExternalStore } from "react";
 import { AppState as RNAppState, Platform } from "react-native";
 import { deleteEverything } from "./data";
 import { decide, describe, forThisPhone } from "./merge";
+import { eventsTokenFrom, flushEvents, track } from "./events";
 import { applyReminders } from "./reminders";
 import { backupAllowed, get, migrate, replace, set, subscribe, type AppState } from "./store";
 
@@ -50,6 +51,7 @@ export function useAccount() {
 /* ---------- the token: the Keychain on iPhone, browser storage on the web build ---------- */
 const web = Platform.OS === "web";
 const readToken = () => (web ? AsyncStorage.getItem(TOKEN_KEY) : SecureStore.getItemAsync(TOKEN_KEY));
+eventsTokenFrom(() => (account ? readToken() : Promise.resolve(null)));
 const writeToken = (t: string) => (web ? AsyncStorage.setItem(TOKEN_KEY, t) : SecureStore.setItemAsync(TOKEN_KEY, t));
 const clearToken = () => (web ? AsyncStorage.removeItem(TOKEN_KEY) : SecureStore.deleteItemAsync(TOKEN_KEY));
 
@@ -266,6 +268,8 @@ export async function signOut(): Promise<void> {
   const token = await readToken();
   if (token) await call("/api/auth/sign-out", { method: "POST", body: "{}" }, token).catch(() => {});
   await forget();
+  track("account_deleted");
+  await flushEvents().catch(() => {}); // before the install record is reset
   await deleteEverything();
 }
 

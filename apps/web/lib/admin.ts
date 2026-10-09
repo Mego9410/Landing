@@ -71,6 +71,51 @@ export const loadMembers = () => load(async () => {
   };
 }, "members");
 
+/* ---------- funnel (our own events table) ---------- */
+export const FUNNEL_STEPS = [
+  { name: "app_first_open", label: "Opened the app" },
+  { name: "onboarding_completed", label: "Finished onboarding" },
+  { name: "paywall_viewed", label: "Saw the plans" },
+  { name: "trial_started", label: "Started a trial" },
+  { name: "subscription_paid", label: "Paid" },
+] as const;
+export interface FunnelWindow { days: number; steps: { label: string; n: number; ofFirst: number | null; ofPrev: number | null }[] }
+export interface Retention { label: string; eligible: number; kept: number; pct: number | null }
+
+/** Installs that reached each step in the last 7 and 30 days (each install counted once per step), and check-in
+ *  retention: of installs first opened 7 (or 30) or more days ago, in the last 90 days, how many checked in on or after
+ *  that day. "Paid" is a subscription seen by the app as paid (after a trial or bought outright). */
+export const loadFunnel = () => load(async () => {
+  await (await import("./db/extra")).ensureExtraTables();
+  const counts = await rows(sql`
+    select name,
+      count(distinct install_id) filter (where created_at > now() - interval '7 days') as d7,
+      count(distinct install_id) filter (where created_at > now() - interval '30 days') as d30
+    from events where created_at > now() - interval '30 days'
+      and name in ('app_first_open', 'onboarding_completed', 'paywall_viewed', 'trial_started', 'subscription_paid', 'purchase_completed')
+    group by name`);
+  const get = (name: string, k: "d7" | "d30") => num(counts.find((r) => r.name === name)?.[k]);
+  const pct = (a: number, b: number) => (b ? Math.round((a / b) * 1000) / 10 : null);
+  const windows: FunnelWindow[] = (["d7", "d30"] as const).map((k) => {
+    const ns = FUNNEL_STEPS.map((st) => get(st.name, k));
+    return { days: k === "d7" ? 7 : 30, steps: FUNNEL_STEPS.map((st, i) => ({ label: st.label, n: ns[i], ofFirst: i ? pct(ns[i], ns[0]) : null, ofPrev: i ? pct(ns[i], ns[i - 1]) : null })) };
+  });
+  const retention: Retention[] = [];
+  for (const d of [7, 30]) {
+    const [r] = await rows(sql`
+      with first as (
+        select install_id, min(created_at) as at from events where name = 'app_first_open' group by install_id
+        having min(created_at) > now() - interval '90 days' and min(created_at) <= now() - make_interval(days => ${d}))
+      select count(*) as eligible,
+        count(*) filter (where exists (select 1 from events e where e.install_id = first.install_id and e.name = 'check_in_completed'
+          and e.created_at >= first.at + make_interval(days => ${d}))) as kept
+      from first`);
+    retention.push({ label: `${d}-day`, eligible: num(r?.eligible), kept: num(r?.kept), pct: pct(num(r?.kept), num(r?.eligible)) });
+  }
+  const [{ total, installs }] = await rows(sql`select count(*) as total, count(distinct install_id) as installs from events where created_at > now() - interval '30 days'`);
+  return { windows, retention, total: num(total), installs: num(installs) };
+}, "funnel");
+
 /* ---------- emails (Resend) ---------- */
 interface Metrics { delivered?: number; unique_opened?: number; unique_clicked?: number; unsubscribed?: number; bounced?: number; open_rate?: number; click_rate?: number }
 export const loadEmails = () => load(async () => {

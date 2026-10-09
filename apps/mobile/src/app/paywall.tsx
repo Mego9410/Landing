@@ -6,6 +6,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
+import { track } from "@/state/events";
 import { buy, plans, plansProblem, restore, type Plan } from "@/state/subscription";
 import { useApp } from "@/state/store";
 import { toast } from "@/state/toast";
@@ -33,7 +34,7 @@ export default function Paywall() {
 
   const fetchPlans = () => plans().then(setOptions).catch((e) => setFailed(plansProblem(e)));
   const load = () => { setFailed(null); setOptions(null); fetchPlans(); };
-  useEffect(() => { fetchPlans(); }, []);
+  useEffect(() => { fetchPlans(); track("paywall_viewed", { lapsed }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (s.subscription?.active) router.replace("/"); }, [s.subscription?.active]);
 
   async function subscribe() {

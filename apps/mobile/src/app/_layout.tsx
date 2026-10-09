@@ -9,9 +9,11 @@ import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { Toast } from "@/components/Toast";
 import { startBackup } from "@/state/account";
+import { flushEvents, track } from "@/state/events";
+import { install, updateInstall } from "@/state/install";
 import { watchDay } from "@/state/rollover";
 import { startBilling } from "@/state/subscription";
-import { hydrate } from "@/state/store";
+import { get, hydrate } from "@/state/store";
 import { useColors } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -44,6 +46,10 @@ export default function RootLayout() {
     let stop: (() => void) | undefined, stopBackup: (() => void) | undefined, gone = false;
     hydrate().finally(() => {
       stop = watchDay(); startBilling().catch(() => {}); setReady(true);
+      install(get().startedOn).then((i) => {
+        if (i.isNew) { track("app_first_open"); updateInstall({ isNew: false }); }
+        flushEvents().catch(() => {});
+      }).catch(() => {});
       startBackup().then((s) => { if (gone) s(); else stopBackup = s; }).catch(() => {});
     });
     return () => { gone = true; stop?.(); stopBackup?.(); };

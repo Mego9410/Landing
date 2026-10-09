@@ -12,6 +12,7 @@ import { questionById, SCALES } from "@/data/journal";
 import { stepsOn } from "@/state/appleHealth";
 import { saveEntry } from "@/state/journal";
 import { refreshReminders } from "@/state/reminders";
+import { track } from "@/state/events";
 import { afterCheckIn } from "@/state/review";
 import { get, useApp, type JournalEntry } from "@/state/store";
 import { toast } from "@/state/toast";
@@ -49,7 +50,7 @@ function Questions({ day }: { day: string }) {
     refreshReminders(get()); // no reminder for a day already checked in
     toast(saved ? "Updated." : "Saved. Thanks for checking in.");
     router.back();
-    if (!saved) afterCheckIn(day, done);
+    if (!saved) { track("check_in_completed"); afterCheckIn(day, done); }
   }
 
   return (

@@ -30,10 +30,14 @@ For every type below: **Used for tracking: No.**
 | Identifiers → **User ID** | Yes | App Functionality | Yes | The account ID |
 | Identifiers → **Device ID** | Yes | App Functionality | No | Expo's random install ID, sent when the app checks for updates |
 | Purchases → **Purchase History** | Yes | App Functionality, Analytics | No | RevenueCat checks the subscription and gives us revenue charts, under an anonymous ID |
+| Usage Data → **Product Interaction** | Yes | Analytics, App Functionality | Yes | Funnel events (app opened, onboarding finished, plans seen, trial started, check-in done...) with a random install ID, linked to the account ID when signed in. No health values, no free text. Stored in our own database |
+| Diagnostics → **Crash Data** | Yes | App Functionality | No | Sentry crash and error reports, personal data stripped. Tick from the build that includes Sentry |
 
 Not collected, so leave unticked: Phone Number, Physical Address, Other User Contact Info, all Financial Info
 (Apple takes payment), Precise and Coarse Location, Contacts, Emails or Text Messages, Photos or Videos, Audio,
-Gameplay Content, Customer Support, Browsing History, Search History, all Usage Data, all Diagnostics, Other Data.
+Gameplay Content, Customer Support, Browsing History, Search History, Usage Data other than Product Interaction
+(Advertising Data, Other Usage Data), Diagnostics other than Crash Data (Performance Data stays unticked while
+Sentry performance tracing is off), Other Data. The optional note on the cancellation card is covered by Other User Content.
 
 ## Notes on the borderline answers
 
@@ -43,15 +47,17 @@ Gameplay Content, Customer Support, Browsing History, Search History, all Usage 
   They'd only count as Coarse Location if used to work out where someone is, and they aren't.
 - **Device ID** is the conservative answer. Expo's update check sends a random ID made when the app is installed.
   It isn't the advertising identifier and isn't linked to the account.
-- **Adding crash reporting or analytics later** (Sentry, for example) adds Diagnostics → Crash Data / Performance
-  Data, and possibly Usage Data. Update the labels, the manifest and the policy before shipping that build.
+- **Product Interaction is "linked"** because a signed-in person's events carry their account ID. Deleting the account
+  removes that link.
+- **Crash Data is "not linked"**: Sentry gets no user ID or email (`sendDefaultPii: false`, and a `beforeSend` that
+  strips anything left). If performance tracing is ever turned on, add Diagnostics → Performance Data, not linked.
 
 ## The privacy label Apple will show
 
 Roughly, the listing will read:
 
-- **Data Linked to You:** Health & Fitness, Contact Info, Sensitive Info, User Content, Identifiers.
-- **Data Not Linked to You:** Purchases, Identifiers.
+- **Data Linked to You:** Health & Fitness, Contact Info, Sensitive Info, User Content, Identifiers, Usage Data.
+- **Data Not Linked to You:** Purchases, Identifiers, Diagnostics.
 - **Data Used to Track You:** none.
 
 ## Elsewhere in App Store Connect

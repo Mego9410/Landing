@@ -6,6 +6,8 @@
 import { Linking, Platform } from "react-native";
 import Purchases, { INTRO_ELIGIBILITY_STATUS, LOG_LEVEL, PURCHASES_ERROR_CODE, type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
 import { period } from "@/data/period";
+import { track } from "./events";
+import { install, updateInstall } from "./install";
 import { trialReminder } from "./reminders";
 import { set } from "./store";
 
@@ -28,6 +30,8 @@ function remember(info: CustomerInfo, askForReminder = false) {
   const ended = !e && !!info.entitlements.all[ENTITLEMENT];
   set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false, ended }; });
   trialReminder(e && trial && e.willRenew ? e.expirationDate : null, e?.latestPurchaseDate ?? null, askForReminder).catch(() => {});
+  // The first time this install sees a paid (not trial) subscription: after a trial converts, or bought outright.
+  if (e && !trial) install().then((i) => { if (!i.paidSent) { updateInstall({ paidSent: true }); track("subscription_paid", { plan: plan ?? "unknown" }); } }).catch(() => {});
 }
 
 /** Connects to RevenueCat once and keeps the saved subscription status up to date. */
@@ -99,6 +103,7 @@ export async function buy(plan: Plan): Promise<boolean> {
   try {
     const { customerInfo } = await Purchases.purchasePackage(plan.pkg);
     remember(customerInfo, !!plan.trial); // starting a trial is the moment to ask about the reminder
+    if (active(customerInfo)) track(plan.trial ? "trial_started" : "purchase_completed", { plan: plan.pkg.packageType === "ANNUAL" ? "yearly" : "monthly" });
     return active(customerInfo);
   } catch (e) {
     if ((e as { code?: string }).code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) return false;
@@ -109,6 +114,7 @@ export async function buy(plan: Plan): Promise<boolean> {
 export async function restore(): Promise<boolean> {
   const info = await Purchases.restorePurchases();
   remember(info);
+  if (active(info)) track("restore_completed");
   return active(info);
 }
 

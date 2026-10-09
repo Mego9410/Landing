@@ -15,9 +15,11 @@
     "build:preview": "eas build --platform ios --profile preview",
     "web:export": "expo export --platform web --output-dir dist",
     "web:phone": "expo export --platform web --output-dir dist && node scripts/pack-web.mjs dist dist/steadie-app.html",
-    "update:preview": "eas update --branch preview --environment preview --clear-cache --message \"Preview\"",
+    "update:preview": "eas update --branch preview --environment preview --clear-cache --message \"Preview\" && pnpm run sourcemaps",
     "build:dev": "eas build --profile development",
-    "test": "tsx --tsconfig tsconfig.json --test src/test/*.test.ts"
+    "test": "tsx --tsconfig tsconfig.json --test src/test/*.test.ts",
+    "update:production": "eas update --branch production --environment production --clear-cache --message \"Production\" && pnpm run sourcemaps",
+    "sourcemaps": "sentry-expo-upload-sourcemaps dist"
   },
   "dependencies": {
     "@expo-google-fonts/fredoka": "^0.4.1",
@@ -30,6 +32,7 @@
     "@landing/motion": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-healthkit/core": "16.0.0",
+    "@sentry/react-native": "~7.11.0",
     "expo": "~57.0.26",
     "expo-apple-authentication": "~57.0.2",
     "expo-constants": "~57.0.20",

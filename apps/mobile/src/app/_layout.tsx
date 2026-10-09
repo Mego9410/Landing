@@ -6,17 +6,21 @@ import { router, Stack, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { AppText } from "@/components/AppText";
+import { Button } from "@/components/Button";
 import { Toast } from "@/components/Toast";
 import { startBackup } from "@/state/account";
 import { flushEvents, track } from "@/state/events";
 import { install, updateInstall } from "@/state/install";
 import { watchDay } from "@/state/rollover";
+import { Sentry, sentryOn, startSentry } from "@/state/sentry";
 import { startBilling } from "@/state/subscription";
 import { get, hydrate } from "@/state/store";
-import { useColors } from "@/theme";
+import { space, useColors } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+startSentry();
 
 // Sheets open over the screen they belong to.
 const SHEET = { presentation: "modal" as const };
@@ -37,7 +41,21 @@ function NotificationLinks() {
   return null;
 }
 
-export default function RootLayout() {
+/** Shown in place of a screen that hit an error, instead of the app closing. The error has been reported (if Sentry is
+ *  on); trying again re-renders, and the plan itself is safe on the phone. */
+function Fallback({ resetError }: { resetError: () => void }) {
+  const c = useColors();
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor: c.surface }} contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: space[6], gap: space[4] }}>
+      <AppText variant="title" accessibilityRole="header">Something went wrong</AppText>
+      <AppText color="inkMuted">That screen didn&apos;t load properly. Your plan and everything you&apos;ve logged are safe on this phone.</AppText>
+      <Button label="Try again" block onPress={resetError} />
+      <Button label="Go to Today" variant="quiet" onPress={() => { resetError(); setTimeout(() => router.replace("/"), 0); }} style={{ alignSelf: "center" }} />
+    </ScrollView>
+  );
+}
+
+function RootLayout() {
   const c = useColors();
   const [loaded, error] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold, Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold });
   const [ready, setReady] = useState(false);
@@ -62,6 +80,7 @@ export default function RootLayout() {
   return (
     <View style={{ flex: 1, backgroundColor: c.surface }}>
       <StatusBar style="auto" />
+      <Sentry.ErrorBoundary fallback={({ resetError }) => <Fallback resetError={resetError} />}>
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface } }}>
         <Stack.Screen name="meals/pick" options={SHEET} />
         <Stack.Screen name="meals/add" options={SHEET} />
@@ -69,8 +88,11 @@ export default function RootLayout() {
         <Stack.Screen name="swap-habit" options={SHEET} />
         <Stack.Screen name="journal/index" options={SHEET} />
       </Stack>
+      </Sentry.ErrorBoundary>
       <Toast />
       <NotificationLinks />
     </View>
   );
 }
+
+export default sentryOn() ? Sentry.wrap(RootLayout) : RootLayout;

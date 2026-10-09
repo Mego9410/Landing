@@ -1,6 +1,8 @@
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Platform, View } from "react-native";
+import Constants from "expo-constants";
+import * as Updates from "expo-updates";
+import { Alert, Platform, Pressable, View } from "react-native";
 import { LABELS } from "@landing/engine";
 import { castById } from "@landing/motion";
 import { AppText } from "@/components/AppText";
@@ -15,6 +17,7 @@ import { available, connect, disconnect } from "@/state/appleHealth";
 import { AccountError, accountsAvailable, backUpNow, deleteAccount, guideEmails, resumeHealthBackup, setGuideEmails, setWeeklyRecap, signOut, useAccount, weeklyRecap, withdrawHealthBackup } from "@/state/account";
 import { deleteEverything, shareExport } from "@/state/data";
 import { openWriteReview } from "@/state/review";
+import { sendTestError, sentryOn } from "@/state/sentry";
 import { billingEnabled, manageSubscription, restore } from "@/state/subscription";
 import { space } from "@/theme";
 
@@ -144,7 +147,10 @@ export default function Settings() {
           <Button label="Reset to Hannah, week 6" variant="quiet" onPress={() => { replace({ ...demoState(), disclaimer: s.disclaimer }); toast("Back to Hannah in week 6."); router.dismissTo("/"); }} style={{ alignSelf: "center" }} />
         </View>
       </Section> : null}
-      <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>Steadie 1.0 · preview. Recipes and nutrition are drafts until our dietitian signs them off.</AppText>
+      {/* Holding this for 3 seconds sends a test error report, to check crash reporting in a TestFlight build. */}
+      <Pressable accessible={false} delayLongPress={3000} onLongPress={() => { if (sentryOn()) { sendTestError(); toast("Test error report sent."); } else toast("Crash reporting is off in this build."); }}>
+        <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>Steadie {Constants.expoConfig?.version ?? ""}{Updates.updateId ? ` · update ${Updates.updateId.slice(0, 8)}` : ""}. Recipes and nutrition are drafts until our dietitian signs them off.</AppText>
+      </Pressable>
     </Screen>
   );
 }

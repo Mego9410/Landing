@@ -12,6 +12,7 @@ export const WRITE_REVIEW_URL = `https://apps.apple.com/app/id${APP_STORE_ID}?ac
 
 type StoreReview = { isAvailableAsync(): Promise<boolean>; requestReview(): Promise<void> };
 function storeReview(): StoreReview | null {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- loaded lazily so older builds skip it
   try { return require("expo-store-review") as StoreReview; } catch { return null; }
 }
 

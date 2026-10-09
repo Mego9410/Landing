@@ -123,12 +123,15 @@ function Plans() {
  *  for anyone who hasn't allowed notifications (so never got it). */
 function TrialEnding() {
   const sub = useApp().subscription;
-  const [allowed, setAllowed] = useState(true);
-  useEffect(() => { notificationsAllowed().then(setAllowed, () => setAllowed(false)); }, []);
-  if (allowed || !sub?.trial || !sub.willRenew || !sub.until) return null;
-  const left = new Date(sub.until).getTime() - Date.now();
-  if (left <= 0 || left > 2 * 24 * 60 * 60 * 1000) return null;
-  const m = trialMessage(sub.until);
+  const until = sub?.trial && sub.willRenew ? sub.until ?? null : null;
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const left = until ? new Date(until).getTime() - Date.now() : -1;
+    const inWindow = left > 0 && left <= 2 * 24 * 60 * 60 * 1000;
+    notificationsAllowed().then((ok) => setShow(inWindow && !ok), () => setShow(inWindow));
+  }, [until]);
+  if (!show || !until) return null;
+  const m = trialMessage(until);
   return (
     <Card style={{ gap: 6 }}>
       <AppText weight="800">{m.title}</AppText>

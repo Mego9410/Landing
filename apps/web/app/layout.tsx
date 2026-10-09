@@ -2,11 +2,12 @@ import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 import "@landing/design-system/tokens.css";
 import "./globals.css";
+import { SITE_URL } from "./site";
 
 const fredoka = Fredoka({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-fredoka", display: "swap" });
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-nunito", display: "swap" });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = SITE_URL; // the live domain on Vercel production even if NEXT_PUBLIC_SITE_URL is missing
 // The launch switch (see app/site.ts): the description and Safari's app banner follow NEXT_PUBLIC_APP_LIVE.
 const live = process.env.NEXT_PUBLIC_APP_LIVE === "true";
 const description = live

@@ -34,7 +34,8 @@ async function person(email: string, safeMode: boolean) {
   if (put.status !== 200) throw new Error(`backup ${put.status}`);
   return { token, id: user.id };
 }
-const a = await person("recap-a@example.com", false), b = await person("recap-b@example.com", true), c = await person("recap-c@example.com", false);
+const a = await person("recap-a@example.com", false), b = await person("recap-b@example.com", true);
+await person("recap-c@example.com", false); // never opts in
 const optIn = (t: string, on: boolean) => prefs.PUT(new Request("http://x/api/account/recap", { method: "PUT", headers: { Authorization: `Bearer ${t}` }, body: JSON.stringify({ on }) }));
 check((await (await prefs.GET(new Request("http://x", { headers: { Authorization: `Bearer ${a.token}` } }))).json()).on === false, "off by default");
 await optIn(a.token, true); await optIn(b.token, true); // c never opts in

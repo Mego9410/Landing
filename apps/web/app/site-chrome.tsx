@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Lockup } from "./lockup";
-import { APP_STORE_URL, ORG_NAME } from "./site";
+import { APP_LIVE, appStoreLink, ORG_NAME } from "./site";
 import styles from "./page.module.css";
 
 // The header and footer for every page. On the home page the section links are in-page anchors; elsewhere they point
@@ -22,7 +22,7 @@ export function SiteHeader({ home = false }: { home?: boolean }) {
   return (
     <>
       <aside className={styles.announce} aria-label="Announcement">
-        <span>Now on iPhone.</span> <a href={APP_STORE_URL}>Try it free for 7 days</a>
+        {APP_LIVE ? <><span>Now on iPhone.</span> <a href={appStoreLink("top-bar")}>Try it free for 7 days</a></> : <span>Coming soon to iPhone.</span>}
       </aside>
       <header className={styles.header}>
         <div className={`${styles.wrap} ${styles.headerInner}`}>
@@ -32,7 +32,7 @@ export function SiteHeader({ home = false }: { home?: boolean }) {
             <Link href="/guides">Guides</Link>
             {SECTIONS.slice(2).map(([id, label]) => <a key={id} href={at(id)}>{label}</a>)}
           </nav>
-          <a className={styles.navCta} href={APP_STORE_URL}>Download</a>
+          {APP_LIVE ? <a className={styles.navCta} href={appStoreLink("header")}>Download</a> : <span className={styles.navSoon}>Coming soon</span>}
         </div>
       </header>
     </>
@@ -52,6 +52,7 @@ export function SiteFooter({ home = false }: { home?: boolean }) {
           <p className={styles.footerHead}>Steadie</p>
           {SECTIONS.map(([id, label]) => <a key={id} href={at(id)}>{label}</a>)}
           <Link href="/about">About us</Link>
+          <Link href="/support">Support</Link>
         </nav>
         <nav aria-label="Guides">
           <p className={styles.footerHead}>Guides</p>

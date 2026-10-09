@@ -7,14 +7,18 @@ const fredoka = Fredoka({ subsets: ["latin"], weight: ["300", "400", "500", "600
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-nunito", display: "swap" });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const description = "A 12-month plan for the year after you stop a GLP-1 weight-loss jab: protein, short strength sessions, easy meals and steady habits to keep the weight off. Coming to iPhone.";
+// The launch switch (see app/site.ts): the description and Safari's app banner follow NEXT_PUBLIC_APP_LIVE.
+const live = process.env.NEXT_PUBLIC_APP_LIVE === "true";
+const description = live
+  ? "A 12-month plan for the year after you stop a GLP-1 weight-loss jab. Protein, short strength sessions, easy meals and steady habits. Free for 7 days on iPhone."
+  : "A 12-month plan for the year after you stop a GLP-1 weight-loss jab: protein, short strength sessions, easy meals and steady habits to keep the weight off. Coming soon to iPhone.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: "Steadie: keep weight off after weight-loss jabs", template: "%s · Steadie" },
   applicationName: "Steadie",
-  // Safari shows a banner offering the app (App Store Connect app ID).
-  itunes: { appId: "6820083153" },
+  // Safari shows a banner offering the app (App Store Connect app ID), once it's live.
+  ...(live ? { itunes: { appId: "6820083153" } } : {}),
   keywords: ["coming off weight loss injections", "life after GLP-1", "keep weight off after stopping weight loss jab", "weight maintenance after GLP-1", "protein and strength after weight loss injections"],
   category: "health",
   description,

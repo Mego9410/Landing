@@ -210,6 +210,9 @@
 .storeBtn small { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 .storeBtn strong { font-family: var(--font-display); font-size: 23px; font-weight: 600; letter-spacing: -.01em; }
 .storeBtn:active { transform: scale(.97); }
+.storeBtnSoon { background: var(--surface-raised); color: var(--ink-muted); box-shadow: inset 0 0 0 1.5px var(--line); cursor: default; }
+.storeBtnSoon:active { transform: none; }
+.navSoon { flex: none; font-weight: 800; font-size: 15px; color: var(--ink-muted); padding: 11px 20px; border-radius: var(--radius-full); box-shadow: inset 0 0 0 1.5px var(--line); }
 .storeBtn:focus-visible { box-shadow: var(--focus-ring); }
 .storeNote { font-size: 15px; line-height: 22px; color: var(--ink-muted); }
 .cta .storeNote { color: var(--on-pastel); opacity: .8; }
@@ -241,7 +244,7 @@
 }
 @media (max-width: 960px) {
   .navLinks { display: none; }
-  .navCta { margin-left: auto; }
+  .navCta, .navSoon { margin-left: auto; }
   .glassGrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .glassWide { grid-column: 1 / -1; }
   .statGrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -311,7 +314,7 @@
   .footerGrid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px 20px; }
   .footerBrand { grid-column: 1 / -1; }
   .button { width: 100%; }
-  .navCta { padding: 8px 14px; font-size: 14px; }
+  .navCta, .navSoon { padding: 8px 14px; font-size: 14px; }
 }
 
 /* Temporary pre-launch link to the prototype (see app/prototype-link.tsx). Dashed so it reads as a test tool. */

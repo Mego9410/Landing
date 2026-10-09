@@ -4,6 +4,7 @@
 // BETTER_AUTH_URL (the site's address) in production.
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware } from "better-auth/api";
 import { bearer, emailOTP } from "better-auth/plugins";
 import { getDb, schema } from "./db";
 import { sendSignInCode } from "./email";
@@ -24,6 +25,14 @@ async function create() {
     trustedOrigins: [site, "steadie://", "landing://", ...(process.env.VERCEL ? [] : ["http://localhost:8081", "http://localhost:8765"])],
     session: { expiresIn: 60 * 60 * 24 * 90, updateAge: 60 * 60 * 24 },
     user: { deleteUser: { enabled: true } },
+    // Codes are stored against the address, so the same person must always give the same address: trim it (Better
+    // Auth already lowercases it) whether it comes from the app, the dashboard or anywhere else.
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        const email = (ctx.body as { email?: unknown } | undefined)?.email;
+        if (typeof email === "string" && email !== email.trim()) return { context: { body: { ...ctx.body, email: email.trim() } } };
+      }),
+    },
     rateLimit: { enabled: true, storage: "database", window: 60, max: 30, customRules: { "/email-otp/send-verification-otp": { window: 60, max: 3 }, "/sign-in/email-otp": { window: 60, max: 6 } } },
     socialProviders: bundle ? {
       // Sign in with Apple from the iPhone app: the app sends Apple's identity token, checked against the bundle ID.

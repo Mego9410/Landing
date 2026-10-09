@@ -5,6 +5,8 @@
 // Env: ADMIN_EMAILS (comma-separated; who may open /admin). Optional, each turns a section on:
 //   REVENUECAT_SECRET_KEY + REVENUECAT_PROJECT_ID   subscribers, trials, MRR, revenue
 //   ASC_KEY_ID + ASC_ISSUER_ID + ASC_PRIVATE_KEY + ASC_VENDOR_NUMBER   App Store downloads
+//   SENTRY_API_TOKEN (or SENTRY_AUTH_TOKEN) + SENTRY_ORG + SENTRY_PROJECT   crashes and errors from the app
+//     (a token with project:read, event:read and org:read; SENTRY_URL only for EU-hosted orgs: https://de.sentry.io)
 import { createSign } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 import { sql } from "drizzle-orm";
@@ -194,6 +196,46 @@ export const loadDownloads = () => load(async () => {
   return days.map((day, i) => ({ day, n: counts[i] }));
 }, "downloads");
 
+/* ---------- crashes (Sentry) ---------- */
+export interface SentryIssue { id: string; shortId: string; title: string; culprit: string; level: string; count: number; users: number; firstSeen: string; lastSeen: string; link: string }
+
+/** The app's crash and error picture from Sentry: unresolved issues (most frequent in 14 days first), errors per day,
+ *  and the share of app sessions without a crash. Read only; links go to Sentry for the detail. */
+export const loadCrashes = () => load(async () => {
+  const token = process.env.SENTRY_API_TOKEN || process.env.SENTRY_AUTH_TOKEN, org = process.env.SENTRY_ORG, project = process.env.SENTRY_PROJECT;
+  if (!token || !org || !project) throw new NotSetUp("Add SENTRY_API_TOKEN, SENTRY_ORG and SENTRY_PROJECT to see crashes and errors from the app.");
+  const base = (process.env.SENTRY_URL || "https://sentry.io").replace(/\/$/, "");
+  const get = async (path: string) => {
+    const res = await fetch(`${base}/api/0/${path}`, { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" });
+    const body = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(`Sentry ${res.status} ${(body as { detail?: string } | null)?.detail ?? ""}`.trim());
+    return body;
+  };
+  const o = encodeURIComponent(org), p = encodeURIComponent(project);
+  const [proj, issues] = await Promise.all([
+    get(`projects/${o}/${p}/`) as Promise<{ id: string }>,
+    get(`projects/${o}/${p}/issues/?query=is:unresolved&statsPeriod=14d&sort=freq&limit=10`) as Promise<Record<string, unknown>[]>,
+  ]);
+  // Errors per day and crash-free sessions are extras: if either isn't available, the issues still show.
+  const days = lastDays(14);
+  const perDay = await get(`organizations/${o}/stats_v2/?field=sum(quantity)&category=error&outcome=accepted&interval=1d&statsPeriod=14d&project=${proj.id}`)
+    .then((b: { intervals?: string[]; groups?: { series?: Record<string, number[]> }[] }) => {
+      const byDay = new Map<string, number>();
+      (b.intervals ?? []).forEach((iso, i) => byDay.set(iso.slice(0, 10), (b.groups ?? []).reduce((n, g) => n + (g.series?.["sum(quantity)"]?.[i] ?? 0), 0)));
+      return days.map((day) => ({ day, n: byDay.get(day) ?? 0 }));
+    }).catch(() => null);
+  const crashFree = await get(`organizations/${o}/sessions/?field=crash_free_rate(session)&field=sum(session)&statsPeriod=14d&interval=1d&project=${proj.id}`)
+    .then((b: { groups?: { totals?: Record<string, number | null> }[] }) => {
+      const t = b.groups?.[0]?.totals;
+      return t && t["sum(session)"] ? { rate: t["crash_free_rate(session)"] ?? null, sessions: t["sum(session)"] ?? 0 } : null;
+    }).catch(() => null);
+  const list: SentryIssue[] = issues.map((i) => ({
+    id: String(i.id), shortId: String(i.shortId ?? ""), title: String(i.title ?? ""), culprit: String(i.culprit ?? ""), level: String(i.level ?? "error"),
+    count: num(i.count), users: num(i.userCount), firstSeen: String(i.firstSeen ?? ""), lastSeen: String(i.lastSeen ?? ""), link: String(i.permalink ?? ""),
+  }));
+  return { issues: list, perDay, crashFree, link: `https://${org}.sentry.io/issues/?project=${proj.id}` };
+}, "crashes");
+
 /* ---------- guides ---------- */
 export function guideSchedule() {
   const today = londonToday();
@@ -212,6 +254,7 @@ export function setupChecks() {
     { label: "Sign in with Apple (APPLE_BUNDLE_ID)", ok: !!process.env.APPLE_BUNDLE_ID },
     { label: "App Review sign-in (REVIEW_EMAIL, REVIEW_CODE)", ok: !!process.env.REVIEW_EMAIL && !!process.env.REVIEW_CODE },
     { label: "Subscriptions (REVENUECAT_SECRET_KEY, REVENUECAT_PROJECT_ID)", ok: !!process.env.REVENUECAT_SECRET_KEY && !!process.env.REVENUECAT_PROJECT_ID },
+    { label: "Crashes (SENTRY_API_TOKEN, SENTRY_ORG, SENTRY_PROJECT)", ok: !!((process.env.SENTRY_API_TOKEN || process.env.SENTRY_AUTH_TOKEN) && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT) },
     { label: "Downloads (App Store Connect API key)", ok: !!(process.env.ASC_KEY_ID && process.env.ASC_ISSUER_ID && process.env.ASC_PRIVATE_KEY && process.env.ASC_VENDOR_NUMBER) },
   ];
 }

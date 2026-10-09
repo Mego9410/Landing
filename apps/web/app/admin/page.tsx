@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { adminFrom, guideSchedule, loadDownloads, loadEmails, loadFunnel, loadLapses, loadMembers, loadRevenue, setupChecks, type Loaded, type RcMetric } from "@/lib/admin";
+import { adminFrom, guideSchedule, loadDownloads, loadEmails, loadCrashes, loadFunnel, loadLapses, loadMembers, loadRevenue, setupChecks, type Loaded, type RcMetric } from "@/lib/admin";
 import { getAuth } from "@/lib/auth";
 import styles from "./admin.module.css";
 import { DailyBars } from "./chart";
@@ -35,7 +35,7 @@ export default async function Admin() {
     return <main className={styles.page}><AdminLogin signedInAs={session?.user.email} /></main>;
   }
 
-  const [members, emails, revenue, downloads, funnel, lapses] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads(), loadFunnel(), loadLapses()]);
+  const [members, emails, revenue, downloads, funnel, lapses, crashes] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads(), loadFunnel(), loadLapses(), loadCrashes()]);
   const guides = guideSchedule();
   const rc = revenue.ok ? revenue.data : [];
   const dl = downloads.ok ? downloads.data : [];
@@ -59,8 +59,38 @@ export default async function Admin() {
           <Tile label="Monthly revenue" value={rcValue(metric(rc, "mrr"))} note="MRR, from RevenueCat" />
           <Tile label="Downloads" value={downloads.ok ? n(dlTotal) : "–"} note="Last 14 days, App Store" />
           <Tile label="Email subscribers" value={emails.ok ? n(emails.data.subscribed) : "–"} note={emails.ok ? `${n(emails.data.unsubscribed)} unsubscribed` : "Guide emails"} />
+          <Tile label="Crash-free sessions" value={crashes.ok && crashes.data.crashFree?.rate != null ? `${(crashes.data.crashFree.rate * 100).toFixed(1)}%` : "–"} note={crashes.ok ? `${n(crashes.data.issues.length)} open issues · 14 days` : "From Sentry"} />
           <Tile label="Guides live" value={n(guides.live)} note={`${guides.scheduled} scheduled`} />
         </div>
+
+        <section className={styles.section} aria-labelledby="crashes">
+          <div className={styles.sectionHead}><h2 id="crashes" className={styles.h2}>Crashes and errors</h2><span className={styles.muted}>Sentry, last 14 days{crashes.ok ? <> · <a href={crashes.data.link} target="_blank" rel="noreferrer" style={{ color: "inherit" }}>open in Sentry</a></> : null}</span></div>
+          <Notice loaded={crashes} />
+          {crashes.ok ? (
+            <div className={styles.grid2}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {crashes.data.perDay ? <><p className={styles.muted}>Errors per day</p><DailyBars points={crashes.data.perDay} label="App errors per day" /></> : <p className={styles.muted}>Errors per day aren&apos;t available with this token.</p>}
+                <div className={styles.stats}>
+                  <div className={styles.stat}><strong>{crashes.data.crashFree?.rate != null ? `${(crashes.data.crashFree.rate * 100).toFixed(1)}%` : "–"}</strong><span>crash-free sessions</span></div>
+                  <div className={styles.stat}><strong>{crashes.data.crashFree ? n(crashes.data.crashFree.sessions) : "–"}</strong><span>app sessions</span></div>
+                  <div className={styles.stat}><strong>{n(crashes.data.issues.reduce((a, i) => a + i.count, 0))}</strong><span>events in open issues</span></div>
+                </div>
+              </div>
+              <div className={styles.scroll}>
+                <p className={styles.muted} style={{ marginBottom: 8 }}>Open issues, most frequent first</p>
+                <table className={styles.table}>
+                  <thead><tr><th>Issue</th><th className={styles.num}>Events</th><th className={styles.num}>People</th><th>Last seen</th></tr></thead>
+                  <tbody>{crashes.data.issues.map((i) => (
+                    <tr key={i.id}>
+                      <td style={{ wordBreak: "break-word" }}><a href={i.link} target="_blank" rel="noreferrer" style={{ color: "inherit", fontWeight: 700 }}>{i.title}</a>{i.culprit ? <div className={styles.muted}>{i.culprit}</div> : null}</td>
+                      <td className={styles.num}>{n(i.count)}</td><td className={styles.num}>{n(i.users)}</td><td>{i.lastSeen ? when(i.lastSeen) : "–"}</td>
+                    </tr>
+                  ))}{crashes.data.issues.length ? null : <tr><td colSpan={4} className={styles.muted}>No open issues. Nice.</td></tr>}</tbody>
+                </table>
+              </div>
+            </div>
+          ) : null}
+        </section>
 
         <section className={styles.section} aria-labelledby="funnel">
           <div className={styles.sectionHead}><h2 id="funnel" className={styles.h2}>Funnel</h2><span className={styles.muted}>From the app, everyone (signed in or not): installs reaching each step{funnel.ok ? ` · ${n(funnel.data.installs)} installs active in 30 days` : ""}</span></div>

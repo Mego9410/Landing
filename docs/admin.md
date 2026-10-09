@@ -12,6 +12,8 @@ can open it; you sign in with an emailed code, like the app. Numbers are read li
 | Members: totals, new per day (30 days), active this week, Apple vs email, backups, newest members | The Neon database | Nothing extra |
 | Subscriptions: active subscribers, trials, MRR, revenue, new customers | RevenueCat | `REVENUECAT_SECRET_KEY`, `REVENUECAT_PROJECT_ID` |
 | Downloads per day (14 days) | App Store Connect sales reports | `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_PRIVATE_KEY`, `ASC_VENDOR_NUMBER` |
+| Crashes and errors: crash-free sessions, errors per day, open issues (most frequent first, with links) | Sentry | `SENTRY_API_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` (`SENTRY_URL` only for EU-hosted orgs) |
+| Funnel: installs at each step (7 and 30 days), check-in retention; why people cancel | The Neon database (app events) | Nothing extra |
 | Guide emails: subscribers, delivered, open and click rates, each email | Resend | `RESEND_API_KEY` (already set) |
 | Guides: live, scheduled, what's next, when the schedule runs out | The guide files | Nothing |
 | Set-up checklist and links to each service | Environment | Nothing |
@@ -31,5 +33,11 @@ RevenueCat (subscribers) and App Store downloads. The App Review account is left
    `ASC_ISSUER_ID` (shown above the keys list), `ASC_PRIVATE_KEY` (the whole contents of the `.p8` file, including the
    BEGIN and END lines) and `ASC_VENDOR_NUMBER` (Payments and Financial Reports, top left). Sales reports arrive a day
    or two late, and only once the app has its first downloads.
+
+4. **Sentry**: in Sentry, Settings → Developer Settings → **Personal Tokens** (or an internal integration) → create a
+   token with **project:read**, **event:read** and **org:read**. Set it as `SENTRY_API_TOKEN`. `SENTRY_ORG` and
+   `SENTRY_PROJECT` are the slugs in Sentry's address bar (`<org>.sentry.io/projects/<project>/`). If your org is
+   hosted in the EU (its address is `de.sentry.io`), also set `SENTRY_URL` to `https://de.sentry.io`. This is a
+   different token from the build's `SENTRY_AUTH_TOKEN` in EAS, which only uploads source maps.
 
 These are server-only secrets: never put them in the app or in an `EXPO_PUBLIC_` variable.

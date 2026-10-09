@@ -99,7 +99,7 @@ const PROMISES: { icon: IconName; title: string; text: string }[] = [
   { icon: "heart", title: "No goal weight", text: "We help you hold steady, and help you reset gently if things drift. Never a telling-off." },
   { icon: "habit", title: "Numbers only if they help", text: "Safe mode hides weight entirely and builds your score from habits and check-ins." },
   { icon: "shield", title: "Your prescriber stays in charge", text: "Steadie never gives advice about medication, doses or stopping treatment." },
-  { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, with a private backup if you sign in. Never sold, never used for ads. Export it or delete your account in a tap." },
+  { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, with an encrypted backup in the UK if you sign in. Never sold, never used for ads. Export it or delete it from Settings." },
 ];
 
 const FAQS = [

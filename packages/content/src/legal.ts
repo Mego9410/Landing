@@ -55,6 +55,7 @@ export const APP_PRIVACY: LegalDoc = {
     { heading: "Where it's kept", paras: [
       "On your phone, always. If you don't sign in, what you log stays on your phone and isn't sent to us.",
       "If you sign in, your backup and account are kept on servers in London, UK. They're sent over an encrypted connection and stored encrypted. The key that keeps you signed in is kept in your iPhone's Keychain.",
+      "Nothing is backed up until you've finished setting up your plan and agreed to Steadie keeping your health information. We record which wording you agreed to and when, alongside your account.",
       "Your phone's own backups (iCloud, if you use it) also include the app's data, under Apple's terms.",
     ] },
     { heading: "Who else is involved", paras: [
@@ -81,7 +82,7 @@ export const APP_PRIVACY: LegalDoc = {
     ] },
     { heading: "Your rights", paras: [
       "You have the right to see what we hold about you, have it corrected, have it deleted, take a copy with you, object to or limit how we use it, and withdraw your consent at any time. Withdrawing consent doesn't affect what we did before.",
-      "Most of this is in the app. Settings → Export my data gives you a file of everything the app keeps. You can change your answers and preferences at any time. Settings → Delete my account (or Delete everything, if you haven't signed in) deletes it all and withdraws your consent.",
+      "Most of this is in the app. Settings → Export my data gives you a file of everything the app keeps. You can change your answers and preferences at any time. Settings → Account → Withdraw health consent deletes your backup from our servers and stops backing up, while your plan stays on your phone. Settings → Delete my account (or Sign out and delete my data, if you haven't signed in) deletes it all and withdraws your consent.",
       `For anything else, email ${PRIVACY_CONTACT}. We'll reply within one month. If you're unhappy with how we've handled your information, you can complain to the Information Commissioner's Office at ico.org.uk or on 0303 123 1113, though we'd like the chance to put it right first.`,
     ] },
     { heading: "Keeping it safe", paras: [

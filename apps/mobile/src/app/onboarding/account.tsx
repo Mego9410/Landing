@@ -88,7 +88,7 @@ export default function AccountStep() {
           <Button label="Continue with email" variant={apple ? "secondary" : "primary"} block disabled={busy} onPress={() => { setError(undefined); setStage("email"); }} />
           <ToggleRow title="Email me new guides" sub="Two short guides a week and a Sunday digest. Unsubscribe any time." value={emails} onChange={setEmails} />
           {fromSettings ? null : <Button label={existing ? "Start a new plan instead" : "Not now"} variant="quiet" onPress={carryOn} style={{ alignSelf: "center" }} />}
-          <AppText variant="caption" color="inkMuted">Your backup is private to you. You can sign out or delete it any time in Settings. {existing || fromSettings ? "" : "Without an account, your plan stays on this phone only and is lost if the phone is."}</AppText>
+          <AppText variant="caption" color="inkMuted">Your backup is private to you: kept encrypted on our servers in London, never sold and never used for ads. You can withdraw it, sign out or delete it any time in Settings. {existing || fromSettings ? "" : "Without an account, your plan stays on this phone only and is lost if the phone is."}</AppText>
         </View>
       ) : null}
 

@@ -4,7 +4,7 @@ import { broadcastNames, digestEmail, guideEmail, sendOnce, type Email } from "@
 
 // The daily guides job, run by Vercel Cron (vercel.json) every morning. It refreshes the site so any guide due today
 // is live, emails each guide published in the last few days that hasn't gone out yet, and on Sundays sends the weekly
-// digest. Emails only send when GUIDE_EMAILS is "on"; until then it reports what it would have sent.
+// digest. Emails only send when GUIDE_EMAILS is "on" (or true/yes/1); until then it reports what it would have sent.
 //
 // Vercel calls it with "Authorization: Bearer $CRON_SECRET". With the same header you can also open:
 //   /api/cron/guides?dry=1                 what would send today, without sending
@@ -48,8 +48,13 @@ export async function GET(request: Request) {
   const sunday = new Date(today + "T12:00:00Z").getUTCDay() === 0;
   if (sunday) emails.push(digestEmail(today));
 
-  const live = process.env.GUIDE_EMAILS === "on" && !url.searchParams.has("dry");
-  if (!live) return Response.json({ today, sending: false, wouldSend: emails.map((e) => ({ name: e.name, subject: e.subject })) });
+  // "on", "true", "yes" or "1", in any case: anything else means report only.
+  const switchedOn = ["on", "true", "yes", "1"].includes((process.env.GUIDE_EMAILS ?? "").trim().toLowerCase());
+  const live = switchedOn && !url.searchParams.has("dry");
+  if (!live) {
+    if (!switchedOn) console.info(`guides cron: GUIDE_EMAILS is ${process.env.GUIDE_EMAILS ? `"${process.env.GUIDE_EMAILS}"` : "not set"}, so nothing was sent`);
+    return Response.json({ today, sending: false, wouldSend: emails.map((e) => ({ name: e.name, subject: e.subject })) });
+  }
 
   const existing = await broadcastNames();
   const sent: string[] = [], skipped: string[] = [];

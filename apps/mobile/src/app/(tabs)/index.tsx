@@ -1,4 +1,5 @@
 import { Redirect, router, type Href } from "expo-router";
+import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 import { AppText } from "@/components/AppText";
@@ -15,6 +16,7 @@ import { minutes, px, thisWeek } from "@/state/food";
 import { habitDetail, nextSession, sessionTarget, toggleHabit } from "@/state/habits";
 import { needsDisclaimer, sessionsInWeek, useApp, weekOf } from "@/state/store";
 import { sessionsPaused } from "@/state/health";
+import { notificationsAllowed, trialMessage } from "@/state/reminders";
 import { headline, todayPlan, type Task } from "@/state/today";
 import { radius, space, useColors } from "@/theme";
 
@@ -117,6 +119,27 @@ function Plans() {
   );
 }
 
+/** In the last two days of a free trial that will turn into a subscription, the trial reminder's message, here instead,
+ *  for anyone who hasn't allowed notifications (so never got it). */
+function TrialEnding() {
+  const sub = useApp().subscription;
+  const [allowed, setAllowed] = useState(true);
+  useEffect(() => { notificationsAllowed().then(setAllowed, () => setAllowed(false)); }, []);
+  if (allowed || !sub?.trial || !sub.willRenew || !sub.until) return null;
+  const left = new Date(sub.until).getTime() - Date.now();
+  if (left <= 0 || left > 2 * 24 * 60 * 60 * 1000) return null;
+  const m = trialMessage(sub.until);
+  return (
+    <Card style={{ gap: 6 }}>
+      <AppText weight="800">{m.title}</AppText>
+      <AppText color="inkMuted">{m.body}</AppText>
+      <Pressable accessibilityRole="button" onPress={() => router.push("/settings")} style={{ alignSelf: "flex-start", paddingVertical: space[2], minHeight: 44, justifyContent: "center" }}>
+        <AppText weight="800" style={{ textDecorationLine: "underline" }}>Your subscription in Settings</AppText>
+      </Pressable>
+    </Card>
+  );
+}
+
 export default function Today() {
   const s = useApp();
   // New people start at the welcome screen; the health information comes during onboarding. Someone already set up
@@ -137,6 +160,8 @@ export default function Today() {
         </View>
         <Avatar name={s.name} />
       </View>
+
+      <TrialEnding />
 
       <Card tone="apricot" hero style={{ gap: space[4] }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: space[4] }}>

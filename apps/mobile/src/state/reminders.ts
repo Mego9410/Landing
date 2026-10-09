@@ -5,6 +5,7 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import { sessionsPaused } from "./health";
 import type { AppState } from "./store";
+import { trialReminderAt } from "@/data/trial";
 export type { Reminders } from "@/data/reminders";
 
 const supported = Platform.OS === "ios" || Platform.OS === "android";
@@ -33,20 +34,33 @@ async function cancelPlanReminders() {
   await Promise.all(all.filter((n) => n.identifier !== TRIAL_ID).map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)));
 }
 
-/** A reminder two days before a free trial ends, so nobody is charged by surprise. `until` null cancels it. Only
- *  schedules if notifications are allowed; `ask` asks for permission first (when someone has just started a trial). */
-export async function trialReminder(until: string | null, ask = false) {
+/** True if notifications can be shown now (no asking). */
+export async function notificationsAllowed(): Promise<boolean> {
+  if (!supported) return false;
+  return (await Notifications.getPermissionsAsync()).granted;
+}
+
+/** The trial reminder's wording, also shown on Today when notifications are off. */
+export function trialMessage(until: string) {
+  const day = new Date(until).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  return { title: "Your free week ends in 2 days", body: `Your Steadie plan continues on ${day}. You can cancel any time in your Apple settings before then.` };
+}
+
+/** A reminder two days before a free trial ends, so nobody is charged by surprise. `until` null cancels it; calling it
+ *  again replaces it (one fixed identifier), so there's never more than one. Only schedules if notifications are
+ *  allowed; `ask` asks for permission first (when someone has just started a trial). Tapping it opens Settings, where the
+ *  subscription is managed. */
+export async function trialReminder(until: string | null, started: string | null = null, ask = false) {
   if (!supported) return;
   await Notifications.cancelScheduledNotificationAsync(TRIAL_ID).catch(() => {});
   if (!until) return;
-  const when = new Date(new Date(until).getTime() - 2 * 24 * 60 * 60 * 1000);
-  if (when.getTime() < Date.now() + 60 * 1000) return;
-  const allowed = ask ? await ensurePermission() : (await Notifications.getPermissionsAsync()).granted;
+  const when = trialReminderAt(until, started);
+  if (!when) return;
+  const allowed = ask ? await ensurePermission() : await notificationsAllowed();
   if (!allowed) return;
-  const day = new Date(until).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
   await Notifications.scheduleNotificationAsync({
     identifier: TRIAL_ID,
-    content: { title: "Your free trial ends in two days", body: `It ends on ${day}. If you're staying, there's nothing to do. If not, you can cancel in Settings.` },
+    content: { ...trialMessage(until), data: { url: "/settings" } },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when },
   });
 }

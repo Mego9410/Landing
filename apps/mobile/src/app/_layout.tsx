@@ -1,10 +1,11 @@
 import { Fredoka_500Medium, Fredoka_600SemiBold } from "@expo-google-fonts/fredoka";
 import { Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold } from "@expo-google-fonts/nunito";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import * as Notifications from "expo-notifications";
+import { router, Stack, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { Toast } from "@/components/Toast";
 import { startBackup } from "@/state/account";
@@ -17,6 +18,22 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 // Sheets open over the screen they belong to.
 const SHEET = { presentation: "modal" as const };
+
+/** Opens the screen a tapped notification points to (its `data.url`), whether the tap launched the app or found it open.
+ *  Each tap is handled once. */
+function NotificationLinks() {
+  const last = Notifications.useLastNotificationResponse();
+  const handled = useRef<string | null>(null);
+  useEffect(() => {
+    if (!last || last.actionIdentifier !== Notifications.DEFAULT_ACTION_IDENTIFIER) return;
+    const id = `${last.notification.request.identifier}:${last.notification.date}`;
+    const url = last.notification.request.content.data?.url;
+    if (handled.current === id || typeof url !== "string") return;
+    handled.current = id;
+    setTimeout(() => router.push(url as Href), 0);
+  }, [last]);
+  return null;
+}
 
 export default function RootLayout() {
   const c = useColors();
@@ -47,6 +64,7 @@ export default function RootLayout() {
         <Stack.Screen name="journal/index" options={SHEET} />
       </Stack>
       <Toast />
+      <NotificationLinks />
     </View>
   );
 }

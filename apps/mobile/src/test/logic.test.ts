@@ -186,3 +186,18 @@ test("subscription periods read in words, trials in days", async () => {
   assert.equal(period("P1Y"), "1 year");
   assert.equal(period(null), "");
 });
+
+test("trial reminder: 9am two days before a week's trial ends, scaled for sandbox, never in the past", async () => {
+  const { trialReminderAt } = await import("@/data/trial");
+  const start = new Date(2026, 9, 9, 14, 30), end = new Date(2026, 9, 16, 14, 30);
+  const at = trialReminderAt(end.toISOString(), start.toISOString(), start.getTime())!;
+  assert.equal(at.getDate(), 14); assert.equal(at.getHours(), 9); assert.equal(at.getMinutes(), 0);
+  // Unknown start: still the real-world rule.
+  assert.equal(trialReminderAt(end.toISOString(), null, start.getTime())!.getHours(), 9);
+  // Sandbox: a 7-day trial lasts 3 minutes, so the reminder comes about 51 seconds before the end.
+  const sStart = Date.UTC(2026, 9, 9, 12), sEnd = sStart + 3 * 60 * 1000;
+  const sAt = trialReminderAt(new Date(sEnd).toISOString(), new Date(sStart).toISOString(), sStart)!;
+  assert.equal(Math.round((sEnd - sAt.getTime()) / 1000), 51);
+  // Already inside the last two days: nothing to schedule.
+  assert.equal(trialReminderAt(end.toISOString(), start.toISOString(), new Date(2026, 9, 15).getTime()), null);
+});

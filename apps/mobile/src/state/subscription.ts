@@ -27,7 +27,7 @@ function remember(info: CustomerInfo, askForReminder = false) {
   const plan = !e ? null : /annual|year/i.test(e.productIdentifier) ? "yearly" : "monthly";
   const ended = !e && !!info.entitlements.all[ENTITLEMENT];
   set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false, ended }; });
-  trialReminder(e && trial && e.willRenew ? e.expirationDate : null, askForReminder).catch(() => {});
+  trialReminder(e && trial && e.willRenew ? e.expirationDate : null, e?.latestPurchaseDate ?? null, askForReminder).catch(() => {});
 }
 
 /** Connects to RevenueCat once and keeps the saved subscription status up to date. */

@@ -123,3 +123,25 @@ production`), not in an update.
 Prices and trials live in App Store Connect, and the app reads them from there, so the paywall updates itself. Also
 change the website (`PRICE` in `apps/web/app/page.tsx`, and the FAQ), the terms (`packages/content/src/legal.ts`) and
 the App Store art if the trial changes.
+
+## Testing the trial-ending reminder
+
+The app schedules one local notification ("Your free week ends in 2 days") at 9am, two days before a trial ends, and
+cancels or replaces it whenever RevenueCat reports a change (cancelled, paid early, dates moved). It has one fixed
+identifier, so there's never a duplicate. Tapping it opens Settings. If notifications aren't allowed, the same message
+shows as a card on Today for the last two days of the trial.
+
+App Store sandbox (TestFlight and Sandbox Apple IDs) compresses time: a 1-week trial lasts **3 minutes**. The app
+notices a trial shorter than a day and scales the offset, so the reminder fires two sevenths of the way from the end,
+about **51 seconds before** the trial converts. To test:
+
+1. On the iPhone, sign in to a Sandbox Apple ID (Settings → Developer → Sandbox Apple Account, or App Store → sign in
+   when buying). Use a fresh one, or clear its purchase history in App Store Connect → Users and Access → Sandbox, so
+   it's eligible for the trial.
+2. Install the TestFlight build, finish onboarding and start the free trial. Allow notifications when asked.
+3. Lock the phone. About 2 minutes 10 seconds later, the reminder arrives. Tap it: Settings opens.
+4. To test the Today card, turn notifications off for Steadie in iOS Settings and start another trial with a fresh
+   sandbox account: the card shows on Today straight away (a sandbox trial is always in its last "2 days").
+5. Cancelling in Settings → Manage subscription before then removes the reminder.
+
+Sandbox renewals repeat up to 12 times a day, then stop.

@@ -116,6 +116,22 @@ export const loadFunnel = () => load(async () => {
   return { windows, retention, total: num(total), installs: num(installs) };
 }, "funnel");
 
+/* ---------- why people cancel (lapse_feedback) ---------- */
+export const LAPSE_LABELS: Record<string, string> = {
+  cost: "Cost", got_what_i_needed: "Got what I needed", not_enough_time: "Not enough time", didnt_suit_me: "Didn't suit me", other: "Other",
+};
+/** Answers to the cancellation card: all-time and last-30-day counts by reason, and the latest notes. */
+export const loadLapses = () => load(async () => {
+  await (await import("./db/extra")).ensureExtraTables();
+  const counts = await rows(sql`select reason, count(*) as n, count(*) filter (where created_at > now() - interval '30 days') as n30 from lapse_feedback group by reason`);
+  const notes = await rows(sql`select reason, note, created_at from lapse_feedback where note is not null order by created_at desc limit 10`);
+  return {
+    reasons: Object.keys(LAPSE_LABELS).map((k) => { const r = counts.find((c) => c.reason === k); return { key: k, label: LAPSE_LABELS[k], n: num(r?.n), n30: num(r?.n30) }; }),
+    total: counts.reduce((a, r) => a + num(r.n), 0),
+    notes: notes.map((r) => ({ reason: LAPSE_LABELS[String(r.reason)] ?? String(r.reason), note: String(r.note), at: new Date(String(r.created_at)).toISOString() })),
+  };
+}, "cancellation answers");
+
 /* ---------- emails (Resend) ---------- */
 interface Metrics { delivered?: number; unique_opened?: number; unique_clicked?: number; unsubscribed?: number; bounced?: number; open_rate?: number; click_rate?: number }
 export const loadEmails = () => load(async () => {

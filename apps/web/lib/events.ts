@@ -9,6 +9,9 @@ export const EVENT_NAMES = [
 ] as const;
 export type EventName = (typeof EVENT_NAMES)[number];
 
+/** The answers on the cancellation card (lapse_feedback.reason). */
+export const LAPSE_REASONS = ["cost", "got_what_i_needed", "not_enough_time", "didnt_suit_me", "other"] as const;
+
 export const MAX_BATCH = 25;
 const NAMES = new Set<string>(EVENT_NAMES);
 const KEY = /^[a-z_]{1,24}$/;

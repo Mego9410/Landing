@@ -12,6 +12,8 @@ export interface Install {
   /** Funnel events sent once per install. */
   paidSent?: boolean;
   week1Sent?: boolean;
+  /** The cancellation the "why are you leaving" card was answered or closed for (its end date), so it shows once. */
+  lapseFor?: string | null;
 }
 
 const KEY = "steadie.install.v1";

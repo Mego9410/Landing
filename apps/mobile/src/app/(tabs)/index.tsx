@@ -8,7 +8,7 @@ import { Card } from "@/components/Card";
 import { HabitCheck } from "@/components/HabitCheck";
 import { Icon, type IconName } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
-import { Avatar, Disc } from "@/components/ui";
+import { Avatar, Choices, Disc, Field } from "@/components/ui";
 import { HABITS, phaseOf, PHASES, TIPS } from "@/data/content";
 import { sessionFor } from "@/data/sessions";
 import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
@@ -18,6 +18,9 @@ import { needsDisclaimer, sessionsInWeek, set, useApp, weekOf } from "@/state/st
 import { sessionsPaused } from "@/state/health";
 import { notificationsAllowed, trialMessage } from "@/state/reminders";
 import { askForReview } from "@/state/review";
+import { sendLapseFeedback, type LapseReason } from "@/state/events";
+import { install, updateInstall } from "@/state/install";
+import { billingEnabled } from "@/state/subscription";
 import { headline, todayPlan, type Task } from "@/state/today";
 import { radius, space, useColors } from "@/theme";
 
@@ -167,6 +170,58 @@ function PhaseCelebration({ week }: { week: number }) {
   );
 }
 
+const LAPSE_OPTIONS: { id: LapseReason; label: string }[] = [
+  { id: "cost", label: "The cost" }, { id: "got_what_i_needed", label: "I got what I needed" }, { id: "not_enough_time", label: "Not enough time" },
+  { id: "didnt_suit_me", label: "It didn't suit me" }, { id: "other", label: "Something else" },
+];
+
+/** Once, after someone cancels (their plan won't renew): one optional question. Never blocks anything; closing it or
+ *  answering it hides it for that cancellation. */
+function LapseCard() {
+  const sub = useApp().subscription;
+  const key = sub && !sub.willRenew && (sub.active || sub.ended) ? sub.until ?? "ended" : null;
+  const [show, setShow] = useState(false);
+  const [reason, setReason] = useState<LapseReason | null>(null);
+  const [note, setNote] = useState("");
+  const [state, setState] = useState<"ask" | "sending" | "thanks" | "error">("ask");
+  useEffect(() => {
+    let live = true;
+    if (key && billingEnabled()) install().then((i) => { if (live) setShow(i.lapseFor !== key); }).catch(() => {});
+    return () => { live = false; };
+  }, [key]);
+  if (!show || !key) return null;
+  const close = () => { setShow(false); updateInstall({ lapseFor: key }).catch(() => {}); };
+  function send() {
+    if (!reason) return;
+    setState("sending");
+    sendLapseFeedback(reason, reason === "other" || note ? note : "").then(() => { setState("thanks"); updateInstall({ lapseFor: key! }).catch(() => {}); }, () => setState("error"));
+  }
+  if (state === "thanks") {
+    return (
+      <Card style={{ gap: space[2] }}>
+        <AppText weight="800">Thank you</AppText>
+        <AppText color="inkMuted">That really helps. Your plan, logs and everything else stay on this phone, and you can export them in Settings whenever you like.</AppText>
+        <Button variant="quiet" label="Close" onPress={() => setShow(false)} style={{ alignSelf: "flex-start" }} />
+      </Card>
+    );
+  }
+  return (
+    <Card style={{ gap: space[3] }}>
+      <View style={{ gap: 4 }}>
+        <AppText weight="800" accessibilityRole="header">Sorry to see you go</AppText>
+        <AppText color="inkMuted">What&apos;s the main reason? It&apos;s optional, and it helps us make Steadie better.</AppText>
+      </View>
+      <Choices label="Main reason" value={reason ?? ("" as LapseReason)} onChange={(v) => setReason(v as LapseReason)} options={LAPSE_OPTIONS} />
+      {reason ? <Field label={reason === "other" ? "Tell us a little more (optional)" : "Anything to add? (optional)"} value={note} onChangeText={setNote} maxLength={500} placeholder="A few words" /> : null}
+      {state === "error" ? <AppText variant="caption" color="roseInk">Couldn&apos;t send that just now. Check your connection and try again.</AppText> : null}
+      <View style={{ flexDirection: "row", gap: space[2], flexWrap: "wrap" }}>
+        <Button label={state === "sending" ? "Sending…" : "Send"} disabled={!reason || state === "sending"} onPress={send} />
+        <Button variant="quiet" label="No thanks" onPress={close} />
+      </View>
+    </Card>
+  );
+}
+
 /** In the last two days of a free trial that will turn into a subscription, the trial reminder's message, here instead,
  *  for anyone who hasn't allowed notifications (so never got it). */
 function TrialEnding() {
@@ -215,6 +270,7 @@ export default function Today() {
       <PhaseStrip week={week} />
       <PhaseCelebration week={week} />
       <TrialEnding />
+      <LapseCard />
 
       <Card tone="apricot" hero style={{ gap: space[4] }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: space[4] }}>

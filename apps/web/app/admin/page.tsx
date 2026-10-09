@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { adminFrom, guideSchedule, loadDownloads, loadEmails, loadFunnel, loadMembers, loadRevenue, setupChecks, type Loaded, type RcMetric } from "@/lib/admin";
+import { adminFrom, guideSchedule, loadDownloads, loadEmails, loadFunnel, loadLapses, loadMembers, loadRevenue, setupChecks, type Loaded, type RcMetric } from "@/lib/admin";
 import { getAuth } from "@/lib/auth";
 import styles from "./admin.module.css";
 import { DailyBars } from "./chart";
@@ -35,7 +35,7 @@ export default async function Admin() {
     return <main className={styles.page}><AdminLogin signedInAs={session?.user.email} /></main>;
   }
 
-  const [members, emails, revenue, downloads, funnel] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads(), loadFunnel()]);
+  const [members, emails, revenue, downloads, funnel, lapses] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads(), loadFunnel(), loadLapses()]);
   const guides = guideSchedule();
   const rc = revenue.ok ? revenue.data : [];
   const dl = downloads.ok ? downloads.data : [];
@@ -82,6 +82,31 @@ export default async function Admin() {
                 {funnel.data.retention.map((r) => (
                   <div key={r.label} className={styles.stat}><strong>{pctText(r.pct)}</strong><span>{r.label} check-in retention ({n(r.kept)} of {n(r.eligible)})</span></div>
                 ))}
+              </div>
+            </div>
+          ) : null}
+        </section>
+
+        <section className={styles.section} aria-labelledby="lapses">
+          <div className={styles.sectionHead}><h2 id="lapses" className={styles.h2}>Why people cancel</h2><span className={styles.muted}>The card shown once after a cancellation{lapses.ok ? ` · ${n(lapses.data.total)} answers` : ""}</span></div>
+          <Notice loaded={lapses} />
+          {lapses.ok ? (
+            <div className={styles.grid2}>
+              <div className={styles.scroll}>
+                <table className={styles.table}>
+                  <thead><tr><th>Reason</th><th className={styles.num}>Last 30 days</th><th className={styles.num}>All time</th></tr></thead>
+                  <tbody>{lapses.data.reasons.map((r) => (
+                    <tr key={r.key}><td>{r.label}</td><td className={styles.num}>{n(r.n30)}</td><td className={styles.num}>{n(r.n)}</td></tr>
+                  ))}</tbody>
+                </table>
+              </div>
+              <div className={styles.scroll}>
+                <p className={styles.muted} style={{ marginBottom: 8 }}>Latest notes</p>
+                <table className={styles.table}>
+                  <tbody>{lapses.data.notes.map((x, i) => (
+                    <tr key={i}><td style={{ whiteSpace: "nowrap" }}>{x.reason}</td><td>{x.note}</td><td style={{ whiteSpace: "nowrap" }}>{when(x.at)}</td></tr>
+                  ))}{lapses.data.notes.length ? null : <tr><td className={styles.muted}>No notes yet.</td></tr>}</tbody>
+                </table>
               </div>
             </div>
           ) : null}

@@ -13,7 +13,8 @@ const info = console.info; console.info = (...a: unknown[]) => { const m = Strin
 const { getAuth } = await import("../lib/auth.ts");
 const events = await import("../app/api/events/route.ts");
 const account = await import("../app/api/account/route.ts");
-const { loadFunnel } = await import("../lib/admin.ts");
+const { loadFunnel, loadLapses } = await import("../lib/admin.ts");
+const feedback = await import("../app/api/feedback/route.ts");
 const { getDb } = await import("../lib/db/index.ts");
 const { sql } = await import("drizzle-orm");
 const auth = await getAuth();
@@ -41,6 +42,13 @@ const b = await rows(sql`select distinct user_id from events where install_id = 
 check(b.length === 1 && typeof b[0].user_id === "string", "signed in: account attached");
 const funnel = await loadFunnel();
 check(funnel.ok && funnel.data.windows[0].steps[0].n === 2 && funnel.data.windows[0].steps[4].n === 1 && funnel.data.windows[0].steps[4].ofFirst === 50, "admin funnel counts installs per step");
+const fb = (body: unknown) => feedback.POST(new Request("http://localhost/api/feedback", { method: "POST", headers: { "Content-Type": "application/json", "x-forwarded-for": "10.1.1.1" }, body: JSON.stringify(body) }));
+check((await fb({ installId: A, reason: "bored" })).status === 400, "feedback: unknown reason refused");
+check((await fb({ installId: A, reason: "cost", note: "x".repeat(900) })).status === 204, "feedback: saved");
+check((await fb({ installId: B, reason: "cost" })).status === 204 && (await fb({ installId: B, reason: "other", note: "Moved abroad" })).status === 204, "feedback: more saved");
+const lapses = await loadLapses();
+check(lapses.ok && lapses.data.reasons.find((r) => r.key === "cost")!.n === 2 && lapses.data.total === 3, "admin: counts by reason");
+check(lapses.ok && lapses.data.notes.some((x) => x.note === "Moved abroad") && lapses.data.notes.every((x) => x.note.length <= 500), "admin: latest notes, capped at 500");
 let limited = false;
 for (let i = 0; i < 40 && !limited; i++) limited = (await post({ installId: A, events: [{ name: "check_in_completed" }] }, undefined, "10.9.9.9")).status === 429;
 check(limited, "rate limited per IP");

@@ -68,3 +68,18 @@ export function flushEvents(): Promise<void> {
   })();
   return sending;
 }
+
+export type LapseReason = "cost" | "got_what_i_needed" | "not_enough_time" | "didnt_suit_me" | "other";
+
+/** Sends the answer to the cancellation card. Throws if it couldn't be sent, so the card can say so. */
+export async function sendLapseFeedback(reason: LapseReason, note: string) {
+  if (!API) return;
+  const { id } = await install(get().startedOn);
+  const t = await token().catch(() => null);
+  const r = await fetch(`${API}/api/feedback`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: "steadie://", ...(t ? { Authorization: `Bearer ${t}` } : {}) },
+    body: JSON.stringify({ installId: id, reason, note: note.trim().slice(0, 500) || undefined }),
+  });
+  if (!r.ok) throw new Error(`feedback ${r.status}`);
+}

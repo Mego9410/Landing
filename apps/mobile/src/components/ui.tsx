@@ -89,7 +89,7 @@ export function Choices<T extends string | number>({ options, value, onChange, l
               const v = value as T[];
               onChange(on ? v.filter((x) => x !== o.id) : [...v, o.id]);
             }}
-            style={{ minHeight: 40, paddingHorizontal: space[4], borderRadius: radius.full, justifyContent: "center", backgroundColor: on ? c.apricot : c.surfaceRaised, borderWidth: on ? 0 : 1.5, borderColor: c.line }}>
+            style={{ minHeight: 44, paddingVertical: space[2], paddingHorizontal: space[4], borderRadius: radius.full, justifyContent: "center", backgroundColor: on ? c.apricot : c.surfaceRaised, borderWidth: on ? 0 : 1.5, borderColor: c.line }}>
             <AppText weight="700" color={on ? "onPastel" : "ink"} style={{ fontSize: 14 }}>{o.label}</AppText>
           </Pressable>
         );
@@ -149,7 +149,7 @@ export function Meter({ value, max, tone = "sageInk", track, label }: { value: n
 export function Pill({ label, tone = "sunk" }: { label: string; tone?: Tone }) {
   const c = useColors();
   return (
-    <View style={{ height: 28, paddingHorizontal: 10, borderRadius: radius.full, backgroundColor: bgFor(c, tone), justifyContent: "center", alignSelf: "flex-start" }}>
+    <View style={{ minHeight: 28, paddingVertical: 4, paddingHorizontal: 10, borderRadius: radius.full, backgroundColor: bgFor(c, tone), justifyContent: "center", alignSelf: "flex-start" }}>
       <AppText variant="caption" weight="800" color={tone === "sunk" ? "ink" : "onPastel"}>{label}</AppText>
     </View>
   );
@@ -222,7 +222,7 @@ export function Avatar({ name }: { name: string }) {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => router.push("/settings")}
       style={{ width: 44, height: 44, borderRadius: radius.full, backgroundColor: c.lilac, alignItems: "center", justifyContent: "center" }}>
-      {name ? <AppText variant="heading" color="onPastel" weight="600">{name.charAt(0).toUpperCase()}</AppText> : <Icon name="settings" color={c.onPastel} />}
+      {name ? <AppText variant="heading" color="onPastel" weight="600" maxFontSizeMultiplier={1.2}>{name.charAt(0).toUpperCase()}</AppText> : <Icon name="settings" color={c.onPastel} />}
     </Pressable>
   );
 }
@@ -233,7 +233,7 @@ export function Field({ label, error, suffix, hint, ...input }: TextInputProps &
   return (
     <View style={{ gap: 6, flex: 1 }}>
       <AppText weight="700">{label}</AppText>
-      <View style={{ flexDirection: "row", alignItems: "center", height: 56, borderRadius: radius.md, backgroundColor: c.surfaceRaised, paddingHorizontal: space[4], borderWidth: 1.5, borderColor: error ? c.roseInk : c.line }}>
+      <View style={{ flexDirection: "row", alignItems: "center", minHeight: 56, paddingVertical: space[2], borderRadius: radius.md, backgroundColor: c.surfaceRaised, paddingHorizontal: space[4], borderWidth: 1.5, borderColor: error ? c.roseInk : c.line }}>
         <TextInput accessibilityLabel={label} placeholderTextColor={c.inkMuted} {...input} style={[textStyle("bodyLg"), { flex: 1, color: c.ink }]} />
         {suffix ? <AppText color="inkMuted">{suffix}</AppText> : null}
       </View>

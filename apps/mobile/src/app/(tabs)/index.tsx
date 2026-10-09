@@ -22,7 +22,7 @@ import { sendLapseFeedback, type LapseReason } from "@/state/events";
 import { install, updateInstall } from "@/state/install";
 import { billingEnabled } from "@/state/subscription";
 import { headline, todayPlan, type Task } from "@/state/today";
-import { radius, space, useColors } from "@/theme";
+import { radius, space, useColors, useLargeText } from "@/theme";
 
 /** The day as a ring of segments, one per thing in today's plan, filled as they're done. Echoes the brand's sun. */
 function DayRing({ done, total }: { done: number; total: number }) {
@@ -42,7 +42,7 @@ function DayRing({ done, total }: { done: number; total: number }) {
           ))}
       </Svg>
       <View style={{ position: "absolute", inset: 0, alignItems: "center", justifyContent: "center" }}>
-        <AppText variant="numeral" color="onPastel" style={{ fontSize: 28, lineHeight: 32 }}>{done}<AppText color="onPastel" style={{ fontSize: 16 }}>/{total}</AppText></AppText>
+        <AppText variant="numeral" color="onPastel" maxFontSizeMultiplier={1.2} style={{ fontSize: 28, lineHeight: 32 }}>{done}<AppText color="onPastel" style={{ fontSize: 16 }}>/{total}</AppText></AppText>
       </View>
     </View>
   );
@@ -80,8 +80,8 @@ function PlanTile({ icon, tone, title, line, detail, onPress }: { icon: IconName
       </View>
       <View style={{ gap: 2 }}>
         <AppText variant="heading" style={{ fontSize: 18, lineHeight: 22 }}>{title}</AppText>
-        <AppText weight="700" numberOfLines={2}>{line}</AppText>
-        <AppText variant="caption" color="inkMuted" numberOfLines={2}>{detail}</AppText>
+        <AppText weight="700">{line}</AppText>
+        <AppText variant="caption" color="inkMuted">{detail}</AppText>
       </View>
     </Pressable>
   );
@@ -92,7 +92,7 @@ function Shortcut({ icon, label, onPress }: { icon: IconName; label: string; onP
   const c = useColors();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress}
-      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 6, height: 40, paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line, opacity: pressed ? 0.7 : 1 })}>
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, paddingVertical: space[2], paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line, opacity: pressed ? 0.7 : 1 })}>
       <Icon name={icon} size={16} color={c.ink} />
       <AppText weight="700" style={{ fontSize: 14 }}>{label}</AppText>
     </Pressable>
@@ -100,7 +100,7 @@ function Shortcut({ icon, label, onPress }: { icon: IconName; label: string; onP
 }
 
 function Plans() {
-  const s = useApp();
+  const s = useApp(), large = useLargeText();
   const day = weekdayIndex(today()), m = thisWeek(s).days[day].dinner;
   const dinner = m.kind === "takeaway" ? { line: "Takeaway night", detail: "A night off cooking, planned in" }
     : m.kind === "free" || !m.recipe ? { line: "A free night", detail: "Eat out, use the freezer or pick a recipe" }
@@ -110,7 +110,7 @@ function Plans() {
   return (
     <View style={{ gap: space[3] }}>
       <AppText variant="heading" accessibilityRole="header">Your plans</AppText>
-      <View style={{ flexDirection: "row", gap: space[3] }}>
+      <View style={{ flexDirection: large ? "column" : "row", gap: space[3] }}>
         <PlanTile icon="meal" tone="apricot" title="Meal plan" line={dinner.line} detail={dinner.detail} onPress={() => router.push("/meals")} />
         <PlanTile icon="workout" tone="sage" title="Strength plan" line={strength.line} detail={strength.detail} onPress={() => router.push("/workouts")} />
       </View>
@@ -247,7 +247,7 @@ function TrialEnding() {
 }
 
 export default function Today() {
-  const s = useApp();
+  const s = useApp(), largeText = useLargeText();
   // New people start at the welcome screen; the health information comes during onboarding. Someone already set up
   // sees it again here only if its wording has changed.
   if (!s.onboarded) return <Redirect href="/onboarding" />;
@@ -256,7 +256,7 @@ export default function Today() {
   const week = weekOf(s), phase = phaseOf(week), nextPhase = PHASES[PHASES.indexOf(phase) + 1];
   const items = todayPlan(s), done = items.filter((i) => i.done).length;
   const up = items.find((i): i is Task => i.kind === "task" && !i.done), habitsLeft = items.some((i) => i.kind === "habit" && !i.done);
-  const part = partOfDay(), tip = part === "evening" ? TIPS.evening : TIPS.day;
+  const part = partOfDay(), tip = part === "evening" ? TIPS.evening : TIPS.day, large = largeText;
   return (
     <Screen>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[3] }}>
@@ -273,7 +273,7 @@ export default function Today() {
       <LapseCard />
 
       <Card tone="apricot" hero style={{ gap: space[4] }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: space[4] }}>
+        <View style={{ flexDirection: large ? "column" : "row", alignItems: large ? "flex-start" : "center", gap: space[4] }}>
           <DayRing done={done} total={items.length} />
           <View style={{ flex: 1, gap: 4 }}>
             <AppText variant="label" color="onPastel">WEEK {week} · {phase.name.toUpperCase()}</AppText>

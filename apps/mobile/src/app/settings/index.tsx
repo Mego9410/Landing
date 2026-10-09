@@ -2,11 +2,12 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import Constants from "expo-constants";
 import * as Updates from "expo-updates";
-import { Alert, Platform, Pressable, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { LABELS } from "@landing/engine";
 import { castById } from "@landing/motion";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Choices, Header, List, Row, Section, ToggleRow } from "@/components/ui";
 import { phaseOf } from "@/data/content";
@@ -35,6 +36,7 @@ export default function Settings() {
     await connect().catch(() => toast("Couldn't connect to Apple Health."));
   }
   const { account, status } = useAccount();
+  const [asking, setAsking] = useState<Asking | null>(null);
   const sub = s.subscription;
   const until = sub?.until ? fmt.dayMonth(isoDate(new Date(sub.until))) : null;
   const subLine = !sub?.active ? "Your logs stay yours either way" : sub.trial ? (sub.willRenew ? `Free trial ends ${until}` : `Free trial ends ${until}, then stops`) : sub.willRenew ? `Renews ${until}` : `Ends ${until}`;
@@ -43,22 +45,17 @@ export default function Settings() {
   const fail = (e: unknown) => toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
   // Without an account, signing out means deleting: there's no backup to come back to, so the warning says so plainly
   // and offers to back up first.
-  const confirmDelete = () => {
-    const title = "Sign out and delete your data?";
-    const message = "You're not signed in, so your plan isn't backed up. This permanently deletes everything on this phone: your answers, plan, logs, weigh-ins and check-ins. It can't be undone.\n\nAny subscription carries on until you cancel it in your Apple account settings.";
-    const go = () => deleteEverything().then(() => { toast("Your data has been deleted."); router.replace("/onboarding"); });
-    const backUp = () => router.push({ pathname: "/onboarding/account", params: { from: "settings" } });
-    if (Platform.OS === "web") { if (window.confirm(`${title}\n\n${message}`)) go(); return; }
-    Alert.alert(title, message, [
-      { text: "Cancel", style: "cancel" },
-      ...(showAccount ? [{ text: "Back up first", onPress: backUp }] : []),
-      { text: "Delete and sign out", style: "destructive" as const, onPress: go },
-    ]);
-  };
-  const confirmSignOut = () => confirm("Sign out?", "Your plan is backed up first, then cleared from this phone. Sign in again to bring it back.", "Sign out",
-    () => signOut().then(() => { toast("Signed out. Your backup is safe."); router.replace("/onboarding"); }, fail));
-  const confirmDeleteAccount = () => confirm("Delete your account?", "This deletes your account and your backup from Steadie's servers, and clears this phone. It can't be undone.", "Delete my account",
-    () => deleteAccount().then(() => { toast("Your account and backup are deleted."); router.replace("/onboarding"); }, fail));
+  const confirmDelete = (where: Asking["where"]) => setAsking({
+    where, title: showAccount ? "Sign out and delete your data?" : "Delete everything?",
+    message: `${showAccount ? "You're not signed in, so your plan isn't backed up. " : ""}This permanently deletes everything on this phone: your answers, plan, logs, weigh-ins and check-ins. It can't be undone. Any subscription carries on until you cancel it in your Apple account settings.`,
+    action: "Delete everything", go: () => deleteEverything().then(() => { toast("Your data has been deleted."); router.replace("/onboarding"); }),
+    other: showAccount ? { label: "Back up first", onPress: () => router.push({ pathname: "/onboarding/account", params: { from: "settings" } }) } : undefined,
+  });
+  const confirmSignOut = () => setAsking({ where: "account", title: "Sign out?", message: "Your plan is backed up first, then cleared from this phone. Sign in again to bring it back.", action: "Sign out", safe: true,
+    go: () => signOut().then(() => { toast("Signed out. Your backup is safe."); router.replace("/onboarding"); }, fail) });
+  const confirmDeleteAccount = () => setAsking({ where: "account", title: "Delete your account?", message: "This deletes your account and your backup from Steadie's servers, and clears this phone. It can't be undone.", action: "Delete my account",
+    go: () => deleteAccount().then(() => { toast("Your account and backup are deleted."); router.replace("/onboarding"); }, fail) });
+  const confirmCard = (where: Asking["where"]) => asking?.where === where ? <Confirm ask={asking} onCancel={() => setAsking(null)} /> : null;
   return (
     <Screen header={<Header fallback="/" title="Settings" />} contentContainerStyle={{ gap: space[6], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">Settings</AppText>
@@ -107,6 +104,7 @@ export default function Settings() {
               <Row title="Delete my account" sub="Deletes your backup and clears this phone" titleColor="roseInk" onPress={confirmDeleteAccount} />
             </List>
           ) : null}
+          {confirmCard("account")}
           {account ? <GuideEmails /> : null}
           {account ? <WeeklyRecap /> : null}
           {account ? <HealthBackup /> : null}
@@ -115,7 +113,7 @@ export default function Settings() {
               <AppText variant="caption" color="inkMuted">Your plan is only on this phone. Sign in to back it up, so it comes with you to a new phone.</AppText>
               <List>
                 <Row first title="Sign in to back up" sub="With Apple or your email" onPress={() => router.push({ pathname: "/onboarding/account", params: { from: "settings" } })} />
-                <Row title="Sign out and delete my data" sub="You're not signed in, so this can't be undone" titleColor="roseInk" onPress={confirmDelete} />
+                <Row title="Sign out and delete my data" sub="You're not signed in, so this can't be undone" titleColor="roseInk" onPress={() => confirmDelete("account")} />
               </List>
             </>
           )}
@@ -126,8 +124,9 @@ export default function Settings() {
           <AppText variant="caption" color="inkMuted">{account ? "Your plan is on this phone and backed up to your Steadie account." : "Everything Steadie keeps is on this phone. Nothing is sent to us."}</AppText>
           <List>
             <Row first title="Export my data" sub="A file of everything the app keeps" onPress={() => shareExport().catch(() => toast("Couldn't make the file. Try again."))} />
-            {account || showAccount ? null : <Row title="Delete everything" sub="Clears this phone and starts again" titleColor="roseInk" onPress={confirmDelete} />}
+            {account || showAccount ? null : <Row title="Delete everything" sub="Clears this phone and starts again" titleColor="roseInk" onPress={() => confirmDelete("data")} />}
           </List>
+          {confirmCard("data")}
         </View>
       </Section>
       <Section title="ABOUT">
@@ -155,10 +154,21 @@ export default function Settings() {
   );
 }
 
-/** Asks before something that can't be undone. */
-function confirm(title: string, message: string, action: string, go: () => void) {
-  if (Platform.OS === "web") { if (window.confirm(`${title} ${message}`)) go(); return; }
-  Alert.alert(title, message, [{ text: "Cancel", style: "cancel" }, { text: action, style: "destructive", onPress: go }]);
+interface Asking { where: "account" | "data"; title: string; message: string; action: string; go: () => unknown; safe?: boolean; other?: { label: string; onPress: () => void } }
+
+/** Asks before something that can't be undone, in place under the row that was tapped (no pop-up). */
+function Confirm({ ask, onCancel }: { ask: Asking; onCancel: () => void }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <Card style={{ gap: space[3] }} accessibilityLiveRegion="polite">
+      <AppText weight="800" accessibilityRole="header">{ask.title}</AppText>
+      <AppText color="inkMuted">{ask.message}</AppText>
+      <Button label={busy ? "One moment…" : ask.action} variant={ask.safe ? "secondary" : "danger"} block disabled={busy}
+        onPress={() => { setBusy(true); Promise.resolve(ask.go()).finally(() => setBusy(false)); }} />
+      {ask.other ? <Button label={ask.other.label} variant="secondary" block disabled={busy} onPress={() => { onCancel(); ask.other!.onPress(); }} /> : null}
+      <Button label="Cancel" variant="quiet" disabled={busy} onPress={onCancel} style={{ alignSelf: "center" }} />
+    </Card>
+  );
 }
 
 /** "today at 09:14" or "3 Oct". */

@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Platform, useColorScheme, View } from "react-native";
+import { useColorScheme, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Mark } from "@/components/Mark";
@@ -11,7 +11,7 @@ import { AccountError, appleAvailable, choose, sendCode, setGuideEmails, setWeek
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
 
-type Stage = "choose" | "email" | "code";
+type Stage = "choose" | "email" | "code" | "pick";
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** O0b Your account: sign in so the plan is backed up and moves to a new phone. Encouraged, never required. Also opened
@@ -21,6 +21,7 @@ export default function AccountStep() {
   const { from, existing } = useLocalSearchParams<{ from?: string; existing?: string }>();
   const fromSettings = from === "settings";
   const [stage, setStage] = useState<Stage>("choose");
+  const [twoPlans, setTwoPlans] = useState<Extract<Outcome, { kind: "ask" }> | null>(null);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string>();
@@ -36,17 +37,18 @@ export default function AccountStep() {
   async function finish(outcome: Outcome) {
     if (emails) setGuideEmails(true).catch(() => toast("Signed in, but we couldn't turn on guide emails. You can do it in Settings."));
     if (recap) setWeeklyRecap(true).catch(() => toast("Signed in, but we couldn't turn on the weekly recap. You can do it in Settings."));
-    if (outcome.kind === "ask") {
-      const keep = await pick(outcome.phone, outcome.backup, outcome.backupDate);
-      await choose(keep);
-      toast(keep === "backup" ? "Your backed-up plan is on this phone." : "This phone's plan is backed up.");
-      router.replace("/");
-      return;
-    }
+    if (outcome.kind === "ask") { setTwoPlans(outcome); setStage("pick"); return; }
     if (outcome.kind === "restored") { toast("Welcome back. Your plan is on this phone."); router.replace("/"); return; }
     toast(outcome.kind === "uploaded" ? "Signed in. Your plan is backed up." : "Signed in. Your plan will be backed up as you go.");
     if (fromSettings) router.back(); else router.replace("/onboarding/start");
   }
+
+  /** Both this phone and the backup have a plan: keep the one they pick. */
+  const keep = (which: "backup" | "phone") => run(async () => {
+    await choose(which);
+    toast(which === "backup" ? "Your backed-up plan is on this phone." : "This phone's plan is backed up.");
+    router.replace("/");
+  });
 
   async function run(job: () => Promise<void>) {
     setBusy(true); setError(undefined);
@@ -64,6 +66,7 @@ export default function AccountStep() {
   });
 
   const back = () => {
+    if (stage === "pick") return; // signed in already: they need to pick one
     if (stage !== "choose") { setStage(stage === "code" ? "email" : "choose"); setError(undefined); return; }
     if (router.canGoBack()) router.back(); else router.replace("/onboarding");
   };
@@ -73,7 +76,7 @@ export default function AccountStep() {
 
   return (
     <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48, flexGrow: 1 }} header={<Header onBack={back} title={stage === "code" ? "Check your email" : title} />}>
-      <View style={{ height: 140, borderRadius: radius.xl, backgroundColor: c.sage, overflow: "hidden" }}>
+      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ height: 140, borderRadius: radius.xl, backgroundColor: c.sage, overflow: "hidden" }}>
         <View style={{ position: "absolute", left: -30, right: -30, bottom: -20, height: 70, borderRadius: 35, backgroundColor: c.sky }} />
         <View style={{ position: "absolute", right: 56, bottom: 44 }}><Mark height={84} hole={c.sage} /></View>
       </View>
@@ -92,6 +95,15 @@ export default function AccountStep() {
           <ToggleRow title="Email me a weekly recap" sub="Sunday evening: your check-ins, sessions and steady score, and a tip for next week. No weight in safe mode." value={recap} onChange={setRecap} />
           {fromSettings ? null : <Button label={existing ? "Start a new plan instead" : "Not now"} variant="quiet" onPress={carryOn} style={{ alignSelf: "center" }} />}
           <AppText variant="caption" color="inkMuted">Your backup is private to you: kept encrypted on our servers in London, never sold and never used for ads. You can withdraw it, sign out or delete it any time in Settings. {existing || fromSettings ? "" : "Without an account, your plan stays on this phone only and is lost if the phone is."}</AppText>
+        </View>
+      ) : null}
+
+      {stage === "pick" && twoPlans ? (
+        <View style={{ gap: space[3] }}>
+          <AppText weight="800" accessibilityRole="header">You have two plans</AppText>
+          <AppText color="inkMuted">Your backup{twoPlans.backupDate ? ` (last changed ${fmt.dayMonth(twoPlans.backupDate.slice(0, 10))})` : ""} has {twoPlans.backup}. This phone has {twoPlans.phone}. The one you don&apos;t keep is replaced.</AppText>
+          <Button label={busy ? "One moment…" : "Keep my backup"} block disabled={busy} onPress={() => keep("backup")} />
+          <Button label="Keep this phone's plan" variant="secondary" block disabled={busy} onPress={() => keep("phone")} />
         </View>
       ) : null}
 
@@ -130,17 +142,3 @@ function AppleButton({ onPress, disabled }: { onPress: () => void; disabled: boo
   );
 }
 
-/** Both this phone and the backup have a plan: the person picks which to keep. */
-function pick(phone: string, backup: string, backupDate: string): Promise<"backup" | "phone"> {
-  const when = backupDate ? ` (last changed ${fmt.dayMonth(backupDate.slice(0, 10))})` : "";
-  const message = `Your backup${when} has ${backup}. This phone has ${phone}. The one you don't keep is replaced.`;
-  if (Platform.OS === "web") {
-    return Promise.resolve(window.confirm(`You have two plans.\n\n${message}\n\nOK keeps your backup. Cancel keeps this phone's plan.`) ? "backup" : "phone");
-  }
-  return new Promise((resolve) => {
-    Alert.alert("You have two plans", message, [
-      { text: "Keep my backup", onPress: () => resolve("backup") },
-      { text: "Keep this phone's", onPress: () => resolve("phone") },
-    ], { cancelable: false });
-  });
-}

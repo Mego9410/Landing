@@ -44,7 +44,7 @@ export default function Meals() {
       <View accessibilityRole="tablist" style={{ flexDirection: "row", gap: 4 }}>
         {week.days.map((d, i) => (
           <Pressable key={i} accessibilityRole="tab" accessibilityState={{ selected: i === day }} accessibilityLabel={d.name} onPress={() => setDay(i)}
-            style={{ flex: 1, height: 40, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: i === day ? c.apricot : "transparent" }}>
+            style={{ flex: 1, minHeight: 44, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: i === day ? c.apricot : "transparent" }}>
             <AppText weight="700" color={i === day ? "onPastel" : "ink"} style={{ fontSize: 13 }}>{d.name.slice(0, 3)}</AppText>
           </Pressable>
         ))}

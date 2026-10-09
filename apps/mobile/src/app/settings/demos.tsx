@@ -21,7 +21,7 @@ export default function Demos() {
       <AppText variant="title" accessibilityRole="header">Exercise demos</AppText>
       <View style={{ borderRadius: radius.lg, backgroundColor: c.sky, overflow: "hidden" }}>
         <ExerciseAnimation id="squat-2" who={who} paused={s.demos.still} />
-        <View style={{ position: "absolute", left: 12, top: 12, backgroundColor: c.surfaceRaised, borderRadius: radius.full, paddingHorizontal: 12, height: 30, justifyContent: "center" }}>
+        <View style={{ position: "absolute", left: 12, top: 12, backgroundColor: c.surfaceRaised, borderRadius: radius.full, paddingHorizontal: 12, minHeight: 30, paddingVertical: 4, justifyContent: "center" }}>
           <AppText variant="caption" weight="800">{s.demos.who === "mix" ? `Mix it up · today ${castById(who).name}` : `${castById(who).name} · sit to stand`}</AppText>
         </View>
       </View>

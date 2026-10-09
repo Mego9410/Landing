@@ -44,7 +44,7 @@ export default function Coach() {
             {m.redirect ? <AppText variant="label" color="onPastel" style={{ marginBottom: 4 }}>FOR YOUR PRESCRIBER</AppText> : null}
             <AppText color="onPastel">{m.text}</AppText>
             {m.redirect ? (
-              <Pressable accessibilityRole="button" onPress={() => sharePrescriberPack(s).catch(() => toast("Couldn't make the summary. Try again."))} style={{ marginTop: space[2], alignSelf: "flex-start", height: 36, paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, justifyContent: "center" }}>
+              <Pressable accessibilityRole="button" onPress={() => sharePrescriberPack(s).catch(() => toast("Couldn't make the summary. Try again."))} style={{ marginTop: space[2], alignSelf: "flex-start", minHeight: 44, paddingVertical: space[2], paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, justifyContent: "center" }}>
                 <AppText variant="caption" weight="800">Make my summary</AppText>
               </Pressable>
             ) : null}
@@ -52,7 +52,7 @@ export default function Coach() {
         ))}
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2], marginTop: space[2] }}>
           {STARTERS.map((t) => (
-            <Pressable key={t} accessibilityRole="button" onPress={() => send(t)} style={{ borderRadius: radius.full, paddingHorizontal: space[3], height: 36, justifyContent: "center", borderWidth: 1.5, borderColor: c.line, backgroundColor: c.surfaceRaised }}>
+            <Pressable key={t} accessibilityRole="button" onPress={() => send(t)} style={{ borderRadius: radius.full, paddingHorizontal: space[3], minHeight: 44, paddingVertical: space[2], justifyContent: "center", borderWidth: 1.5, borderColor: c.line, backgroundColor: c.surfaceRaised }}>
               <AppText variant="caption" weight="700">{t}</AppText>
             </Pressable>
           ))}
@@ -61,7 +61,7 @@ export default function Coach() {
       <View style={[{ flexDirection: "row", gap: space[2], paddingHorizontal: 20, paddingTop: space[2], paddingBottom: 112, backgroundColor: c.surface }, readable]}>
         <TextInput accessibilityLabel="Find an answer from the coach" value={text} onChangeText={setText} onSubmitEditing={() => send(text)} returnKeyType="send"
           placeholder="A few words, like eating out" placeholderTextColor={c.inkMuted}
-          style={[textStyle("body"), { flex: 1, height: 48, borderRadius: radius.full, paddingHorizontal: space[4], backgroundColor: c.surfaceRaised, color: c.ink, borderWidth: 1.5, borderColor: c.line }]} />
+          style={[textStyle("body"), { flex: 1, minHeight: 48, paddingVertical: space[2], borderRadius: radius.full, paddingHorizontal: space[4], backgroundColor: c.surfaceRaised, color: c.ink, borderWidth: 1.5, borderColor: c.line }]} />
         <Pressable accessibilityRole="button" accessibilityLabel="Send" onPress={() => send(text)} style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: c.lilac, alignItems: "center", justifyContent: "center" }}>
           <Icon name="send" color={c.onPastel} />
         </Pressable>

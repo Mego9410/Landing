@@ -1,4 +1,4 @@
-import { useColorScheme } from "react-native";
+import { useColorScheme, useWindowDimensions } from "react-native";
 import { colors, fontFamilies, radius, space, text, type TextStyleName } from "@landing/design-system/tokens";
 
 export { radius, space };
@@ -7,6 +7,11 @@ export type Colors = { [K in keyof typeof colors.light]: string };
 /** The palette for the device's light or dark setting. */
 export function useColors(): Colors {
   return useColorScheme() === "dark" ? colors.dark : colors.light;
+}
+
+/** True at the larger accessibility text sizes, where side-by-side layouts should stack instead. */
+export function useLargeText() {
+  return useWindowDimensions().fontScale >= 1.35;
 }
 
 // Names the fonts are registered under in app/_layout.tsx.

@@ -28,7 +28,7 @@ export default function SessionOverview() {
       <SessionHealth paused={sessionsPaused(s)} notes={sessionNotes(s)} onCleared={() => { set((st) => { st.health.gpCleared = true; }); toast("Thanks. Your sessions are ready."); }} />
       <View style={{ borderRadius: radius.lg, backgroundColor: c.sky, overflow: "hidden" }}>
         <ExerciseAnimation id={move.anim} who={who} paused={s.demos.still} />
-        <View style={{ position: "absolute", left: 12, top: 12, backgroundColor: c.surfaceRaised, borderRadius: radius.full, paddingHorizontal: 12, height: 30, justifyContent: "center" }}>
+        <View style={{ position: "absolute", left: 12, top: 12, backgroundColor: c.surfaceRaised, borderRadius: radius.full, paddingHorizontal: 12, minHeight: 30, paddingVertical: 4, justifyContent: "center" }}>
           <AppText variant="caption" weight="800">{move.name} · {castById(who).name}</AppText>
         </View>
       </View>

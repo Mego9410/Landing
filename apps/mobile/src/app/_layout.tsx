@@ -6,7 +6,7 @@ import { router, Stack, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { Platform, ScrollView, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Toast } from "@/components/Toast";
@@ -27,7 +27,7 @@ startSentry();
 const SHEET = { presentation: "modal" as const };
 
 /** Opens the screen a tapped notification points to (its `data.url`), whether the tap launched the app or found it open.
- *  Each tap is handled once. */
+ *  Each tap is handled once. Not on the web preview, which has no notifications. */
 function NotificationLinks() {
   const last = Notifications.useLastNotificationResponse();
   const handled = useRef<string | null>(null);
@@ -92,7 +92,7 @@ function RootLayout() {
       </Stack>
       </Sentry.ErrorBoundary>
       <Toast />
-      <NotificationLinks />
+      {Platform.OS === "web" ? null : <NotificationLinks />}
     </View>
   );
 }

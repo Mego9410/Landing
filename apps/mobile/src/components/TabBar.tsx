@@ -34,11 +34,11 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
                 const event = navigation.emit({ type: "tabPress", target: route.key, canPreventDefault: true });
                 if (!focused && !event.defaultPrevented) navigation.navigate(route.name, route.params);
               }}
-              style={{ flex: 1, alignItems: "center", gap: 2 }}>
+              style={{ flex: 1, alignItems: "center", gap: 2, minHeight: 48 }}>
               <View style={{ width: 56, height: 32, borderRadius: radius.full, backgroundColor: pill, alignItems: "center", justifyContent: "center" }}>
                 <Icon name={ICON_FOR[route.name] ?? "today"} size={22} color={focused ? c.onPastel : c.inkMuted} />
               </View>
-              <AppText variant="caption" weight="700" color={focused ? "ink" : "inkMuted"}>{label}</AppText>
+              <AppText variant="caption" weight="700" color={focused ? "ink" : "inkMuted"} maxFontSizeMultiplier={1.4} numberOfLines={1}>{label}</AppText>
             </Pressable>
           );
         })}

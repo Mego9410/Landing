@@ -63,9 +63,11 @@ export default function Plan() {
               <AppText variant="caption" color="inkMuted">Weeks {p.from}–{p.to}</AppText>
             </View>
             <AppText color="inkMuted">{p.focus}</AppText>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+            {/* One summary for VoiceOver rather than a stop per week. */}
+            <View accessible accessibilityLabel={week < p.from ? `${p.name}: ${weeks.length} weeks, coming up` : week > p.to ? `${p.name}: all ${weeks.length} weeks done` : `${p.name}: week ${week - p.from + 1} of ${weeks.length}, ${week - p.from} done`}
+              style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
               {weeks.map((w) => (
-                <View key={w} accessibilityLabel={`Week ${w}${w < week ? ", done" : w === week ? ", this week" : ", coming up"}`}
+                <View key={w}
                   style={{ width: 26, height: 26, borderRadius: radius.full, backgroundColor: w < week ? c.sageInk : w === week ? c.apricot : c.surfaceSunk, borderWidth: w === week ? 2 : w > week ? 1.5 : 0, borderColor: w === week ? c.apricotInk : c.line }} />
               ))}
             </View>

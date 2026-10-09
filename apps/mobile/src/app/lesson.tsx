@@ -17,7 +17,7 @@ export default function Lesson() {
   const week = weekOf(s), phase = phaseOf(week), lesson = lessonFor(week);
   return (
     <Screen header={<Header fallback="/week" right={<AppText variant="caption" color="inkMuted">3 minute read</AppText>} title={lesson.title} titleAfter={170} />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-      <View accessible={false} style={{ height: 120, borderRadius: radius.lg, backgroundColor: c.lilac, overflow: "hidden" }}>
+      <View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ height: 120, borderRadius: radius.lg, backgroundColor: c.lilac, overflow: "hidden" }}>
         <View style={{ position: "absolute", left: 30, bottom: -40, width: 110, height: 110, borderRadius: 55, backgroundColor: c.apricot }} />
         <View style={{ position: "absolute", right: 40, top: 24, width: 120, height: 40, borderRadius: 20, backgroundColor: c.surfaceRaised, opacity: 0.7 }} />
       </View>

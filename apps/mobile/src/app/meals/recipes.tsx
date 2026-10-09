@@ -39,7 +39,7 @@ export default function Recipes() {
     <Screen header={<Header fallback="/meals" right={<AppText variant="caption" color="inkMuted">{suits} of {lib.length} suit you</AppText>} title={picking ? `Choose ${SLOT_NAME[q.slot!].toLowerCase()} for ${which === "next" ? "next " : ""}${dayName(Number(q.day))}` : "Recipes"} />} contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">{picking ? `Choose ${SLOT_NAME[q.slot!].toLowerCase()} for ${which === "next" ? "next " : ""}${dayName(Number(q.day))}` : "Recipes"}</AppText>
       <TextInput accessibilityLabel="Search recipes" value={query} onChangeText={setQuery} placeholder="Try chilli, salmon or no-cook" placeholderTextColor={c.inkMuted}
-        style={[textStyle("bodyLg"), { height: 52, borderRadius: radius.md, paddingHorizontal: space[4], backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line, color: c.ink }]} />
+        style={[textStyle("bodyLg"), { minHeight: 52, paddingVertical: space[3], borderRadius: radius.md, paddingHorizontal: space[4], backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line, color: c.ink }]} />
       {picking ? null : (
         <Choices label="Meal" value={slot} onChange={(v) => setSlot(v as string)}
           options={[{ id: "all", label: "All meals" }, ...(["breakfast", "lunch", "dinner", "snack"] as Slot[]).map((k) => ({ id: k, label: SLOT_NAME[k] + (k === "snack" ? "s" : "") }))]} />

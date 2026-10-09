@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Lockup } from "./lockup";
-import { APP_LIVE, appStoreLink, campaign, ORG_NAME } from "./site";
+import { appLive, appStoreLink, campaign, ORG_NAME } from "./site";
 import styles from "./page.module.css";
 
 // The header and footer for every page. On the home page the section links are in-page anchors; elsewhere they point
@@ -18,7 +18,8 @@ const GUIDE_LINKS = [
 ] as const;
 
 /** `page` names the page in App Store analytics (top-bar-<page>, header-<page>), so each page's links are told apart. */
-export function SiteHeader({ home = false, page = home ? "home" : "site" }: { home?: boolean; page?: string }) {
+export async function SiteHeader({ home = false, page = home ? "home" : "site" }: { home?: boolean; page?: string }) {
+  const APP_LIVE = await appLive();
   const at = (id: string) => (home ? `#${id}` : `/#${id}`);
   return (
     <>

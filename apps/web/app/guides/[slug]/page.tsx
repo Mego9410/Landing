@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { liveGuide, liveGuides, relatedGuides } from "@/content/guides";
 import home from "../../page.module.css";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
-import { abs, APP_LIVE, appStoreLink, campaign, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
+import { abs, appLive, appStoreLink, campaign, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
 import styles from "../guides.module.css";
 import { GuideArt } from "../art";
 import { GuideEndCta } from "../end-cta";
@@ -35,6 +35,7 @@ const long = (iso: string) => new Date(iso + "T12:00:00Z").toLocaleDateString("e
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
   const g = liveGuide((await params).slug);
   if (!g) notFound();
+  const APP_LIVE = await appLive();
   const url = abs(`/guides/${g.slug}`);
   const words = JSON.stringify(g.sections).split(/\s+/).length;
   const minutes = Math.max(2, Math.round(words / 220));

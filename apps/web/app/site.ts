@@ -9,9 +9,21 @@ export const CONTACT_EMAIL = "hello@getsteadieapp.com";
 /** The app on the App Store (App Store Connect app ID 6820083153). */
 export const APP_STORE_ID = "6820083153";
 export const APP_STORE_URL = `https://apps.apple.com/gb/app/steadie/id${APP_STORE_ID}`;
-/** The launch switch: NEXT_PUBLIC_APP_LIVE=true once the app is on the App Store. Until then every download button
- *  reads "Coming soon" and no App Store link is shown. Read at build time, so flip it in Vercel and redeploy. */
-export const APP_LIVE = process.env.NEXT_PUBLIC_APP_LIVE === "true";
+/** The launch switch, on by itself: true once Apple's public lookup lists the app on the UK App Store. Pages refresh
+ *  hourly (revalidate = 3600), so the site follows within the hour of release with no redeploy. Until then every
+ *  download button reads "Coming soon" and no App Store link is shown. NEXT_PUBLIC_APP_LIVE=true forces it on; any other
+ *  value leaves it to the lookup. A failed lookup counts as not live, so a hiccup never shows a dead link. */
+export async function appLive(): Promise<boolean> {
+  if (process.env.NEXT_PUBLIC_APP_LIVE === "true") return true;
+  try {
+    const res = await fetch(`https://itunes.apple.com/lookup?id=${APP_STORE_ID}&country=gb`, { next: { revalidate: 3600 } });
+    if (!res.ok) return false;
+    const body = (await res.json()) as { resultCount?: number };
+    return (body.resultCount ?? 0) > 0;
+  } catch {
+    return false;
+  }
+}
 /** An App Store link that tells App Store Connect's App Analytics which page sent the download (Apple campaign links:
  *  pt = provider token from NEXT_PUBLIC_APPLE_PROVIDER_TOKEN, ct = campaign of 40 characters or fewer, mt = 8). */
 export function appStoreLink(campaign: string) {

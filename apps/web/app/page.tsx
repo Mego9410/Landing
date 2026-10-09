@@ -6,7 +6,7 @@ import { Carousel } from "./carousel";
 import { ExerciseLoop } from "./exercise-loop";
 import { latestGuides, liveGuide, liveGuides } from "@/content/guides";
 import { SiteFooter, SiteHeader } from "./site-chrome";
-import { abs, APP_LIVE, APP_STORE_URL, ldJson, ORGANIZATION, PRICE, PRICE_GBP, SITE_NAME } from "./site";
+import { abs, appLive, APP_STORE_URL, ldJson, ORGANIZATION, PRICE, PRICE_GBP, SITE_NAME } from "./site";
 import { PrototypeLink } from "./prototype-link";
 import { AppStoreButton } from "./app-store";
 import { GuideArt } from "./guides/art";
@@ -47,7 +47,8 @@ function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICONS[name] }} />;
 }
 
-const TRUST: { icon: IconName; text: string }[] = [
+// TRUST, FAQS and HOME_LD follow the launch switch (appLive in site.ts), so they are built per render.
+const trustItems = (APP_LIVE: boolean): { icon: IconName; text: string }[] => [
   { icon: "gift", text: "7-day free trial" },
   { icon: "heart", text: "A health check before you start" },
   { icon: "shield", text: "Works alongside your prescriber" },
@@ -100,7 +101,7 @@ const PROMISES: { icon: IconName; title: string; text: string }[] = [
   { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, with an encrypted backup in the UK if you sign in. Never sold, never used for ads. Export it or delete it from Settings." },
 ];
 
-const FAQS = [
+const faqItems = (APP_LIVE: boolean) => [
   { q: "Who is Steadie for?", a: "Adults who have stopped a weight-loss jab such as Wegovy or Mounjaro, are stopping soon, or want a plan ready for when they do." },
   { q: "Is Steadie medical advice?", a: "No. Steadie is a general wellness app for building food, activity and eating habits. It doesn't diagnose or treat anything, and decisions about medication are always for your prescriber." },
   { q: "I'm still on my jab. Can I start now?", a: "Yes. Many people start building the habits before their last injection, so the routines are in place when appetite returns." },
@@ -143,7 +144,7 @@ function RegainChart() {
   );
 }
 
-const HOME_LD = {
+const homeLd = (APP_LIVE: boolean, FAQS: { q: string; a: string }[]) => ({
   "@context": "https://schema.org",
   "@graph": [
     ORGANIZATION,
@@ -167,9 +168,13 @@ const HOME_LD = {
     },
     { "@type": "FAQPage", "@id": `${abs("/")}#faq`, mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
   ],
-};
+});
 
-export default function Home() {
+export default async function Home() {
+  const APP_LIVE = await appLive();
+  const TRUST = trustItems(APP_LIVE);
+  const FAQS = faqItems(APP_LIVE);
+  const HOME_LD = homeLd(APP_LIVE, FAQS);
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={ldJson(HOME_LD)} />

@@ -2,19 +2,22 @@ import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 import "@landing/design-system/tokens.css";
 import "./globals.css";
-import { SITE_URL } from "./site";
+import { appLive, SITE_URL } from "./site";
 
 const fredoka = Fredoka({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-fredoka", display: "swap" });
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-nunito", display: "swap" });
 
 const siteUrl = SITE_URL; // the live domain on Vercel production even if NEXT_PUBLIC_SITE_URL is missing
-// The launch switch (see app/site.ts): the description and Safari's app banner follow NEXT_PUBLIC_APP_LIVE.
-const live = process.env.NEXT_PUBLIC_APP_LIVE === "true";
-const description = live
+// The launch switch (appLive in app/site.ts): the description and Safari's app banner follow it, so metadata is
+// generated per render and refreshes with the pages (hourly).
+const describe = (live: boolean) => live
   ? "A 12-month plan for the year after you stop a GLP-1 weight-loss jab. Protein, short strength sessions, easy meals and steady habits. Free for 7 days on iPhone."
   : "A 12-month plan for the year after you stop a GLP-1 weight-loss jab: protein, short strength sessions, easy meals and steady habits to keep the weight off. Coming soon to iPhone.";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const live = await appLive();
+  const description = describe(live);
+  return {
   metadataBase: new URL(siteUrl),
   title: { default: "Steadie: keep weight off after weight-loss jabs", template: "%s · Steadie" },
   applicationName: "Steadie",
@@ -27,7 +30,8 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Steadie: keep what you've worked for", description, images: ["/og.png"] },
   alternates: { canonical: "/", types: { "application/rss+xml": "/guides/feed.xml" } },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
-};
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [

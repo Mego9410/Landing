@@ -1,9 +1,9 @@
 import type { Guide } from "@/content/guides";
-import { APP_LIVE, appStoreLink, campaign, PRICE } from "../site";
+import { appLive, appStoreLink, campaign, PRICE } from "../site";
 import styles from "./guides.module.css";
 
 // The card at the end of every guide: a one-line hook that fits what the guide was about, then the App Store link.
-// Before launch (APP_LIVE false) it keeps the hook and says "Coming soon to iPhone", with no link, like the aside and
+// Before launch (appLive() false) it keeps the hook and says "Coming soon to iPhone", with no link, like the aside and
 // AppStoreButton. Hooks describe the app only: nothing about medicines, doses or stopping, and no promises about weight.
 
 type Topic = "cost" | "comingOff" | "food" | "strength" | "appetite" | "habits" | "occasions" | "keeping" | "basics";
@@ -33,11 +33,12 @@ const BY_CATEGORY: Record<Guide["category"], Topic> = { "Coming off": "comingOff
 
 export const guideTopic = (g: Pick<Guide, "slug" | "category">): Topic => BY_SLUG.find(([re]) => re.test(g.slug))?.[1] ?? BY_CATEGORY[g.category] ?? "basics";
 
-export function GuideEndCta({ guide }: { guide: Pick<Guide, "slug" | "category"> }) {
+export async function GuideEndCta({ guide }: { guide: Pick<Guide, "slug" | "category"> }) {
+  const live = await appLive();
   return (
     <aside className={styles.endCta} aria-label="Steadie for iPhone">
       <p className={styles.endHook}>{HOOKS[guideTopic(guide)]}</p>
-      {APP_LIVE ? (
+      {live ? (
         <>
           <a className={styles.ctaButton} href={appStoreLink(campaign("guide-end", guide.slug))}>Try Steadie free for 7 days</a>
           <span className={styles.endSmall}>On iPhone. Then {PRICE.yearly} a year or {PRICE.monthly} a month; cancel any time in your iPhone settings.</span>

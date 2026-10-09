@@ -6,7 +6,7 @@ import { Carousel } from "./carousel";
 import { ExerciseLoop } from "./exercise-loop";
 import { latestGuides, liveGuide, liveGuides } from "@/content/guides";
 import { SiteFooter, SiteHeader } from "./site-chrome";
-import { abs, APP_LIVE, APP_STORE_URL, ldJson, ORGANIZATION, PRICE, PRICE_GBP, SITE_NAME } from "./site";
+import { abs, appLive, APP_STORE_URL, ldJson, ORGANIZATION, PRICE, PRICE_GBP, SITE_NAME } from "./site";
 import { PrototypeLink } from "./prototype-link";
 import { AppStoreButton } from "./app-store";
 import { GuideArt } from "./guides/art";
@@ -47,12 +47,12 @@ function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICONS[name] }} />;
 }
 
-const TRUST: { icon: IconName; text: string }[] = [
+const trust = (live: boolean): { icon: IconName; text: string }[] => [
   { icon: "gift", text: "7-day free trial" },
   { icon: "heart", text: "A health check before you start" },
   { icon: "shield", text: "Works alongside your prescriber" },
   { icon: "lock", text: "Private backup, never sold" },
-  { icon: "phone", text: APP_LIVE ? "On iPhone" : "Coming soon to iPhone" },
+  { icon: "phone", text: live ? "On iPhone" : "Coming soon to iPhone" },
 ];
 
 const SUPPORT: { icon: IconName; tone: string; title: string; text: string }[] = [
@@ -100,7 +100,7 @@ const PROMISES: { icon: IconName; title: string; text: string }[] = [
   { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, with an encrypted backup in the UK if you sign in. Never sold, never used for ads. Export it or delete it from Settings." },
 ];
 
-const FAQS = [
+const faqs = (live: boolean) => [
   { q: "Who is Steadie for?", a: "Adults who have stopped a weight-loss jab such as Wegovy or Mounjaro, are stopping soon, or want a plan ready for when they do." },
   { q: "Is Steadie medical advice?", a: "No. Steadie is a general wellness app for building food, activity and eating habits. It doesn't diagnose or treat anything, and decisions about medication are always for your prescriber." },
   { q: "I'm still on my jab. Can I start now?", a: "Yes. Many people start building the habits before their last injection, so the routines are in place when appetite returns." },
@@ -109,7 +109,7 @@ const FAQS = [
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
   { q: "Where is my data kept?", a: "On your phone. If you sign in, Steadie also keeps a private, encrypted backup so your plan moves with you to a new phone. It's never sold or used for ads, and you can export everything or delete your account from Settings. If you connect Apple Health, that information is only used for your own plan, and never for advertising." },
-  { q: "When can I use it, and what will it cost?", a: `${APP_LIVE ? "Now, on iPhone: download Steadie from the App Store." : "Steadie is coming soon to iPhone."} Both plans start with a 7-day free trial: then ${PRICE.yearly} a year, or ${PRICE.monthly} a month. Cancel any time in your iPhone settings.` },
+  { q: "When can I use it, and what will it cost?", a: `${live ? "Now, on iPhone: download Steadie from the App Store." : "Steadie is coming soon to iPhone."} Both plans start with a 7-day free trial: then ${PRICE.yearly} a year, or ${PRICE.monthly} a month. Cancel any time in your iPhone settings.` },
 ];
 
 // STEP 1 trial extension (reference 1): mean change in body weight from the start of treatment.
@@ -143,7 +143,7 @@ function RegainChart() {
   );
 }
 
-const HOME_LD = {
+const homeLd = (live: boolean, FAQS: ReturnType<typeof faqs>) => ({
   "@context": "https://schema.org",
   "@graph": [
     ORGANIZATION,
@@ -159,7 +159,7 @@ const HOME_LD = {
       description: ORGANIZATION.description,
       inLanguage: "en-GB",
       publisher: { "@id": ORGANIZATION["@id"] },
-      ...(APP_LIVE ? { url: APP_STORE_URL, downloadUrl: APP_STORE_URL } : {}),
+      ...(live ? { url: APP_STORE_URL, downloadUrl: APP_STORE_URL } : {}),
       offers: [
         { "@type": "Offer", name: "Monthly", price: PRICE_GBP.monthly, priceCurrency: "GBP", description: "7 days free, then billed monthly." },
         { "@type": "Offer", name: "Yearly", price: PRICE_GBP.yearly, priceCurrency: "GBP", description: "7 days free, then billed yearly." },
@@ -167,19 +167,20 @@ const HOME_LD = {
     },
     { "@type": "FAQPage", "@id": `${abs("/")}#faq`, mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
   ],
-};
+});
 
-export default function Home() {
+export default async function Home() {
+  const live = await appLive(), FAQS = faqs(live), TRUST = trust(live);
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={ldJson(HOME_LD)} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={ldJson(homeLd(live, FAQS))} />
 
       <SiteHeader home />
 
       <section className={styles.hero} aria-labelledby="hero-title">
         <div className={`${styles.wrap} ${styles.heroGrid}`}>
           <div className={styles.heroCopy}>
-            <p className={styles.pill}><span className={styles.pillDot} aria-hidden="true" />{APP_LIVE ? "Now on iPhone" : "Coming soon to iPhone"}</p>
+            <p className={styles.pill}><span className={styles.pillDot} aria-hidden="true" />{live ? "Now on iPhone" : "Coming soon to iPhone"}</p>
             <h1 id="hero-title" className={styles.display}>Keep what you&apos;ve worked&nbsp;for.</h1>
             <p className={styles.lede}>The 12-month plan for the year after you stop a weight-loss jab. Strength, protein and steady habits to keep the weight off, with support on your side.</p>
             <div id="download" className={styles.heroCta}>

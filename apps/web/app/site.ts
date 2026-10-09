@@ -9,9 +9,21 @@ export const CONTACT_EMAIL = "hello@getsteadieapp.com";
 /** The app on the App Store (App Store Connect app ID 6820083153). */
 export const APP_STORE_ID = "6820083153";
 export const APP_STORE_URL = `https://apps.apple.com/gb/app/steadie/id${APP_STORE_ID}`;
-/** The launch switch: NEXT_PUBLIC_APP_LIVE=true once the app is on the App Store. Until then every download button
- *  reads "Coming soon" and no App Store link is shown. Read at build time, so flip it in Vercel and redeploy. */
-export const APP_LIVE = process.env.NEXT_PUBLIC_APP_LIVE === "true";
+/** The launch switch, automatic: the site goes live by itself once Apple's public lookup lists the app on the UK App
+ *  Store (checked at most every 15 minutes; pages refresh on the same schedule). Until then every download button
+ *  reads "Coming soon", no App Store link is shown and there's no Safari app banner. NEXT_PUBLIC_APP_LIVE=true forces
+ *  it on; any other value, or none, leaves it automatic. If the lookup can't be reached, it counts as not live. */
+export async function appLive(): Promise<boolean> {
+  if ((process.env.NEXT_PUBLIC_APP_LIVE ?? "").trim().toLowerCase() === "true") return true;
+  try {
+    const res = await fetch(`https://itunes.apple.com/lookup?id=${APP_STORE_ID}&country=gb`, { next: { revalidate: 900 } });
+    if (!res.ok) return false;
+    const body = (await res.json()) as { resultCount?: number; results?: { trackId?: number }[] };
+    return (body.results ?? []).some((r) => String(r.trackId) === APP_STORE_ID);
+  } catch {
+    return false;
+  }
+}
 /** An App Store link that tells App Store Connect's App Analytics which page sent the download (Apple campaign links:
  *  pt = provider token from NEXT_PUBLIC_APPLE_PROVIDER_TOKEN, ct = campaign of 40 characters or fewer, mt = 8). */
 export function appStoreLink(campaign: string) {

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { liveGuide, liveGuides, relatedGuides } from "@/content/guides";
 import home from "../../page.module.css";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
-import { abs, APP_LIVE, appStoreLink, campaign, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
+import { abs, appLive, appStoreLink, campaign, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
 import styles from "../guides.module.css";
 import { GuideArt } from "../art";
 import { GuideEndCta } from "../end-cta";
@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 const long = (iso: string) => new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
+  const live = await appLive();
   const g = liveGuide((await params).slug);
   if (!g) notFound();
   const url = abs(`/guides/${g.slug}`);
@@ -134,8 +135,8 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               </nav>
               <div className={styles.cta}>
                 <strong>A 12-month plan for the year after</strong>
-                <span>Small habits, short strength sessions and easy meals, on your side. {APP_LIVE ? "On iPhone, with 7 days free." : "Coming soon to iPhone."}</span>
-                {APP_LIVE ? <a className={styles.ctaButton} href={appStoreLink(campaign("guide", g.slug))}>Download Steadie</a> : null}
+                <span>Small habits, short strength sessions and easy meals, on your side. {live ? "On iPhone, with 7 days free." : "Coming soon to iPhone."}</span>
+                {live ? <a className={styles.ctaButton} href={appStoreLink(campaign("guide", g.slug))}>Download Steadie</a> : null}
               </div>
             </aside>
           </div>

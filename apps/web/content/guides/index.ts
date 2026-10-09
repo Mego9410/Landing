@@ -1,13 +1,14 @@
 // All guides, in the order the hub shows them, with lookups and a check that every internal link points at a guide.
 import { BASICS } from "./basics";
 import { COMING_OFF } from "./coming-off";
+import { COSTS } from "./costs";
 import { FOOD_MOVE } from "./food-move";
 import { KEEPING } from "./keeping";
 import type { Category, Guide } from "./types";
 
 export type { Block, Category, Faq, Guide, Section, Source } from "./types";
 
-export const GUIDES: Guide[] = [...COMING_OFF, ...KEEPING, ...FOOD_MOVE, ...BASICS];
+export const GUIDES: Guide[] = [...COMING_OFF, ...COSTS, ...KEEPING, ...FOOD_MOVE, ...BASICS];
 export const CATEGORIES: { name: Category; blurb: string }[] = [
   { name: "Coming off", blurb: "What to expect, what to ask your prescriber and how to prepare." },
   { name: "Keeping it off", blurb: "Hunger, cravings, sleep and a calm way to watch your weight." },

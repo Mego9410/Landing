@@ -13,6 +13,7 @@ const GUIDE_LINKS = [
   ["/guides/what-happens-when-you-stop-weight-loss-injections", "What happens when you stop"],
   ["/guides/protein-after-glp-1", "Protein after a GLP-1"],
   ["/guides/strength-training-after-glp-1", "Strength training"],
+  ["/guides/weight-loss-jab-price-rise-uk", "Jab prices"],
   ["/guides", "All guides"],
 ] as const;
 

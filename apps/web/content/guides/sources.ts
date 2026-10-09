@@ -26,4 +26,9 @@ export const S = {
   nhsSleep: { label: "NHS Every Mind Matters: how to fall asleep faster and sleep better", url: "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/how-to-fall-asleep-faster-and-sleep-better/" },
   beat: { label: "Beat, the UK's eating disorder charity", url: "https://www.beateatingdisorders.org.uk/" },
   nesta: { label: "Nesta: testing the calories of the UK's favourite takeaway foods", url: "https://nesta.org.uk/project/testing-the-calories-of-the-uks-favourite-takeaway-foods" },
+  lillyPrice: { label: "Euronews: Eli Lilly raises the UK price of Mounjaro by up to 170% (14 August 2025)", url: "https://www.euronews.com/health/2025/08/14/eli-lilly-hikes-uk-price-of-blockbuster-weight-loss-drug-mounjaro-by-up-to-170" },
+  cpeMounjaro: { label: "Community Pharmacy England: Mounjaro reimbursement prices redetermined for September 2025", url: "https://cpe.org.uk/our-news/mounjaro-reimbursement-prices-redetermined-for-september-2025/" },
+  mhraFakePens: { label: "MHRA: warning about unsafe fake weight-loss pens", url: "https://www.gov.uk/government/news/mhra-warns-of-unsafe-fake-weight-loss-pens" },
+  gphcRegister: { label: "General Pharmaceutical Council: check a pharmacy is registered", url: "https://www.pharmacyregulation.org/registers" },
+  yellowCard: { label: "MHRA Yellow Card scheme: report a suspected fake medicine or side effect", url: "https://yellowcard.mhra.gov.uk/" },
 } satisfies Record<string, Source>;

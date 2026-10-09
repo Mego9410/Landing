@@ -189,6 +189,19 @@ export default function Home() {
         <ul className={styles.trust} aria-label="Why people trust Steadie">
           {TRUST.map((t) => <li key={t.text}><Icon name={t.icon} size={18} />{t.text}</li>)}
         </ul>
+        <section className={styles.newsBand} aria-labelledby="prices-title">
+          <div className={`${styles.wrap} ${styles.news}`}>
+            <div className={styles.newsCopy}>
+              <p className={styles.eyebrow}>Jab prices</p>
+              <h2 id="prices-title" className={styles.newsTitle}>Paying more for your weight-loss jab?</h2>
+              <p className={styles.muted}>Mounjaro&apos;s UK price rose by up to 170% in September 2025, and private prices can still change. What&apos;s happened, what&apos;s been announced, and what you can do.</p>
+            </div>
+            <div className={styles.newsLinks}>
+              <Link className={styles.btnPrimary} href="/guides/weight-loss-jab-price-rise-uk">What you can do</Link>
+              <Link className={styles.newsLink} href="/guides/stopping-weight-loss-jabs-because-of-cost">Stopping because of the cost</Link>
+            </div>
+          </div>
+        </section>
         <section className={styles.pillars} aria-labelledby="pillars-title">
           <div className={styles.wrap}>
             <div className={styles.head}>
@@ -374,7 +387,7 @@ export default function Home() {
               <h2 id="guides-title" className={styles.h2Light}>Guides for the year after<br /><span className={styles.mutedHead}>clear, kind and sourced</span></h2>
             </div>
             <ul className={styles.guideGrid}>
-              {GUIDES.filter((g) => g.pillar).concat(GUIDES.filter((g) => ["what-happens-when-you-stop-weight-loss-injections", "appetite-after-stopping-glp-1"].includes(g.slug))).map((g) => (
+              {[GUIDES.find((g) => g.slug === "weight-loss-jab-price-rise-uk")!].concat(GUIDES.filter((g) => g.pillar)).concat(GUIDES.filter((g) => ["what-happens-when-you-stop-weight-loss-injections", "appetite-after-stopping-glp-1"].includes(g.slug))).map((g) => (
                 <li key={g.slug}><Link className={styles.guideCard} href={`/guides/${g.slug}`}><strong>{g.title}</strong><span>{g.description}</span></Link></li>
               ))}
             </ul>

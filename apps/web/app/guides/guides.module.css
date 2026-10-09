@@ -55,6 +55,12 @@
 .cta strong { font-family: var(--font-display); font-size: 21px; line-height: 26px; font-weight: 500; }
 .cta span { font-size: 15px; line-height: 22px; }
 .ctaButton { align-self: flex-start; background: var(--ink); color: var(--surface); text-decoration: none; font-weight: 800; padding: 10px 18px; border-radius: var(--radius-full); }
+/* end-of-guide card (end-cta.tsx) */
+.endCta { margin-top: 40px; background: var(--apricot); color: var(--on-pastel); border-radius: var(--radius-lg); padding: 22px 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.body .endHook { font-family: var(--font-display); font-size: 22px; line-height: 1.3; font-weight: 500; margin: 0; }
+.body .endCta .ctaButton { color: var(--surface); }  /* not the apricot link colour the article gives every <a> */
+.endSmall { font-size: 14px; line-height: 20px; }
+.endSoon { font-weight: 800; font-size: 15px; padding: 8px 16px; border-radius: var(--radius-full); border: 2px dashed currentColor; }
 .related { margin-top: 48px; }
 .related h2 { margin-top: 0; }
 

@@ -1,4 +1,6 @@
 // Site-wide values for metadata and structured data.
+import type { Metadata } from "next";
+
 const LIVE = "https://www.getsteadieapp.com";
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_ENV === "production" ? LIVE : "http://localhost:3000")).replace(/\/$/, "");
 export const SITE_NAME = "Steadie";
@@ -18,7 +20,28 @@ export function appStoreLink(campaign: string) {
   const ct = campaign.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "site";
   return `${APP_STORE_URL}?pt=${encodeURIComponent(pt)}&ct=${ct}&mt=8`;
 }
+/** A campaign name of `prefix-slug` that fits Apple's 40 characters by dropping whole words off the end of the slug
+ *  (so "guide-end-questions-to-ask-before-stopping" rather than a word cut in half). */
+export function campaign(prefix: string, slug: string) {
+  const words = slug.split("-");
+  while (words.length > 1 && `${prefix}-${words.join("-")}`.length > 40) words.pop();
+  return `${prefix}-${words.join("-")}`;
+}
+/** Pricing from the paywall design (App Store Connect). Confirm before launch. ≈ £1.35 a week on the yearly plan. */
+export const PRICE = { yearly: "£69.99", weekly: "£1.35", monthly: "£12.99" };
+export const PRICE_GBP = { yearly: "69.99", monthly: "12.99" };
 export const abs = (path: string) => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+
+/** Metadata for a plain page: its own <title>, description, canonical and share card. Next replaces nested fields
+ *  (openGraph, twitter, alternates) whole rather than merging them, so a page that leaves them out would share the home
+ *  page's canonical and card. */
+export const pageMetadata = (title: string, description: string, path: string): Metadata => ({
+  title: { absolute: `${title} · ${SITE_NAME}` },
+  description,
+  alternates: { canonical: path },
+  openGraph: { type: "website", url: path, title, description, siteName: SITE_NAME, locale: "en_GB", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", title, description, images: ["/og.png"] },
+});
 
 /** JSON-LD as a script tag's HTML, with "<" escaped so text can't close the tag. */
 export const ldJson = (data: unknown) => ({ __html: JSON.stringify(data).replace(/</g, "\\u003c") });

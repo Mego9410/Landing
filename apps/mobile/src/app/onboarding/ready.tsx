@@ -5,7 +5,8 @@ import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
 import { Step } from "@/components/Onboarding";
 import { habitsForWeek, phaseOf, PHASES } from "@/data/content";
-import { set, useApp, weekOf } from "@/state/store";
+import { refreshReminders } from "@/state/reminders";
+import { get, set, useApp, weekOf } from "@/state/store";
 import { space } from "@/theme";
 
 /** O12 Your Steadie plan. */
@@ -21,10 +22,11 @@ export default function Ready() {
       st.food.joinedWeek = week; // the fibre ramp starts today
       st.food.plan = null;
     });
+    refreshReminders(get()); // the check-in reminder, if turned on, starts tomorrow
     router.replace("/");
   }
   return (
-    <Step n={6} title="12 months to make it stick" lede={`Three phases, a few small habits at a time. You're starting in week ${week}.`} next={start} label="Start my plan">
+    <Step n={7} title="12 months to make it stick" lede={`Three phases, a few small habits at a time. You're starting in week ${week}.`} next={start} label="Start my plan">
       <View style={{ gap: space[3] }}>
         {PHASES.map((p) => (
           <Card key={p.key} tone={p.tone} style={{ gap: 2, borderWidth: p.key === phase.key ? 2 : 0 }}>

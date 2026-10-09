@@ -11,8 +11,9 @@ import { addDays, fmt, yesterday } from "@/data/dates";
 import { questionById, SCALES } from "@/data/journal";
 import { stepsOn } from "@/state/appleHealth";
 import { saveEntry } from "@/state/journal";
+import { refreshReminders } from "@/state/reminders";
 import { afterCheckIn } from "@/state/review";
-import { useApp, type JournalEntry } from "@/state/store";
+import { get, useApp, type JournalEntry } from "@/state/store";
 import { toast } from "@/state/toast";
 import { space, useColors } from "@/theme";
 
@@ -45,6 +46,7 @@ function Questions({ day }: { day: string }) {
     const yes = Object.fromEntries(qs.filter((q) => entry.yes[q.id] != null).map((q) => [q.id, entry.yes[q.id]]));
     const done = { yes, fullness: entry.fullness, energy: entry.energy };
     saveEntry(day, done);
+    refreshReminders(get()); // no reminder for a day already checked in
     toast(saved ? "Updated." : "Saved. Thanks for checking in.");
     router.back();
     if (!saved) afterCheckIn(day, done);

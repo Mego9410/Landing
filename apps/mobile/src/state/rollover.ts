@@ -6,6 +6,7 @@ import { habitsForWeek } from "@/data/content";
 import { today, weekStart } from "@/data/dates";
 import { syncWeights } from "./appleHealth";
 import { saveThisWeek } from "./food";
+import { refreshReminders } from "./reminders";
 import { get, set, weekOf } from "./store";
 
 export function rollover() {
@@ -26,8 +27,9 @@ export function rollover() {
 /** Starts watching for a new day. Returns a function that stops watching. */
 export function watchDay(): () => void {
   rollover();
+  refreshReminders(get());
   syncWeights().catch(() => {});
   const timer = setInterval(rollover, 60_000);
-  const sub = RNAppState.addEventListener("change", (a) => { if (a === "active") { rollover(); syncWeights().catch(() => {}); } });
+  const sub = RNAppState.addEventListener("change", (a) => { if (a === "active") { rollover(); refreshReminders(get()); syncWeights().catch(() => {}); } });
   return () => { clearInterval(timer); sub.remove(); };
 }

@@ -6,10 +6,10 @@ import { Button } from "./Button";
 import { Screen } from "./Screen";
 import { Header, Meter } from "./ui";
 
-export const STEPS = 6;
+export const STEPS = 7;
 
 /** An onboarding step: progress, a title and lede, the questions, and Continue. */
-export function Step({ n, title, lede, next, children, label = "Continue" }: { n: number; title: string; lede: string; next: () => void; children: ReactNode; label?: string }) {
+export function Step({ n, title, lede, next, children, label = "Continue", after }: { n: number; title: string; lede: string; next: () => void; children: ReactNode; label?: string; /** Below the main button, e.g. "Not now". */ after?: ReactNode }) {
   return (
     <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48 }} header={
       <Header fallback="/onboarding" title={title}
@@ -22,6 +22,7 @@ export function Step({ n, title, lede, next, children, label = "Continue" }: { n
       </View>
       {children}
       <Button label={label} block onPress={next} />
+      {after}
     </Screen>
   );
 }

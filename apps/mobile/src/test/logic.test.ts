@@ -218,3 +218,18 @@ test("rating prompt: only after a week of having the app, never within 120 days,
   assert.equal(hardDay({ weights: [] }, "2026-10-08", { yes: {}, energy: 4, fullness: 3 }), false);
   assert.equal(hardDay({ weights: [{ date: "2026-10-09", kg: 80.4, source: "x" }, { date: "2026-10-08", kg: 80, source: "x" }] }, "2026-10-08", { yes: {} }), true);
 });
+
+test("check-in reminders: daily at the chosen time from the day after onboarding, rotating wording, skipping days done", async () => {
+  const { checkInSchedule, CHECK_IN_VARIANTS } = await import("@/data/reminders");
+  const now = new Date(2026, 9, 9, 10, 0); // Friday 9 October, 10am: today's 8am has passed
+  const s = { startedOn: "2026-10-09", journal: { entries: {} as Record<string, unknown> } };
+  const all = checkInSchedule(s, 8, 0, now, 7);
+  assert.equal(all[0].day, "2026-10-10");
+  assert.equal(all[0].at.getHours(), 8);
+  assert.equal(all.length, 6);
+  assert.notEqual(all[0].title, all[1].title);
+  assert.equal(new Set(all.slice(0, 5).map((n) => n.title)).size, CHECK_IN_VARIANTS.length);
+  // Yesterday's check-in already done before the reminder: no reminder that morning.
+  s.journal.entries["2026-10-10"] = { yes: {} };
+  assert.equal(checkInSchedule(s, 8, 0, now, 7).some((n) => n.day === "2026-10-11"), false);
+});

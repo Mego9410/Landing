@@ -6,6 +6,7 @@ import { Platform } from "react-native";
 import { sessionsPaused } from "./health";
 import type { AppState } from "./store";
 import { trialReminderAt } from "@/data/trial";
+import { checkInSchedule } from "@/data/reminders";
 export type { Reminders } from "@/data/reminders";
 
 const supported = Platform.OS === "ios" || Platform.OS === "android";
@@ -65,17 +66,36 @@ export async function trialReminder(until: string | null, started: string | null
   });
 }
 
+/** Whether notifications have been turned off for Steadie (asked and refused, so only iOS Settings can change it). */
+export async function notificationsDenied(): Promise<boolean> {
+  if (!supported) return false;
+  const p = await Notifications.getPermissionsAsync();
+  return !p.granted && !p.canAskAgain;
+}
+
+let pending: Promise<void> = Promise.resolve();
+/** Reschedules the reminders, one run at a time, so overlapping calls can't leave duplicates. */
+export function refreshReminders(s: AppState) {
+  pending = pending.then(() => applyReminders(s)).catch(() => {});
+  return pending;
+}
+
 /** Replaces whatever is scheduled with the reminders as set now. */
 export async function applyReminders(s: AppState) {
   if (!supported) return;
   await cancelPlanReminders();
   const r = s.settings.reminders;
-  const { DAILY, WEEKLY } = Notifications.SchedulableTriggerInputTypes;
-  if (r.checkIn.on) {
-    await Notifications.scheduleNotificationAsync({
-      content: { title: "How was yesterday?", body: "A minute of quick questions. Over time they show what helps your days." },
-      trigger: { type: DAILY, hour: r.checkIn.hour, minute: r.checkIn.minute },
-    });
+  const { DATE, WEEKLY } = Notifications.SchedulableTriggerInputTypes;
+  // One dated reminder a day rather than a repeating one, so the wording can change and a day already checked in
+  // gets none. Rescheduled whenever the app opens and after each check-in.
+  if (r.checkIn.on && s.onboarded) {
+    for (const n of checkInSchedule(s, r.checkIn.hour, r.checkIn.minute, new Date())) {
+      await Notifications.scheduleNotificationAsync({
+        identifier: `check-in-${n.day}`,
+        content: { title: n.title, body: n.body, data: { url: "/journal" } },
+        trigger: { type: DATE, date: n.at },
+      });
+    }
   }
   if (r.sessions.on && !sessionsPaused(s)) {
     for (const d of r.sessions.days) {

@@ -1,5 +1,5 @@
 import { Linking, View } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -7,7 +7,7 @@ import { Screen } from "@/components/Screen";
 import { Choices, Header, ToggleRow } from "@/components/ui";
 import { DAYS } from "@landing/engine";
 import { sessionsPaused } from "@/state/health";
-import { applyReminders, ensurePermission, type Reminders as R } from "@/state/reminders";
+import { applyReminders, ensurePermission, notificationsDenied, type Reminders as R } from "@/state/reminders";
 import { get, set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { space } from "@/theme";
@@ -19,6 +19,8 @@ const label = (h: number) => (h === 12 ? "Midday" : h < 12 ? `${h}am` : `${h - 1
 export default function Reminders() {
   const s = useApp(), r = s.settings.reminders;
   const [denied, setDenied] = useState(false);
+  // Notifications already turned off (say, "Don't allow" during onboarding): explain once, here, with the way to fix it.
+  useEffect(() => { notificationsDenied().then((d) => { if (d) setDenied(true); }, () => {}); }, []);
 
   async function change(fn: (r: R) => void, turningOn: boolean) {
     if (turningOn && !(await ensurePermission())) { setDenied(true); return; }

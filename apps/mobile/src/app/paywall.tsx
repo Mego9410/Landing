@@ -27,6 +27,7 @@ export default function Paywall() {
   const [pick, setPick] = useState(0);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState<{ text: string; detail: string } | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
   const lapsed = !!s.subscription?.ended && !s.subscription.active; // had the plan before, so "welcome back"
   const chosen = options?.[pick];
 
@@ -67,9 +68,13 @@ export default function Paywall() {
 
       {failed ? (
         <Card tone="sunk" style={{ gap: 6 }}>
-          <AppText weight="800">Plans aren&apos;t loading</AppText>
-          <AppText color="inkMuted">{failed.text}</AppText>
-          {failed.detail ? <AppText variant="caption" color="inkMuted">{failed.detail}</AppText> : null}
+          {/* The store's technical message is for testing: shown in development builds, or on any build after holding
+              the heading for two seconds. Customers only see the calm line. */}
+          <Pressable onLongPress={() => setShowDetail((v) => !v)} delayLongPress={2000} accessibilityRole="header">
+            <AppText weight="800">Plans aren&apos;t loading just now</AppText>
+          </Pressable>
+          <AppText color="inkMuted">Check your connection and try again.</AppText>
+          {(__DEV__ || showDetail) && failed.detail ? <AppText variant="caption" color="inkMuted">{failed.text} {failed.detail}</AppText> : null}
           <Button label="Try again" variant="secondary" onPress={load} />
         </Card>
       ) : !options ? (
@@ -83,8 +88,9 @@ export default function Paywall() {
                 style={{ flexDirection: "row", alignItems: "center", gap: space[3], padding: space[4], borderRadius: radius.md, backgroundColor: on ? c.apricot : c.surfaceRaised, borderWidth: on ? 0 : 1.5, borderColor: c.line }}>
                 <View style={{ width: 24, height: 24, borderRadius: radius.full, borderWidth: on ? 7 : 2, borderColor: on ? c.onPastel : c.inkMuted, backgroundColor: c.surfaceRaised }} />
                 <View style={{ flex: 1, gap: 2 }}>
-                  <AppText weight="800" color={on ? "onPastel" : "ink"}>{o.title} · {o.price} {o.per}</AppText>
-                  <AppText variant="caption" color={on ? "onPastel" : "inkMuted"}>{[o.trial ? `${o.trial} free` : null, o.monthly].filter(Boolean).join(" · ") || (o.pkg.packageType === "ANNUAL" ? "Billed yearly" : "Billed monthly")}</AppText>
+                  <AppText weight="800" color={on ? "onPastel" : "ink"}>{o.title}</AppText>
+                  <AppText color={on ? "onPastel" : "ink"}>{o.price} {o.per}{o.weekly ? ` · ${o.weekly}` : ""}</AppText>
+                  <AppText variant="caption" color={on ? "onPastel" : "inkMuted"}>{[o.trial ? `${o.trial} free` : null, o.billing].filter(Boolean).join(" · ")}</AppText>
                 </View>
                 {o.saving ? <AppText variant="caption" weight="800" color={on ? "onPastel" : "sageInk"}>{o.saving}</AppText> : null}
               </Pressable>
@@ -96,7 +102,7 @@ export default function Paywall() {
       {chosen?.trial ? <TrialSteps plan={chosen} /> : null}
 
       <View style={{ gap: space[2] }}>
-        <Button label={busy ? "One moment…" : chosen?.trial ? `Start my ${chosen.trial} free` : "Subscribe"} block disabled={busy || !options?.length} onPress={subscribe} />
+        <Button label={busy ? "One moment…" : chosen?.trial ? `Start my ${trialDays(chosen.trial)}-day free trial` : "Subscribe"} block disabled={busy || !options?.length} onPress={subscribe} />
         <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>
           {chosen?.trial
             ? `${chosen.trial} free, then ${chosen.price} ${chosen.per}. Cancel at least 24 hours before the trial ends and you won't be charged. Renews automatically until you cancel in your Apple account settings.`
@@ -113,14 +119,17 @@ export default function Paywall() {
   );
 }
 
+/** "7 days" (or "1 week") to 7. */
+const trialDays = (trial: string | null) => { const n = parseInt(trial ?? "", 10) || 7; return /week/i.test(trial ?? "") ? n * 7 : n; };
+
 /** How the free trial works, day by day, so nobody is surprised by a charge. */
 function TrialSteps({ plan }: { plan: Plan }) {
   const c = useColors();
-  const days = parseInt(plan.trial ?? "7", 10) || 7;
+  const days = trialDays(plan.trial);
   const steps = [
-    { when: "Today", what: "Full access to your plan. Nothing to pay." },
-    { when: `Day ${Math.max(1, days - 2)}`, what: "We remind you the trial is ending, if you allow notifications." },
-    { when: `Day ${days}`, what: `Your ${plan.title.toLowerCase()} plan starts at ${plan.price} ${plan.per}, unless you cancel before.` },
+    { when: "Today", what: "Full access to your plan." },
+    { when: `Day ${Math.max(1, days - 2)}`, what: "We'll remind you before it ends." },
+    { when: `Day ${days}`, what: `Your plan starts at ${plan.price} ${plan.per}. Cancel any time before.` },
   ];
   return (
     <Card tone="sunk" style={{ gap: space[3] }}>

@@ -46,8 +46,10 @@ export interface Plan {
   /** "£69.99", from the App Store, in the person's currency. */
   price: string;
   per: string;
-  /** "About £5.83 a month", for the yearly plan. */
-  monthly: string | null;
+  /** "Billed once a year" or "Billed monthly". */
+  billing: string;
+  /** "£1.35 a week", for the yearly plan, from the App Store's own per-week price. */
+  weekly: string | null;
   /** "7 days", when this person can have a free trial on this plan; null otherwise. */
   trial: string | null;
   saving?: string;
@@ -69,15 +71,16 @@ export async function plans(): Promise<Plan[]> {
       const saving = yearly && monthlyPkg ? Math.round((1 - pr.price / (monthlyPkg.product.price * 12)) * 100) : 0;
       const canTrial = !!intro && intro.price === 0 && eligible[pr.identifier]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
       return {
-        pkg, title: yearly ? "Yearly" : "Monthly", price: pr.priceString, per: yearly ? "a year" : "a month",
-        monthly: yearly && pr.pricePerMonthString ? `About ${pr.pricePerMonthString} a month` : null,
+        pkg, title: yearly ? "Steadie Yearly" : "Steadie Monthly", price: pr.priceString, per: yearly ? "a year" : "a month",
+        billing: yearly ? "Billed once a year" : "Billed monthly",
+        weekly: yearly && pr.pricePerWeekString ? `${pr.pricePerWeekString} a week` : null,
         trial: canTrial ? period(intro!.period) : null,
         saving: saving > 0 ? `Save ${saving}%` : undefined,
       };
     });
 }
 
-/** Why plans didn't load, in plain words, with the store's own message kept for testing. */
+/** Why plans didn't load: `text` for everyone, `detail` (the store's own code and message) for testing only. */
 export function plansProblem(e: unknown): { text: string; detail: string } {
   const err = e as { code?: string; message?: string; underlyingErrorMessage?: string };
   const code = String(err?.code ?? "");

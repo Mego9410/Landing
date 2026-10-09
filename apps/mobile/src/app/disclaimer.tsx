@@ -34,8 +34,8 @@ export default function Disclaimer() {
   function accept() {
     if (!understood || !adult) { setError("Tick both boxes to carry on."); return; }
     set((st) => { st.disclaimer = { acceptedAt: new Date().toISOString(), version: DISCLAIMER_VERSION }; });
-    // During onboarding this sits just before the health check; for someone already set up (new wording), back to Today.
-    router.replace(s.onboarded ? "/" : "/onboarding/health");
+    // During onboarding this sits just before consent and the health check; for someone already set up (new wording), back to Today.
+    router.replace(s.onboarded ? "/" : s.consent ? "/onboarding/health" : "/consent");
   }
 
   return (

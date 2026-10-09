@@ -123,6 +123,7 @@ export default function Today() {
   // sees it again here only if its wording has changed.
   if (!s.onboarded) return <Redirect href="/onboarding" />;
   if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
+  if (!s.consent) return <Redirect href="/consent" />;
   const week = weekOf(s), phase = phaseOf(week), nextPhase = PHASES[PHASES.indexOf(phase) + 1];
   const items = todayPlan(s), done = items.filter((i) => i.done).length;
   const up = items.find((i): i is Task => i.kind === "task" && !i.done), habitsLeft = items.some((i) => i.kind === "habit" && !i.done);

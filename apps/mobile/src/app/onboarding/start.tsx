@@ -10,7 +10,7 @@ import { space } from "@/theme";
 export default function Start() {
   const s = useApp();
   return (
-    <Step n={1} title="Where are you now?" lede="Your plan is built around the year after your last injection." next={() => router.push(needsDisclaimer(s) ? "/disclaimer" : "/onboarding/health")}>
+    <Step n={1} title="Where are you now?" lede="Your plan is built around the year after your last injection." next={() => router.push(needsDisclaimer(s) ? "/disclaimer" : s.consent ? "/onboarding/health" : "/consent")}>
       <Field label="What should we call you? (optional)" value={s.name} onChangeText={(v) => set((st) => { st.name = v.slice(0, 30); })} placeholder="Your first name" autoComplete="given-name" textContentType="givenName" returnKeyType="done" />
       <Options label="Where you are" value={s.ob.status} onChange={(v) => set((st) => { st.ob.status = v; })} options={[
         { id: "stopped", title: "I've stopped", detail: "My last injection was a while ago" },

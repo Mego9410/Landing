@@ -16,15 +16,14 @@ import { set, useApp, type Units } from "@/state/store";
 import { toast } from "@/state/toast";
 import { space, useColors } from "@/theme";
 
-/** O2 A quick health check (movement plan §4.2), with consent to keep health information on the phone and, if they
- *  like, a starting weight. Also the 12-weekly re-check from Today or Settings (`?recheck=1`). */
+/** O2 A quick health check (movement plan §4.2) and, if they like, a starting weight (consent comes just before, in
+ *  app/consent.tsx). Also the 12-weekly re-check from Today or Settings (`?recheck=1`). */
 export default function HealthCheck() {
   const s = useApp(), c = useColors();
   const recheck = useLocalSearchParams<{ recheck?: string }>().recheck === "1";
   const [answers, setAnswers] = useState<Record<string, boolean | undefined>>(() => (recheck ? { ...s.health.answers } : {}));
   const [gpChecked, setGpChecked] = useState(s.health.gpCleared);
   const [referAgreed, setReferAgreed] = useState(!!s.health.referAgreed && s.health.referAgreed.version >= HEALTH_VERSION);
-  const [consent, setConsent] = useState(!!s.consent);
   const [units, setUnits] = useState<Units>(s.settings.units);
   const [kg, setKg] = useState(""), [st, setSt] = useState(""), [lb, setLb] = useState("");
   const [lowest, setLowest] = useState(""), [lowSt, setLowSt] = useState(""), [lowLb, setLowLb] = useState("");
@@ -52,14 +51,13 @@ export default function HealthCheck() {
   function save() {
     if (unanswered) { setError(`Answer each question with yes or no. ${unanswered} to go.`); return; }
     if (refer.length && !referAgreed) { setError("Tick the box under the note to carry on, or close the app and come back after you've checked."); return; }
-    if (!consent) { setError("Tick the box to agree to Steadie keeping your health information."); return; }
+    if (!s.consent) { router.push("/consent"); return; }
     const w = safe || recheck ? { now: null, low: null } : parseWeight();
     if (typeof w === "string") { setError(w); return; }
     set((st2) => {
       applyHealth(st2, answers as Record<string, boolean>);
       if (gp) st2.health.gpCleared = gpChecked;
       if (refer.length) st2.health.referAgreed = { at: new Date().toISOString(), version: HEALTH_VERSION };
-      if (!st2.consent) st2.consent = { healthDataAt: new Date().toISOString() };
       st2.settings.units = units;
       if (w.now != null) { const t = today(); st2.weights = [{ date: t, kg: w.now, source: "Logged by you" }, ...st2.weights.filter((x) => x.date !== t)]; }
       if (w.low != null) st2.ob.lowestWeight = w.low;
@@ -128,12 +126,6 @@ export default function HealthCheck() {
         </Card>
       ) : null}
 
-      {!s.consent ? (
-        <View style={{ gap: space[2] }}>
-          <Tick label="I agree to Steadie keeping my health information, like my answers, weight and check-ins, to build my plan: on this phone, and in my private backup if I sign in" checked={consent} onChange={(v) => { setError(""); setConsent(v); }} />
-          <Button label="Read the privacy policy" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} style={{ alignSelf: "flex-start", marginLeft: -space[6] }} />
-        </View>
-      ) : null}
       {error ? <AppText variant="caption" color="roseInk">{error}</AppText> : null}
     </>
   );

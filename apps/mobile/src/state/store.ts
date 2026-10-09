@@ -78,8 +78,10 @@ export interface AppState {
   /** The health check: answers by question, when and which wording; whether they've checked with their GP; and, for
    *  pregnancy or kidney disease, when they ticked the box to carry on. */
   health: { answers: Record<string, boolean>; checkedAt: string | null; version: number; gpCleared: boolean; referAgreed: { at: string; version: number } | null };
-  /** Explicit consent to keep health information (weight, eating, check-ins) on the phone, and when it was given. */
-  consent: { healthDataAt: string } | null;
+  /** Explicit consent to keep health information (weight, eating, check-ins): when it was given, which wording
+   *  (CONSENT_VERSION), and, if they've since withdrawn it for the backup, when (the app then keeps working on this
+   *  phone only, and nothing is uploaded). */
+  consent: { healthDataAt: string; version?: string; backupOffAt?: string | null } | null;
   /** The last known subscription status, so the app opens offline. Only used when billing is on. `until` is when the
    *  trial ends or the plan renews (or ends, if `willRenew` is false). */
   subscription: { active: boolean; checkedAt: string; plan?: "yearly" | "monthly" | null; trial?: boolean; until?: string | null; willRenew?: boolean; /** Had the plan before and it has ended (not just never subscribed). */ ended?: boolean } | null;
@@ -91,6 +93,10 @@ export const HEALTH_DEFAULTS: AppState["health"] = { answers: {}, checkedAt: nul
 
 /** Bump when the wording of the health information changes, so everyone sees and accepts it again. */
 export const DISCLAIMER_VERSION = 1;
+/** The health-information consent wording people agree to (app/consent.tsx). Recorded on the server with each backup. */
+export const CONSENT_VERSION = "health-v1";
+/** Health information may be backed up only with consent that hasn't been withdrawn for the backup. */
+export const backupAllowed = (s: Pick<AppState, "consent">) => !!s.consent && !s.consent.backupOffAt;
 export const needsDisclaimer = (s: AppState) => !s.disclaimer || s.disclaimer.version < DISCLAIMER_VERSION;
 
 export const FOOD_DEFAULTS: FoodPrefs = {

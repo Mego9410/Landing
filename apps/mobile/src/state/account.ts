@@ -10,7 +10,7 @@ import { AppState as RNAppState, Platform } from "react-native";
 import { deleteEverything } from "./data";
 import { decide, describe, forThisPhone } from "./merge";
 import { applyReminders } from "./reminders";
-import { get, migrate, replace, subscribe, type AppState } from "./store";
+import { backupAllowed, get, migrate, replace, set, subscribe, type AppState } from "./store";
 
 const API = (process.env.EXPO_PUBLIC_API_URL ?? "").replace(/\/$/, "");
 // Named before the app was renamed to Steadie. Keep them: changing them would sign everyone out.
@@ -194,6 +194,8 @@ function reconcile(): Promise<Outcome> {
           return { kind: "ask" as const, phone: describe(get()), backup: describe(backup!.data), backupDate: backup!.data.savedAt ?? "" };
         }
         if (choice === "none") return { kind: "none" as const };
+        // Health information only leaves the phone with consent (the server checks too).
+        if (!backupAllowed(get())) return { kind: "none" as const };
         const done = await upload(token, backup?.revision ?? 0);
         if (done === "signed-out") { await forget(); return { kind: "none" as const }; }
         if (done === "done") return { kind: "uploaded" as const };
@@ -213,6 +215,7 @@ export async function choose(keep: "backup" | "phone"): Promise<void> {
   pending = null;
   if (!backup || !account) return;
   if (keep === "backup") { restore(backup); return; }
+  if (!backupAllowed(get())) return;
   // Keep this phone's: upload it over the backup the person saw. If another phone changed it meanwhile, look again.
   setAccount({ ...account, linked: true, revision: backup.revision });
   await queue(async () => {
@@ -283,6 +286,26 @@ export async function setGuideEmails(on: boolean): Promise<void> {
   if (!token) throw new AccountError("Sign in first.");
   const r = await call("/api/account/emails", { method: "PUT", body: JSON.stringify({ on }) }, token);
   if (!r.ok) throw new AccountError("Couldn't change your email settings just now. Try again.");
+}
+
+/* ---------- health consent for the backup ---------- */
+/** Withdraws consent to back up health information: deletes the backup on Steadie's server and stops backing up.
+ *  Everything stays on this phone, and the account (and guide emails) stay. */
+export async function withdrawHealthBackup(): Promise<void> {
+  const token = await readToken();
+  if (token) {
+    const r = await call("/api/sync", { method: "DELETE" }, token);
+    if (!r.ok && r.status !== 401) throw new AccountError("Couldn't remove your backup just now. Nothing has changed. Try again.");
+  }
+  clearTimeout(timer);
+  set((s) => { if (s.consent) s.consent.backupOffAt = new Date().toISOString(); });
+  if (account) setAccount({ ...account, revision: 0, syncedAt: null, linked: false });
+}
+
+/** Gives consent again and backs up straight away. */
+export async function resumeHealthBackup(): Promise<Outcome> {
+  set((s) => { if (s.consent) s.consent.backupOffAt = null; });
+  return backUpNow();
 }
 
 /** Deletes the account and the backup on Steadie's server, then clears this phone. */

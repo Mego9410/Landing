@@ -12,7 +12,7 @@ import { fmt, isoDate, today } from "@/data/dates";
 import { demoState, freshState, replace, set, setWeek, useApp, weekOf, type Units } from "@/state/store";
 import { toast } from "@/state/toast";
 import { available, connect, disconnect } from "@/state/appleHealth";
-import { accountsAvailable, AccountError, backUpNow, deleteAccount, guideEmails, setGuideEmails, signOut, useAccount } from "@/state/account";
+import { accountsAvailable, AccountError, backUpNow, deleteAccount, guideEmails, resumeHealthBackup, setGuideEmails, signOut, useAccount, withdrawHealthBackup } from "@/state/account";
 import { deleteEverything, shareExport } from "@/state/data";
 import { billingEnabled, manageSubscription, restore } from "@/state/subscription";
 import { space } from "@/theme";
@@ -104,6 +104,7 @@ export default function Settings() {
             </List>
           ) : null}
           {account ? <GuideEmails /> : null}
+          {account ? <HealthBackup /> : null}
           {account ? null : (
             <>
               <AppText variant="caption" color="inkMuted">Your plan is only on this phone. Sign in to back it up, so it comes with you to a new phone.</AppText>
@@ -171,4 +172,44 @@ function GuideEmails() {
     });
   };
   return <ToggleRow title="Guide emails" sub="Two new guides a week and a Sunday digest. Unsubscribe any time." value={state.on} onChange={change} />;
+}
+
+/** Consent to back up health information: withdraw it (deletes the backup on our servers and stops backing up; the
+ *  plan stays on this phone), or give it again. Confirmed inline rather than in a pop-up. */
+function HealthBackup() {
+  const s = useApp();
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState("");
+  const off = !!s.consent?.backupOffAt;
+  const run = (job: () => Promise<unknown>, done: string) => {
+    setBusy(true); setNote("");
+    job().then(() => { setConfirming(false); setNote(done); }, (e) => setNote(e instanceof AccountError ? e.message : "Something went wrong. Try again.")).finally(() => setBusy(false));
+  };
+  if (off) {
+    return (
+      <View style={{ gap: space[2] }}>
+        <AppText variant="caption" color="inkMuted">You&apos;ve withdrawn consent to back up your health information, so your plan is only on this phone.</AppText>
+        <Button label={busy ? "One moment…" : "Back up my health information again"} variant="secondary" disabled={busy} onPress={() => run(resumeHealthBackup, "Thanks. Your plan is backed up again.")} />
+        {note ? <AppText variant="caption" color="inkMuted">{note}</AppText> : null}
+      </View>
+    );
+  }
+  return (
+    <View style={{ gap: space[2] }}>
+      {!confirming ? (
+        <Button label="Withdraw health consent" variant="quiet" onPress={() => { setNote(""); setConfirming(true); }} style={{ alignSelf: "flex-start" }} />
+      ) : (
+        <View style={{ gap: space[2] }}>
+          <AppText weight="800">Withdraw consent for your backup?</AppText>
+          <AppText variant="caption" color="inkMuted">This deletes your health information from our servers and stops backing it up. Your plan stays on this phone and you stay signed in. To remove it from this phone too, use Delete my account.</AppText>
+          <View style={{ flexDirection: "row", gap: space[2] }}>
+            <Button label={busy ? "Withdrawing…" : "Withdraw and delete backup"} disabled={busy} onPress={() => run(withdrawHealthBackup, "Done. Your backup is deleted and your plan is on this phone only.")} />
+            <Button label="Keep it" variant="quiet" disabled={busy} onPress={() => setConfirming(false)} />
+          </View>
+        </View>
+      )}
+      {note ? <AppText variant="caption" color="inkMuted">{note}</AppText> : null}
+    </View>
+  );
 }

@@ -80,7 +80,16 @@ export async function sendCode(email: string): Promise<void> {
 export async function verifyCode(email: string, code: string): Promise<Outcome> {
   const r = await call("/api/auth/sign-in/email-otp", { method: "POST", body: JSON.stringify({ email: email.trim().toLowerCase(), otp: code.trim() }) });
   if (r.status === 429) throw new AccountError("Too many tries. Wait a minute, then try again.");
-  if (!r.ok) throw new AccountError("That code didn't match, or it's more than 10 minutes old. Check it or send a new one.");
+  if (!r.ok) {
+    const reason = ((await r.json().catch(() => null)) as { code?: string } | null)?.code;
+    // An expired or used-up code is replaced straight away, so the next email has one that works.
+    if (reason === "OTP_EXPIRED" || reason === "TOO_MANY_ATTEMPTS") {
+      const sent = await sendCode(email).then(() => true, () => false);
+      throw new AccountError(!sent ? "That code has expired. Send a new one."
+        : reason === "OTP_EXPIRED" ? "That code has expired. We've sent a new one." : "Too many tries with that code. We've sent a new one.");
+    }
+    throw new AccountError("That code didn't match. Check it and try again.");
+  }
   return signedIn(r);
 }
 

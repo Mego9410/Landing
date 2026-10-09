@@ -19,8 +19,17 @@ export function AdminLogin({ signedInAs }: { signedInAs?: string }) {
   async function verify(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setError("");
     const r = await post("/sign-in/email-otp", { email: email.trim(), otp: code.trim() }).catch(() => null);
+    if (r?.ok) { window.location.reload(); return; }
+    const reason = r ? ((await r.json().catch(() => null)) as { code?: string } | null)?.code : undefined;
+    // An expired or used-up code is replaced straight away, so the next email has one that works.
+    if (reason === "OTP_EXPIRED" || reason === "TOO_MANY_ATTEMPTS") {
+      const again = await post("/email-otp/send-verification-otp", { email: email.trim(), type: "sign-in" }).catch(() => null);
+      setCode("");
+      setError(again?.ok ? (reason === "OTP_EXPIRED" ? "That code has expired. We've sent a new one." : "Too many tries with that code. We've sent a new one.") : "That code has expired. Send a new one.");
+    } else if (r?.status === 429) setError("Too many tries. Wait a minute, then try again.");
+    else if (!r) setError("Couldn't reach Steadie. Check your connection and try again.");
+    else setError("That code didn't match. Check it and try again.");
     setBusy(false);
-    if (r?.ok) window.location.reload(); else setError("That code didn't work. Check it, or send a new one.");
   }
   return (
     <div className={styles.login}>

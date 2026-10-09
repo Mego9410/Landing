@@ -14,9 +14,10 @@ import { sessionFor } from "@/data/sessions";
 import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
 import { minutes, px, thisWeek } from "@/state/food";
 import { habitDetail, nextSession, sessionTarget, toggleHabit } from "@/state/habits";
-import { needsDisclaimer, sessionsInWeek, useApp, weekOf } from "@/state/store";
+import { needsDisclaimer, sessionsInWeek, set, useApp, weekOf } from "@/state/store";
 import { sessionsPaused } from "@/state/health";
 import { notificationsAllowed, trialMessage } from "@/state/reminders";
+import { askForReview } from "@/state/review";
 import { headline, todayPlan, type Task } from "@/state/today";
 import { radius, space, useColors } from "@/theme";
 
@@ -119,6 +120,53 @@ function Plans() {
   );
 }
 
+/** The year at a glance: Land, Settle and Steady as one strip, sized by their weeks, filled up to this week. */
+function PhaseStrip({ week }: { week: number }) {
+  const c = useColors(), phase = phaseOf(week);
+  return (
+    <View accessible accessibilityRole="progressbar" accessibilityLabel={`Week ${week} of 52, ${phase.name} phase`} accessibilityValue={{ min: 1, max: 52, now: week }} style={{ gap: 6 }}>
+      <View style={{ flexDirection: "row", gap: 4 }}>
+        {PHASES.map((p) => {
+          const len = p.to - p.from + 1, filled = Math.max(0, Math.min(len, week - p.from + 1));
+          return (
+            <View key={p.key} style={{ flex: len, height: 8, borderRadius: radius.full, backgroundColor: c.surfaceSunk, overflow: "hidden" }}>
+              <View style={{ width: `${(filled / len) * 100}%`, height: "100%", backgroundColor: c[p.tone] }} />
+            </View>
+          );
+        })}
+      </View>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space[2] }}>
+        <AppText variant="caption" weight="700">Week {week} of 52 · {phase.name}</AppText>
+        <AppText variant="caption" color="inkMuted">{PHASES.map((p) => p.name).join(" › ")}</AppText>
+      </View>
+    </View>
+  );
+}
+
+/** Once, when a new phase starts: what it's about. Closing it may be followed by Apple's rating prompt (a milestone). */
+function PhaseCelebration({ week }: { week: number }) {
+  const s = useApp(), phase = phaseOf(week);
+  const seen = s.phaseSeen;
+  // People who had the app before this existed: start from where they are, without a card.
+  useEffect(() => { if (seen === undefined) set((st) => { st.phaseSeen = phase.key; }); }, [seen, phase.key]);
+  const order = PHASES.map((p) => p.key);
+  if (!seen || order.indexOf(phase.key) <= order.indexOf(seen)) return null;
+  const done = PHASES[order.indexOf(phase.key) - 1];
+  function close() {
+    set((st) => { st.phaseSeen = phase.key; });
+    askForReview("phase").catch(() => {});
+  }
+  return (
+    <Card tone={phase.tone} style={{ gap: space[2] }}>
+      <AppText variant="label" color="onPastel">{done.name.toUpperCase()} DONE · WEEK {week}</AppText>
+      <AppText variant="heading" color="onPastel" accessibilityRole="header">Welcome to {phase.name}</AppText>
+      <AppText color="onPastel">You&apos;ve finished {done.name}, weeks {done.from} to {done.to}. That&apos;s a real stretch of steady habits.</AppText>
+      <AppText color="onPastel"><AppText weight="800" color="onPastel">What {phase.name} is about: </AppText>{phase.focus}</AppText>
+      <Button variant="secondary" label={`On to ${phase.name}`} onPress={close} />
+    </Card>
+  );
+}
+
 /** In the last two days of a free trial that will turn into a subscription, the trial reminder's message, here instead,
  *  for anyone who hasn't allowed notifications (so never got it). */
 function TrialEnding() {
@@ -164,6 +212,8 @@ export default function Today() {
         <Avatar name={s.name} />
       </View>
 
+      <PhaseStrip week={week} />
+      <PhaseCelebration week={week} />
       <TrialEnding />
 
       <Card tone="apricot" hero style={{ gap: space[4] }}>

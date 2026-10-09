@@ -85,6 +85,8 @@ export interface AppState {
   /** The last known subscription status, so the app opens offline. Only used when billing is on. `until` is when the
    *  trial ends or the plan renews (or ends, if `willRenew` is false). */
   subscription: { active: boolean; checkedAt: string; plan?: "yearly" | "monthly" | null; trial?: boolean; until?: string | null; willRenew?: boolean; /** Had the plan before and it has ended (not just never subscribed). */ ended?: boolean } | null;
+  /** The phase whose start has been celebrated on Today (or that someone started in), so each change shows once. */
+  phaseSeen?: "land" | "settle" | "steady" | null;
   /** When this copy last changed, so the newer of two copies wins when a backup and a phone disagree. */
   savedAt?: string;
 }

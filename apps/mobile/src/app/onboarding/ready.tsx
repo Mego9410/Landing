@@ -22,6 +22,7 @@ export default function Ready() {
       st.habits = { week, ids, swappedFrom: null };
       st.food.joinedWeek = week; // the fibre ramp starts today
       st.food.plan = null;
+      st.phaseSeen = phase.key; // no celebration for the phase they start in
     });
     refreshReminders(get()); // the check-in reminder, if turned on, starts tomorrow
     track("onboarding_completed", { week });

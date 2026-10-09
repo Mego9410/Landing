@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { Platform, ScrollView, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
+import { IntroSplash } from "@/components/IntroSplash";
 import { Toast } from "@/components/Toast";
 import { startBackup } from "@/state/account";
 import { flushEvents, track } from "@/state/events";
@@ -22,6 +23,9 @@ import { space, useColors } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 startSentry();
+
+// Set once the intro has played, so a remount (e.g. fast refresh) never replays it.
+let introPlayed = false;
 
 // Sheets open over the screen they belong to.
 const SHEET = { presentation: "modal" as const };
@@ -60,6 +64,7 @@ function RootLayout() {
   const c = useColors();
   const [loaded, error] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold, Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold });
   const [ready, setReady] = useState(false);
+  const [intro, setIntro] = useState(!introPlayed);
 
   useEffect(() => {
     let stop: (() => void) | undefined, stopBackup: (() => void) | undefined, gone = false;
@@ -74,14 +79,17 @@ function RootLayout() {
     });
     return () => { gone = true; stop?.(); stopBackup?.(); };
   }, []);
+  // The intro hides the native splash itself; this is only for when it isn't showing.
   useEffect(() => {
-    if ((loaded || error) && ready) SplashScreen.hideAsync().catch(() => {});
-  }, [loaded, error, ready]);
+    if (!intro && (loaded || error) && ready) SplashScreen.hideAsync().catch(() => {});
+  }, [intro, loaded, error, ready]);
 
-  if ((!loaded && !error) || !ready) return null;
+  // The native splash stays up until the fonts are in (the intro needs Nunito 800).
+  if (!loaded && !error) return null;
   return (
     <View style={{ flex: 1, backgroundColor: c.surface }}>
-      <StatusBar style="auto" />
+      {ready ? <>
+      <StatusBar style={intro ? "light" : "auto"} />
       <Sentry.ErrorBoundary fallback={({ resetError }) => <Fallback resetError={resetError} />}>
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface } }}>
         <Stack.Screen name="meals/pick" options={SHEET} />
@@ -93,6 +101,11 @@ function RootLayout() {
       </Sentry.ErrorBoundary>
       <Toast />
       {Platform.OS === "web" ? null : <NotificationLinks />}
+      </> : null}
+      {intro ? <>
+        <StatusBar style="light" />
+        <IntroSplash ready={ready} onDone={() => { introPlayed = true; setIntro(false); }} />
+      </> : null}
     </View>
   );
 }

@@ -126,7 +126,7 @@ export { broadcastNames };
 
 // ---- The emails ----
 
-const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c]!);
+export const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[c]!);
 /** Guide text uses [label](href) and **bold**; emails get plain text. */
 const plain = (s: string) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/\*\*([^*]+)\*\*/g, "$1");
 const link = (g: Guide, campaign: string) => `${SITE_URL}/guides/${g.slug}?utm_source=email&utm_medium=email&utm_campaign=${campaign}`;
@@ -134,10 +134,12 @@ const UNSUBSCRIBE = "{{{RESEND_UNSUBSCRIBE_URL}}}";
 /** The guide's illustration as a PNG (app/guides/[slug]/art.png). */
 const artUrl = (g: Guide) => `${SITE_URL}/guides/${g.slug}/art.png`;
 
-const C = { apricot: "#DE6F44", apricotInk: "#B4532C", cream: "#FBF1E4", oat: "#F5EFE6", ink: "#2A2530", muted: "#6A6371", line: "#E7DDD0" };
-const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+export const C = { apricot: "#DE6F44", apricotInk: "#B4532C", cream: "#FBF1E4", oat: "#F5EFE6", ink: "#2A2530", muted: "#6A6371", line: "#E7DDD0" };
+export const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 
-function shell(previewText: string, body: string) {
+/** The branded email frame. By default the footer is the guide emails' one; the weekly recap passes its own reason and
+ *  unsubscribe link. */
+export function shell(previewText: string, body: string, footer: { why: string; unsubscribe: string; where: string } = { why: "You're getting this because you asked for Steadie guides by email.", unsubscribe: UNSUBSCRIBE, where: "turn guide emails off in the app's Settings" }) {
   return `<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Steadie</title></head>
 <body style="margin:0;padding:0;background:${C.oat};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0">${esc(previewText)}</div>
@@ -146,13 +148,13 @@ function shell(previewText: string, body: string) {
 <tr><td style="padding:0 4px 20px;"><a href="${SITE_URL}"><img src="${SITE_URL}/email/steadie-lockup.png" width="150" alt="Steadie" style="display:block;border:0;width:150px;height:auto;"></a></td></tr>
 <tr><td style="background:#FFFFFF;border-radius:20px;padding:32px 28px;font-family:${FONT};color:${C.ink};">${body}</td></tr>
 <tr><td style="padding:22px 8px 0;font-family:${FONT};font-size:12px;line-height:18px;color:${C.muted};">
-You're getting this because you asked for Steadie guides by email. <a href="${UNSUBSCRIBE}" style="color:${C.muted};">Unsubscribe</a> any time, or turn guide emails off in the app's Settings.<br><br>
-Steadie guides are general information, not medical advice. Steadie never gives advice about medicines, doses or stopping treatment: talk to your prescriber, GP or pharmacist.<br><br>
+${esc(footer.why)} <a href="${footer.unsubscribe}" style="color:${C.muted};">Unsubscribe</a> any time, or ${esc(footer.where)}.<br><br>
+Steadie is general information, not medical advice. Steadie never gives advice about medicines, doses or stopping treatment: talk to your prescriber, GP or pharmacist.<br><br>
 ${esc(ORG_NAME)} · <a href="${SITE_URL}" style="color:${C.muted};">getsteadieapp.com</a> · <a href="${SITE_URL}/app-privacy" style="color:${C.muted};">Privacy</a>
 </td></tr></table></td></tr></table></body></html>`;
 }
 
-const button = (href: string, label: string) =>
+export const button = (href: string, label: string) =>
   `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:24px 0 4px;"><tr><td style="background:${C.ink};border-radius:999px;"><a href="${href}" style="display:inline-block;padding:14px 26px;font-family:${FONT};font-size:16px;font-weight:700;color:${C.cream};text-decoration:none;">${esc(label)}</a></td></tr></table>`;
 
 const footerText = `\n\n---\nYou're getting this because you asked for Steadie guides by email. Unsubscribe: ${UNSUBSCRIBE}\nSteadie guides are general information, not medical advice. ${ORG_NAME} · ${SITE_URL}`;

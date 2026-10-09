@@ -1,7 +1,7 @@
 // The database: Better Auth's tables (user, session, account, verification, rate limits), each person's synced app
 // data, and the website waitlist. Postgres on Neon in production; an embedded Postgres (PGlite) for local work.
 // After changing this file, run `pnpm --filter @landing/web db:generate` to write a migration.
-import { bigint, bigserial, boolean, index, integer, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { bigint, bigserial, boolean, index, integer, jsonb, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
 
 const created = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 const updated = () => timestamp("updated_at", { withTimezone: true }).notNull().defaultNow();
@@ -104,3 +104,17 @@ export const lapseFeedback = pgTable("lapse_feedback", {
   reason: text("reason").notNull(),
   note: text("note"),
 });
+
+/** Email choices kept by us rather than Resend: the weekly recap (off unless turned on). */
+export const emailPrefs = pgTable("email_prefs", {
+  userId: text("user_id").primaryKey().references(() => user.id, { onDelete: "cascade" }),
+  weeklyRecap: boolean("weekly_recap").notNull().default(false),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Which weekly recaps have gone out (week = that Sunday's date), so a re-run never sends one twice. */
+export const recapSent = pgTable("recap_sent", {
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  week: text("week").notNull(),
+  sentAt: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [primaryKey({ columns: [t.userId, t.week] })]);

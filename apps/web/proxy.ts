@@ -25,4 +25,4 @@ export function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/api/auth/:path*", "/api/sync", "/api/account", "/api/account/emails", "/api/events", "/api/feedback"] };
+export const config = { matcher: ["/api/auth/:path*", "/api/sync", "/api/account", "/api/account/emails", "/api/account/recap", "/api/events", "/api/feedback"] };

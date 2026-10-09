@@ -15,6 +15,13 @@
       "when": 1791562283617,
       "tag": "0001_nosy_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791563518974,
+      "tag": "0002_glorious_shotgun",
+      "breakpoints": true
     }
   ]
 }

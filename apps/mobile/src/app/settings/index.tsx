@@ -12,7 +12,7 @@ import { fmt, isoDate, today } from "@/data/dates";
 import { demoState, freshState, replace, set, setWeek, useApp, weekOf, type Units } from "@/state/store";
 import { toast } from "@/state/toast";
 import { available, connect, disconnect } from "@/state/appleHealth";
-import { accountsAvailable, AccountError, backUpNow, deleteAccount, guideEmails, resumeHealthBackup, setGuideEmails, signOut, useAccount, withdrawHealthBackup } from "@/state/account";
+import { AccountError, accountsAvailable, backUpNow, deleteAccount, guideEmails, resumeHealthBackup, setGuideEmails, setWeeklyRecap, signOut, useAccount, weeklyRecap, withdrawHealthBackup } from "@/state/account";
 import { deleteEverything, shareExport } from "@/state/data";
 import { openWriteReview } from "@/state/review";
 import { billingEnabled, manageSubscription, restore } from "@/state/subscription";
@@ -105,6 +105,7 @@ export default function Settings() {
             </List>
           ) : null}
           {account ? <GuideEmails /> : null}
+          {account ? <WeeklyRecap /> : null}
           {account ? <HealthBackup /> : null}
           {account ? null : (
             <>
@@ -174,6 +175,20 @@ function GuideEmails() {
     });
   };
   return <ToggleRow title="Guide emails" sub="Two new guides a week and a Sunday digest. Unsubscribe any time." value={state.on} onChange={change} />;
+}
+
+function WeeklyRecap() {
+  const [state, setState] = useState<{ on: boolean; available: boolean } | null>(null);
+  useEffect(() => { let live = true; weeklyRecap().then((v) => { if (live) setState(v); }); return () => { live = false; }; }, []);
+  if (!state?.available) return null;
+  const change = (on: boolean) => {
+    setState({ ...state, on });
+    setWeeklyRecap(on).then(() => toast(on ? "You'll get a recap each Sunday evening." : "The weekly recap is off."), (e) => {
+      setState({ ...state, on: !on });
+      toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
+    });
+  };
+  return <ToggleRow title="Weekly recap email" sub="Sunday evening: check-ins, sessions, steady score and a tip. No weight in safe mode." value={state.on} onChange={change} />;
 }
 
 /** Consent to back up health information: withdraw it (deletes the backup on our servers and stops backing up; the

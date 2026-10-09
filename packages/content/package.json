@@ -6,7 +6,8 @@
   "description": "Food content for Steadie: ingredients, recipes and swap lists, checked against the Easy standard.",
   "exports": {
     ".": "./src/index.ts",
-    "./legal": "./src/legal.ts"
+    "./legal": "./src/legal.ts",
+    "./lessons": "./src/lessons.ts"
   },
   "scripts": {
     "check": "node scripts/check.ts",

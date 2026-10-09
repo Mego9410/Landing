@@ -7,10 +7,12 @@ import Constants, { ExecutionEnvironment } from "expo-constants";
 import * as SecureStore from "expo-secure-store";
 import { useSyncExternalStore } from "react";
 import { AppState as RNAppState, Platform } from "react-native";
+import { addDays, today, weekStart } from "@/data/dates";
 import { deleteEverything } from "./data";
 import { decide, describe, forThisPhone } from "./merge";
 import { eventsTokenFrom, flushEvents, track } from "./events";
 import { applyReminders } from "./reminders";
+import { weekScore } from "./score";
 import { backupAllowed, get, migrate, replace, set, subscribe, type AppState } from "./store";
 
 const API = (process.env.EXPO_PUBLIC_API_URL ?? "").replace(/\/$/, "");
@@ -151,6 +153,7 @@ async function fetchBackup(token: string): Promise<{ data: AppState; revision: n
   if (r.status === 204) return null;
   if (!r.ok) throw new AccountError("Couldn't check your backup.");
   const body = (await r.json()) as { data: Record<string, unknown>; revision: number };
+  delete body.data?.derived; // worked out for the server, not part of the plan
   const data = migrate(body.data);
   return data ? { data, revision: body.revision } : null;
 }
@@ -165,9 +168,18 @@ function restore(backup: { data: AppState; revision: number }) {
   applyReminders(next).catch(() => {});
 }
 
+/** Worked out on the phone and sent with the backup for the weekly recap email: the steady score for this week and the
+ *  two before (by Monday). Dropped again when a backup is restored. */
+function derived(s: AppState) {
+  const monday = weekStart(today());
+  const scores: Record<string, number | null> = {};
+  for (const m of [monday, addDays(monday, -7), addDays(monday, -14)]) scores[m] = weekScore(s, m)?.score ?? null;
+  return { scores, at: new Date().toISOString() };
+}
+
 async function upload(token: string, baseRevision: number): Promise<"done" | "conflict" | "signed-out"> {
   status = "saving"; emit();
-  const r = await call("/api/sync", { method: "PUT", body: JSON.stringify({ data: get(), baseRevision }) }, token);
+  const r = await call("/api/sync", { method: "PUT", body: JSON.stringify({ data: { ...get(), derived: derived(get()) }, baseRevision }) }, token);
   status = "idle";
   if (r.status === 401) return "signed-out";
   if (r.status === 409) { emit(); return "conflict"; }
@@ -289,6 +301,24 @@ export async function setGuideEmails(on: boolean): Promise<void> {
   const token = await readToken();
   if (!token) throw new AccountError("Sign in first.");
   const r = await call("/api/account/emails", { method: "PUT", body: JSON.stringify({ on }) }, token);
+  if (!r.ok) throw new AccountError("Couldn't change your email settings just now. Try again.");
+}
+
+/* ---------- the weekly recap email ---------- */
+/** Whether the signed-in person gets the weekly recap (Sunday 6pm: check-ins, sessions, steady score, next week's tip;
+ *  no weight in safe mode). Built from the backup, so it needs one. Null if signed out or the server can't say. */
+export async function weeklyRecap(): Promise<{ on: boolean; available: boolean } | null> {
+  const token = await readToken();
+  if (!token || !account) return null;
+  const r = await call("/api/account/recap", {}, token).catch(() => null);
+  if (!r?.ok) return null;
+  return (await r.json()) as { on: boolean; available: boolean };
+}
+
+export async function setWeeklyRecap(on: boolean): Promise<void> {
+  const token = await readToken();
+  if (!token) throw new AccountError("Sign in first.");
+  const r = await call("/api/account/recap", { method: "PUT", body: JSON.stringify({ on }) }, token);
   if (!r.ok) throw new AccountError("Couldn't change your email settings just now. Try again.");
 }
 

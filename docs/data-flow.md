@@ -21,6 +21,8 @@ weight and steps. Signed in, the session key is in the iPhone Keychain.
 | Health consent: wording version, when given, when withdrawn | With each backup / on withdrawal | Neon, London |
 | Funnel events (app opened, onboarding done, paywall seen, trial started…): random install ID, account ID if signed in, event name, no health values or free text | As they happen, signed in or not | Neon, London |
 | Why someone cancelled (one answer, optional note) | Only if they answer the card | Neon, London |
+| Weekly recap choice (on/off) and which weeks it was sent | When turned on in onboarding or Settings | Neon, London |
+| The steady scores for this week and the two before (`derived`, worked out on the phone) | With each backup, for the recap | Neon, London, inside the backup |
 
 Without an account, nothing about the plan leaves the phone. Funnel events and the cancellation answer do.
 
@@ -29,7 +31,9 @@ Without an account, nothing about the plan leaves the phone. Funnel events and t
 - **Vercel** runs the server (London) and keeps short request logs.
 - **Neon** is the database (London).
 - **Resend** gets the email address and the code for sign-in, and runs the guide-email list for people who opt in
-  (address, subscribed or not, delivery/open/click stats).
+  (address, subscribed or not, delivery/open/click stats). For people who turn on the weekly recap, it also sends
+  that email, so it sees its contents: check-ins, sessions, steady score, a tip and, unless safe mode is on and only if
+  weight is logged, the 7-day average weight.
 - **RevenueCat** gets an anonymous app user ID, App Store purchase details and basic device info. It never gets what
   people log.
 - **Apple** handles payment, Sign in with Apple (may give a private relay address) and Apple Health (read on the phone).

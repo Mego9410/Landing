@@ -40,6 +40,7 @@ export const APP_PRIVACY: LegalDoc = {
       "If you're signed in, you can choose to get Steadie's guides by email: two new guides a week and a Sunday digest. They're off unless you turn them on, when you sign in or in Settings.",
       "If you do, we add your email address to our mailing list with Resend, which sends the emails, and keep whether you've unsubscribed. Resend also records whether emails are delivered, opened or clicked, which we only use to check the emails are working and useful. Nothing you log in the app goes into these emails or to the mailing list.",
       "You can stop them at any time with the unsubscribe link in every email or in Settings. If you unsubscribe, we keep your address marked as unsubscribed so we don't email you again. Deleting your account removes it from the list completely.",
+      "You can also turn on a weekly recap: each Sunday evening, an email with how many days you checked in, the strength sessions you did, your steady score against the week before and a tip for next week. It's built from your backup, so it needs you to be signed in with your backup on. If you log your weight and safe mode is off, it also shows your 7-day average; in safe mode it never includes weight. It's off unless you turn it on, and you can stop it with the link in every recap or in Settings. Resend sends it, so it handles that email's contents, and we keep a note of which weeks it was sent.",
     ] },
     { heading: "How the app is used", paras: [
       "To see where people get stuck and what helps, the app sends us a short note when certain things happen: the app is opened for the first time, setting up is started or finished, consent is given, the plans are seen, a trial or subscription starts or is restored, a check-in is done, the first week is complete, notifications are allowed or not, and an account is deleted.",
@@ -51,7 +52,7 @@ export const APP_PRIVACY: LegalDoc = {
       "To build and run your plan, and to back it up and restore it if you sign in. This is needed to provide the app you've asked for (contract). Because it includes health information, we also rely on your explicit consent, which you give in the health check when you set up the app.",
       "To send you sign-in codes and keep your account secure, including limiting repeated attempts. This is needed to provide your account (contract) and is in our legitimate interest in keeping Steadie safe.",
       "To check whether you have an active subscription. This is needed to provide what you've paid for (contract).",
-      "To send you guide emails, only if you ask for them (consent). You can withdraw it at any time.",
+      "To send you guide emails and the weekly recap, only if you ask for them (consent). You can withdraw it at any time.",
       "To understand how the app is used, learn why people cancel and fix crashes, so we can improve Steadie. This is in our legitimate interest, and it uses the least information we can: no health information goes into it. You can object by emailing us.",
       "To answer you if you contact us, and to meet our legal obligations.",
       "We don't use your information for advertising, profiling, or to train AI models, and we don't sell it or share it with data brokers. Guide emails are the same for everyone who gets them.",

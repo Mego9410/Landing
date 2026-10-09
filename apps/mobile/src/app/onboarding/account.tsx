@@ -7,7 +7,7 @@ import { Mark } from "@/components/Mark";
 import { Screen } from "@/components/Screen";
 import { Banner, Field, Header, ToggleRow } from "@/components/ui";
 import { fmt } from "@/data/dates";
-import { AccountError, appleAvailable, choose, sendCode, setGuideEmails, signInWithApple, verifyCode, type Outcome } from "@/state/account";
+import { AccountError, appleAvailable, choose, sendCode, setGuideEmails, setWeeklyRecap, signInWithApple, verifyCode, type Outcome } from "@/state/account";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
 
@@ -28,12 +28,14 @@ export default function AccountStep() {
   const [apple, setApple] = useState(false);
   // Guide emails are opt-in: off unless they turn this on. Saved once they've signed in.
   const [emails, setEmails] = useState(false);
+  const [recap, setRecap] = useState(false);
   useEffect(() => { appleAvailable().then(setApple).catch(() => setApple(false)); }, []);
 
   const carryOn = () => (fromSettings ? router.back() : router.push("/onboarding/start"));
 
   async function finish(outcome: Outcome) {
     if (emails) setGuideEmails(true).catch(() => toast("Signed in, but we couldn't turn on guide emails. You can do it in Settings."));
+    if (recap) setWeeklyRecap(true).catch(() => toast("Signed in, but we couldn't turn on the weekly recap. You can do it in Settings."));
     if (outcome.kind === "ask") {
       const keep = await pick(outcome.phone, outcome.backup, outcome.backupDate);
       await choose(keep);
@@ -87,6 +89,7 @@ export default function AccountStep() {
           {apple ? <AppleButton onPress={withApple} disabled={busy} /> : null}
           <Button label="Continue with email" variant={apple ? "secondary" : "primary"} block disabled={busy} onPress={() => { setError(undefined); setStage("email"); }} />
           <ToggleRow title="Email me new guides" sub="Two short guides a week and a Sunday digest. Unsubscribe any time." value={emails} onChange={setEmails} />
+          <ToggleRow title="Email me a weekly recap" sub="Sunday evening: your check-ins, sessions and steady score, and a tip for next week. No weight in safe mode." value={recap} onChange={setRecap} />
           {fromSettings ? null : <Button label={existing ? "Start a new plan instead" : "Not now"} variant="quiet" onPress={carryOn} style={{ alignSelf: "center" }} />}
           <AppText variant="caption" color="inkMuted">Your backup is private to you: kept encrypted on our servers in London, never sold and never used for ads. You can withdraw it, sign out or delete it any time in Settings. {existing || fromSettings ? "" : "Without an account, your plan stays on this phone only and is lost if the phone is."}</AppText>
         </View>

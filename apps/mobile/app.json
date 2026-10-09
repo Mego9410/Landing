@@ -191,15 +191,18 @@
       "reactCompiler": true
     },
     "runtimeVersion": {
-      "policy": "sdkVersion"
+      "policy": "fingerprint"
     },
     "updates": {
-      "url": "https://u.expo.dev/eb04d207-c0e2-464e-8bee-5e6f711bc27f"
+      "url": "https://u.expo.dev/eb04d207-c0e2-464e-8bee-5e6f711bc27f",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
     },
     "extra": {
       "eas": {
         "projectId": "eb04d207-c0e2-464e-8bee-5e6f711bc27f"
-      }
+      },
+      "criticalIndex": 0
     }
   }
 }

@@ -16,6 +16,7 @@ import { install, updateInstall } from "@/state/install";
 import { watchDay } from "@/state/rollover";
 import { Sentry, sentryOn, startSentry } from "@/state/sentry";
 import { startBilling } from "@/state/subscription";
+import { applyCriticalUpdate } from "@/state/updates";
 import { get, hydrate } from "@/state/store";
 import { space, useColors } from "@/theme";
 
@@ -64,6 +65,7 @@ function RootLayout() {
     let stop: (() => void) | undefined, stopBackup: (() => void) | undefined, gone = false;
     hydrate().finally(() => {
       stop = watchDay(); startBilling().catch(() => {}); setReady(true);
+      applyCriticalUpdate().catch(() => {});
       install(get().startedOn).then((i) => {
         if (i.isNew) { track("app_first_open"); updateInstall({ isNew: false }); }
         flushEvents().catch(() => {});

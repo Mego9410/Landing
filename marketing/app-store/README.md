@@ -44,6 +44,6 @@ capture each screen at 430 × 878 points at 3x, and add a 162 px status bar on t
 
 ## iPad
 
-The app supports iPad (portrait, full screen), so App Store Connect needs an **iPad 13" Display** set. `source/ipad-13/`
+The app supports iPad in any orientation (full screen; iPhone stays portrait), so App Store Connect needs an **iPad 13" Display** set. `source/ipad-13/`
 has raw screens at 2064 × 2752, captured from the web build at 1032 × 1376 points at 2x in demo mode. On iPad the
 content sits in a centred column (680 points) with the tab bar centred below.

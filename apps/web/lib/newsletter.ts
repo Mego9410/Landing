@@ -131,6 +131,8 @@ const esc = (s: string) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt
 const plain = (s: string) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1").replace(/\*\*([^*]+)\*\*/g, "$1");
 const link = (g: Guide, campaign: string) => `${SITE_URL}/guides/${g.slug}?utm_source=email&utm_medium=email&utm_campaign=${campaign}`;
 const UNSUBSCRIBE = "{{{RESEND_UNSUBSCRIBE_URL}}}";
+/** The guide's illustration as a PNG (app/guides/[slug]/art.png). */
+const artUrl = (g: Guide) => `${SITE_URL}/guides/${g.slug}/art.png`;
 
 const C = { apricot: "#DE6F44", apricotInk: "#B4532C", cream: "#FBF1E4", oat: "#F5EFE6", ink: "#2A2530", muted: "#6A6371", line: "#E7DDD0" };
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
@@ -158,7 +160,8 @@ const footerText = `\n\n---\nYou're getting this because you asked for Steadie g
 /** The email for one new guide: its short version, then a link to read it all. */
 export function guideEmail(g: Guide): Email {
   const href = link(g, `guide-${g.slug}`);
-  const body = `<p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${C.apricotInk};">New guide · ${esc(g.category)}</p>
+  const body = `<a href="${href}"><img src="${artUrl(g)}" width="504" alt="" style="display:block;width:100%;max-width:504px;height:auto;border:0;border-radius:14px;margin:0 0 22px;"></a>
+<p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${C.apricotInk};">New guide · ${esc(g.category)}</p>
 <h1 style="margin:0 0 14px;font-size:26px;line-height:32px;font-weight:700;">${esc(g.title)}</h1>
 <p style="margin:0 0 18px;font-size:16px;line-height:24px;color:${C.muted};">${esc(g.description)}</p>
 <p style="margin:0 0 8px;font-size:15px;font-weight:700;">The short version</p>
@@ -184,10 +187,12 @@ export function libraryPicks(today: string, exclude: Set<string>, count = 3) {
 /** Sunday's digest: the week's new guides, then a few from the library. */
 export function digestEmail(today: string): Email {
   const weekAgo = new Date(Date.parse(today + "T12:00:00Z") - 6 * 86400000).toISOString().slice(0, 10);
-  const fresh = latestGuides(today).filter((g) => g.published >= weekAgo);
+  // At most three, newest first (the launch week alone had 22).
+  const fresh = latestGuides(today).filter((g) => g.published >= weekAgo).slice(0, 3);
   const library = libraryPicks(today, new Set(fresh.map((g) => g.slug)));
   const campaign = `digest-${today}`;
-  const card = (g: Guide) => `<tr><td style="padding:14px 0;border-top:1px solid ${C.line};"><a href="${link(g, campaign)}" style="font-size:17px;line-height:23px;font-weight:700;color:${C.ink};text-decoration:none;">${esc(g.title)}</a><p style="margin:4px 0 0;font-size:15px;line-height:22px;color:${C.muted};">${esc(g.description)}</p></td></tr>`;
+  const card = (g: Guide) => `<tr><td width="132" valign="top" style="padding:14px 14px 14px 0;border-top:1px solid ${C.line};"><a href="${link(g, campaign)}"><img src="${artUrl(g)}" width="118" alt="" style="display:block;width:118px;height:auto;border:0;border-radius:10px;"></a></td>
+<td valign="top" style="padding:14px 0;border-top:1px solid ${C.line};"><a href="${link(g, campaign)}" style="font-size:17px;line-height:23px;font-weight:700;color:${C.ink};text-decoration:none;">${esc(g.title)}</a><p style="margin:4px 0 0;font-size:15px;line-height:22px;color:${C.muted};">${esc(g.description)}</p></td></tr>`;
   const section = (title: string, list: Guide[]) => list.length
     ? `<p style="margin:22px 0 6px;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${C.apricotInk};">${title}</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${list.map(card).join("")}</table>` : "";
   const intro = fresh.length ? `${fresh.length === 1 ? "One new guide" : `${fresh.length} new guides`} this week, and a few from the library you might have missed.` : "A few guides from the library you might have missed.";

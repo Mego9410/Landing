@@ -9,6 +9,7 @@ import { SiteFooter, SiteHeader } from "./site-chrome";
 import { abs, ldJson, ORGANIZATION, SITE_NAME } from "./site";
 import { PrototypeLink } from "./prototype-link";
 import { AppStoreButton } from "./app-store";
+import { GuideArt } from "./guides/art";
 
 // New guides go live on their date (see content/guides), so the home page refreshes hourly to show the latest.
 export const revalidate = 3600;
@@ -400,7 +401,7 @@ export default function Home() {
             </div>
             <ul className={styles.guideGrid}>
               {homeGuides().map((g) => (
-                <li key={g.slug}><Link className={styles.guideCard} href={`/guides/${g.slug}`}><strong>{g.title}</strong><span>{g.description}</span></Link></li>
+                <li key={g.slug}><Link className={styles.guideCard} href={`/guides/${g.slug}`}><GuideArt guide={g} className={styles.guideArt} /><strong>{g.title}</strong><span>{g.description}</span></Link></li>
               ))}
             </ul>
             <p className={styles.castNote}><Link href="/guides">See all {liveGuides().length} guides</Link></p>

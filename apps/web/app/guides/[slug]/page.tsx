@@ -6,6 +6,7 @@ import home from "../../page.module.css";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
 import { abs, APP_STORE_URL, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
 import styles from "../guides.module.css";
+import { GuideArt } from "../art";
 import { anchor, Blocks, plain } from "../rich";
 
 // Guides published so far are built ahead; scheduled ones appear on their day (refreshed hourly, and by the daily cron).
@@ -89,6 +90,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               <p className={styles.kicker}>{g.category}</p>
               <h1 className={styles.title}>{g.title}</h1>
               <p className={styles.meta}>By the Steadie team · Updated <time dateTime={g.updated}>{long(g.updated)}</time> · {minutes} minute read</p>
+              <GuideArt guide={g} className={styles.heroArt} />
               <div className={styles.summary}>
                 <p>The short version</p>
                 <ul>{g.summary.map((s) => <li key={s}>{s}</li>)}</ul>
@@ -118,7 +120,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                 <section className={styles.related} aria-labelledby="related">
                   <h2 id="related">Keep reading</h2>
                   <ul className={styles.cards}>
-                    {related.map((r) => <li key={r.slug}><Link className={styles.card} href={`/guides/${r.slug}`}><strong>{r.title}</strong><span>{r.description}</span></Link></li>)}
+                    {related.map((r) => <li key={r.slug}><Link className={styles.card} href={`/guides/${r.slug}`}><GuideArt guide={r} className={styles.cardArt} /><strong>{r.title}</strong><span>{r.description}</span></Link></li>)}
                   </ul>
                 </section>
               ) : null}

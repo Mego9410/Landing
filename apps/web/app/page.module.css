@@ -216,10 +216,11 @@
 
 /* guides on the home page */
 .guideGrid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
-.guideCard { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 20px; border-radius: var(--radius-lg); background: var(--surface-raised); box-shadow: var(--shadow-sm); text-decoration: none; color: var(--ink); }
+.guideCard { display: flex; flex-direction: column; gap: 6px; height: 100%; padding: 20px; overflow: hidden; border-radius: var(--radius-lg); background: var(--surface-raised); box-shadow: var(--shadow-sm); text-decoration: none; color: var(--ink); }
 .guideCard strong { font-size: 18px; line-height: 24px; font-weight: 800; }
 .guideCard span { font-size: 15px; line-height: 22px; color: var(--ink-muted); }
 .guideCard:hover strong { color: var(--apricot-ink); }
+.guideArt { display: block; width: calc(100% + 40px); height: auto; aspect-ratio: 600 / 315; margin: -20px -20px 12px; }
 
 /* footer */
 .footer { padding-block: 64px 40px; background: var(--surface); border-top: 1px solid var(--line); font-size: 15px; line-height: 22px; }

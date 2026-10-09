@@ -4,6 +4,7 @@ import { CATEGORIES, liveGuides } from "@/content/guides";
 import home from "../page.module.css";
 import { SiteFooter, SiteHeader } from "../site-chrome";
 import { abs, ldJson, ORGANIZATION, SITE_NAME } from "../site";
+import { GuideArt } from "./art";
 import styles from "./guides.module.css";
 
 const TITLE = "Guides to coming off GLP-1 weight-loss injections";
@@ -73,7 +74,7 @@ export default function Guides() {
                   <p className={home.muted}>{c.blurb}</p>
                 </div>
                 <ul className={styles.cards}>
-                  {list.map((g) => <li key={g.slug}><Link className={styles.card} href={`/guides/${g.slug}`}><strong>{g.title}</strong><span>{g.description}</span></Link></li>)}
+                  {list.map((g) => <li key={g.slug}><Link className={styles.card} href={`/guides/${g.slug}`}><GuideArt guide={g} className={styles.cardArt} /><strong>{g.title}</strong><span>{g.description}</span></Link></li>)}
                 </ul>
               </section>
             ) : null;

@@ -47,7 +47,7 @@ export default function Guides() {
   };
   return (
     <>
-      <SiteHeader />
+      <SiteHeader page="guides" />
       <main className={styles.page}>
         <script type="application/ld+json" dangerouslySetInnerHTML={ldJson(ld)} />
         <div className={home.wrap}>

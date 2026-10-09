@@ -6,7 +6,7 @@ import { Carousel } from "./carousel";
 import { ExerciseLoop } from "./exercise-loop";
 import { latestGuides, liveGuide, liveGuides } from "@/content/guides";
 import { SiteFooter, SiteHeader } from "./site-chrome";
-import { abs, APP_LIVE, ldJson, ORGANIZATION, SITE_NAME } from "./site";
+import { abs, APP_LIVE, APP_STORE_URL, ldJson, ORGANIZATION, PRICE, PRICE_GBP, SITE_NAME } from "./site";
 import { PrototypeLink } from "./prototype-link";
 import { AppStoreButton } from "./app-store";
 import { GuideArt } from "./guides/art";
@@ -23,8 +23,6 @@ function homeGuides() {
   return [...new Map(picks.filter((g) => !!g).map((g) => [g.slug, g])).values()].slice(0, 8);
 }
 
-// Pricing from the paywall design. Confirm before launch; the page says so under the plan.
-const PRICE = { yearly: "£69.99", weekly: "£1.35", monthly: "£12.99" };
 
 const ICONS = {
   check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
@@ -150,6 +148,23 @@ const HOME_LD = {
   "@graph": [
     ORGANIZATION,
     { "@type": "WebSite", "@id": `${abs("/")}#website`, url: abs("/"), name: SITE_NAME, inLanguage: "en-GB", publisher: { "@id": ORGANIZATION["@id"] } },
+    // The app itself, with both plans. The App Store URL (plain, no campaign: it's data, not a link anyone taps) only
+    // once it's live. Google wants ratings before it shows an app rich result; those come from the App Store, never here.
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${abs("/")}#app`,
+      name: SITE_NAME,
+      operatingSystem: "iOS",
+      applicationCategory: "HealthApplication",
+      description: ORGANIZATION.description,
+      inLanguage: "en-GB",
+      publisher: { "@id": ORGANIZATION["@id"] },
+      ...(APP_LIVE ? { url: APP_STORE_URL, downloadUrl: APP_STORE_URL } : {}),
+      offers: [
+        { "@type": "Offer", name: "Monthly", price: PRICE_GBP.monthly, priceCurrency: "GBP", description: "7 days free, then billed monthly." },
+        { "@type": "Offer", name: "Yearly", price: PRICE_GBP.yearly, priceCurrency: "GBP", description: "7 days free, then billed yearly." },
+      ],
+    },
     { "@type": "FAQPage", "@id": `${abs("/")}#faq`, mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
   ],
 };

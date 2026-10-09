@@ -1,21 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import home from "../page.module.css";
 import styles from "../guides/guides.module.css";
 import { SiteFooter, SiteHeader } from "../site-chrome";
-import { abs, CONTACT_EMAIL, ldJson, ORG_NAME, ORGANIZATION, SITE_NAME } from "../site";
+import { abs, CONTACT_EMAIL, ldJson, ORG_NAME, ORGANIZATION, pageMetadata } from "../site";
 
-export const metadata: Metadata = {
-  title: { absolute: `About Steadie · ${SITE_NAME}` },
-  description: "Steadie is a UK wellness app with a 12-month plan for the year after stopping a GLP-1 weight-loss medicine. Who we are and what we believe.",
-  alternates: { canonical: "/about" },
-};
+export const metadata = pageMetadata("About us", "Steadie is a UK wellness app with a 12-month plan for the year after stopping a GLP-1 weight-loss medicine. Who we are and what we believe.", "/about");
 
 export default function About() {
   const ld = { "@context": "https://schema.org", "@graph": [ORGANIZATION, { "@type": "AboutPage", url: abs("/about"), name: "About Steadie", about: { "@id": ORGANIZATION["@id"] } }] };
   return (
     <>
-      <SiteHeader />
+      <SiteHeader page="about" />
       <main className={styles.page}>
         <script type="application/ld+json" dangerouslySetInnerHTML={ldJson(ld)} />
         <div className={home.wrap}>

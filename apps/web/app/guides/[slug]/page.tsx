@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { liveGuide, liveGuides, relatedGuides } from "@/content/guides";
 import home from "../../page.module.css";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
-import { abs, APP_LIVE, appStoreLink, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
+import { abs, APP_LIVE, appStoreLink, campaign, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
 import styles from "../guides.module.css";
 import { GuideArt } from "../art";
+import { GuideEndCta } from "../end-cta";
 import { anchor, Blocks, plain } from "../rich";
 
 // Guides published so far are built ahead; scheduled ones appear on their day (refreshed hourly, and by the daily cron).
@@ -78,7 +79,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader page={g.slug} />
       <main className={styles.page}>
         <script type="application/ld+json" dangerouslySetInnerHTML={ldJson(ld)} />
         <div className={home.wrap}>
@@ -109,6 +110,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                   </div>
                 </section>
               ) : null}
+              <GuideEndCta guide={g} />
               <section aria-labelledby="sources">
                 <h2 id="sources">Sources</h2>
                 <ol className={styles.sources}>{g.sources.map((s) => <li key={s.url}><a href={s.url} rel="noopener">{s.label}</a></li>)}</ol>
@@ -133,7 +135,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               <div className={styles.cta}>
                 <strong>A 12-month plan for the year after</strong>
                 <span>Small habits, short strength sessions and easy meals, on your side. {APP_LIVE ? "On iPhone, with 7 days free." : "Coming soon to iPhone."}</span>
-                {APP_LIVE ? <a className={styles.ctaButton} href={appStoreLink(`guide-${g.slug}`)}>Download Steadie</a> : null}
+                {APP_LIVE ? <a className={styles.ctaButton} href={appStoreLink(campaign("guide", g.slug))}>Download Steadie</a> : null}
               </div>
             </aside>
           </div>

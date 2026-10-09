@@ -1,21 +1,16 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import home from "../page.module.css";
 import styles from "../guides/guides.module.css";
 import { SiteFooter, SiteHeader } from "../site-chrome";
-import { CONTACT_EMAIL, SITE_NAME } from "../site";
+import { CONTACT_EMAIL, pageMetadata } from "../site";
 
-export const metadata: Metadata = {
-  title: { absolute: `Editorial policy · ${SITE_NAME}` },
-  description: "How Steadie writes its guides about life after GLP-1 weight-loss medicines: sources, accuracy, what we never advise on, and corrections.",
-  alternates: { canonical: "/editorial-policy" },
-};
+export const metadata = pageMetadata("Editorial policy", "How Steadie writes its guides about life after GLP-1 weight-loss medicines: sources, accuracy, what we never advise on, and corrections.", "/editorial-policy");
 
 /** How the guides are written, so readers (and search engines) can judge them. Keep it true to what we actually do. */
 export default function EditorialPolicy() {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader page="editorial-policy" />
       <main className={styles.page}>
         <div className={home.wrap}>
           <article className={styles.body}>

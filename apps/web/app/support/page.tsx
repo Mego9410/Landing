@@ -1,17 +1,12 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import home from "../page.module.css";
 import styles from "../guides/guides.module.css";
 import { SiteFooter, SiteHeader } from "../site-chrome";
-import { abs, CONTACT_EMAIL, ldJson, ORGANIZATION, SITE_NAME } from "../site";
+import { abs, CONTACT_EMAIL, ldJson, ORGANIZATION, pageMetadata } from "../site";
 
 // Help with the app: contact, subscriptions, restoring, deleting and exporting. App Store Connect's Support URL points
 // here. Keep the steps in step with the app's Settings screen (apps/mobile/src/app/settings/index.tsx).
-export const metadata: Metadata = {
-  title: { absolute: `Support · ${SITE_NAME}` },
-  description: "Help with Steadie: contact us, manage or cancel your subscription, restore purchases, export your data or delete your account.",
-  alternates: { canonical: "/support" },
-};
+export const metadata = pageMetadata("Support", "Help with Steadie: contact us, manage or cancel your subscription, restore purchases, export your data or delete your account.", "/support");
 
 const FAQ = [
   { q: "How do I cancel my subscription?", a: "On your iPhone, open Settings, tap your name, then Subscriptions, choose Steadie and tap Cancel Subscription. Cancel at least 24 hours before your trial ends or your plan renews." },
@@ -27,7 +22,7 @@ export default function Support() {
   };
   return (
     <>
-      <SiteHeader />
+      <SiteHeader page="support" />
       <main className={styles.page}>
         <script type="application/ld+json" dangerouslySetInnerHTML={ldJson(ld)} />
         <div className={home.wrap}>

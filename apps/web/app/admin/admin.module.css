@@ -1,0 +1,42 @@
+/* The owner's dashboard. Brand tokens throughout; works on a phone. */
+.page { min-height: 100vh; background: var(--surface); color: var(--ink); padding: 28px 16px 64px; }
+.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.title { font-family: var(--font-display); font-size: clamp(28px, 4vw, 38px); line-height: 1.1; font-weight: 500; }
+.muted { color: var(--ink-muted); font-size: 14px; line-height: 20px; }
+.button { height: 40px; padding: 0 18px; border-radius: var(--radius-full); border: 0; background: var(--ink); color: var(--surface); font: inherit; font-weight: 800; font-size: 14px; cursor: pointer; }
+.ghost { background: var(--surface-raised); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.tile { background: var(--surface-raised); border-radius: var(--radius-lg); padding: 16px 18px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 4px; }
+.tileLabel { font-size: 13px; line-height: 18px; font-weight: 700; color: var(--ink-muted); }
+.tileValue { font-family: var(--font-display); font-size: 34px; line-height: 1.1; font-weight: 500; letter-spacing: -.02em; }
+.tileNote { font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+.section { background: var(--surface-raised); border-radius: var(--radius-xl); padding: 22px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 16px; }
+.sectionHead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.h2 { font-size: 20px; line-height: 26px; font-weight: 800; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.stat { background: var(--surface); border-radius: var(--radius-md); padding: 12px 14px; }
+.stat strong { display: block; font-size: 22px; line-height: 28px; }
+.stat span { font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+.notice { background: var(--butter); color: var(--on-pastel); border-radius: var(--radius-md); padding: 12px 14px; font-size: 14px; line-height: 20px; }
+.table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 20px; }
+.table th { text-align: left; font-size: 12px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-muted); padding: 6px 8px 8px 0; border-bottom: 1px solid var(--line); }
+.table td { padding: 9px 8px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.table td.num, .table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.scroll { overflow-x: auto; }
+.pill { display: inline-block; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: var(--radius-full); background: var(--sage); color: var(--on-pastel); }
+.pillOff { background: var(--rose); }
+.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.checks li { display: flex; gap: 10px; align-items: center; }
+.links { display: flex; flex-wrap: wrap; gap: 8px; }
+.links a { font-size: 14px; font-weight: 700; color: var(--ink); text-decoration: none; padding: 8px 14px; border-radius: var(--radius-full); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.chart { width: 100%; height: auto; display: block; }
+.chartBar { fill: var(--apricot-ink); }
+.chartBar:hover { opacity: .75; }
+.chartAxis { fill: var(--ink-muted); font-size: 11px; font-family: var(--font-body); }
+.chartBase { stroke: var(--line); stroke-width: 1; }
+/* sign-in */
+.login { max-width: 400px; margin: 10vh auto 0; background: var(--surface-raised); border-radius: var(--radius-xl); padding: 28px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px; }
+.input { height: 48px; border-radius: var(--radius-full); border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); padding: 0 18px; font: inherit; font-size: 16px; }
+.error { color: var(--rose-ink); font-size: 14px; }

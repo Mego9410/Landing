@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
   // Keep preview deployments out of search results; only production is indexable.
   const production = process.env.VERCEL_ENV ? process.env.VERCEL_ENV === "production" : true;
   return {
-    rules: production ? { userAgent: "*", allow: "/" } : { userAgent: "*", disallow: "/" },
+    rules: production ? { userAgent: "*", allow: "/", disallow: "/admin" } : { userAgent: "*", disallow: "/" },
     sitemap: `${site}/sitemap.xml`,
   };
 }

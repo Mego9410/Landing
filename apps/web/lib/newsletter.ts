@@ -14,7 +14,7 @@ const SEGMENT_NAME = "Steadie guides";
 
 export class ResendError extends Error {}
 
-async function resend<T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
+export async function resend<T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new ResendError("RESEND_API_KEY isn't set.");
   const res = await fetch(API + path, {

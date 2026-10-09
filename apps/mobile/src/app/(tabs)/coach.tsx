@@ -12,7 +12,7 @@ import { radius, space, textStyle, useColors } from "@/theme";
 
 const STARTERS = ["A quick high-protein lunch?", "I'm hungry tonight", "Eating out this weekend", "I had a hard day"];
 
-/** C1–C2 The coach: scripted replies for now, and the prescriber redirect for any medication question. */
+/** C1–C2 The coach: ready-made replies written by the team, matched to what someone types or taps (no AI, no live chat), and the prescriber redirect for any medication question. */
 export default function Coach() {
   const s = useApp(), c = useColors(), insets = useSafeAreaInsets();
   const [text, setText] = useState("");
@@ -30,7 +30,14 @@ export default function Coach() {
       <ScrollView ref={scroll} contentContainerStyle={[{ paddingTop: insets.top + space[4], paddingHorizontal: 20, paddingBottom: 24, gap: space[3] }, readable]}
         onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}>
         <AppText variant="title" accessibilityRole="header">Coach</AppText>
-        <AppText color="inkMuted">Ask anything about habits, food and getting through a tricky day. For anything about your medication, your prescriber is the person to ask.</AppText>
+        <AppText color="inkMuted">Practical help for tricky days: hunger, eating out, quick protein and a word of encouragement. Ready-made answers written by our team, not AI or a live chat.</AppText>
+        {s.coach.messages.length ? null : (
+          <View style={{ gap: space[1], padding: space[4], borderRadius: radius.lg, backgroundColor: c.lilac }}>
+            <AppText weight="800" color="onPastel">How it works</AppText>
+            <AppText color="onPastel">Tap a topic below, or type a few words like &quot;eating out&quot; or &quot;hungry tonight&quot;, and you&apos;ll get the closest answer from our team.</AppText>
+            <AppText color="onPastel">Anything about your medication or dose is one for your prescriber. We can make a summary to take with you.</AppText>
+          </View>
+        )}
         {s.coach.messages.map((m, i) => (
           <View key={i} style={{ alignSelf: m.from === "you" ? "flex-end" : "flex-start", maxWidth: "85%", padding: space[3], borderRadius: radius.lg,
             backgroundColor: m.from === "you" ? c.apricot : m.redirect ? c.butter : c.lilac }}>
@@ -52,8 +59,8 @@ export default function Coach() {
         </View>
       </ScrollView>
       <View style={[{ flexDirection: "row", gap: space[2], paddingHorizontal: 20, paddingTop: space[2], paddingBottom: 112, backgroundColor: c.surface }, readable]}>
-        <TextInput accessibilityLabel="Message the coach" value={text} onChangeText={setText} onSubmitEditing={() => send(text)} returnKeyType="send"
-          placeholder="Ask about food, habits or a hard day" placeholderTextColor={c.inkMuted}
+        <TextInput accessibilityLabel="Find an answer from the coach" value={text} onChangeText={setText} onSubmitEditing={() => send(text)} returnKeyType="send"
+          placeholder="A few words, like eating out" placeholderTextColor={c.inkMuted}
           style={[textStyle("body"), { flex: 1, height: 48, borderRadius: radius.full, paddingHorizontal: space[4], backgroundColor: c.surfaceRaised, color: c.ink, borderWidth: 1.5, borderColor: c.line }]} />
         <Pressable accessibilityRole="button" accessibilityLabel="Send" onPress={() => send(text)} style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: c.lilac, alignItems: "center", justifyContent: "center" }}>
           <Icon name="send" color={c.onPastel} />

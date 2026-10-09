@@ -63,7 +63,7 @@ const SUPPORT: { icon: IconName; tone: string; title: string; text: string }[] =
   { icon: "habit", tone: "sage", title: "Three small habits a week", text: "Protein at breakfast, a session, a pause before seconds, with a short lesson each week. Swap one if it doesn't suit your week." },
   { icon: "sun", tone: "sky", title: "A one-minute morning check-in", text: "A few questions about yesterday. Over a few weeks, Steadie shows what goes with your fuller, steadier days." },
   { icon: "score", tone: "butter", title: "A weekly steady score", text: "It rewards steady habits, not weight loss, and notices drift early, kindly." },
-  { icon: "coach", tone: "lilac", title: "A coach for tricky days", text: "Ideas for meals out, high-protein swaps and a calm word when a day doesn't go to plan." },
+  { icon: "coach", tone: "lilac", title: "A coach for tricky days", text: "Ready-made ideas from our team for meals out, high-protein swaps and a calm word when a day doesn't go to plan." },
   { icon: "doc", tone: "rose", title: "A summary for your prescriber", text: "A one-page update to take to appointments. Steadie never gives advice about doses or stopping." },
   { icon: "bell", tone: "butter", title: "Gentle reminders, and Apple Health", text: "Nudges at times that suit you, never about weight. Bring in your weight and steps from Apple Health if you like." },
 ];

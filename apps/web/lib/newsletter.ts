@@ -73,6 +73,19 @@ export async function forgetContact(email: string) {
   await resend(`/contacts/${encodeURIComponent(email)}`, { method: "DELETE" }).catch((e) => { if (statusOf(e) !== 404) throw e; });
 }
 
+/** Whether anyone in the segment is still subscribed. Resend refuses to send a broadcast to an empty segment. */
+export async function hasSubscribers() {
+  const id = await segmentId();
+  let after: string | undefined;
+  for (let page = 0; page < 50; page++) {
+    const res = await resend<{ data: { id: string; unsubscribed: boolean }[]; has_more: boolean }>(`/segments/${id}/contacts?limit=100${after ? `&after=${after}` : ""}`);
+    if (res.data.some((c) => !c.unsubscribed)) return true;
+    if (!res.has_more || !res.data.length) return false;
+    after = res.data.at(-1)!.id;
+  }
+  return true;
+}
+
 /** Names of broadcasts already created, so nothing is sent twice. */
 async function broadcastNames() {
   const names = new Set<string>();

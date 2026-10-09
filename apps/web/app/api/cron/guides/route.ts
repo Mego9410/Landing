@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { ALL_GUIDES, guideBySlug, londonToday } from "@/content/guides";
-import { broadcastNames, digestEmail, guideEmail, sendOnce, type Email } from "@/lib/newsletter";
+import { broadcastNames, digestEmail, guideEmail, hasSubscribers, sendOnce, type Email } from "@/lib/newsletter";
 
 // The daily guides job, run by Vercel Cron (vercel.json) every morning. It refreshes the site so any guide due today
 // is live, emails each guide published in the last few days that hasn't gone out yet, and on Sundays sends the weekly
@@ -55,6 +55,10 @@ export async function GET(request: Request) {
     if (!switchedOn) console.info(`guides cron: GUIDE_EMAILS is ${process.env.GUIDE_EMAILS ? `"${process.env.GUIDE_EMAILS}"` : "not set"}, so nothing was sent`);
     return Response.json({ today, sending: false, wouldSend: emails.map((e) => ({ name: e.name, subject: e.subject })) });
   }
+
+  // Nobody has opted in yet (or everyone has unsubscribed): nothing to send, and not an error. Guides from the last few
+  // days still go out on a later run once someone subscribes.
+  if (!emails.length || !(await hasSubscribers())) return Response.json({ today, sending: true, sent: [], note: emails.length ? "No subscribers yet, so nothing was sent." : "Nothing due today." });
 
   const existing = await broadcastNames();
   const sent: string[] = [], skipped: string[] = [];

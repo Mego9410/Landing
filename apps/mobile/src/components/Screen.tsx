@@ -10,6 +10,11 @@ export const useScrollY = () => useContext(ScrollY);
 /** The bar's height below the status bar: 8 above, the 44 point back button, 8 below. */
 const BAR = 60;
 
+/** On iPad, content stays a comfortable reading width, centred; on iPhone it fills the screen as before. Applied to the
+ *  scroll content itself (not the window), so it also works in iPad sheets and split screens. */
+export const READING_WIDTH = 680;
+export const readable = { width: "100%", maxWidth: READING_WIDTH + 40, alignSelf: "center" } as const;
+
 /** A scrolling screen on the oat surface, clear of the status bar and the floating tab bar. With `header` (usually a
  *  <Header>), that bar stays pinned at the top while the page scrolls under it. */
 export function Screen({ children, contentContainerStyle, header, onScroll, ...rest }: ScrollViewProps & { header?: ReactNode }) {
@@ -22,7 +27,7 @@ export function Screen({ children, contentContainerStyle, header, onScroll, ...r
         {...rest}
         onScroll={onScroll}
         style={{ flex: 1, backgroundColor: c.surface }}
-        contentContainerStyle={[{ paddingTop: insets.top + space[4], paddingHorizontal: 20, paddingBottom: 128, gap: space[6] }, contentContainerStyle]}>
+        contentContainerStyle={[{ paddingTop: insets.top + space[4], paddingHorizontal: 20, paddingBottom: 128, gap: space[6] }, readable, contentContainerStyle]}>
         {children}
       </ScrollView>
     );
@@ -38,11 +43,11 @@ export function Screen({ children, contentContainerStyle, header, onScroll, ...r
             listener: onScroll ? (e: NativeSyntheticEvent<NativeScrollEvent>) => onScroll(e) : undefined,
           })}
           style={{ flex: 1 }}
-          contentContainerStyle={[{ paddingTop: insets.top + BAR + space[2], paddingHorizontal: 20, paddingBottom: 128, gap: space[6] }, contentContainerStyle]}>
+          contentContainerStyle={[{ paddingTop: insets.top + BAR + space[2], paddingHorizontal: 20, paddingBottom: 128, gap: space[6] }, readable, contentContainerStyle]}>
           {children}
         </Animated.ScrollView>
         <View style={{ position: "absolute", top: 0, left: 0, right: 0, paddingTop: insets.top + space[2], paddingBottom: space[2], paddingHorizontal: 20, backgroundColor: c.surface }}>
-          {header}
+          <View style={readable}>{header}</View>
           {/* A hairline once the page has scrolled under the bar. */}
           <Animated.View style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 1, backgroundColor: c.line, opacity: y.interpolate({ inputRange: [0, 16], outputRange: [0, 1], extrapolate: "clamp" }) }} />
         </View>

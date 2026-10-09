@@ -16,8 +16,9 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const c = useColors();
   const insets = useSafeAreaInsets();
   return (
-    <View style={{ position: "absolute", left: space[3], right: space[3], bottom: Math.max(insets.bottom, space[3]) }}>
-      <View style={{ flexDirection: "row", backgroundColor: c.surfaceRaised, borderRadius: radius.xl, paddingTop: space[2], paddingBottom: space[3], paddingHorizontal: space[3],
+    <View style={{ position: "absolute", left: space[3], right: space[3], bottom: Math.max(insets.bottom, space[3]), alignItems: "center" }}>
+      {/* Full width on iPhone; a centred bar on iPad. */}
+      <View style={{ width: "100%", maxWidth: 560, flexDirection: "row", backgroundColor: c.surfaceRaised, borderRadius: radius.xl, paddingTop: space[2], paddingBottom: space[3], paddingHorizontal: space[3],
         shadowColor: "#6b4a30", shadowOpacity: 0.1, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 4 }}>
         {state.routes.map((route, i) => {
           const focused = state.index === i;

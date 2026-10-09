@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText } from "@/components/AppText";
 import { Icon } from "@/components/Icon";
+import { readable } from "@/components/Screen";
 import { coachReply } from "@/data/content";
 import { sharePrescriberPack } from "@/state/prescriber";
 import { set, useApp } from "@/state/store";
@@ -26,7 +27,7 @@ export default function Coach() {
   }
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: c.surface }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <ScrollView ref={scroll} contentContainerStyle={{ paddingTop: insets.top + space[4], paddingHorizontal: 20, paddingBottom: 24, gap: space[3] }}
+      <ScrollView ref={scroll} contentContainerStyle={[{ paddingTop: insets.top + space[4], paddingHorizontal: 20, paddingBottom: 24, gap: space[3] }, readable]}
         onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: false })}>
         <AppText variant="title" accessibilityRole="header">Coach</AppText>
         <AppText color="inkMuted">Ask anything about habits, food and getting through a tricky day. For anything about your medication, your prescriber is the person to ask.</AppText>
@@ -50,7 +51,7 @@ export default function Coach() {
           ))}
         </View>
       </ScrollView>
-      <View style={{ flexDirection: "row", gap: space[2], paddingHorizontal: 20, paddingTop: space[2], paddingBottom: 112, backgroundColor: c.surface }}>
+      <View style={[{ flexDirection: "row", gap: space[2], paddingHorizontal: 20, paddingTop: space[2], paddingBottom: 112, backgroundColor: c.surface }, readable]}>
         <TextInput accessibilityLabel="Message the coach" value={text} onChangeText={setText} onSubmitEditing={() => send(text)} returnKeyType="send"
           placeholder="Ask about food, habits or a hard day" placeholderTextColor={c.inkMuted}
           style={[textStyle("body"), { flex: 1, height: 48, borderRadius: radius.full, paddingHorizontal: space[4], backgroundColor: c.surfaceRaised, color: c.ink, borderWidth: 1.5, borderColor: c.line }]} />

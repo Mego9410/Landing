@@ -41,3 +41,9 @@ from, captured from the app in demo mode (Hannah, six weeks in). To remake them 
 app (`pnpm --filter @landing/mobile web:export`), open it in demo mode (hold the welcome picture for three seconds),
 capture each screen at 430 × 878 points at 3x, and add a 162 px status bar on top. The listing layout is in
 `designs/brand/Steadie App Store Assets.dc.html`.
+
+## iPad
+
+The app supports iPad (portrait, full screen), so App Store Connect needs an **iPad 13" Display** set. `source/ipad-13/`
+has raw screens at 2064 × 2752, captured from the web build at 1032 × 1376 points at 2x in demo mode. On iPad the
+content sits in a centred column (680 points) with the tab bar centred below.

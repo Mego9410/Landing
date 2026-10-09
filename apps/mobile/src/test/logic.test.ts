@@ -201,3 +201,20 @@ test("trial reminder: 9am two days before a week's trial ends, scaled for sandbo
   // Already inside the last two days: nothing to schedule.
   assert.equal(trialReminderAt(end.toISOString(), start.toISOString(), new Date(2026, 9, 15).getTime()), null);
 });
+
+test("rating prompt: only after a week of having the app, never within 120 days, milestones and hard days", async () => {
+  const { mayAsk, checkInMilestone, hardDay, streak } = await import("@/data/review");
+  const now = new Date("2026-10-09T12:00:00Z");
+  assert.equal(mayAsk("2026-10-05T12:00:00Z", null, now), false);
+  assert.equal(mayAsk("2026-10-01T12:00:00Z", null, now), true);
+  assert.equal(mayAsk("2026-01-01T12:00:00Z", "2026-07-01T12:00:00Z", now), false);
+  assert.equal(mayAsk("2026-01-01T12:00:00Z", "2026-06-01T12:00:00Z", now), true);
+  const entries = (n: number, end: string) => Object.fromEntries(Array.from({ length: n }, (_, i) => [addDays(end, -i), { yes: {} }]));
+  assert.equal(checkInMilestone({ journal: { questions: [], entries: entries(7, "2026-10-08") } }, "2026-10-08"), "first-week");
+  assert.equal(checkInMilestone({ journal: { questions: [], entries: entries(8, "2026-10-08") } }, "2026-10-08"), null);
+  assert.equal(streak({ journal: { questions: [], entries: entries(28, "2026-10-08") } }, "2026-10-08"), 28);
+  assert.equal(checkInMilestone({ journal: { questions: [], entries: entries(28, "2026-10-08") } }, "2026-10-08"), "four-week-streak");
+  assert.equal(hardDay({ weights: [] }, "2026-10-08", { yes: {}, energy: 2 }), true);
+  assert.equal(hardDay({ weights: [] }, "2026-10-08", { yes: {}, energy: 4, fullness: 3 }), false);
+  assert.equal(hardDay({ weights: [{ date: "2026-10-09", kg: 80.4, source: "x" }, { date: "2026-10-08", kg: 80, source: "x" }] }, "2026-10-08", { yes: {} }), true);
+});

@@ -14,6 +14,7 @@ import { toast } from "@/state/toast";
 import { available, connect, disconnect } from "@/state/appleHealth";
 import { accountsAvailable, AccountError, backUpNow, deleteAccount, guideEmails, resumeHealthBackup, setGuideEmails, signOut, useAccount, withdrawHealthBackup } from "@/state/account";
 import { deleteEverything, shareExport } from "@/state/data";
+import { openWriteReview } from "@/state/review";
 import { billingEnabled, manageSubscription, restore } from "@/state/subscription";
 import { space } from "@/theme";
 
@@ -127,7 +128,8 @@ export default function Settings() {
       </Section>
       <Section title="ABOUT">
         <List>
-          <Row first title="Privacy policy" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />
+          <Row first title="Rate Steadie" sub="Leave a rating or review on the App Store" onPress={() => openWriteReview().catch(() => toast("Couldn't open the App Store."))} />
+          <Row title="Privacy policy" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />
           <Row title="Terms of use" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "terms" } })} />
         </List>
       </Section>

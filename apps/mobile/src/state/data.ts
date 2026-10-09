@@ -6,6 +6,7 @@ import { File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { Platform, Share } from "react-native";
 import { today } from "@/data/dates";
+import { resetInstall } from "./install";
 import { cancelReminders } from "./reminders";
 import { freshState, get, replace, STORAGE_KEY } from "./store";
 
@@ -39,5 +40,6 @@ export async function shareExport(): Promise<void> {
 export async function deleteEverything(): Promise<void> {
   await cancelReminders().catch(() => {});
   await AsyncStorage.removeItem(STORAGE_KEY).catch(() => {});
+  await resetInstall();
   replace(freshState());
 }

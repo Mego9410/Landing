@@ -18,8 +18,16 @@ export const maxDuration = 60;
 const CATCH_UP_DAYS = 3;
 
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) return Response.json({ error: "Not allowed." }, { status: 401 });
+  // Trimmed, so a stray space or newline pasted into Vercel doesn't lock the job out.
+  const secret = process.env.CRON_SECRET?.trim();
+  const sent = request.headers.get("authorization")?.trim();
+  if (!secret || sent !== `Bearer ${secret}`) {
+    // Says why in the logs, never the secret itself.
+    console.warn(!secret ? "guides cron: CRON_SECRET isn't set on this deployment (add it, then redeploy)"
+      : !sent ? "guides cron: no Authorization header (Vercel only sends one when CRON_SECRET is set for this environment)"
+      : "guides cron: Authorization header doesn't match CRON_SECRET");
+    return Response.json({ error: "Not allowed." }, { status: 401 });
+  }
 
   const url = new URL(request.url);
   const today = url.searchParams.get("date") && url.searchParams.has("dry") ? url.searchParams.get("date")! : londonToday();

@@ -1,8 +1,11 @@
 import type { MetadataRoute } from "next";
-import { GUIDES } from "@/content/guides";
+import { liveGuides } from "@/content/guides";
 import { abs } from "./site";
 
+export const revalidate = 3600;
+
 export default function sitemap(): MetadataRoute.Sitemap {
+  const GUIDES = liveGuides();
   const latest = GUIDES.map((g) => g.updated).sort().at(-1);
   return [
     { url: abs("/"), changeFrequency: "monthly", priority: 1 },

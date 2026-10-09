@@ -1,17 +1,18 @@
 import { ImageResponse } from "next/og";
-import { GUIDES, guideBySlug } from "@/content/guides";
+import { liveGuide, liveGuides } from "@/content/guides";
 
 // A share image for each guide: the title on oat, with the Steadie mark (the roly-poly) on the right.
 export const alt = "A Steadie guide";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+export const revalidate = 3600;
 export function generateStaticParams() {
-  return GUIDES.map((g) => ({ slug: g.slug }));
+  return liveGuides().map((g) => ({ slug: g.slug }));
 }
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
-  const g = guideBySlug((await params).slug);
+  const g = liveGuide((await params).slug);
   const title = g?.title ?? "Guides for life after weight-loss jabs";
   return new ImageResponse(
     (

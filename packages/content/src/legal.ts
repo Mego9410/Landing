@@ -9,7 +9,7 @@ const COMPANY = "Oliver Acton, trading as Steadie";
 const CONTACT = "hello@getsteadieapp.com";
 const PRIVACY_CONTACT = "hello@getsteadieapp.com";
 
-const UPDATED = "8 October 2026";
+const UPDATED = "9 October 2026";
 // Add these when there are some: they then appear in each document's Contact section.
 const ADDRESS = "";
 const ICO_NUMBER = "";
@@ -36,12 +36,18 @@ export const APP_PRIVACY: LegalDoc = {
       "When you ask for a sign-in code, we keep the code for up to 10 minutes, and a short record of recent attempts from your IP address so that nobody can guess codes.",
       "We keep a backup of everything listed under \"What the app keeps\", with when it was last changed, so you can move to a new phone without losing your plan.",
     ] },
+    { heading: "Guide emails", paras: [
+      "If you're signed in, you can choose to get Steadie's guides by email: two new guides a week and a Sunday digest. They're off unless you turn them on, when you sign in or in Settings.",
+      "If you do, we add your email address to our mailing list with Resend, which sends the emails, and keep whether you've unsubscribed. Resend also records whether emails are delivered, opened or clicked, which we only use to check the emails are working and useful. Nothing you log in the app goes into these emails or to the mailing list.",
+      "You can stop them at any time with the unsubscribe link in every email or in Settings. If you unsubscribe, we keep your address marked as unsubscribed so we don't email you again. Deleting your account removes it from the list completely.",
+    ] },
     { heading: "Why we use it, and the law that allows it", paras: [
       "To build and run your plan, and to back it up and restore it if you sign in. This is needed to provide the app you've asked for (contract). Because it includes health information, we also rely on your explicit consent, which you give in the health check when you set up the app.",
       "To send you sign-in codes and keep your account secure, including limiting repeated attempts. This is needed to provide your account (contract) and is in our legitimate interest in keeping Steadie safe.",
       "To check whether you have an active subscription. This is needed to provide what you've paid for (contract).",
+      "To send you guide emails, only if you ask for them (consent). You can withdraw it at any time.",
       "To answer you if you contact us, and to meet our legal obligations.",
-      "We don't use your information for advertising, profiling for marketing, or to train AI models, and we don't sell it or share it with data brokers.",
+      "We don't use your information for advertising, profiling, or to train AI models, and we don't sell it or share it with data brokers. Guide emails are the same for everyone who gets them.",
     ] },
     { heading: "How the health check changes your plan", paras: [
       "Your health check answers change your plan automatically: for example, some answers pause strength sessions until you've checked with your GP, or switch to gentler sessions. This keeps the plan suitable for you; it doesn't have any legal effect on you. If you think an adjustment is wrong, you can redo the health check in Settings or contact us.",
@@ -53,7 +59,7 @@ export const APP_PRIVACY: LegalDoc = {
     ] },
     { heading: "Who else is involved", paras: [
       "We use a small number of service providers. They only act on our instructions, are bound by contract to keep your information safe, and can't use it for their own purposes.",
-      "Vercel: runs Steadie's server (in London). Neon: the database that holds accounts and backups (in London). Resend: sends sign-in codes, so it receives your email address and the code. RevenueCat: checks your subscription; it receives an anonymous ID, your App Store purchase details and basic device information such as the app version and your country, never what you log. Expo: delivers app updates; when the app checks for one, Expo sees your IP address, a random ID for this install and the app version, nothing else.",
+      "Vercel: runs Steadie's server (in London). Neon: the database that holds accounts and backups (in London). Resend: sends sign-in codes, so it receives your email address and the code, and, if you ask for them, guide emails. RevenueCat: checks your subscription; it receives an anonymous ID, your App Store purchase details and basic device information such as the app version and your country, never what you log. Expo: delivers app updates; when the app checks for one, Expo sees your IP address, a random ID for this install and the app version, nothing else.",
       "Apple: handles payments, Sign in with Apple and Apple Health under its own privacy policy.",
       "Resend, RevenueCat and Expo are based in the US. Where they handle your information outside the UK, it's protected by the UK's approved safeguards (the UK Extension to the EU-US Data Privacy Framework or the UK International Data Transfer Addendum).",
       "We'll only share your information with anyone else if the law requires it, for example a court order.",
@@ -68,6 +74,7 @@ export const APP_PRIVACY: LegalDoc = {
     ] },
     { heading: "How long we keep it", paras: [
       "On your phone: until you delete it, sign out or delete the app.",
+      "Guide emails: your address stays on the mailing list until you delete your account; if you unsubscribe, it's kept only as unsubscribed so you aren't emailed again.",
       "Your account and backup: until you delete your account. Deleting it removes your account, backup and sign-in records from our database straight away, and from our database's short-term recovery copies within 7 days.",
       "Signing out removes your sign-in from that phone and clears the phone, but keeps your backup so you can sign in again.",
       "If we ever close Steadie, we'll tell you in the app and by email first, and delete what we hold.",

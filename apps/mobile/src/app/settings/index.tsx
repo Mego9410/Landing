@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { Alert, Platform, View } from "react-native";
 import { LABELS } from "@landing/engine";
 import { castById } from "@landing/motion";
@@ -11,7 +12,7 @@ import { fmt, isoDate, today } from "@/data/dates";
 import { demoState, freshState, replace, set, setWeek, useApp, weekOf, type Units } from "@/state/store";
 import { toast } from "@/state/toast";
 import { available, connect, disconnect } from "@/state/appleHealth";
-import { accountsAvailable, AccountError, backUpNow, deleteAccount, signOut, useAccount } from "@/state/account";
+import { accountsAvailable, AccountError, backUpNow, deleteAccount, guideEmails, setGuideEmails, signOut, useAccount } from "@/state/account";
 import { deleteEverything, shareExport } from "@/state/data";
 import { billingEnabled, manageSubscription, restore } from "@/state/subscription";
 import { space } from "@/theme";
@@ -101,7 +102,9 @@ export default function Settings() {
               <Row title="Sign out" sub="Your backup stays. This phone is cleared." onPress={confirmSignOut} />
               <Row title="Delete my account" sub="Deletes your backup and clears this phone" titleColor="roseInk" onPress={confirmDeleteAccount} />
             </List>
-          ) : (
+          ) : null}
+          {account ? <GuideEmails /> : null}
+          {account ? null : (
             <>
               <AppText variant="caption" color="inkMuted">Your plan is only on this phone. Sign in to back it up, so it comes with you to a new phone.</AppText>
               <List>
@@ -152,4 +155,20 @@ function confirm(title: string, message: string, action: string, go: () => void)
 function when(iso: string) {
   const d = new Date(iso), t = today();
   return isoDate(d) === t ? `today at ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : fmt.dayMonth(isoDate(d));
+}
+
+/** Guide emails: two new guides a week and a Sunday digest, for people who are signed in. Off unless they turn it on.
+ *  The choice is kept by the server (in Resend), so it's read when Settings opens. */
+function GuideEmails() {
+  const [state, setState] = useState<{ on: boolean; available: boolean } | null>(null);
+  useEffect(() => { let live = true; guideEmails().then((v) => { if (live) setState(v); }); return () => { live = false; }; }, []);
+  if (!state?.available) return null;
+  const change = (on: boolean) => {
+    setState({ ...state, on });
+    setGuideEmails(on).then(() => toast(on ? "You'll get new guides by email." : "Guide emails are off."), (e) => {
+      setState({ ...state, on: !on });
+      toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
+    });
+  };
+  return <ToggleRow title="Guide emails" sub="Two new guides a week and a Sunday digest. Unsubscribe any time." value={state.on} onChange={change} />;
 }

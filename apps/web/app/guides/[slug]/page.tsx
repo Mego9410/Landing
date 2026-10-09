@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GUIDES, guideBySlug, relatedGuides } from "@/content/guides";
+import { liveGuide, liveGuides, relatedGuides } from "@/content/guides";
 import home from "../../page.module.css";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
 import { abs, APP_STORE_URL, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
 import styles from "../guides.module.css";
 import { anchor, Blocks, plain } from "../rich";
 
-export const dynamicParams = false;
+// Guides published so far are built ahead; scheduled ones appear on their day (refreshed hourly, and by the daily cron).
+export const revalidate = 3600;
 export function generateStaticParams() {
-  return GUIDES.map((g) => ({ slug: g.slug }));
+  return liveGuides().map((g) => ({ slug: g.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const g = guideBySlug((await params).slug);
+  const g = liveGuide((await params).slug);
   if (!g) return {};
   const url = `/guides/${g.slug}`;
   return {
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 const long = (iso: string) => new Date(iso + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
-  const g = guideBySlug((await params).slug);
+  const g = liveGuide((await params).slug);
   if (!g) notFound();
   const url = abs(`/guides/${g.slug}`);
   const words = JSON.stringify(g.sections).split(/\s+/).length;

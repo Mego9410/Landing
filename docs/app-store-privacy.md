@@ -22,7 +22,7 @@ For every type below: **Used for tracking: No.**
 | App Store category → type | Collected | Purpose | Linked to the user | Where it comes from |
 | --- | --- | --- | --- | --- |
 | Contact Info → **Name** | Yes | App Functionality | Yes | The optional first name, in the backup |
-| Contact Info → **Email Address** | Yes | App Functionality | Yes | Signing in (email code, or Apple's relay address) |
+| Contact Info → **Email Address** | Yes | App Functionality, Developer's Advertising or Marketing | Yes | Signing in (email code, or Apple's relay address), and guide emails for people who turn them on |
 | Health & Fitness → **Health** | Yes | App Functionality | Yes | Weigh-ins (typed or from Apple Health), the health check, medicine status, hunger and other check-ins |
 | Health & Fitness → **Fitness** | Yes | App Functionality | Yes | Steps from Apple Health and strength sessions done |
 | **Sensitive Info** | Yes | App Functionality | Yes | The health check asks about pregnancy, and diet preferences (halal, kosher, Jain) can show religious beliefs; Apple lists both as sensitive |

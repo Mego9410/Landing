@@ -6,5 +6,11 @@
   "ignoreCommand": "npx turbo-ignore @landing/web --fallback=HEAD^1",
   "regions": [
     "lhr1"
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/guides",
+      "schedule": "0 7 * * *"
+    }
   ]
 }

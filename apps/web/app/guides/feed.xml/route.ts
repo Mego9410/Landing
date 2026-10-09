@@ -1,13 +1,13 @@
-import { GUIDES } from "@/content/guides";
+import { liveGuides } from "@/content/guides";
 import { abs, SITE_NAME } from "../../site";
 
 // An RSS feed of the guides, so readers and search engines hear about new and updated ones.
-export const dynamic = "force-static";
+export const revalidate = 3600;
 
 const esc = (s: string) => s.replace(/[<>&'"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c]!);
 
 export function GET() {
-  const items = [...GUIDES]
+  const items = liveGuides()
     .sort((a, b) => (a.updated < b.updated ? 1 : -1))
     .map((g) => `    <item>
       <title>${esc(g.title)}</title>

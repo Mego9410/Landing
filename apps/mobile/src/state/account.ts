@@ -257,6 +257,25 @@ export async function signOut(): Promise<void> {
   await deleteEverything();
 }
 
+/* ---------- guide emails ---------- */
+/** Whether the signed-in person gets guide emails (two new guides a week and a Sunday digest). Null if signed out or
+ *  the server can't say; `available` is false until the server is set up to send them. */
+export async function guideEmails(): Promise<{ on: boolean; available: boolean } | null> {
+  const token = await readToken();
+  if (!token || !account) return null;
+  const r = await call("/api/account/emails", {}, token).catch(() => null);
+  if (!r?.ok) return null;
+  return (await r.json()) as { on: boolean; available: boolean };
+}
+
+/** Turns guide emails on or off for the signed-in person. */
+export async function setGuideEmails(on: boolean): Promise<void> {
+  const token = await readToken();
+  if (!token) throw new AccountError("Sign in first.");
+  const r = await call("/api/account/emails", { method: "PUT", body: JSON.stringify({ on }) }, token);
+  if (!r.ok) throw new AccountError("Couldn't change your email settings just now. Try again.");
+}
+
 /** Deletes the account and the backup on Steadie's server, then clears this phone. */
 export async function deleteAccount(): Promise<void> {
   const token = await readToken();

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CATEGORIES, GUIDES } from "@/content/guides";
+import { CATEGORIES, liveGuides } from "@/content/guides";
 import home from "../page.module.css";
 import { SiteFooter, SiteHeader } from "../site-chrome";
 import { abs, ldJson, ORGANIZATION, SITE_NAME } from "../site";
@@ -18,7 +18,11 @@ export const metadata: Metadata = {
 
 const TONES = ["apricot", "sage", "sky", "lilac"] as const;
 
+// New guides go live on their date, so the hub refreshes hourly.
+export const revalidate = 3600;
+
 export default function Guides() {
+  const GUIDES = liveGuides();
   const pillars = GUIDES.filter((g) => g.pillar);
   const ld = {
     "@context": "https://schema.org",

@@ -4,11 +4,23 @@ import { cast } from "@landing/motion/browser";
 import styles from "./page.module.css";
 import { Carousel } from "./carousel";
 import { ExerciseLoop } from "./exercise-loop";
-import { GUIDES } from "@/content/guides";
+import { latestGuides, liveGuide, liveGuides } from "@/content/guides";
 import { SiteFooter, SiteHeader } from "./site-chrome";
 import { abs, ldJson, ORGANIZATION, SITE_NAME } from "./site";
 import { PrototypeLink } from "./prototype-link";
 import { AppStoreButton } from "./app-store";
+
+// New guides go live on their date (see content/guides), so the home page refreshes hourly to show the latest.
+export const revalidate = 3600;
+
+/** The home page's guides: the two newest, the price guide, the pillars, then two favourites, without repeats. */
+function homeGuides() {
+  const LAUNCH = "2026-10-09";
+  const fresh = latestGuides().filter((g) => g.published > LAUNCH).slice(0, 2);
+  const picks = [...fresh, liveGuide("weight-loss-jab-price-rise-uk"), ...liveGuides().filter((g) => g.pillar),
+    liveGuide("what-happens-when-you-stop-weight-loss-injections"), liveGuide("appetite-after-stopping-glp-1")];
+  return [...new Map(picks.filter((g) => !!g).map((g) => [g.slug, g])).values()].slice(0, 8);
+}
 
 // Pricing from the paywall design. Confirm before launch; the page says so under the plan.
 const PRICE = { yearly: "£69.99", weekly: "£1.35", monthly: "£12.99" };
@@ -387,11 +399,11 @@ export default function Home() {
               <h2 id="guides-title" className={styles.h2Light}>Guides for the year after<br /><span className={styles.mutedHead}>clear, kind and sourced</span></h2>
             </div>
             <ul className={styles.guideGrid}>
-              {[GUIDES.find((g) => g.slug === "weight-loss-jab-price-rise-uk")!].concat(GUIDES.filter((g) => g.pillar)).concat(GUIDES.filter((g) => ["what-happens-when-you-stop-weight-loss-injections", "appetite-after-stopping-glp-1"].includes(g.slug))).map((g) => (
+              {homeGuides().map((g) => (
                 <li key={g.slug}><Link className={styles.guideCard} href={`/guides/${g.slug}`}><strong>{g.title}</strong><span>{g.description}</span></Link></li>
               ))}
             </ul>
-            <p className={styles.castNote}><Link href="/guides">See all {GUIDES.length} guides</Link></p>
+            <p className={styles.castNote}><Link href="/guides">See all {liveGuides().length} guides</Link></p>
           </div>
         </section>
 

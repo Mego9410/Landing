@@ -12,7 +12,7 @@ import { radius, space, textStyle, useColors } from "@/theme";
 
 const VIEWS: { id: Story["weightView"]; label: string }[] = [{ id: "show", label: "Show it" }, { id: "trend", label: "Just show the trend" }, { id: "hide", label: "Not at all" }];
 
-/** 12 · Numbers, your way: whether weight shows at all (not at all is safe mode), and, optionally, today's weight and the
+/** 12 · Numbers, your way: whether weight shows at all (not at all is Habit Only mode), and, optionally, today's weight and the
  *  lowest on the jab (the steady zone starts from it). Pregnancy keeps weight hidden. */
 export default function Numbers() {
   const s = useApp(), c = useColors();
@@ -82,7 +82,7 @@ export default function Numbers() {
       ) : (
         <View style={{ flexDirection: "row", gap: space[2], alignItems: "center", marginTop: space[2] }}>
           <Icon name="check" size={18} color={c.sageInk} />
-          <AppText color="inkMuted" style={{ flex: 1 }}>Weight and numbers stay hidden (safe mode). Your plan is all routines.</AppText>
+          <AppText color="inkMuted" style={{ flex: 1 }}>Weight and numbers stay hidden (Habit Only mode). Your plan is all routines.</AppText>
         </View>
       )}
       <AppText variant="caption" color="inkMuted" style={{ marginTop: space[2], fontSize: 14, lineHeight: 20 }}>We only use this to notice drift early, gently. You can change any of this in Settings.</AppText>

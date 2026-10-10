@@ -43,7 +43,7 @@ function TrendChart({ s }: { s: AppState }) {
   );
 }
 
-/** PR1 Progress: the steady score, the weight trend (hidden in safe mode) and recent weigh-ins. */
+/** PR1 Progress: the steady score, the weight trend (hidden in Habit Only mode) and recent weigh-ins. */
 export default function Progress() {
   const s = useApp(), c = useColors();
   const week = weekOf(s), safe = s.settings.safeMode;
@@ -109,7 +109,7 @@ export default function Progress() {
       </RowCard>
       {safe ? (
         <Card tone="sunk" style={{ gap: 6 }}>
-          <AppText weight="800">Weight is hidden in safe mode</AppText>
+          <AppText weight="800">Weight is hidden in Habit Only mode</AppText>
           <AppText color="inkMuted">Your score comes from your routines. You can change this in Settings whenever you like.</AppText>
         </Card>
       ) : (

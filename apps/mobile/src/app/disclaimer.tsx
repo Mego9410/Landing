@@ -19,7 +19,7 @@ const POINTS: { title: string; text: string }[] = [
   { title: "Check with your GP first if you", text: "are pregnant or breastfeeding; have a heart, lung, kidney or liver condition, diabetes or high blood pressure; have an injury or joint problem, or have had recent surgery; have, or have had, an eating disorder." },
   { title: "Listen to your body", text: "Stop exercising if you feel pain, dizziness, chest pain or breathlessness that worries you, and get medical help. In an emergency, call 999." },
   { title: "Check labels", text: "Recipes, nutrition and allergen information are a guide. Always check the labels on what you buy, especially if you have an allergy." },
-  { title: "If eating feels hard", text: "Beat, the UK's eating disorder charity, has a helpline you can talk to. Safe mode in Settings hides weight and numbers." },
+  { title: "If eating feels hard", text: "Beat, the UK's eating disorder charity, has a helpline you can talk to. Habit Only mode in Settings hides weight and numbers." },
 ];
 
 /** Health and safety: accepted during onboarding, just before the health check, and again whenever the wording changes.

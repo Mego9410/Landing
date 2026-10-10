@@ -20,7 +20,8 @@ import { Sentry, sentryOn, startSentry } from "@/state/sentry";
 import { startBilling } from "@/state/subscription";
 import { loadTimers } from "@/state/timers";
 import { applyCriticalUpdate } from "@/state/updates";
-import { get, hydrate } from "@/state/store";
+import { get, hydrate, useApp } from "@/state/store";
+import { applyTheme } from "@/state/theme";
 import { space, useColors } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -62,6 +63,13 @@ function Fallback({ resetError }: { resetError: () => void }) {
   );
 }
 
+/** Keeps the app's light or dark look in line with the setting. */
+function ThemeSync() {
+  const theme = useApp().settings.theme;
+  useEffect(() => { applyTheme(theme); }, [theme]);
+  return null;
+}
+
 function RootLayout() {
   const c = useColors();
   const [loaded, error] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold, Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold });
@@ -92,6 +100,7 @@ function RootLayout() {
   return (
     <View style={{ flex: 1, backgroundColor: c.surface }}>
       {ready ? <>
+      <ThemeSync />
       <StatusBar style={intro ? "light" : "auto"} />
       <Sentry.ErrorBoundary fallback={({ resetError }) => <Fallback resetError={resetError} />}>
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface } }}>

@@ -66,7 +66,9 @@ export function IntroSplash({ ready, onDone }: { ready: boolean; onDone: () => v
   // The overlay's own size once laid out (on web the window size can read as zero on the first render).
   const [box, setBox] = useState<{ width: number; height: number } | null>(null);
   const W = box?.width || win.width, H = box?.height || win.height;
-  const c = PALETTE[useColorScheme() === "dark" ? "dark" : "light"];
+  // The palette it started with: a saved light or dark choice applies once the plan has loaded, which can be mid-intro.
+  const scheme = useColorScheme();
+  const [c] = useState(() => PALETTE[scheme === "dark" ? "dark" : "light"]);
   const t = useSharedValue(0);
   const [held, setHeld] = useState(false);
   const started = useRef(false);

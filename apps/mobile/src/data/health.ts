@@ -41,6 +41,6 @@ export const NOTES: Partial<Record<string, string>> = {
   bones: "Sessions start with the easier version of each move, and avoid bending forward under load.",
   falls: "Do standing moves next to a wall or a sturdy chair, and start with the easier versions.",
   floor: "Sessions start with the easier versions. Swap any floor move for its easier version.",
-  eating: "We’ll hide weight and numbers (safe mode), and you can change that in Settings. If food feels hard, Beat, the UK’s eating disorder charity, is there to talk to: 0808 801 0677, or beateatingdisorders.org.uk.",
+  eating: "We’ll hide weight and numbers (Habit Only mode), and you can change that in Settings. If food feels hard, Beat, the UK’s eating disorder charity, is there to talk to: 0808 801 0677, or beateatingdisorders.org.uk.",
   fatigue: "Go at your own pace. Sessions won't step up on their own, and it's fine to stop early.",
 };

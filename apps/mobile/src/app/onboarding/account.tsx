@@ -97,7 +97,7 @@ export default function AccountStep() {
               <ToggleRow title="Email me new guides" sub="Two short guides a week and a Sunday digest. Unsubscribe any time." value={emails} onChange={setEmails} />
             </View>
             <View style={{ backgroundColor: c.surfaceRaised, borderRadius: 18, padding: 14, paddingHorizontal: space[4] }}>
-              <ToggleRow title="Email me a weekly recap" sub="Sunday evening: your week and a tip. No weight in safe mode." value={recap} onChange={setRecap} />
+              <ToggleRow title="Email me a weekly recap" sub="Sunday evening: your week and a tip. No weight in Habit Only mode." value={recap} onChange={setRecap} />
             </View>
           </View>
           <AppText variant="caption" color="inkMuted" style={{ fontSize: 14, lineHeight: 20 }}>Encrypted and kept in London. Never sold, never used for ads. {existing || fromSettings ? "" : "Without an account, your plan stays on this phone only and is lost if the phone is."}</AppText>

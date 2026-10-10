@@ -33,7 +33,7 @@ Without an account, nothing about the plan leaves the phone. Funnel events and t
 - **Neon** is the database (London).
 - **Resend** gets the email address and the code for sign-in, and runs the guide-email list for people who opt in
   (address, subscribed or not, delivery/open/click stats). For people who turn on the weekly recap, it also sends
-  that email, so it sees its contents: check-ins, sessions, steady score, a tip and, unless safe mode is on and only if
+  that email, so it sees its contents: check-ins, sessions, steady score, a tip and, unless Habit Only mode is on and only if
   weight is logged, the 7-day average weight.
 - **RevenueCat** gets an anonymous app user ID, App Store purchase details and basic device info. It never gets what
   people log.

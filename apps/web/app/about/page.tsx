@@ -23,7 +23,7 @@ export default function About() {
             <ul>
               <li>Keeping weight steady is hard for biological reasons, and nobody should feel ashamed when it is.</li>
               <li>Protein, strength, routine and sleep make the biggest difference, so that&apos;s what we focus on.</li>
-              <li>Numbers should only be there when they help. Safe mode hides weight entirely.</li>
+              <li>Numbers should only be there when they help. Habit Only mode hides weight entirely.</li>
               <li>Your prescriber stays in charge of your medicine. We never advise on it.</li>
               <li>Your data is yours. It lives on your phone, with a private backup if you sign in, and is never sold.</li>
             </ul>

@@ -118,7 +118,7 @@ export const KEEPING: Guide[] = [
         "Pick a small range, for example up to 2% above your lowest weight. While your 7-day average sits inside it, you're holding steady, whatever single days say. If the average sits above it for a couple of weeks, that's your cue to go back to basics for a week, not to panic. See [how to keep weight off](/guides/keep-weight-off-after-glp-1).",
       ] },
       { heading: "If you'd rather not weigh yourself", blocks: [
-        "You don't have to. How your clothes fit, how hungry you feel, your energy and whether your routines are holding are all useful signals. Steadie's safe mode hides weight completely and builds your weekly score from habits and check-ins instead.",
+        "You don't have to. How your clothes fit, how hungry you feel, your energy and whether your routines are holding are all useful signals. Steadie's Habit Only mode hides weight completely and builds your weekly score from habits and check-ins instead.",
         { note: "If thoughts about your weight or food feel overwhelming, Beat, the UK's eating disorder charity, has a helpline you can talk to.", tone: "sky" },
       ] },
     ],

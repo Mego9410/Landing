@@ -17,7 +17,7 @@ export default function FoodPreferences() {
         <AppText variant="title" accessibilityRole="header">Food preferences</AppText>
         <AppText color="inkMuted">Your meal plan and recipe swaps follow these. Changing them builds a fresh week.</AppText>
       </View>
-      {s.settings.safeMode ? <Banner>Safe mode is on, so meals are planned for holding steady and numbers stay hidden.</Banner> : (
+      {s.settings.safeMode ? <Banner>Habit Only mode is on, so meals are planned for holding steady and numbers stay hidden.</Banner> : (
         <View style={{ gap: space[2] }}>
           <AppText variant="label">WHAT WOULD YOU LIKE FOOD TO DO FOR YOU?</AppText>
           <GoalPicker />

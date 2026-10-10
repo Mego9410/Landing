@@ -12,7 +12,7 @@ import { Screen } from "@/components/Screen";
 import { Choices, Header, List, Row, Section, ToggleRow } from "@/components/ui";
 import { phaseOf } from "@/data/content";
 import { fmt, isoDate, today } from "@/data/dates";
-import { demoState, freshState, replace, set, setWeek, useApp, weekOf, type Units } from "@/state/store";
+import { demoState, freshState, replace, set, setWeek, useApp, weekOf, type Theme, type Units } from "@/state/store";
 import { toast } from "@/state/toast";
 import { available, connect, disconnect } from "@/state/appleHealth";
 import { AccountError, accountsAvailable, backUpNow, deleteAccount, guideEmails, resumeHealthBackup, setGuideEmails, setWeeklyRecap, signOut, useAccount, weeklyRecap, withdrawHealthBackup } from "@/state/account";
@@ -72,7 +72,7 @@ export default function Settings() {
             <Row first title="Health and safety" sub={s.disclaimer ? `You accepted this on ${fmt.dayMonth(s.disclaimer.acceptedAt.slice(0, 10))}` : undefined} onPress={() => router.push({ pathname: "/disclaimer", params: { review: "1" } })} />
             <Row title="Your health check" sub={s.health.checkedAt ? `Last done ${fmt.dayMonth(s.health.checkedAt)}` : "Not done yet"} onPress={() => router.push({ pathname: "/onboarding/health", params: { recheck: "1" } })} />
           </List>
-          <ToggleRow title="Safe mode" sub="Hides weight and numbers, and keeps the focus on routines" value={s.settings.safeMode} onChange={(v) => { set((st) => { st.settings.safeMode = v; }); toast(v ? "Safe mode is on." : "Safe mode is off."); }} />
+          <ToggleRow title="Habit Only mode" sub="Hides weight and numbers, and keeps the focus on routines" value={s.settings.safeMode} onChange={(v) => { set((st) => { st.settings.safeMode = v; }); toast(v ? "Habit Only mode is on." : "Habit Only mode is off."); }} />
           <AppText variant="caption" color="inkMuted">If food or eating feels hard, Beat&apos;s helpline is there to talk to.</AppText>
         </View>
       </Section>
@@ -82,6 +82,8 @@ export default function Settings() {
             <Row first title="Reminders" value={on} onPress={() => router.push("/settings/reminders")} />
             <Row title="Apple Health" sub={healthSub} onPress={toggleHealth} chevron={false} right={<AppText weight="800" color="apricotInk">{s.settings.appleHealth ? "Disconnect" : available() ? "Connect" : ""}</AppText>} />
           </List>
+          <AppText weight="700">Appearance</AppText>
+          <Choices label="Appearance" value={s.settings.theme ?? "system"} onChange={(v) => set((st) => { st.settings.theme = v as Theme; })} options={[{ id: "system", label: "Match my phone" }, { id: "light", label: "Light" }, { id: "dark", label: "Dark" }]} />
           <AppText weight="700">Units</AppText>
           <Choices label="Units" value={s.settings.units} onChange={(v) => set((st) => { st.settings.units = v as Units; })} options={[{ id: "kg", label: "Kilograms" }, { id: "stlb", label: "Stones and pounds" }]} />
         </View>
@@ -204,7 +206,7 @@ function WeeklyRecap() {
       toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
     });
   };
-  return <ToggleRow title="Weekly recap email" sub="Sunday evening: check-ins, sessions, steady score and a tip. No weight in safe mode." value={state.on} onChange={change} />;
+  return <ToggleRow title="Weekly recap email" sub="Sunday evening: check-ins, sessions, steady score and a tip. No weight in Habit Only mode." value={state.on} onChange={change} />;
 }
 
 /** Consent to back up health information: withdraw it (deletes the backup on our servers and stops backing up; the

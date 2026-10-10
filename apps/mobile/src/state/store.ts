@@ -54,6 +54,8 @@ export interface DayLog {
 
 export type Units = "kg" | "stlb";
 
+export type Theme = "system" | "light" | "dark";
+
 export interface AppState {
   v: 3;
   name: string;
@@ -74,7 +76,7 @@ export interface AppState {
   demos: { who: string; still: boolean; ghost: boolean };
   lessonsRead: Record<number, boolean>;
   coach: { messages: { from: "you" | "coach"; text: string; redirect?: boolean }[] };
-  settings: { safeMode: boolean; units: Units; reminders: Reminders; appleHealth: boolean; /** The reminder two days before a free trial ends; on unless turned off on the paywall. */ trialReminder?: boolean };
+  settings: { safeMode: boolean; /** Light, dark, or follow the phone (the default). */ theme?: Theme; units: Units; reminders: Reminders; appleHealth: boolean; /** The reminder two days before a free trial ends; on unless turned off on the paywall. */ trialReminder?: boolean };
   journal: { questions: string[]; entries: Record<string, JournalEntry> };
   /** When the person accepted the health information at the start, and which wording they saw. */
   disclaimer: { acceptedAt: string; version: number } | null;

@@ -95,7 +95,7 @@ const SAFETY: { icon: IconName; title: string; text: string }[] = [
 
 const PROMISES: { icon: IconName; title: string; text: string }[] = [
   { icon: "heart", title: "No goal weight", text: "We help you hold steady, and help you reset gently if things drift. Never a telling-off." },
-  { icon: "habit", title: "Numbers only if they help", text: "Safe mode hides weight entirely and builds your score from habits and check-ins." },
+  { icon: "habit", title: "Numbers only if they help", text: "Habit Only mode hides weight entirely and builds your score from habits and check-ins." },
   { icon: "shield", title: "Your prescriber stays in charge", text: "Steadie never gives advice about medication, doses or stopping treatment." },
   { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, with an encrypted backup in the UK if you sign in. Never sold, never used for ads. Export it or delete it from Settings." },
 ];
@@ -104,7 +104,7 @@ const faqs = (live: boolean) => [
   { q: "Who is Steadie for?", a: "Adults who have stopped a weight-loss jab such as Wegovy or Mounjaro, are stopping soon, or want a plan ready for when they do." },
   { q: "Is Steadie medical advice?", a: "No. Steadie is a general wellness app for building food, activity and eating habits. It doesn't diagnose or treat anything, and decisions about medication are always for your prescriber." },
   { q: "I'm still on my jab. Can I start now?", a: "Yes. Many people start building the habits before their last injection, so the routines are in place when appetite returns." },
-  { q: "Do I have to weigh myself?", a: "No. Weigh-ins are optional, and safe mode hides weight completely. Your weekly score can come from habits and your morning check-ins alone." },
+  { q: "Do I have to weigh myself?", a: "No. Weigh-ins are optional, and Habit Only mode hides weight completely. Your weekly score can come from habits and your morning check-ins alone." },
   { q: "I have a health condition. Can I use Steadie?", a: "Steadie gives general guidance, not medical advice. A quick health check at the start suggests checking with your GP, midwife or specialist where it matters, pauses strength sessions until you have, and adjusts food and sessions to suit. It asks again every 12 weeks." },
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },

@@ -5,8 +5,8 @@
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AccessibilityInfo, type LayoutChangeEvent, Pressable, StyleSheet, useColorScheme, useWindowDimensions } from "react-native";
-import Animated, { cancelAnimation, Easing, runOnJS, type SharedValue, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import Svg, { Circle, G, Path, Rect } from "react-native-svg";
+import Animated, { cancelAnimation, Easing, runOnJS, type SharedValue, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Svg, { Circle, Path, Rect } from "react-native-svg";
 import { LETTERS, LOCKUP } from "./wordmark";
 
 const ROCK = [[0, -12], [110, -21], [270, 6], [410, -16], [530, -9], [640, -12]];
@@ -28,7 +28,6 @@ const PALETTE = {
   dark: { bg: "#1C1B22", mark: "#F2A27A", word: "#F5EFE6", dot: "#F2A27A" },
 };
 
-const AnimatedG = Animated.createAnimatedComponent(G);
 
 function seg(t: number, a: number, b: number) { "worklet"; return Math.min(1, Math.max(0, (t - a) / (b - a))); }
 function sine(x: number) { "worklet"; return -(Math.cos(Math.PI * x) - 1) / 2; }
@@ -113,7 +112,9 @@ export function IntroSplash({ ready, onDone }: { ready: boolean; onDone: () => v
     const mv = cubicInOut(seg(t.value, T.moveA, T.moveB));
     return { transform: [{ translateX: markDx * mv }, { scale: (U0 + (U1 - U0) * mv) / U0 }] };
   });
-  const bodyProps = useAnimatedProps(() => ({ rotation: rock(t.value), originX: 50, originY: 80 }));
+  // The body rocks about its contact point, logo unit (50, 80). A view transform rather than an svg prop, because
+  // animated svg transform props only take effect on web, not on the phone.
+  const bodyStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${rock(t.value)}deg` }] }));
   const dotStyle = useAnimatedStyle(() => {
     const p = drop(seg(t.value, T.dotA, T.dotB));
     return { opacity: Math.min(1, seg(t.value, T.dotA, T.dotA + 120)), transform: [{ translateY: (p - 1) * 0.9 * F }] };
@@ -126,13 +127,15 @@ export function IntroSplash({ ready, onDone }: { ready: boolean; onDone: () => v
         <Animated.View style={[StyleSheet.absoluteFill, liftStyle]}>
           <Animated.View style={[{ position: "absolute", left: W / 2 - S0 / 2, top: H / 2 - S0 / 2, width: S0, height: S0 }, markStyle]}>
             {/* viewBox starts at y=6 so the box's centre is logo unit (50, 56), as in the native splash */}
-            <Svg width={S0} height={S0} viewBox="0 6 100 100">
+            <Svg width={S0} height={S0} viewBox="0 6 100 100" style={StyleSheet.absoluteFill}>
               <Rect x={31} y={85} width={38} height={5} rx={2.5} fill={c.mark} opacity={0.5} />
-              <AnimatedG animatedProps={bodyProps}>
+            </Svg>
+            <Animated.View style={[StyleSheet.absoluteFill, { transformOrigin: [0.5 * S0, 0.74 * S0, 0] }, bodyStyle]}>
+              <Svg width={S0} height={S0} viewBox="0 6 100 100">
                 <Path d={BODY} fill={c.mark} />
                 <Circle cx={50} cy={64} r={7} fill={c.bg} />
-              </AnimatedG>
-            </Svg>
+              </Svg>
+            </Animated.View>
           </Animated.View>
           {LETTERS.map((_, i) => <Letter key={i} i={i} t={t} color={c.word} left={left} top={top} />)}
           <Animated.View style={[{ position: "absolute", left: left + (cx - r) * K, top: top + (cy - r) * K, width: 2 * r * K, height: 2 * r * K, borderRadius: r * K, backgroundColor: c.dot }, dotStyle]} />

@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, useColorScheme, View } from "react-native";
 import { progress } from "@landing/engine";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
@@ -16,7 +16,7 @@ import { dayName, minutes, px, shoppingCount, thisWeek } from "@/state/food";
 import { nextSession, sessionTarget, weekSessions } from "@/state/habits";
 import { sessionsPaused } from "@/state/health";
 import { lessonNow, lessonRead } from "@/state/plans";
-import { dayLog, stageLabel, useApp, type AppState } from "@/state/store";
+import { dayLog, stageCaption, useApp, type AppState } from "@/state/store";
 import { radius, space, useColors, useLargeText } from "@/theme";
 
 const SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -69,7 +69,7 @@ const SLOT_WORD = { breakfast: "breakfast", lunch: "lunch", dinner: "dinner", sn
 
 /** The selected day's dinner, big: a cook night with cook-along and the recipe, leftovers, a takeaway or a free night. */
 function DinnerCard({ day }: { day: number }) {
-  const s = useApp(), c = useColors(), large = useLargeText();
+  const s = useApp(), c = useColors(), large = useLargeText(), dark = useColorScheme() === "dark";
   const week = thisWeek(s), meal = week.days[day].dinner, isToday = day === weekdayIndex(today());
   if (meal.kind === "takeaway") return <TakeawayCard />;
   if (meal.kind === "free" || !meal.recipe) return <FreeNightCard day={day} />;
@@ -86,7 +86,8 @@ function DinnerCard({ day }: { day: number }) {
   return (
     <Card tone={leftover ? "butter" : "apricot"} style={{ borderRadius: 26, padding: 18, gap: space[3] }}>
       <View style={{ flexDirection: large ? "column" : "row", justifyContent: "space-between", alignItems: large ? "flex-start" : "center", gap: space[2] }}>
-        <AppText variant="label" color={leftover ? "onPastel" : "apricotInk"}>{label}</AppText>
+        {/* Dark apricot ink is made for dark surfaces, so on the pastel card the label uses the card's own ink. */}
+        <AppText variant="label" color={leftover || dark ? "onPastel" : "apricotInk"}>{label}</AppText>
         {leftover ? null : (
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4, paddingHorizontal: space[2], borderRadius: radius.full, backgroundColor: c.surfaceRaised }}>
             <Icon name="timer" size={14} color={c.ink} />
@@ -156,7 +157,7 @@ export default function Plan() {
     <Screen contentContainerStyle={{ gap: space[4] }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <View style={{ gap: 2 }}>
-          <AppText variant="caption" color="inkMuted">{stageLabel(s)}</AppText>
+          <AppText variant="caption" color="inkMuted">{stageCaption(s)}</AppText>
           <AppText variant="title" accessibilityRole="header">Your plan</AppText>
         </View>
         <Avatar name={s.name} />
@@ -202,7 +203,7 @@ export default function Plan() {
 
       <RowCard tone="sky" onPress={() => router.push("/week")} accessibilityLabel={`This week's lesson${read ? ", read" : ""}: ${pick.lesson.week}`}>
         <View style={{ width: 44, height: 44, borderRadius: radius.md, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceRaised }}>
-          <Icon name="book" size={22} color={c.onPastel} />
+          <Icon name="book" size={22} color={c.ink} />
         </View>
         <View style={{ flex: 1, gap: 2 }}>
           <AppText variant="label" color="onPastel">THIS WEEK&apos;S LESSON{read ? " · READ" : ""}</AppText>

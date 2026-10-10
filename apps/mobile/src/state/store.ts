@@ -357,6 +357,9 @@ export const jabStopped = (s: AppState, on = today()) => s.ob.status === "stoppe
 export const yearTwoWeek = (s: AppState, on = today()) => Math.max(0, jabWeek(s, on) - 52);
 /** Where someone is now: getting ready, Land, Settle, Steady or year two. */
 export const stageOf = (s: AppState, on = today()): Phase => (gettingReady(s, on) ? phaseOf(0) : phaseOf(jabWeek(s, on)));
+/** The tab headers' caption: "Getting ready", "Week 6 · Land" or "Year two, week 3". */
+export const stageCaption = (s: AppState, on = today()) =>
+  gettingReady(s, on) ? "Getting ready" : yearTwoWeek(s, on) ? `Year two, week ${yearTwoWeek(s, on)}` : `Week ${weekOf(s, on)} · ${stageOf(s, on).name}`;
 /** A short label for where someone is: "Getting ready", "Week 12 of 52" or "Year two, week 3". */
 export const stageLabel = (s: AppState, on = today()) =>
   gettingReady(s, on) ? "Getting ready" : yearTwoWeek(s, on) ? `Year two, week ${yearTwoWeek(s, on)}` : `Week ${weekOf(s, on)} of 52`;

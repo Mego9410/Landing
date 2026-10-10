@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { View } from "react-native";
+import { useColorScheme, View } from "react-native";
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
@@ -7,16 +7,16 @@ import { PhaseStrip } from "@/components/PhaseStrip";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc, List, Row, RowCard } from "@/components/ui";
 import { HABITS } from "@/data/content";
-import { addDays, daysBetween, fmt, today } from "@/data/dates";
+import { addDays, daysBetween, fmt, today, weekDates, weekStart } from "@/data/dates";
 import { sessionsByMonth, strengthYear } from "@/data/sessions";
 import { change, weight } from "@/data/units";
 import { sessionTarget } from "@/state/habits";
 import { sharePrescriberPack } from "@/state/prescriber";
-import { recentScores, scoreHistory, steadiestStretch } from "@/state/score";
+import { habitSlots, recentScores, scoreHistory, steadiestStretch } from "@/state/score";
 import { toast } from "@/state/toast";
 import { insights, loggedOf } from "@/state/journal";
-import { avg7, habitDays, sessionsInWeek, steadyZone, useApp, type AppState, type Units } from "@/state/store";
-import { radius, space, useColors } from "@/theme";
+import { avg7, sessionsInWeek, stageCaption, steadyZone, useApp, type AppState, type Units } from "@/state/store";
+import { radius, space, useColors, useLargeText } from "@/theme";
 
 /** A short axis label in their units: "78" or "12st 5". */
 const axisLabel = (kg: number, units: Units) => (units === "kg" ? kg.toFixed(0) : weight(kg, units).replace(" st ", "st ").replace(" lb", ""));
@@ -109,61 +109,98 @@ function StrengthYear({ s }: { s: AppState }) {
 }
 
 /** PR1 Progress: the steady score, the weight trend (hidden in Habit Only mode) and recent weigh-ins. */
+/** A sageInk bar on a soft white track, for one part of the score. */
+function Bar({ label, value, fill }: { label: string; value: string; fill: number }) {
+  const c = useColors(), dark = useColorScheme() === "dark";
+  return (
+    <View style={{ gap: 6 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space[2], flexWrap: "wrap" }}>
+        <AppText weight="800" color="onPastel" style={{ fontSize: 13 }}>{label}</AppText>
+        <AppText weight="800" color="onPastel" style={{ fontSize: 13 }}>{value}</AppText>
+      </View>
+      <View style={{ height: 10, borderRadius: radius.full, overflow: "hidden" }}>
+        <View style={{ position: "absolute", inset: 0, backgroundColor: dark ? c.onPastel : c.surfaceRaised, opacity: dark ? 0.14 : 0.55 }} />
+        <View style={{ width: `${Math.round(Math.max(0, Math.min(1, fill)) * 100)}%`, height: "100%", borderRadius: radius.full, backgroundColor: dark ? c.onPastel : c.sageInk }} />
+      </View>
+    </View>
+  );
+}
+
+/** The score as a ring: a white centre with the number, and a sageInk arc for score / 100 on a soft white track. */
+function ScoreRing({ score }: { score: number }) {
+  // The dark theme's sage ink is made for dark surfaces, so on the pastel card the ring uses the card's own ink.
+  const c = useColors(), dark = useColorScheme() === "dark", size = 84, r = 37, len = 2 * Math.PI * r;
+  return (
+    <View style={{ width: size, height: size }}>
+      <Svg width={size} height={size}>
+        <Circle cx={size / 2} cy={size / 2} r={r} stroke={dark ? c.onPastel : c.surfaceRaised} strokeOpacity={dark ? 0.14 : 0.55} strokeWidth={9} fill={dark ? c.ink : c.surfaceRaised} />
+        <Circle cx={size / 2} cy={size / 2} r={r} stroke={dark ? c.onPastel : c.sageInk} strokeWidth={9} fill="none" strokeLinecap="round"
+          strokeDasharray={`${(len * score) / 100} ${len}`} transform={`rotate(-90 ${size / 2} ${size / 2})`} />
+      </Svg>
+      <View style={{ position: "absolute", inset: 0, alignItems: "center", justifyContent: "center" }}>
+        <AppText variant="display" color="onPastel" maxFontSizeMultiplier={1.2} style={{ fontSize: 30, lineHeight: 34, letterSpacing: 0 }}>{score}</AppText>
+      </View>
+    </View>
+  );
+}
+
+/** Last week's steady score and what built it: habits, strength, and check-ins or the trend (never a weight). */
+function ScoreCard({ s }: { s: AppState }) {
+  const large = useLargeText(), safe = s.settings.safeMode, accent = useColorScheme() === "dark" ? "onPastel" : "sageInk";
+  const { last, before } = recentScores(s), monday = addDays(weekStart(today()), -7);
+  const scoredBefore = !last && scoreHistory(s).some((h) => h.score != null);
+  const card = { borderRadius: 26, padding: 18, gap: space[3] } as const;
+  if (!last) {
+    return (
+      <Card tone="sage" style={card} accessible>
+        <AppText variant="label" color={accent}>STEADY SCORE{scoredBefore ? " · LAST WEEK" : ""}</AppText>
+        <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>{scoredBefore ? "A quiet week" : "Your first score arrives on Monday"}</AppText>
+        <AppText variant="caption" color="onPastel">{scoredBefore ? "Nothing was logged last week, and that's fine. Whatever you log this week makes Monday's score."
+          : `It's built each week from your habits, sessions and ${safe ? "check-ins" : "trend"}. There's no target to hit.`}</AppText>
+      </Card>
+    );
+  }
+  const slots = habitSlots(s, monday), aim = slots.reduce((a, h) => a + HABITS[h.id].target, 0), kept = slots.reduce((a, h) => a + Math.min(h.days, HABITS[h.id].target), 0);
+  const done = sessionsInWeek(s, addDays(monday, 6)).length, target = sessionTarget(s);
+  const mornings = weekDates(monday).filter((d) => s.journal.entries[d]).length;
+  const headline = !before || last.score >= before.score ? "A steady week" : "A wobblier week, and that's fine";
+  const compare = before ? (last.score === before.score ? "The same as the week before" : last.score > before.score ? `Up ${last.score - before.score} on the week before` : `Down ${before.score - last.score} on the week before`) : "";
+  const third = last.usedWeight ? { label: "Your trend", value: last.trend >= 1 ? "Inside your steady zone" : "A little above your zone" } : { label: "Check-ins", value: `${mornings} of 7 mornings` };
+  const said = `Steady score last week ${last.score}, ${headline.toLowerCase()}. Habits ${kept} of ${aim} days, strength ${done} of ${target} sessions, ${third.label.toLowerCase()} ${third.value.toLowerCase()}.`;
+  return (
+    <Card tone="sage" style={card} accessible accessibilityLabel={said}>
+      <View style={{ flexDirection: large ? "column" : "row", alignItems: large ? "flex-start" : "center", gap: space[4] }}>
+        <ScoreRing score={last.score} />
+        <View style={{ flex: large ? undefined : 1, gap: 2 }}>
+          <AppText variant="label" color={accent}>STEADY SCORE · LAST WEEK</AppText>
+          <AppText variant="heading" color="onPastel" style={{ fontSize: 19, lineHeight: 24 }}>{headline}</AppText>
+          {compare ? <AppText variant="caption" color={accent}>{compare}</AppText> : null}
+        </View>
+      </View>
+      <Bar label="Habits" value={`${kept} of ${aim} days`} fill={last.habits} />
+      <Bar label="Strength" value={`${done} of ${target} sessions`} fill={last.sessions} />
+      <Bar label={third.label} value={third.value} fill={last.trend} />
+    </Card>
+  );
+}
+
 export default function Progress() {
   const s = useApp(), c = useColors();
   const safe = s.settings.safeMode, bare = s.story.weightView === "trend";
-  const { last, before } = recentScores(s);
-  const scoredBefore = !last && scoreHistory(s).some((h) => h.score != null);
-  const ids = s.habits.ids.filter((id) => HABITS[id]?.kind !== "sessions");
-  const habitTotal = ids.reduce((a, id) => a + Math.min(habitDays(s, id), HABITS[id]?.target ?? 0), 0);
-  const habitTarget = ids.reduce((a, id) => a + (HABITS[id]?.target ?? 0), 0);
-  const sessions = sessionsInWeek(s).length, units = s.settings.units, target = sessionTarget(s);
+  const units = s.settings.units;
   const now = avg7(s), weekAgo = avg7(s, addDays(today(), -7));
   const recent = [...s.weights].sort((a, b) => (a.date < b.date ? 1 : -1)).filter((w) => daysBetween(w.date, today()) < 10);
   return (
     <Screen contentContainerStyle={{ gap: space[5] }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-        <AppText variant="title" accessibilityRole="header">Progress</AppText>
+        <View style={{ gap: 2 }}>
+          <AppText variant="caption" color="inkMuted">{stageCaption(s)}</AppText>
+          <AppText variant="title" accessibilityRole="header">Progress</AppText>
+        </View>
         <Avatar name={s.name} />
       </View>
       <PhaseStrip s={s} />
-      {last ? (
-        <Card tone="sage" hero style={{ flexDirection: "row", alignItems: "center", gap: space[4] }}>
-          <View style={{ width: 84, height: 84, borderRadius: 42, borderWidth: 9, borderColor: c.sageInk, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceRaised }}>
-            <AppText variant="numeral" style={{ fontSize: 28, lineHeight: 32 }}>{last.score}</AppText>
-          </View>
-          <View style={{ flex: 1, gap: 2 }}>
-            <AppText variant="label" color="onPastel">STEADY SCORE · LAST WEEK</AppText>
-            <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>{!before || last.score >= before.score ? "A steady week" : "A wobblier week, and that's fine"}</AppText>
-            <AppText variant="caption" color="onPastel">
-              {before ? (last.score === before.score ? "The same as the week before. " : last.score > before.score ? `Up ${last.score - before.score} on the week before. ` : `Down ${before.score - last.score} on the week before. `) : ""}
-              Built from habits, sessions{last.usedWeight ? " and your trend" : " and your check-ins"}.
-            </AppText>
-          </View>
-        </Card>
-      ) : scoredBefore ? (
-        <Card tone="sage" hero style={{ gap: 4 }}>
-          <AppText variant="label" color="onPastel">STEADY SCORE · LAST WEEK</AppText>
-          <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>A quiet week</AppText>
-          <AppText variant="caption" color="onPastel">Nothing was logged last week, and that&apos;s fine. Whatever you log this week makes Monday&apos;s score.</AppText>
-        </Card>
-      ) : (
-        <Card tone="sage" hero style={{ gap: 4 }}>
-          <AppText variant="label" color="onPastel">STEADY SCORE</AppText>
-          <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>Your first score arrives on Monday</AppText>
-          <AppText variant="caption" color="onPastel">It&apos;s built each week from your habits, sessions and {safe ? "check-ins" : "trend"}. There&apos;s no target to hit.</AppText>
-        </Card>
-      )}
-      <View style={{ flexDirection: "row", gap: space[3] }}>
-        <Card style={{ flex: 1, gap: 2 }}>
-          <AppText variant="numeral" style={{ fontSize: 26, lineHeight: 30 }}>{habitTotal}<AppText color="inkMuted"> / {habitTarget}</AppText></AppText>
-          <AppText variant="caption" color="inkMuted">Habit days this week</AppText>
-        </Card>
-        <Card style={{ flex: 1, gap: 2 }}>
-          <AppText variant="numeral" style={{ fontSize: 26, lineHeight: 30 }}>{sessions}<AppText color="inkMuted"> / {target}</AppText></AppText>
-          <AppText variant="caption" color="inkMuted">Strength sessions</AppText>
-        </Card>
-      </View>
+      <ScoreCard s={s} />
       <ScoreStrip s={s} />
       <StrengthYear s={s} />
       <RowCard onPress={() => sharePrescriberPack(s).catch(() => toast("Couldn't make the summary. Try again."))}>

@@ -50,6 +50,7 @@ export const SWAPS: Record<string, Swap[]> = {
   "roll": [s("gf-bread", 1.2)],
   "rye-crispbread": [s("oatcakes"), s("gf-bread", 1.5)],
   "pasta": [s("gf-pasta")],
+  "red-lentil-pasta": [s("pasta"), s("gf-pasta", 1, "Less protein than lentil pasta, so we add a top-up")],
   "fresh-pasta": [s("gf-pasta", 0.6, "Gluten-free pasta is dried, so cook it first for the time on the pack")],
   "noodles": [s("rice-noodles")],
   "couscous": [s("quinoa-pouch", 3)],
@@ -80,6 +81,7 @@ export const SWAPS: Record<string, Swap[]> = {
   "honey": [s("banana", 2)],
   "avocado": [s("cucumber", 1.2)],
   "olives": [s("cherry-tomatoes", 1.5)],
+  "cauliflower": [s("broccoli")],
   "mushrooms": [s("courgette"), s("peppers")],
 };
 

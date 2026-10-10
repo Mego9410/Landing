@@ -92,6 +92,7 @@ export const INGREDIENTS: Ingredient[] = [
   ing("carrots", "Carrots", [0.6, 7.9, 2.4, 0.3, 0.1], "plant", [], "Fruit and veg", { step: "carrot", buy: bag(1000), veg: true, root: true }),
   ing("cucumber", "Cucumber", [0.6, 1.5, 0.6, 0.1, 0], "plant", [], "Fruit and veg", { step: "cucumber", each: { name: "cucumber", plural: "cucumbers", grams: 350 }, veg: true }),
   ing("salad-leaves", "Bagged salad leaves", [1, 1.7, 1.2, 0.3, 0], "plant", [], "Fruit and veg", { step: "leaves", words: ["leaves", "salad"], buy: bag(120), veg: true }),
+  ing("cauliflower", "Cauliflower", [3.6, 3, 2.2, 0.9, 0], "plant", [], "Fruit and veg", { step: "cauliflower", short: "cauliflower", words: ["florets"], buy: { unit: "head", plural: "heads", size: 600 }, veg: true }),
   ing("mushrooms", "Mushrooms", [1.8, 0.4, 1.1, 0.5, 0], "plant", [], "Fruit and veg", { short: "mushroom", buy: pack(250), veg: true }),
   ing("courgette", "Courgette", [1.8, 1.8, 1.1, 0.4, 0], "plant", [], "Fruit and veg", { step: "courgette", short: "courgette", each: { name: "courgette", plural: "courgettes", grams: 200 }, veg: true }),
   ing("sweetcorn", "Tinned sweetcorn, drained", [2.9, 17, 2.5, 1.2, 0.3], "plant", [], "Tins and jars", { buy: tin(165), veg: true }),
@@ -121,6 +122,7 @@ export const INGREDIENTS: Ingredient[] = [
   ing("bagel", "Bagels", [10, 48, 3, 1.5, 1], "plant", ["gluten"], "Bakery", { step: "bagel", short: "bagel", buy: { unit: "pack of 4", plural: "packs of 4", size: 340 }, each: { name: "bagel", plural: "bagels", grams: 85 } }),
   ing("pasta", "Wholewheat pasta (dry)", [13, 62, 9, 2.5, 0], "plant", ["gluten"], "Rice, pasta and grains", { step: "pasta", short: "pasta", buy: bag(500) }),
   ing("fresh-pasta", "Fresh egg pasta", [11, 50, 2.5, 3, 0.05], "egg", ["gluten", "eggs"], "Chilled", { step: "pasta", words: ["fresh pasta"], short: "pasta", buy: pack(300) }),
+  ing("red-lentil-pasta", "Red lentil pasta (dry)", [24, 48, 11, 2, 0], "plant", [], "Rice, pasta and grains", { step: "pasta", short: "lentil pasta", words: ["lentil pasta"], buy: bag(250) }),
   ing("gf-pasta", "Gluten-free pasta (dry)", [7, 75, 3, 1.5, 0], "plant", [], "Rice, pasta and grains", { step: "pasta", short: "pasta", buy: bag(500) }),
   ing("noodles", "Straight-to-wok egg noodles", [5.5, 26, 1.5, 2, 0.4], "plant", ["gluten", "eggs"], "World foods", { step: "noodles", short: "noodle", buy: pouch(150) }),
   ing("rice-noodles", "Straight-to-wok rice noodles", [2, 30, 1, 0.5, 0.1], "plant", [], "World foods", { step: "noodles", short: "noodle", buy: pouch(150) }),
@@ -128,6 +130,7 @@ export const INGREDIENTS: Ingredient[] = [
   ing("quinoa-pouch", "Microwave quinoa (pouch)", [5, 22, 4, 3, 0.3], "plant", [], "Rice, pasta and grains", { step: "quinoa", short: "quinoa", buy: pouch(250) }),
   ing("couscous", "Wholewheat couscous (dry)", [13, 66, 7, 2, 0], "plant", ["gluten"], "Rice, pasta and grains", { step: "couscous", short: "couscous", buy: bag(500) }),
   ing("gnocchi", "Gnocchi", [4, 33, 1.6, 0.4, 1], "plant", ["gluten"], "Chilled", { step: "gnocchi", short: "gnocchi", buy: pack(500) }),
+  ing("gram-flour", "Gram flour (chickpea flour)", [19.7, 49.6, 10.7, 5.4, 0], "plant", [], "World foods", { step: "gram flour", buy: bag(1000) }),
   ing("oatcakes", "Oatcakes", [10, 58, 8, 18, 1.2], "plant", ["gluten"], "Bakery", { step: "oatcakes", buy: pack(300), each: { name: "oatcake", plural: "oatcakes", grams: 10 } }),
 
   // sauces and pantry
@@ -143,7 +146,7 @@ export const INGREDIENTS: Ingredient[] = [
   ing("stock", "Reduced-salt stock, made up", [0.3, 0.6, 0, 0.2, 0.4], "plant", ["celery"], "Store cupboard", { step: "stock", pantry: true }),
   ing("curry-paste", "Curry paste (tikka or korma)", [3, 12, 3, 20, 4], "plant", ["mustard"], "World foods", { step: "curry paste", words: ["paste"], pantry: true }),
   ing("thai-paste", "Thai green curry paste", [2, 12, 3, 8, 6], "fish", ["fish", "crustaceans"], "World foods", { step: "paste", words: ["paste"], pantry: true }),
-  ing("vegan-thai-paste", "Vegan Thai green curry paste", [2, 12, 3, 8, 5], "plant", [], "World foods", { step: "vegan curry paste", pantry: true }),
+  ing("vegan-thai-paste", "Vegan Thai green curry paste", [2, 12, 3, 8, 5], "plant", [], "World foods", { step: "vegan curry paste", words: ["paste"], pantry: true }),
   ing("garlic", "Garlic (lazy or granules)", [6, 16, 2, 0.5, 0], "plant", [], "Store cupboard", { step: "garlic", pantry: true, root: true }),
   ing("asafoetida", "Asafoetida (hing)", [4, 68, 4, 1, 0], "plant", ["gluten"], "World foods", { step: "asafoetida", pantry: true }),
   ing("spices", "Dried herbs and spices", [10, 50, 25, 10, 0.1], "plant", [], "Store cupboard", { step: "spices", words: ["spices", "dried herbs", "seasoning"], pantry: true }),

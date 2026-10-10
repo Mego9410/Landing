@@ -259,7 +259,7 @@
   font: inherit; font-size: 15px; font-weight: 800; color: #2E2A33; background: rgba(251, 248, 244, .55); transition: background .15s ease-out; }
 .castChoice:hover { background: rgba(251, 248, 244, .85); }
 .castChoice[aria-pressed="true"] { background: #FBF8F4; box-shadow: 0 0 0 3px #2E2A33; }
-.castPortrait { display: block; width: 58px; height: 92px; }
+.castPortrait { display: block; width: 54px; height: 96px; }
 .castPortrait svg { width: 100%; height: 100%; display: block; }
 .castSmall { font-size: 15px; line-height: 1.5; opacity: .82; }
 
@@ -373,7 +373,7 @@
   .castCaption { font-size: 14px; }
   .castChoices { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
   .castChoice { padding: 8px 2px 10px; border-radius: 16px; font-size: 12px; gap: 4px; }
-  .castPortrait { width: 30px; height: 48px; }
+  .castPortrait { width: 29px; height: 52px; }
   .castAge { display: none; }
   .castSmall { font-size: 13px; }
 

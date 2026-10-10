@@ -96,7 +96,8 @@ const BRIEFS: Record<string, { build: string; move: string; ids: string[] }> = {
   tom: { build: "Slim build", move: "Walks a lot, new to strength", ids: ["push-1", "core-2"] },
   grace: { build: "Fuller build", move: "Low-impact, knee-friendly sessions", ids: ["hinge-1", "squat-3"] },
 };
-const CAST: CastPerson[] = cast.map((c) => ({ id: c.id, name: c.name, age: c.age, ...BRIEFS[c.id], portrait: portraitSvg(c.id) }));
+const CAST: CastPerson[] = cast.map((c) => ({ id: c.id, name: c.name, age: c.age, ...BRIEFS[c.id], // The shared portrait frame starts at y=14, which clips the tops of heads and hair; show the whole figure.
+  portrait: portraitSvg(c.id).replace('viewBox="64 14 112 178"', 'viewBox="64 -4 112 200"') }));
 
 // "Careful by design": the safety features and the promises, as one list.
 const CARE = [

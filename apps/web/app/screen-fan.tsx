@@ -18,7 +18,8 @@ export function ScreenFan({ screens }: { screens: FanScreen[] }) {
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setOpen(true); return; }
+    // Reduce Motion: open straight away (after this render, so the effect doesn't set state synchronously).
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { queueMicrotask(() => setOpen(true)); return; }
     const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setOpen(true); io.disconnect(); } }, { threshold: 0.35 });
     io.observe(el);
     return () => io.disconnect();

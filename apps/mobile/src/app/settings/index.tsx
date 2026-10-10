@@ -191,7 +191,7 @@ export default function Settings() {
       </Section> : null}
       {/* Holding this for 3 seconds sends a test error report, to check crash reporting in a TestFlight build. */}
       <Pressable accessible={false} delayLongPress={3000} onLongPress={() => { if (sentryOn()) { sendTestError(); toast("Test error report sent."); } else toast("Crash reporting is off in this build."); }}>
-        <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>Steadie {Constants.expoConfig?.version ?? ""}{Updates.updateId ? ` · update ${Updates.updateId.slice(0, 8)}` : ""}. Recipes and nutrition are drafts until our dietitian signs them off.</AppText>
+        <AppText variant="caption" color="inkMuted" style={{ textAlign: "center" }}>Steadie {Constants.expoConfig?.version ?? ""}{Updates.updateId ? ` · update ${Updates.updateId.slice(0, 8)}` : ""}. Nutrition is approximate.</AppText>
       </Pressable>
     </Screen>
   );

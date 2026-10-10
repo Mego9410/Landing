@@ -7,6 +7,7 @@ import { DAYS, emptyWeek, personaliseById, planWeek, profile, setMeal, swapOptio
 import { addDays, daysBetween, fmt, today, weekStart } from "@/data/dates";
 import { jabStopped, useApp, weekOf, weeksOnPlan, type AppState } from "./store";
 
+// Every recipe is live in the app. Their review records stay as they are until a dietitian signs each one off.
 export const INCLUDE_DRAFTS = true;
 const HUNGRY: Record<string, string> = { Morning: "morning", Lunchtime: "lunchtime", Afternoon: "afternoon", Evening: "evening", "Late night": "late-night" };
 

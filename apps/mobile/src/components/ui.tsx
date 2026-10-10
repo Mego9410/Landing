@@ -213,7 +213,7 @@ export function Stepper({ value, min = 1, max = 8, onChange, unit }: { value: nu
 }
 
 export function DraftNote() {
-  return <Banner tone="butter" icon="doc">Recipes are drafts until our dietitian has checked them. Nutrition is approximate.</Banner>;
+  return <Banner tone="butter" icon="doc">Nutrition is approximate, worked out from typical UK values for each ingredient.</Banner>;
 }
 
 /** The person's initial; opens Settings. */

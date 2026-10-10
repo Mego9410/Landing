@@ -94,7 +94,7 @@ function StrengthYear({ s }: { s: AppState }) {
           {months.map((m) => (
             <View key={m.month} style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", gap: 2 }}>
               {m.count ? <AppText variant="caption" weight="800" maxFontSizeMultiplier={1.2}>{m.count}</AppText> : null}
-              <View style={{ alignSelf: "stretch", maxWidth: 44, marginHorizontal: "auto", height: m.count ? Math.max(6, (m.count / most) * 36) : 4, borderRadius: radius.sm, backgroundColor: m.count ? c.butter : c.line }} />
+              <View style={{ width: "100%", maxWidth: 44, height: m.count ? Math.max(6, (m.count / most) * 36) : 4, borderRadius: radius.sm, backgroundColor: m.count ? c.butter : c.line }} />
             </View>
           ))}
         </View>

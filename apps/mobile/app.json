@@ -2,7 +2,7 @@
   "expo": {
     "name": "Steadie",
     "slug": "landing",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "steadie",
@@ -167,11 +167,7 @@
         {
           "backgroundColor": "#DE6F44",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 120,
-          "dark": {
-            "backgroundColor": "#1C1B22",
-            "image": "./assets/images/splash-icon-dark.png"
-          }
+          "imageWidth": 120
         }
       ],
       "expo-sharing",

@@ -21,7 +21,7 @@ import { startBilling } from "@/state/subscription";
 import { loadTimers } from "@/state/timers";
 import { applyCriticalUpdate } from "@/state/updates";
 import { get, hydrate, useApp } from "@/state/store";
-import { applyTheme, launchScheme, loadTheme } from "@/state/theme";
+import { applyTheme, loadTheme } from "@/state/theme";
 import { space, useColors } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -75,7 +75,7 @@ function RootLayout() {
   const [loaded, error] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold, Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold });
   const [ready, setReady] = useState(false);
   const [intro, setIntro] = useState(!introPlayed);
-  // The saved light or dark choice, applied before anything draws, so the intro is in the app's colours.
+  // The saved light or dark choice, applied before anything draws, so the app never opens in the wrong one.
   const [themed, setThemed] = useState(false);
   useEffect(() => { loadTheme().finally(() => setThemed(true)); }, []);
 
@@ -124,7 +124,7 @@ function RootLayout() {
       </> : null}
       {intro ? <>
         <StatusBar style="light" />
-        <IntroSplash ready={ready} from={launchScheme} onDone={() => { introPlayed = true; setIntro(false); }} />
+        <IntroSplash ready={ready} onDone={() => { introPlayed = true; setIntro(false); }} />
       </> : null}
     </View>
   );

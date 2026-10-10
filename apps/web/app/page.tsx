@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { cast } from "@landing/motion/browser";
 import styles from "./page.module.css";
@@ -10,6 +9,8 @@ import { abs, appLive, APP_STORE_URL, ldJson, ORGANIZATION, PRICE, PRICE_GBP, SI
 import { PrototypeLink } from "./prototype-link";
 import { AppStoreButton } from "./app-store";
 import { GuideArt } from "./guides/art";
+import { PhoneTour, type Screen } from "./phone-tour";
+import { ScreenFan, type FanScreen } from "./screen-fan";
 
 // New guides go live on their date (see content/guides), so the home page refreshes hourly to show the latest.
 export const revalidate = 3600;
@@ -46,6 +47,22 @@ type IconName = keyof typeof ICONS;
 function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ICONS[name] }} />;
 }
+
+// Real app screens (iPhone, 1.0.2). The hero phone slides through these.
+const TOUR: Screen[] = [
+  { src: "/screens/today.webp", label: "Today" },
+  { src: "/screens/progress.webp", label: "Progress" },
+  { src: "/screens/session.webp", label: "Strength session" },
+  { src: "/screens/cook.webp", label: "Cook along" },
+];
+
+const FAN: FanScreen[] = [
+  { src: "/screens/welcome.webp", alt: "Steadie's welcome screen: Wobbles are normal. Let's keep you steady.", title: "A calm start", text: "A few questions, then your 12-month plan is ready." },
+  { src: "/screens/session.webp", alt: "A strength session: sit to stand, shown by Grace, with an easier version switch.", title: "Strength, shown for you", text: "Short sessions at home, with an easier version a tap away." },
+  { src: "/screens/today.webp", dark: "/screens/today-dark.webp", alt: "The Today screen: today's plan, your meal and strength plans, and a morning check-in.", title: "Your day at a glance", text: "Light or dark, to match your phone." },
+  { src: "/screens/cook.webp", alt: "Cook along: a recipe step with the ingredients you need and a simmer timer.", title: "Cook along", text: "Step by step, with timers that keep running." },
+  { src: "/screens/month.webp", alt: "Your month: check-ins, strength sessions and the habit you kept most, with the option to swap a habit.", title: "Your month", text: "A kind look back, and a chance to swap a habit." },
+];
 
 const trust = (live: boolean): { icon: IconName; text: string }[] => [
   { icon: "gift", text: "7-day free trial" },
@@ -194,9 +211,7 @@ export default async function Home() {
             <span className={styles.shapeButter} />
             <span className={styles.shapeGround} />
             <span className={styles.shapeSun} />
-            <div className={styles.phone}>
-              <Image src="/today.png" alt="" width={780} height={1688} sizes="(max-width: 900px) 250px, 290px" priority />
-            </div>
+            <PhoneTour screens={TOUR} />
             <div className={`${styles.float} ${styles.floatLoop}`}>
               <span className={styles.floatLabel}>Today&apos;s session</span>
               <div className={styles.floatStage}><ExerciseLoop ids={["squat-2", "push-2", "hinge-1", "row-2"]} /></div>
@@ -257,6 +272,16 @@ export default async function Home() {
                 <span className={styles.ringArt} aria-hidden="true"><span>78</span></span>
               </a>
             </div>
+          </div>
+        </section>
+
+        <section id="inside" className={`${styles.section} ${styles.showcase}`} aria-labelledby="inside-title">
+          <div className={styles.wrap}>
+            <div className={styles.head}>
+              <p className={styles.eyebrow}>Inside the app</p>
+              <h2 id="inside-title" className={styles.h2Light}>Calm to look at,<br /><span className={styles.mutedHead}>easy to keep up</span></h2>
+            </div>
+            <ScreenFan screens={FAN} />
           </div>
         </section>
 

@@ -307,7 +307,8 @@
   .careList li { grid-template-columns: 30px minmax(0, 1fr); gap: 6px 14px; padding: 18px 0; }
   .careList p { grid-column: 2; }
   .careList h3 { font-size: 21px; }
-  .careArt { height: 260px; }
+  .careArt { height: 330px; }
+  .castSide { order: -1; }
   .careBlob { width: 200px; height: 200px; }
   .carePhone { width: 140px; left: 40px; }
   .careChip { left: 120px; top: 205px; }

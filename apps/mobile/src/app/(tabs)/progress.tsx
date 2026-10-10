@@ -1,20 +1,21 @@
 import { router } from "expo-router";
-import { useColorScheme, View } from "react-native";
+import { Pressable, useColorScheme, View } from "react-native";
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
+import { Icon, type IconName } from "@/components/Icon";
 import { YearCard } from "@/components/YearCard";
 import { Screen } from "@/components/Screen";
-import { Avatar, Disc, List, Row, RowCard } from "@/components/ui";
+import { Avatar, List, Row } from "@/components/ui";
 import { HABITS } from "@/data/content";
 import { addDays, daysBetween, fmt, today, weekDates, weekStart } from "@/data/dates";
 import { sessionsByMonth, strengthYear } from "@/data/sessions";
 import { change, weight } from "@/data/units";
 import { habitWeekGrid, sessionTarget } from "@/state/habits";
 import { sharePrescriberPack } from "@/state/prescriber";
-import { habitSlots, recentScores, scoreHistory, steadiestStretch, weekHabits } from "@/state/score";
+import { habitSlots, recentScores, scoreHistory, weekHabits } from "@/state/score";
 import { toast } from "@/state/toast";
-import { insights, loggedOf } from "@/state/journal";
+import { describe, insights, loggedOf } from "@/state/journal";
 import { avg7, sessionsInWeek, stageCaption, steadyZone, useApp, type AppState, type Units } from "@/state/store";
 import { radius, space, useColors, useLargeText } from "@/theme";
 
@@ -50,28 +51,6 @@ function TrendChart({ s, bare }: { s: AppState; bare?: boolean }) {
   );
 }
 
-/** The last 12 weeks' steady scores as a strip of small bars, with their steadiest stretch. No weight in it. */
-function ScoreStrip({ s }: { s: AppState }) {
-  const c = useColors();
-  const history = scoreHistory(s), stretch = steadiestStretch(history);
-  if (history.filter((h) => h.score != null).length < 2) return null;
-  const label = history.map((h) => `week ${h.week}, ${h.score ?? "no score"}`).join("; ");
-  return (
-    <Card style={{ gap: space[3] }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
-        <AppText variant="heading">Your last 12 weeks</AppText>
-        <AppText variant="caption" color="inkMuted">Steady score</AppText>
-      </View>
-      <View accessible accessibilityRole="image" accessibilityLabel={`Steady score by week: ${label}.`} style={{ flexDirection: "row", alignItems: "flex-end", gap: 4, height: 48 }}>
-        {history.map((h) => (
-          <View key={h.monday} style={{ flex: 1, height: h.score == null ? 4 : Math.max(6, (h.score / 100) * 48), borderRadius: radius.sm, backgroundColor: h.score == null ? c.line : stretch && h.week >= stretch.from && h.week <= stretch.to ? c.sageInk : c.sage }} />
-        ))}
-      </View>
-      <AppText variant="caption" color="inkMuted">{stretch ? `Your steadiest stretch: weeks ${stretch.from} to ${stretch.to}.` : "Each bar is one week. Gaps are weeks with nothing logged, and that's fine."}</AppText>
-    </Card>
-  );
-}
-
 const MONTH_NAME = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 /** "Your strength year": where each pattern started and where it is now, and sessions done each month. No weight. */
@@ -79,17 +58,12 @@ function StrengthYear({ s }: { s: AppState }) {
   const c = useColors();
   const rows = strengthYear(s), moved = rows.filter((r) => r.up), months = sessionsByMonth(s);
   const total = months.reduce((a, m) => a + m.count, 0), most = Math.max(1, ...months.map((m) => m.count));
-  if (!moved.length && !total) return null;
   return (
-    <Card style={{ gap: space[3] }}>
-      <AppText variant="heading">Your strength year</AppText>
-      {moved.length ? <View style={{ gap: 4 }}>
-        {moved.slice(0, 6).map((r) => (
-          <AppText key={r.pattern} variant="caption"><AppText variant="caption" weight="800">{r.pattern}:</AppText> {r.from} → {r.to}</AppText>
-        ))}
-        {moved.length > 6 ? <AppText variant="caption" color="inkMuted">And {moved.length - 6} more.</AppText> : null}
-        {rows.length > moved.length ? <AppText variant="caption" color="inkMuted">The others stay at the level that suits you.</AppText> : null}
-      </View> : <AppText variant="caption" color="inkMuted">Your moves step up every eight weeks. This is where you&apos;ll see how far each one has come.</AppText>}
+    <Card style={{ borderRadius: 24, padding: 18, gap: space[3] }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", gap: space[2], flexWrap: "wrap" }}>
+        <AppText variant="heading" accessibilityRole="header" style={{ fontSize: 20 }}>Strength</AppText>
+        <AppText variant="caption" color="inkMuted">{total} {total === 1 ? "session" : "sessions"} so far</AppText>
+      </View>
       {total ? <View style={{ gap: 4 }}>
         <View accessible accessibilityRole="image" accessibilityLabel={`Sessions each month: ${months.map((m) => `${MONTH_NAME[Number(m.month.slice(5)) - 1]}, ${m.count}`).join("; ")}.`} style={{ flexDirection: "row", alignItems: "flex-end", gap: 4, height: 56 }}>
           {months.map((m) => (
@@ -102,13 +76,18 @@ function StrengthYear({ s }: { s: AppState }) {
         <View style={{ flexDirection: "row", gap: 4 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
           {months.map((m) => <AppText key={m.month} variant="caption" color="inkMuted" maxFontSizeMultiplier={1.2} style={{ flex: 1, textAlign: "center", fontSize: months.length > 8 ? 10 : 12 }}>{MONTH_NAME[Number(m.month.slice(5)) - 1].slice(0, 3)}</AppText>)}
         </View>
-        <AppText variant="caption" color="inkMuted">{total} {total === 1 ? "session" : "sessions"} so far, month by month.</AppText>
       </View> : null}
+      {moved.length ? <View style={{ gap: 4 }}>
+        {moved.slice(0, 6).map((r) => (
+          <AppText key={r.pattern} variant="caption"><AppText variant="caption" weight="800">{r.pattern}:</AppText> {r.from} → {r.to}</AppText>
+        ))}
+        {moved.length > 6 ? <AppText variant="caption" color="inkMuted">And {moved.length - 6} more.</AppText> : null}
+        {rows.length > moved.length ? <AppText variant="caption" color="inkMuted">The others stay at the level that suits you.</AppText> : null}
+      </View> : <AppText variant="caption" color="inkMuted">Your moves step up every eight weeks. This is where you&apos;ll see how far each one has come.</AppText>}
     </Card>
   );
 }
 
-/** PR1 Progress: the steady score, the weight trend (hidden in Habit Only mode) and recent weigh-ins. */
 /** A sageInk bar on a soft white track, for one part of the score. */
 function Bar({ label, value, fill }: { label: string; value: string; fill: number }) {
   const c = useColors(), dark = useColorScheme() === "dark";
@@ -253,10 +232,31 @@ function HabitsWeek({ s }: { s: AppState }) {
   );
 }
 
+/** One link with a tinted 40pt tile. */
+function LinkRow({ icon, tone, title, sub, onPress, first }: { icon: IconName; tone: "sky" | "butter"; title: string; sub: string; onPress: () => void; first?: boolean }) {
+  const c = useColors();
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={`${title}. ${sub}`} onPress={onPress}
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], minHeight: 64, paddingVertical: space[3], paddingHorizontal: space[4], borderTopWidth: first ? 0 : 1, borderColor: c.line, opacity: pressed ? 0.7 : 1 })}>
+      <View style={{ width: 40, height: 40, borderRadius: radius.md, alignItems: "center", justifyContent: "center", backgroundColor: c[tone] }}>
+        <Icon name={icon} size={20} color={c.onPastel} />
+      </View>
+      <View style={{ flex: 1, gap: 2 }}>
+        <AppText weight="800" style={{ fontSize: 16 }}>{title}</AppText>
+        <AppText variant="caption" color="inkMuted">{sub}</AppText>
+      </View>
+      <Icon name="chevron" size={18} color={c.inkMuted} />
+    </Pressable>
+  );
+}
+
+/** PR1 Progress: last week's score explained, this week's habits, the year, strength, the trend (hidden in Habit Only
+ *  mode) and links to patterns and the prescriber summary. */
 export default function Progress() {
   const s = useApp(), c = useColors();
   const safe = s.settings.safeMode, bare = s.story.weightView === "trend";
   const units = s.settings.units;
+  const pattern = insights(s).ready.find((i) => i.lead) ?? null;
   const now = avg7(s), weekAgo = avg7(s, addDays(today(), -7));
   const recent = [...s.weights].sort((a, b) => (a.date < b.date ? 1 : -1)).filter((w) => daysBetween(w.date, today()) < 10);
   return (
@@ -271,24 +271,7 @@ export default function Progress() {
       <ScoreCard s={s} />
       <HabitsWeek s={s} />
       <YearCard s={s} />
-      <ScoreStrip s={s} />
       <StrengthYear s={s} />
-      <RowCard onPress={() => sharePrescriberPack(s).catch(() => toast("Couldn't make the summary. Try again."))}>
-        <Disc icon="doc" tone="butter" />
-        <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="label" color="inkMuted">FOR YOUR PRESCRIBER</AppText>
-          <AppText weight="800" style={{ fontSize: 16 }}>A one-page summary</AppText>
-          <AppText variant="caption" color="inkMuted">Your last four weeks, to share or print</AppText>
-        </View>
-      </RowCard>
-      <RowCard onPress={() => router.push("/journal/insights")}>
-        <Disc icon="today" tone="sky" />
-        <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="label" color="inkMuted">YOUR DAY</AppText>
-          <AppText weight="800" style={{ fontSize: 16 }}>What shapes your days</AppText>
-          <AppText variant="caption" color="inkMuted">{loggedOf(s, 30) ? `${insights(s).ready.filter((i) => i.lead).length} patterns from ${loggedOf(s, 30)} days of check-ins` : "Patterns appear after a few morning check-ins"}</AppText>
-        </View>
-      </RowCard>
       {safe ? (
         <Card tone="sunk" style={{ gap: 6 }}>
           <AppText weight="800">Weight is hidden in Habit Only mode</AppText>
@@ -296,9 +279,9 @@ export default function Progress() {
         </Card>
       ) : (
         <>
-          <Card style={{ gap: space[3] }}>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" }}>
-              <AppText variant="heading">Your trend</AppText>
+          <Card style={{ borderRadius: 24, padding: 18, gap: space[3] }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", gap: space[2], flexWrap: "wrap" }}>
+              <AppText variant="heading" accessibilityRole="header" style={{ fontSize: 20 }}>Your trend</AppText>
               <AppText variant="caption" color="inkMuted">7-day average</AppText>
             </View>
             {now != null && !bare ? <View style={{ flexDirection: "row", alignItems: "baseline", gap: 8 }}>
@@ -319,6 +302,12 @@ export default function Progress() {
           </View> : null}
         </>
       )}
+      <List>
+        <LinkRow first icon="today" tone="sky" title="What shapes your days" onPress={() => router.push("/journal/insights")}
+          sub={pattern?.lead ? `Days with ${pattern.q.short}: ${describe(pattern.lead).toLowerCase()}` : loggedOf(s, 30) ? "Patterns from your morning check-ins" : "Patterns appear after a few morning check-ins"} />
+        <LinkRow icon="doc" tone="butter" title="Summary for your prescriber" sub="Your last four weeks, to share or print"
+          onPress={() => sharePrescriberPack(s).catch(() => toast("Couldn't make the summary. Try again."))} />
+      </List>
     </Screen>
   );
 }

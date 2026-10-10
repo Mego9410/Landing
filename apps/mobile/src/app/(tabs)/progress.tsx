@@ -3,16 +3,16 @@ import { useColorScheme, View } from "react-native";
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
-import { PhaseStrip } from "@/components/PhaseStrip";
+import { YearCard } from "@/components/YearCard";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc, List, Row, RowCard } from "@/components/ui";
 import { HABITS } from "@/data/content";
 import { addDays, daysBetween, fmt, today, weekDates, weekStart } from "@/data/dates";
 import { sessionsByMonth, strengthYear } from "@/data/sessions";
 import { change, weight } from "@/data/units";
-import { sessionTarget } from "@/state/habits";
+import { habitWeekGrid, sessionTarget } from "@/state/habits";
 import { sharePrescriberPack } from "@/state/prescriber";
-import { habitSlots, recentScores, scoreHistory, steadiestStretch } from "@/state/score";
+import { habitSlots, recentScores, scoreHistory, steadiestStretch, weekHabits } from "@/state/score";
 import { toast } from "@/state/toast";
 import { insights, loggedOf } from "@/state/journal";
 import { avg7, sessionsInWeek, stageCaption, steadyZone, useApp, type AppState, type Units } from "@/state/store";
@@ -184,6 +184,75 @@ function ScoreCard({ s }: { s: AppState }) {
   );
 }
 
+const DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+/** Seven circles for a habit's week: filled when done, a ring for a past day, a dashed ring for days to come. */
+function DayDots({ grid }: { grid: ("done" | "missed" | "future")[] }) {
+  const c = useColors();
+  return (
+    <View style={{ flexDirection: "row", gap: 6 }}>
+      {grid.map((g, i) => (
+        <View key={i} style={{ flex: 1, alignItems: "center" }}>
+          <View style={{ width: "100%", maxWidth: 40, aspectRatio: 1, borderRadius: radius.full, backgroundColor: g === "done" ? c.sageInk : "transparent", borderWidth: g === "done" ? 0 : 2, borderColor: c.line, borderStyle: g === "future" ? "dashed" : "solid" }} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/** "Monday to Saturday", "Monday, Wednesday and Friday", or "no days yet". */
+function daysSaid(grid: ("done" | "missed" | "future")[]) {
+  const on = grid.map((g, i) => (g === "done" ? i : -1)).filter((i) => i >= 0);
+  if (!on.length) return "no days yet";
+  if (on.length > 2 && on[on.length - 1] - on[0] === on.length - 1) return `${DAY_NAMES[on[0]]} to ${DAY_NAMES[on[on.length - 1]]}`;
+  const names = on.map((i) => DAY_NAMES[i]);
+  return names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
+}
+
+/** This week's habits and strength, day by day. A missed day is just an empty ring: never a cross or a warning. */
+function HabitsWeek({ s }: { s: AppState }) {
+  const c = useColors(), monday = weekStart(today());
+  const rows = [
+    ...weekHabits(s, monday).map((id) => {
+      const grid = habitWeekGrid(s, id), n = grid.filter((g) => g === "done").length, target = HABITS[id].target, kept = n >= target;
+      return { key: id, name: HABITS[id].label, grid, status: kept ? `${n} ${n === 1 ? "day" : "days"} · kept` : `${n} of ${target}`, n, kept, unit: "days" };
+    }),
+    (() => {
+      const grid = habitWeekGrid(s, "sessions"), n = sessionsInWeek(s).length, target = sessionTarget(s), kept = n >= target;
+      return { key: "sessions", name: "Strength sessions", grid, status: `${n} of ${target}${kept ? " · kept" : ""}`, n, kept, unit: "sessions" };
+    })(),
+  ];
+  return (
+    <Card style={{ borderRadius: 24, padding: 18, gap: space[3] }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", gap: space[2], flexWrap: "wrap" }}>
+        <AppText variant="heading" accessibilityRole="header" style={{ fontSize: 20 }}>Your habits</AppText>
+        <AppText variant="caption" color="inkMuted">This week so far</AppText>
+      </View>
+      <View style={{ flexDirection: "row", gap: 6 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {DAY_NAMES.map((d, i) => <AppText key={i} weight="800" color="inkMuted" style={{ flex: 1, textAlign: "center", fontSize: 11 }}>{d[0]}</AppText>)}
+      </View>
+      {rows.map((r) => (
+        <View key={r.key} style={{ gap: space[2] }} accessible
+          accessibilityLabel={`${r.name}: done ${daysSaid(r.grid)}, ${r.n} ${r.n === 1 ? r.unit.slice(0, -1) : r.unit}${r.kept ? ", kept" : ""}.`}>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", gap: space[2], flexWrap: "wrap" }}>
+            <AppText weight="800" style={{ fontSize: 15, flexShrink: 1 }}>{r.name}</AppText>
+            <AppText variant="caption" color="inkMuted">{r.status}</AppText>
+          </View>
+          <DayDots grid={r.grid} />
+        </View>
+      ))}
+      <View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: space[3], rowGap: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {[{ label: "Done", style: { backgroundColor: c.sageInk } }, { label: "Not this day", style: { borderWidth: 1.5, borderColor: c.line } }, { label: "Still to come", style: { borderWidth: 1.5, borderColor: c.line, borderStyle: "dashed" as const } }].map((k) => (
+          <View key={k.label} style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <View style={[{ width: 10, height: 10, borderRadius: 5 }, k.style]} />
+            <AppText variant="caption" color="inkMuted">{k.label}</AppText>
+          </View>
+        ))}
+      </View>
+    </Card>
+  );
+}
+
 export default function Progress() {
   const s = useApp(), c = useColors();
   const safe = s.settings.safeMode, bare = s.story.weightView === "trend";
@@ -199,8 +268,9 @@ export default function Progress() {
         </View>
         <Avatar name={s.name} />
       </View>
-      <PhaseStrip s={s} />
       <ScoreCard s={s} />
+      <HabitsWeek s={s} />
+      <YearCard s={s} />
       <ScoreStrip s={s} />
       <StrengthYear s={s} />
       <RowCard onPress={() => sharePrescriberPack(s).catch(() => toast("Couldn't make the summary. Try again."))}>

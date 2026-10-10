@@ -45,6 +45,15 @@ export function nextSession(s: AppState): "A" | "B" | null {
   return a <= b ? "A" : "B";
 }
 
+/** This week, day by day, for a habit (or "sessions" for strength): done, a past day not done, or still to come. */
+export function habitWeekGrid(s: AppState, id: string): ("done" | "missed" | "future")[] {
+  const t = today();
+  return weekDates(t).map((d) => {
+    const log = dayLog(s, d), done = id === "sessions" ? !!log.sessions?.length : !!log.habits?.[id];
+    return done ? "done" : d > t ? "future" : "missed";
+  });
+}
+
 /** This week's sessions in order (A, B, then A again when the target is three), each with the day it was done. */
 export function weekSessions(s: AppState): { id: "A" | "B"; doneOn: string | null }[] {
   const t = today(), done = weekDates(t).filter((d) => d <= t).flatMap((d) => (dayLog(s, d).sessions ?? []).map((id) => ({ id, d })));

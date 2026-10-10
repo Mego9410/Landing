@@ -33,6 +33,17 @@ export function TakeawayCard() {
   );
 }
 
+/** A free night: no dinner planned, with the choice to pick one. */
+export function FreeNightCard({ day, which = "this" }: { day: number; which?: "this" | "next" }) {
+  return (
+    <Card tone="sunk" style={{ gap: 8 }}>
+      <AppText variant="label" color="inkMuted">DINNER · FREE NIGHT</AppText>
+      <AppText>Eat out, have something from the freezer, or pick a recipe.</AppText>
+      <Button label="Pick a recipe" variant="secondary" onPress={() => router.push({ pathname: "/meals/pick", params: { which, day: String(day), slot: "dinner", index: "0" } })} />
+    </Card>
+  );
+}
+
 /** One meal in a day list: tap to open the recipe, or to choose one when it's empty. A meal that no longer suits their
  *  preferences says so; one they've never had gets a small "New to you". */
 export function MealRow({ meal, slot, day, which, first, index = 0 }: { meal: Meal | undefined; slot: Slot; day: number; which: "this" | "next"; first?: boolean; index?: number }) {

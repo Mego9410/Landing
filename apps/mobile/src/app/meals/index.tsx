@@ -13,7 +13,7 @@ import { profileOf, thisWeek } from "@/state/food";
 import { set, stageLabel, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
-import { MealRow, TakeawayCard } from "@/components/meals";
+import { FreeNightCard, MealRow, TakeawayCard } from "@/components/meals";
 
 const GOAL_LINE = { steady: "to help you hold steady", strength: "to help you build strength", fuller: "to help you feel fuller for longer" };
 const PHASE_NAME = { land: "Land", settle: "Settle", steady: "Steady" };
@@ -61,13 +61,7 @@ export default function Meals() {
         {today.snacks.map((m, i) => <MealRow key={i} index={i} meal={m} slot="snack" day={day} which="this" />)}
       </List>
       {today.dinner.kind === "takeaway" ? <TakeawayCard /> : null}
-      {today.dinner.kind === "free" ? (
-        <Card tone="sunk" style={{ gap: 8 }}>
-          <AppText variant="label" color="inkMuted">DINNER · FREE NIGHT</AppText>
-          <AppText>Eat out, have something from the freezer, or pick a recipe.</AppText>
-          <Button label="Pick a recipe" variant="secondary" onPress={() => router.push({ pathname: "/meals/pick", params: { which: "this", day: String(day), slot: "dinner", index: "0" } })} />
-        </Card>
-      ) : null}
+      {today.dinner.kind === "free" ? <FreeNightCard day={day} /> : null}
       {sum.notes.map((n) => <Banner key={n}>{n}</Banner>)}
 
       <View style={{ gap: space[2] }}>

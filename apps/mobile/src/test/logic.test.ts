@@ -9,7 +9,7 @@ import { applyHealth, needsHealthCheck, proteinTargetsOff, referrals, sessionsPa
 import { insights } from "@/state/journal";
 import { weekScore } from "@/state/score";
 import { demoState, freshState, migrate, sessionsInWeek, steadyZone, weekOf, type AppState } from "@/state/store";
-import { headline, todayPlan } from "@/state/today";
+import { todayPlan } from "@/state/today";
 
 const clone = (s: AppState): AppState => JSON.parse(JSON.stringify(s));
 
@@ -73,8 +73,6 @@ test("today's plan: next step, and safe wording for protein", () => {
   const s = demoState();
   const plan = todayPlan(s);
   assert.equal(plan[0].id, "journal");
-  assert.match(headline(0, 5), /^Five small things/);
-  assert.equal(headline(5, 5), "That's today done");
   s.settings.safeMode = true;
   const protein = todayPlan(s).find((i) => i.id === "protein");
   assert.ok(protein && protein.kind === "task" && !/ g /.test(protein.label));

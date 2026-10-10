@@ -3,7 +3,7 @@
 // asks for drafts and labels them.
 import { useMemo } from "react";
 import type { Slot } from "@landing/content";
-import { DAYS, emptyWeek, personaliseById, planWeek, profile, setMeal, swapOptions, type Personalised, type PlanOptions, type Profile, type Week } from "@landing/engine";
+import { DAYS, emptyWeek, personaliseById, planWeek, profile, setMeal, shoppingList, swapOptions, type Personalised, type PlanOptions, type Profile, type Week } from "@landing/engine";
 import { addDays, daysBetween, fmt, today, weekStart } from "@/data/dates";
 import { jabStopped, useApp, weekOf, weeksOnPlan, type AppState } from "./store";
 
@@ -150,6 +150,9 @@ export function startNextWeek(s: AppState, from: "blank" | "suggested") {
 
 export const mealAt = (week: Week, day: number, slot: Slot, index = 0) => (slot === "snack" ? week.days[day].snacks[index] : week.days[day][slot]);
 export const px = (s: AppState, id: string, which: Which = "this"): Personalised => personaliseById(id, profileFor(s, which));
+
+/** How many things are on this week's shopping list (not counting the cupboard basics). */
+export const shoppingCount = (s: AppState) => shoppingList(thisWeek(s), profileFor(s, "this")).aisles.reduce((n, a) => n + a.items.length, 0);
 
 /** Next Monday. */
 export const nextStart = () => addDays(weekStart(today()), 7);

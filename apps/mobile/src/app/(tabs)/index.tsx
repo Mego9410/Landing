@@ -1,152 +1,73 @@
 import { Redirect, router, type Href } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
-import Svg, { Circle, Path } from "react-native-svg";
+import Animated, { LinearTransition, useReducedMotion } from "react-native-reanimated";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { HabitCheck } from "@/components/HabitCheck";
+import { HabitCheck, Tick } from "@/components/HabitCheck";
+import { QuoteCard } from "@/components/QuoteCard";
 import { Icon, type IconName } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
-import { Avatar, Choices, Disc, Field } from "@/components/ui";
-import { HABITS, PHASES, READY, tipFor, YEAR_TWO, type Phase } from "@/data/content";
-import { sessionFor } from "@/data/sessions";
-import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
-import { minutes, px, thisWeek } from "@/state/food";
-import { habitDetail, isWeekly, nextSession, sessionTarget, toggleHabit } from "@/state/habits";
+import { Avatar, Choices, Field } from "@/components/ui";
+import { HABITS, PHASES, READY, type Phase } from "@/data/content";
+import { fmt, partOfDay, today } from "@/data/dates";
+import { habitDetail, isWeekly, toggleHabit } from "@/state/habits";
 import { lessonNow, lessonRead, lookBackDue, markLessonRead } from "@/state/plans";
-import { gettingReady, jabWeek, monthOnPlan, needsDisclaimer, sessionsInWeek, set, stageOf, useApp, weeksToLastJab, yearTwoWeek, type AppState } from "@/state/store";
-import { sessionsPaused } from "@/state/health";
+import { gettingReady, jabWeek, monthOnPlan, needsDisclaimer, set, stageOf, useApp, yearTwoWeek } from "@/state/store";
 import { notificationsAllowed, trialMessage } from "@/state/reminders";
 import { askForReview } from "@/state/review";
 import { sendLapseFeedback, type LapseReason } from "@/state/events";
 import { install, updateInstall } from "@/state/install";
 import { billingEnabled } from "@/state/subscription";
-import { headline, todayPlan, type Task } from "@/state/today";
-import { radius, space, useColors, useLargeText } from "@/theme";
+import { todayPlan, type Task, type TodayItem } from "@/state/today";
+import { radius, space, useColors } from "@/theme";
 
-/** The day as a ring of segments, one per thing in today's plan, filled as they're done. Echoes the brand's sun. */
-function DayRing({ done, total }: { done: number; total: number }) {
-  const c = useColors();
-  const size = 96, r = 40, cx = size / 2, gap = total > 1 ? 0.22 : 0;
-  const arc = (i: number) => {
-    const a0 = (i / total) * 2 * Math.PI + gap / 2 - Math.PI / 2, a1 = ((i + 1) / total) * 2 * Math.PI - gap / 2 - Math.PI / 2;
-    const p = (a: number) => `${(cx + r * Math.cos(a)).toFixed(2)},${(cx + r * Math.sin(a)).toFixed(2)}`;
-    return `M${p(a0)} A${r},${r} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${p(a1)}`;
-  };
-  return (
-    <View accessible accessibilityLabel={`${done} of ${total} done today`} style={{ width: size, height: size }}>
-      <Svg width={size} height={size}>
-        {total === 1 ? <Circle cx={cx} cy={cx} r={r} stroke={c.onPastel} strokeOpacity={done ? 1 : 0.18} strokeWidth={9} fill="none" />
-          : Array.from({ length: total }, (_, i) => (
-            <Path key={i} d={arc(i)} stroke={c.onPastel} strokeOpacity={i < done ? 1 : 0.18} strokeWidth={9} strokeLinecap="round" fill="none" />
-          ))}
-      </Svg>
-      <View style={{ position: "absolute", inset: 0, alignItems: "center", justifyContent: "center" }}>
-        <AppText variant="numeral" color="onPastel" maxFontSizeMultiplier={1.2} style={{ fontSize: 28, lineHeight: 32 }}>{done}<AppText color="onPastel" style={{ fontSize: 16 }}>/{total}</AppText></AppText>
-      </View>
-    </View>
-  );
-}
-
-/** A thing to go and do, laid out like a habit so the day reads as one list. Tapping opens where it's done. */
+/** A thing to go and do, as a compact row in the day's list. Tapping opens where it's done. */
 function TaskRow({ t }: { t: Task }) {
-  const c = useColors();
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={`${t.label}${t.done ? ", done" : ""}. ${t.detail}`} onPress={() => router.push(t.href as Href)}
-      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], paddingVertical: space[3], paddingHorizontal: space[4], borderRadius: radius.md,
-        backgroundColor: t.done ? c.sage : c.surfaceRaised, opacity: pressed ? 0.85 : 1 })}>
-      <View style={{ width: 32, height: 32, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: t.done ? c.onPastel : c.surfaceSunk }}>
-        <Icon name={t.done ? "check" : t.icon} size={18} color={t.done ? c.sage : c.ink} />
-      </View>
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], minHeight: 56, paddingVertical: space[2], paddingHorizontal: space[4], opacity: pressed ? 0.7 : 1 })}>
+      <Tick done={t.done} />
       <View style={{ flex: 1 }}>
-        <AppText weight="700" color={t.done ? "onPastel" : "ink"}>{t.label}</AppText>
-        <AppText variant="caption" color={t.done ? "onPastel" : "inkMuted"}>{t.detail}</AppText>
+        <AppText weight="700" color={t.done ? "inkMuted" : "ink"} style={t.done ? { textDecorationLine: "line-through" } : undefined}>{t.label}</AppText>
+        {t.done ? null : <AppText variant="caption" color="inkMuted" numberOfLines={1}>{t.detail}</AppText>}
       </View>
-      <Icon name="chevron" size={18} color={t.done ? c.onPastel : c.inkMuted} />
     </Pressable>
   );
 }
 
-/** A big way into one of the two plans, with what it holds for today. */
-function PlanTile({ icon, tone, title, line, detail, onPress }: { icon: IconName; tone: "apricot" | "sage"; title: string; line: string; detail: string; onPress: () => void }) {
+// The icon tile's tone for each kind of thing: strength sage, food butter, the check-in sky.
+const TONE: Record<string, { icon: IconName; tone: "sage" | "butter" | "sky" | "lilac" | "apricot" }> = {
+  session: { icon: "workout", tone: "sage" }, protein: { icon: "meal", tone: "butter" }, journal: { icon: "today", tone: "sky" }, health: { icon: "check", tone: "apricot" },
+};
+
+/** The one next thing: a task still to do (with its button), else the first habit left, else the day's done. */
+function UpNext({ up, habit, done, total }: { up: Task | null; habit: string | null; done: number; total: number }) {
   const c = useColors();
+  const t = up ? { title: up.label, detail: up.detail, ...(TONE[up.id] ?? { icon: up.icon, tone: "lilac" as const }) }
+    : habit ? { title: HABITS[habit].label, detail: "Tick it off below when it's done", icon: "check" as IconName, tone: "lilac" as const }
+    : { title: "All done for today", detail: "Rest up. Tomorrow's check-in will be here in the morning.", icon: "smile" as IconName, tone: "sage" as const };
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${title}. ${line}. ${detail}`} onPress={onPress}
-      style={({ pressed }) => ({ flex: 1, gap: space[3], padding: space[4], borderRadius: radius.lg, backgroundColor: c.surfaceRaised, opacity: pressed ? 0.85 : 1,
-        shadowColor: "#6b4a30", shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 2 })}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <Disc icon={icon} tone={tone} size={44} />
-        <Icon name="chevron" size={18} color={c.inkMuted} />
+    <Card style={{ gap: space[4], padding: space[5], borderRadius: radius.xl }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[2] }}>
+        <AppText variant="label" color="inkMuted" accessibilityRole="header">UP NEXT</AppText>
+        <View style={{ paddingVertical: 4, paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceSunk }}>
+          <AppText variant="caption" weight="700">{done} of {total} done today</AppText>
+        </View>
       </View>
-      <View style={{ gap: 2 }}>
-        <AppText variant="heading" style={{ fontSize: 18, lineHeight: 22 }}>{title}</AppText>
-        <AppText weight="700">{line}</AppText>
-        <AppText variant="caption" color="inkMuted">{detail}</AppText>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: space[4] }} accessible accessibilityLabel={`${t.title}. ${t.detail}`}>
+        <View style={{ width: 54, height: 54, borderRadius: radius.md, alignItems: "center", justifyContent: "center", backgroundColor: c[t.tone] }}>
+          <Icon name={t.icon} size={26} color={c.onPastel} />
+        </View>
+        <View style={{ flex: 1, gap: 2 }}>
+          <AppText weight="800" style={{ fontSize: 19, lineHeight: 24 }}>{t.title}</AppText>
+          <AppText variant="caption" color="inkMuted">{t.detail}</AppText>
+        </View>
       </View>
-    </Pressable>
-  );
-}
-
-/** Small pill links for the jobs people come back for. */
-function Shortcut({ icon, label, onPress }: { icon: IconName; label: string; onPress: () => void }) {
-  const c = useColors();
-  return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress}
-      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, paddingVertical: space[2], paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line, opacity: pressed ? 0.7 : 1 })}>
-      <Icon name={icon} size={16} color={c.ink} />
-      <AppText weight="700" style={{ fontSize: 14 }}>{label}</AppText>
-    </Pressable>
-  );
-}
-
-function Plans() {
-  const s = useApp(), large = useLargeText();
-  const day = weekdayIndex(today()), m = thisWeek(s).days[day].dinner;
-  const dinner = m.kind === "takeaway" ? { line: "Takeaway night", detail: "A night off cooking, planned in" }
-    : m.kind === "free" || !m.recipe ? { line: "A free night", detail: "Eat out, use the freezer or pick a recipe" }
-    : { line: px(s, m.recipe).name, detail: m.kind === "leftover" ? "Tonight's leftovers" : `Tonight · ${minutes(px(s, m.recipe).recipe)}` };
-  const next = nextSession(s), done = sessionsInWeek(s).length, paused = sessionsPaused(s), target = sessionTarget(s);
-  const strength = paused ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" } : next ? { line: `${sessionFor(s, next).name} next`, detail: `${done} of ${target} done this week · ${sessionFor(s, next).minutes} min` } : { line: target === 2 ? "Both sessions done" : `All ${target} sessions done`, detail: "Next ones arrive on Monday" };
-  return (
-    <View style={{ gap: space[3] }}>
-      <AppText variant="heading" accessibilityRole="header">Your plans</AppText>
-      <View style={{ flexDirection: large ? "column" : "row", gap: space[3] }}>
-        <PlanTile icon="meal" tone="apricot" title="Meal plan" line={dinner.line} detail={dinner.detail} onPress={() => router.push("/meals")} />
-        <PlanTile icon="workout" tone="sage" title="Strength plan" line={strength.line} detail={strength.detail} onPress={() => router.push("/workouts")} />
-      </View>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
-        <Shortcut icon="basket" label="Shopping list" onPress={() => router.push({ pathname: "/meals/shopping", params: { which: "this" } })} />
-        <Shortcut icon="doc" label="Recipes" onPress={() => router.push("/meals/recipes")} />
-        <Shortcut icon="plan" label={s.food.next ? "Next week's meals" : "Plan next week"} onPress={() => router.push("/meals/next")} />
-      </View>
-    </View>
-  );
-}
-
-/** The year at a glance: Land, Settle and Steady as one strip, sized by their weeks, filled up to this week. Empty while
- *  getting ready, and full in year two. */
-function PhaseStrip({ s }: { s: AppState }) {
-  const c = useColors(), phase = stageOf(s), ready = gettingReady(s), two = yearTwoWeek(s), week = ready ? 0 : jabWeek(s);
-  const toGo = weeksToLastJab(s);
-  const label = ready ? `${READY.name} · last jab in about ${toGo} ${toGo === 1 ? "week" : "weeks"}` : two ? `${YEAR_TWO.name} · week ${two}` : `Week ${week} of 52 · ${phase.name}`;
-  return (
-    <View accessible accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 52, now: Math.min(52, week) }} style={{ gap: 6 }}>
-      <View style={{ flexDirection: "row", gap: 4 }}>
-        {PHASES.map((p) => {
-          const len = p.to - p.from + 1, filled = Math.max(0, Math.min(len, week - p.from + 1));
-          return (
-            <View key={p.key} style={{ flex: len, height: 8, borderRadius: radius.full, backgroundColor: c.surfaceSunk, overflow: "hidden" }}>
-              <View style={{ width: `${(filled / len) * 100}%`, height: "100%", backgroundColor: c[p.tone] }} />
-            </View>
-          );
-        })}
-      </View>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space[2] }}>
-        <AppText variant="caption" weight="700" style={{ flexShrink: 1 }}>{label}</AppText>
-        <AppText variant="caption" color="inkMuted">{two ? "A year done" : PHASES.map((p) => p.name).join(" › ")}</AppText>
-      </View>
-    </View>
+      {up ? <Button variant="brand" block label={up.cta} onPress={() => router.push(up.href as Href)} />
+        : habit ? null : <Button variant="brand" block label="See what shapes your days" onPress={() => router.push("/journal/insights")} />}
+    </Card>
   );
 }
 
@@ -181,19 +102,23 @@ function PhaseCelebration({ phase, week }: { phase: Phase; week: number }) {
   );
 }
 
-/** This week's lesson, small: its title and one thing to try. Opening it marks it read. */
-function LessonCard() {
-  const s = useApp(), pick = lessonNow(s), read = lessonRead(s, pick.key);
+/** This week's lesson, as a row in the day's list until it's been opened that week. */
+function LessonRow() {
+  const s = useApp(), c = useColors(), pick = lessonNow(s);
+  if (lessonRead(s, pick.key)) return null;
+  const title = pick.refresher ? "A refresher" : "This week's lesson";
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${pick.refresher ? "A refresher" : "This week's lesson"}: ${pick.lesson.title}. One thing to try: ${pick.lesson.tries[0]}${read ? ". Read" : ""}`}
-      onPress={() => { if (!read) set((st) => markLessonRead(st, pick.key)); router.push({ pathname: "/lesson", params: { key: pick.key } }); }}>
-      {({ pressed }) => (
-        <Card tone="sky" style={{ gap: 4, opacity: pressed ? 0.85 : 1 }}>
-          <AppText variant="label" color="onPastel">{pick.refresher ? "A REFRESHER" : "THIS WEEK'S LESSON"}{read ? " · READ" : ""}</AppText>
-          <AppText weight="800" color="onPastel" style={{ fontSize: 17 }}>{pick.lesson.title}</AppText>
-          <AppText variant="caption" color="onPastel">Try this: {pick.lesson.tries[0]}</AppText>
-        </Card>
-      )}
+    <Pressable accessibilityRole="button" accessibilityLabel={`${title}: ${pick.lesson.title}`}
+      onPress={() => { set((st) => markLessonRead(st, pick.key)); router.push({ pathname: "/lesson", params: { key: pick.key } }); }}
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], minHeight: 56, paddingVertical: space[2], paddingHorizontal: space[4], opacity: pressed ? 0.7 : 1 })}>
+      <View style={{ width: 30, height: 30, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: c.sky }}>
+        <Icon name="book" size={16} color={c.onPastel} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <AppText weight="700">{title}</AppText>
+        <AppText variant="caption" color="inkMuted" numberOfLines={1}>{pick.lesson.title}</AppText>
+      </View>
+      <Icon name="chevron" size={18} color={c.inkMuted} />
     </Pressable>
   );
 }
@@ -293,77 +218,54 @@ function TrialEnding() {
 }
 
 export default function Today() {
-  const s = useApp(), largeText = useLargeText();
+  const s = useApp(), reduce = useReducedMotion();
   // New people start at the welcome screen; the health information comes during onboarding. Someone already set up
   // sees it again here only if its wording has changed.
   if (!s.onboarded) return <Redirect href="/onboarding" />;
   if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
   if (!s.consent) return <Redirect href="/consent" />;
   const phase = stageOf(s), ready = gettingReady(s), week = jabWeek(s), two = yearTwoWeek(s);
-  const nextPhase = ready ? null : phase.key === "steady" ? YEAR_TWO : PHASES[PHASES.indexOf(phase) + 1];
-  // Weekly habits (done once in the week) sit below the day's list, outside the ring.
+  // Weekly habits (done once in the week) sit at the end of the list, outside the day's count.
   const all = todayPlan(s), weekly = all.filter((i) => i.kind === "habit" && isWeekly(i.id)), items = all.filter((i) => !weekly.includes(i));
   const done = items.filter((i) => i.done).length;
-  const up = items.find((i): i is Task => i.kind === "task" && !i.done), habitsLeft = items.some((i) => i.kind === "habit" && !i.done);
-  const part = partOfDay(), large = largeText;
-  const tip = { label: part === "evening" ? "TIP FOR TONIGHT" : "TIP FOR TODAY", text: tipFor(phase.key, today(), part === "evening") };
-  const where = ready ? READY.name.toUpperCase() : two ? `YEAR TWO · WEEK ${two}` : `WEEK ${week} · ${phase.name.toUpperCase()}`;
-  const ahead = ready ? " Week 1 begins after your last jab." : nextPhase ? ` ${nextPhase.from - week} ${nextPhase.from - week === 1 ? "week" : "weeks"} until ${nextPhase.key === "yearTwo" ? "year two" : nextPhase.name}.` : "";
+  const up = items.find((i): i is Task => i.kind === "task" && !i.done) ?? null;
+  const habit = up ? null : items.find((i) => i.kind === "habit" && !i.done) ?? null;
+  const next = up ?? habit;
+  // The rest: still to do first, in their order, then what's done.
+  const rest = [...items.filter((i) => i !== next && !i.done), ...items.filter((i) => i !== next && i.done)];
+  const layout = reduce ? undefined : LinearTransition.duration(260);
+  const row = (i: TodayItem, weeklyRow = false) => (
+    <Animated.View key={i.id} layout={layout}>
+      {i.kind === "task" ? <TaskRow t={i} />
+        : <HabitCheck compact label={HABITS[i.id].label} detail={weeklyRow ? "Once this week" : habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />}
+    </Animated.View>
+  );
   return (
-    <Screen>
+    <Screen contentContainerStyle={{ gap: space[4] }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[3] }}>
         <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="caption" color="inkMuted">{fmt.long(today())}</AppText>
-          <AppText variant="title" accessibilityRole="header">Good {part}{s.name ? `, ${s.name}` : ""}</AppText>
+          <AppText variant="caption" color="inkMuted">{fmt.long(today())} · {ready ? "Getting ready" : two ? `Year two, week ${two}` : `Week ${week}`}</AppText>
+          <AppText variant="title" accessibilityRole="header">Good {partOfDay()}{s.name ? `, ${s.name}` : ""}</AppText>
         </View>
         <Avatar name={s.name} />
       </View>
 
-      <PhaseStrip s={s} />
       <PhaseCelebration phase={phase} week={week} />
       <MonthCard />
       <TrialEnding />
       <LapseCard />
+      <QuoteCard />
 
-      <Card tone="apricot" hero style={{ gap: space[4] }}>
-        <View style={{ flexDirection: large ? "column" : "row", alignItems: large ? "flex-start" : "center", gap: space[4] }}>
-          <DayRing done={done} total={items.length} />
-          <View style={{ flex: 1, gap: 4 }}>
-            <AppText variant="label" color="onPastel">{where}</AppText>
-            <AppText variant="heading" color="onPastel" style={{ fontSize: 22, lineHeight: 26 }}>{headline(done, items.length)}</AppText>
-            <AppText variant="caption" color="onPastel">
-              {up ? "Small steps that add up to a steady week." : habitsLeft ? "Just your habits left. Tick them off below as you do them." : "Rest up. Tomorrow's check-in will be here in the morning."}
-              {ahead}
-            </AppText>
-          </View>
-        </View>
-        {up ? <Button variant="secondary" block label={up.cta} onPress={() => router.push(up.href as Href)} />
-          : habitsLeft ? null : <Button variant="secondary" block label="See what shapes your days" onPress={() => router.push("/journal/insights")} />}
-      </Card>
+      <UpNext up={up} habit={habit?.id ?? null} done={done} total={items.length} />
 
-      <Plans />
-
-      <View style={{ gap: space[3] }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <AppText variant="heading" accessibilityRole="header">Today&apos;s plan</AppText>
-          <AppText variant="caption" color="inkMuted">{done} of {items.length} done</AppText>
-        </View>
-        {items.map((i) => i.kind === "task" ? <TaskRow key={i.id} t={i} />
-          : <HabitCheck key={i.id} label={HABITS[i.id].label} detail={habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />)}
-        {weekly.length ? <AppText variant="label" color="inkMuted" style={{ marginTop: space[2] }}>ONCE THIS WEEK</AppText> : null}
-        {weekly.map((i) => <HabitCheck key={i.id} label={HABITS[i.id].label} detail={habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />)}
+      <View style={{ gap: space[2] }}>
+        <Card style={{ padding: 0, paddingVertical: space[1], gap: 0, borderRadius: radius.lg }}>
+          {rest.map((i) => row(i))}
+          {weekly.map((i) => row(i, true))}
+          <LessonRow />
+        </Card>
         <Button label="Swap a habit" variant="quiet" onPress={() => router.push("/swap-habit")} style={{ alignSelf: "center" }} />
       </View>
-
-      <LessonCard />
-
-      <Card tone="lilac" style={{ gap: 6 }}>
-        <AppText variant="label" color="onPastel">{tip.label}</AppText>
-        <AppText variant="bodyLg" color="onPastel">{tip.text}</AppText>
-        <Pressable accessibilityRole="button" onPress={() => router.push("/coach")} style={{ alignSelf: "flex-start", paddingVertical: space[2] }}>
-          <AppText weight="800" color="onPastel" style={{ textDecorationLine: "underline" }}>Ask the coach for more ideas</AppText>
-        </Pressable>
-      </Card>
     </Screen>
   );
 }

@@ -1,13 +1,13 @@
 import { Redirect, router, type Href } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
-import Svg, { Circle, Path } from "react-native-svg";
+import Animated, { LinearTransition, useReducedMotion } from "react-native-reanimated";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { HabitCheck } from "@/components/HabitCheck";
+import { HabitCheck, Tick } from "@/components/HabitCheck";
 import { QuoteCard } from "@/components/QuoteCard";
-import { Icon } from "@/components/Icon";
+import { Icon, type IconName } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
 import { Avatar, Choices, Field } from "@/components/ui";
 import { HABITS, PHASES, READY, type Phase } from "@/data/content";
@@ -20,49 +20,54 @@ import { askForReview } from "@/state/review";
 import { sendLapseFeedback, type LapseReason } from "@/state/events";
 import { install, updateInstall } from "@/state/install";
 import { billingEnabled } from "@/state/subscription";
-import { headline, todayPlan, type Task } from "@/state/today";
-import { radius, space, useColors, useLargeText } from "@/theme";
+import { todayPlan, type Task, type TodayItem } from "@/state/today";
+import { radius, space, useColors } from "@/theme";
 
-/** The day as a ring of segments, one per thing in today's plan, filled as they're done. Echoes the brand's sun. */
-function DayRing({ done, total }: { done: number; total: number }) {
-  const c = useColors();
-  const size = 96, r = 40, cx = size / 2, gap = total > 1 ? 0.22 : 0;
-  const arc = (i: number) => {
-    const a0 = (i / total) * 2 * Math.PI + gap / 2 - Math.PI / 2, a1 = ((i + 1) / total) * 2 * Math.PI - gap / 2 - Math.PI / 2;
-    const p = (a: number) => `${(cx + r * Math.cos(a)).toFixed(2)},${(cx + r * Math.sin(a)).toFixed(2)}`;
-    return `M${p(a0)} A${r},${r} 0 ${a1 - a0 > Math.PI ? 1 : 0} 1 ${p(a1)}`;
-  };
+/** A thing to go and do, as a compact row in the day's list. Tapping opens where it's done. */
+function TaskRow({ t }: { t: Task }) {
   return (
-    <View accessible accessibilityLabel={`${done} of ${total} done today`} style={{ width: size, height: size }}>
-      <Svg width={size} height={size}>
-        {total === 1 ? <Circle cx={cx} cy={cx} r={r} stroke={c.onPastel} strokeOpacity={done ? 1 : 0.18} strokeWidth={9} fill="none" />
-          : Array.from({ length: total }, (_, i) => (
-            <Path key={i} d={arc(i)} stroke={c.onPastel} strokeOpacity={i < done ? 1 : 0.18} strokeWidth={9} strokeLinecap="round" fill="none" />
-          ))}
-      </Svg>
-      <View style={{ position: "absolute", inset: 0, alignItems: "center", justifyContent: "center" }}>
-        <AppText variant="numeral" color="onPastel" maxFontSizeMultiplier={1.2} style={{ fontSize: 28, lineHeight: 32 }}>{done}<AppText color="onPastel" style={{ fontSize: 16 }}>/{total}</AppText></AppText>
+    <Pressable accessibilityRole="button" accessibilityLabel={`${t.label}${t.done ? ", done" : ""}. ${t.detail}`} onPress={() => router.push(t.href as Href)}
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], minHeight: 56, paddingVertical: space[2], paddingHorizontal: space[4], opacity: pressed ? 0.7 : 1 })}>
+      <Tick done={t.done} />
+      <View style={{ flex: 1 }}>
+        <AppText weight="700" color={t.done ? "inkMuted" : "ink"} style={t.done ? { textDecorationLine: "line-through" } : undefined}>{t.label}</AppText>
+        {t.done ? null : <AppText variant="caption" color="inkMuted" numberOfLines={1}>{t.detail}</AppText>}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
-/** A thing to go and do, laid out like a habit so the day reads as one list. Tapping opens where it's done. */
-function TaskRow({ t }: { t: Task }) {
+// The icon tile's tone for each kind of thing: strength sage, food butter, the check-in sky.
+const TONE: Record<string, { icon: IconName; tone: "sage" | "butter" | "sky" | "lilac" | "apricot" }> = {
+  session: { icon: "workout", tone: "sage" }, protein: { icon: "meal", tone: "butter" }, journal: { icon: "today", tone: "sky" }, health: { icon: "check", tone: "apricot" },
+};
+
+/** The one next thing: a task still to do (with its button), else the first habit left, else the day's done. */
+function UpNext({ up, habit, done, total }: { up: Task | null; habit: string | null; done: number; total: number }) {
   const c = useColors();
+  const t = up ? { title: up.label, detail: up.detail, ...(TONE[up.id] ?? { icon: up.icon, tone: "lilac" as const }) }
+    : habit ? { title: HABITS[habit].label, detail: "Tick it off below when it's done", icon: "check" as IconName, tone: "lilac" as const }
+    : { title: "All done for today", detail: "Rest up. Tomorrow's check-in will be here in the morning.", icon: "smile" as IconName, tone: "sage" as const };
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${t.label}${t.done ? ", done" : ""}. ${t.detail}`} onPress={() => router.push(t.href as Href)}
-      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], paddingVertical: space[3], paddingHorizontal: space[4], borderRadius: radius.md,
-        backgroundColor: t.done ? c.sage : c.surfaceRaised, opacity: pressed ? 0.85 : 1 })}>
-      <View style={{ width: 32, height: 32, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: t.done ? c.onPastel : c.surfaceSunk }}>
-        <Icon name={t.done ? "check" : t.icon} size={18} color={t.done ? c.sage : c.ink} />
+    <Card style={{ gap: space[4], padding: space[5], borderRadius: radius.xl }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[2] }}>
+        <AppText variant="label" color="inkMuted" accessibilityRole="header">UP NEXT</AppText>
+        <View style={{ paddingVertical: 4, paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceSunk }}>
+          <AppText variant="caption" weight="700">{done} of {total} done today</AppText>
+        </View>
       </View>
-      <View style={{ flex: 1 }}>
-        <AppText weight="700" color={t.done ? "onPastel" : "ink"}>{t.label}</AppText>
-        <AppText variant="caption" color={t.done ? "onPastel" : "inkMuted"}>{t.detail}</AppText>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: space[4] }} accessible accessibilityLabel={`${t.title}. ${t.detail}`}>
+        <View style={{ width: 54, height: 54, borderRadius: radius.md, alignItems: "center", justifyContent: "center", backgroundColor: c[t.tone] }}>
+          <Icon name={t.icon} size={26} color={c.onPastel} />
+        </View>
+        <View style={{ flex: 1, gap: 2 }}>
+          <AppText weight="800" style={{ fontSize: 19, lineHeight: 24 }}>{t.title}</AppText>
+          <AppText variant="caption" color="inkMuted">{t.detail}</AppText>
+        </View>
       </View>
-      <Icon name="chevron" size={18} color={t.done ? c.onPastel : c.inkMuted} />
-    </Pressable>
+      {up ? <Button variant="brand" block label={up.cta} onPress={() => router.push(up.href as Href)} />
+        : habit ? null : <Button variant="brand" block label="See what shapes your days" onPress={() => router.push("/journal/insights")} />}
+    </Card>
   );
 }
 
@@ -105,13 +110,13 @@ function LessonRow() {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={`${title}: ${pick.lesson.title}`}
       onPress={() => { set((st) => markLessonRead(st, pick.key)); router.push({ pathname: "/lesson", params: { key: pick.key } }); }}
-      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], paddingVertical: space[3], paddingHorizontal: space[4], borderRadius: radius.md, backgroundColor: c.surfaceRaised, opacity: pressed ? 0.85 : 1 })}>
-      <View style={{ width: 32, height: 32, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceSunk }}>
-        <Icon name="book" size={18} color={c.ink} />
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], minHeight: 56, paddingVertical: space[2], paddingHorizontal: space[4], opacity: pressed ? 0.7 : 1 })}>
+      <View style={{ width: 30, height: 30, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: c.sky }}>
+        <Icon name="book" size={16} color={c.onPastel} />
       </View>
       <View style={{ flex: 1 }}>
         <AppText weight="700">{title}</AppText>
-        <AppText variant="caption" color="inkMuted">{pick.lesson.title}</AppText>
+        <AppText variant="caption" color="inkMuted" numberOfLines={1}>{pick.lesson.title}</AppText>
       </View>
       <Icon name="chevron" size={18} color={c.inkMuted} />
     </Pressable>
@@ -213,25 +218,34 @@ function TrialEnding() {
 }
 
 export default function Today() {
-  const s = useApp(), largeText = useLargeText();
+  const s = useApp(), reduce = useReducedMotion();
   // New people start at the welcome screen; the health information comes during onboarding. Someone already set up
   // sees it again here only if its wording has changed.
   if (!s.onboarded) return <Redirect href="/onboarding" />;
   if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
   if (!s.consent) return <Redirect href="/consent" />;
   const phase = stageOf(s), ready = gettingReady(s), week = jabWeek(s), two = yearTwoWeek(s);
-  // Weekly habits (done once in the week) sit below the day's list, outside the ring.
+  // Weekly habits (done once in the week) sit at the end of the list, outside the day's count.
   const all = todayPlan(s), weekly = all.filter((i) => i.kind === "habit" && isWeekly(i.id)), items = all.filter((i) => !weekly.includes(i));
   const done = items.filter((i) => i.done).length;
-  const up = items.find((i): i is Task => i.kind === "task" && !i.done), habitsLeft = items.some((i) => i.kind === "habit" && !i.done);
-  const part = partOfDay(), large = largeText;
-  const where = ready ? READY.name.toUpperCase() : two ? `YEAR TWO · WEEK ${two}` : `WEEK ${week} · ${phase.name.toUpperCase()}`;
+  const up = items.find((i): i is Task => i.kind === "task" && !i.done) ?? null;
+  const habit = up ? null : items.find((i) => i.kind === "habit" && !i.done) ?? null;
+  const next = up ?? habit;
+  // The rest: still to do first, in their order, then what's done.
+  const rest = [...items.filter((i) => i !== next && !i.done), ...items.filter((i) => i !== next && i.done)];
+  const layout = reduce ? undefined : LinearTransition.duration(260);
+  const row = (i: TodayItem, weeklyRow = false) => (
+    <Animated.View key={i.id} layout={layout}>
+      {i.kind === "task" ? <TaskRow t={i} />
+        : <HabitCheck compact label={HABITS[i.id].label} detail={weeklyRow ? "Once this week" : habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />}
+    </Animated.View>
+  );
   return (
-    <Screen>
+    <Screen contentContainerStyle={{ gap: space[4] }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[3] }}>
         <View style={{ flex: 1, gap: 2 }}>
           <AppText variant="caption" color="inkMuted">{fmt.long(today())} · {ready ? "Getting ready" : two ? `Year two, week ${two}` : `Week ${week}`}</AppText>
-          <AppText variant="title" accessibilityRole="header">Good {part}{s.name ? `, ${s.name}` : ""}</AppText>
+          <AppText variant="title" accessibilityRole="header">Good {partOfDay()}{s.name ? `, ${s.name}` : ""}</AppText>
         </View>
         <Avatar name={s.name} />
       </View>
@@ -242,34 +256,16 @@ export default function Today() {
       <LapseCard />
       <QuoteCard />
 
-      <Card tone="apricot" hero style={{ gap: space[4] }}>
-        <View style={{ flexDirection: large ? "column" : "row", alignItems: large ? "flex-start" : "center", gap: space[4] }}>
-          <DayRing done={done} total={items.length} />
-          <View style={{ flex: 1, gap: 4 }}>
-            <AppText variant="label" color="onPastel">{where}</AppText>
-            <AppText variant="heading" color="onPastel" style={{ fontSize: 22, lineHeight: 26 }}>{headline(done, items.length)}</AppText>
-            <AppText variant="caption" color="onPastel">
-              {up ? "Small steps that add up to a steady week." : habitsLeft ? "Just your habits left. Tick them off below as you do them." : "Rest up. Tomorrow's check-in will be here in the morning."}
-            </AppText>
-          </View>
-        </View>
-        {up ? <Button variant="secondary" block label={up.cta} onPress={() => router.push(up.href as Href)} />
-          : habitsLeft ? null : <Button variant="secondary" block label="See what shapes your days" onPress={() => router.push("/journal/insights")} />}
-      </Card>
+      <UpNext up={up} habit={habit?.id ?? null} done={done} total={items.length} />
 
-      <View style={{ gap: space[3] }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <AppText variant="heading" accessibilityRole="header">Today&apos;s plan</AppText>
-          <AppText variant="caption" color="inkMuted">{done} of {items.length} done</AppText>
-        </View>
-        {items.map((i) => i.kind === "task" ? <TaskRow key={i.id} t={i} />
-          : <HabitCheck key={i.id} label={HABITS[i.id].label} detail={habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />)}
-        {weekly.length ? <AppText variant="label" color="inkMuted" style={{ marginTop: space[2] }}>ONCE THIS WEEK</AppText> : null}
-        {weekly.map((i) => <HabitCheck key={i.id} label={HABITS[i.id].label} detail={habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />)}
-        <LessonRow />
+      <View style={{ gap: space[2] }}>
+        <Card style={{ padding: 0, paddingVertical: space[1], gap: 0, borderRadius: radius.lg }}>
+          {rest.map((i) => row(i))}
+          {weekly.map((i) => row(i, true))}
+          <LessonRow />
+        </Card>
         <Button label="Swap a habit" variant="quiet" onPress={() => router.push("/swap-habit")} style={{ alignSelf: "center" }} />
       </View>
-
     </Screen>
   );
 }

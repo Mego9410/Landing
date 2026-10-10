@@ -58,21 +58,6 @@ export function scoreHistory(s: AppState, n = 12): { monday: string; week: numbe
   });
 }
 
-/** The run of three or more scored weeks with the highest average, for "Your steadiest stretch". */
-export function steadiestStretch(history: { week: number; score: number | null }[], min = 3): { from: number; to: number } | null {
-  let best: { from: number; to: number; avg: number } | null = null;
-  for (let i = 0; i < history.length; i++) {
-    for (let j = i + min - 1; j < history.length; j++) {
-      const run = history.slice(i, j + 1);
-      if (run.some((h) => h.score == null)) break;
-      const avg = run.reduce((a, h) => a + h.score!, 0) / run.length;
-      // A longer run wins a tie.
-      if (!best || avg > best.avg + 0.5 || (Math.abs(avg - best.avg) <= 0.5 && j - i > best.to - best.from)) best = { from: i, to: j, avg };
-    }
-  }
-  return best && history[best.from].week < history[best.to].week ? { from: history[best.from].week, to: history[best.to].week } : null;
-}
-
 /** Last full week's score and the one before, for Progress. */
 export function recentScores(s: AppState) {
   const last = addDays(weekStart(today()), -7);

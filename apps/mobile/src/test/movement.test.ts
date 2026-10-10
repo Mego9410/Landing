@@ -6,7 +6,7 @@ import { test } from "node:test";
 import { byId, EXERCISES, PATTERNS } from "@landing/motion";
 import { buildBlock, kitFor, ladder, withBlock, type Block, type Program, type ProgramInput } from "@/data/program";
 import { addDays, today, weekDates, weekStart } from "@/data/dates";
-import { scoreHistory, steadiestStretch, weekScore } from "@/state/score";
+import { scoreHistory, weekScore } from "@/state/score";
 import { freshState, weekOf } from "@/state/store";
 
 const home: ProgramInput = { at: "home", kit: [], answers: {}, perWeek: 2 };
@@ -145,14 +145,11 @@ test("a perfect week with a swapped habit scores full marks", () => {
   assert.equal(weekScore(s, monday)!.score, 100);
 });
 
-test("score history and the steadiest stretch", () => {
+test("score history", () => {
   const s = freshState();
   s.ob.lastInjection = addDays(weekStart(today()), -7 * 20);
   assert.equal(scoreHistory(s).length, 12);
   assert.ok(scoreHistory(s).every((h) => h.score == null));
-  const h = [60, 70, null, 80, 85, 82, 50].map((score, i) => ({ week: 10 + i, score }));
-  assert.deepEqual(steadiestStretch(h), { from: 13, to: 15 });
-  assert.equal(steadiestStretch([{ week: 1, score: 50 }, { week: 2, score: null }]), null);
 });
 
 test("the library's floor flag covers every move on the original floor list", () => {

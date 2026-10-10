@@ -6,17 +6,17 @@ import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Button } from "@/components/Button";
-import { Icon } from "@/components/Icon";
+import { Icon, type IconName } from "@/components/Icon";
+import { Tick } from "@/components/HabitCheck";
 import { FreeNightCard, MealRow, TakeawayCard } from "@/components/meals";
 import { Avatar, Disc, List, RowCard } from "@/components/ui";
-import { PHASES } from "@/data/content";
 import { fmt, today, weekDates, weekdayIndex } from "@/data/dates";
 import { sessionFor } from "@/data/sessions";
-import { dayName, minutes, px, thisWeek } from "@/state/food";
-import { nextSession, sessionTarget } from "@/state/habits";
+import { dayName, minutes, px, shoppingCount, thisWeek } from "@/state/food";
+import { nextSession, sessionTarget, weekSessions } from "@/state/habits";
 import { sessionsPaused } from "@/state/health";
 import { lessonNow, lessonRead } from "@/state/plans";
-import { dayLog, gettingReady, jabWeek, sessionsInWeek, stageLabel, useApp, type AppState } from "@/state/store";
+import { dayLog, stageLabel, useApp, type AppState } from "@/state/store";
 import { radius, space, useColors, useLargeText } from "@/theme";
 
 const SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -132,20 +132,28 @@ function StrengthCard({ day }: { day: number }) {
   );
 }
 
-/** PL1 Your plan: this week day by day (dinner, meals, strength), with shortcuts and the week's lesson. */
+/** A small white pill link. */
+function Chip({ icon, label, count, onPress }: { icon: IconName; label: string; count?: number; onPress: () => void }) {
+  const c = useColors();
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={count ? `${label}, ${count} items` : label} onPress={onPress}
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 6, minHeight: 40, paddingVertical: 6, paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line, opacity: pressed ? 0.7 : 1 })}>
+      <Icon name={icon} size={16} color={c.ink} />
+      <AppText weight="800" style={{ fontSize: 14 }}>{label}</AppText>
+      {count ? <AppText weight="800" color="apricotInk" style={{ fontSize: 14 }}>{count}</AppText> : null}
+    </Pressable>
+  );
+}
+
+/** PL1 Your plan: this week day by day (dinner, meals, strength), with shortcuts, the week's sessions and its lesson. */
 export default function Plan() {
   const s = useApp(), c = useColors();
   const [day, setDay] = useState(() => weekdayIndex(today()));
-  // For the phase strips: 0 while getting ready (nothing done yet); past 52 in year two (all done).
-  const week = gettingReady(s) ? 0 : jabWeek(s), pick = lessonNow(s), lesson = pick.lesson;
-  const meals = thisWeek(s), cooks = meals.days.filter((d) => d.dinner.kind === "cook").length;
-  const nx = s.food.next, pr = nx ? progress(nx.week) : null;
-  const next = nextSession(s), done = sessionsInWeek(s).length, target = sessionTarget(s);
-  const strength = sessionsPaused(s) ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" }
-    : next ? { line: `${sessionFor(s, next).name} next`, detail: `${done} of ${target} done this week · ${sessionFor(s, next).minutes} min` }
-    : { line: target === 2 ? "Both sessions done" : `All ${target} sessions done`, detail: "Next ones arrive on Monday" };
+  const meals = thisWeek(s), nx = s.food.next, pr = nx ? progress(nx.week) : null;
+  const sessions = weekSessions(s), target = sessionTarget(s), done = sessions.filter((x) => x.doneOn).length;
+  const pick = lessonNow(s), read = lessonRead(s, pick.key);
   return (
-    <Screen contentContainerStyle={{ gap: space[5] }}>
+    <Screen contentContainerStyle={{ gap: space[4] }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <View style={{ gap: 2 }}>
           <AppText variant="caption" color="inkMuted">{stageLabel(s)}</AppText>
@@ -162,62 +170,45 @@ export default function Plan() {
       </List>
       <StrengthCard day={day} />
 
-      <Pressable accessibilityRole="button" onPress={() => router.push("/week")}>
-        <Card tone="apricot" hero style={{ gap: 6 }}>
-          <AppText variant="label" color="onPastel">THIS WEEK</AppText>
-          <AppText variant="heading" color="onPastel" style={{ fontSize: 22 }}>{lesson.week}</AppText>
-          <AppText color="onPastel">{lessonRead(s, pick.key) ? "Lesson read · three habits and two sessions" : "Lesson, three habits and two sessions"}</AppText>
-        </Card>
-      </Pressable>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
+        <Chip icon="basket" label="Shopping list" count={shoppingCount(s)} onPress={() => router.push({ pathname: "/meals/shopping", params: { which: "this" } })} />
+        <Chip icon="book" label="All recipes" onPress={() => router.push("/meals/recipes")} />
+        <Chip icon="plan" label={pr ? `Next week: ${pr.chosen} of ${pr.total} picked` : "Plan next week"} onPress={() => router.push("/meals/next")} />
+      </View>
 
-      <RowCard tone="sky" onPress={() => router.push("/meals")}>
+      <View style={{ gap: space[2] }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[2] }}>
+          <AppText variant="heading" accessibilityRole="header" style={{ fontSize: 20 }}>Strength this week</AppText>
+          <AppText variant="caption" color="inkMuted">{done} of {target} done</AppText>
+        </View>
+        <List>
+          {sessions.map((x, i) => {
+            const sf = sessionFor(s, x.id), sub = `${sf.minutes} min · ${sf.moves.length} moves`;
+            return (
+              <Pressable key={i} accessibilityRole="button" accessibilityLabel={`${sf.name}${x.doneOn ? ", done" : ""}. ${x.doneOn ? `Done on ${fmt.long(x.doneOn).split(" ")[0]}, ` : ""}${sub}`}
+                onPress={() => router.push({ pathname: "/workouts/[id]", params: { id: x.id } })}
+                style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], minHeight: 60, paddingVertical: space[2], paddingHorizontal: space[4], borderTopWidth: i ? 1 : 0, borderColor: c.line, opacity: pressed ? 0.7 : 1 })}>
+                <Tick done={!!x.doneOn} />
+                <View style={{ flex: 1 }}>
+                  <AppText weight="800">{sf.name}</AppText>
+                  <AppText variant="caption" color="inkMuted">{x.doneOn ? `Done on ${fmt.long(x.doneOn).split(" ")[0]} · ${sub}` : sub}</AppText>
+                </View>
+                <Icon name="chevron" size={18} color={c.inkMuted} />
+              </Pressable>
+            );
+          })}
+        </List>
+      </View>
+
+      <RowCard tone="sky" onPress={() => router.push("/week")} accessibilityLabel={`This week's lesson${read ? ", read" : ""}: ${pick.lesson.week}`}>
+        <View style={{ width: 44, height: 44, borderRadius: radius.md, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceRaised }}>
+          <Icon name="book" size={22} color={c.onPastel} />
+        </View>
         <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="label" color="onPastel">MEALS THIS WEEK</AppText>
-          <AppText variant="heading" color="onPastel">{cooks} dinners, leftovers and a takeaway</AppText>
-          <AppText variant="caption" color="onPastel">Recipes, swaps and your shopping list</AppText>
+          <AppText variant="label" color="onPastel">THIS WEEK&apos;S LESSON{read ? " · READ" : ""}</AppText>
+          <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>{pick.lesson.week}</AppText>
         </View>
       </RowCard>
-      <RowCard onPress={() => router.push("/meals/next")}>
-        <Disc icon="basket" tone="butter" />
-        <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="label" color="inkMuted">NEXT WEEK</AppText>
-          <AppText weight="800" style={{ fontSize: 16 }}>{pr ? `${pr.chosen} of ${pr.total} meals picked` : "Pick your meals for next week"}</AppText>
-          <AppText variant="caption" color="inkMuted">{pr ? "Your shopping list adds it all up" : "Then get one shopping list for the lot"}</AppText>
-        </View>
-      </RowCard>
-
-      <RowCard onPress={() => router.push("/workouts")}>
-        <Disc icon="workout" tone="sage" />
-        <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="label" color="inkMuted">STRENGTH PLAN</AppText>
-          <AppText weight="800" style={{ fontSize: 16 }}>{strength.line}</AppText>
-          <AppText variant="caption" color="inkMuted">{strength.detail}</AppText>
-        </View>
-      </RowCard>
-
-      {PHASES.map((p) => {
-        const weeks = Array.from({ length: p.to - p.from + 1 }, (_, i) => p.from + i);
-        return (
-          <Card key={p.key} style={{ gap: 12 }}>
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: c[`${p.tone}Ink` as const] }} />
-                <AppText variant="heading">{p.name}</AppText>
-              </View>
-              <AppText variant="caption" color="inkMuted">Weeks {p.from}–{p.to}</AppText>
-            </View>
-            <AppText color="inkMuted">{p.focus}</AppText>
-            {/* One summary for VoiceOver rather than a stop per week. */}
-            <View accessible accessibilityLabel={week < p.from ? `${p.name}: ${weeks.length} weeks, coming up` : week > p.to ? `${p.name}: all ${weeks.length} weeks done` : `${p.name}: week ${week - p.from + 1} of ${weeks.length}, ${week - p.from} done`}
-              style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-              {weeks.map((w) => (
-                <View key={w}
-                  style={{ width: 26, height: 26, borderRadius: radius.full, backgroundColor: w < week ? c.sageInk : w === week ? c.apricot : c.surfaceSunk, borderWidth: w === week ? 2 : w > week ? 1.5 : 0, borderColor: w === week ? c.apricotInk : c.line }} />
-              ))}
-            </View>
-          </Card>
-        );
-      })}
     </Screen>
   );
 }

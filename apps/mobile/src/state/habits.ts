@@ -45,6 +45,17 @@ export function nextSession(s: AppState): "A" | "B" | null {
   return a <= b ? "A" : "B";
 }
 
+/** This week's sessions in order (A, B, then A again when the target is three), each with the day it was done. */
+export function weekSessions(s: AppState): { id: "A" | "B"; doneOn: string | null }[] {
+  const t = today(), done = weekDates(t).filter((d) => d <= t).flatMap((d) => (dayLog(s, d).sessions ?? []).map((id) => ({ id, d })));
+  const slots: ("A" | "B")[] = sessionTarget(s) === 3 ? ["A", "B", "A"] : ["A", "B"];
+  return slots.map((id) => {
+    const i = done.findIndex((x) => x.id === id);
+    const hit = i >= 0 ? done.splice(i, 1)[0] : null;
+    return { id, doneOn: hit?.d ?? null };
+  });
+}
+
 /** The day a session was done this week, if it was. */
 export function sessionDoneOn(s: AppState, id: "A" | "B"): string | null {
   const t = today();

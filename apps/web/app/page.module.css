@@ -187,6 +187,9 @@
 .filmPlay:hover .filmPill, .filmPlay:focus-visible .filmPill { transform: scale(1.04); }
 .filmIcon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #DE6F44; color: #FBF8F4; padding-left: 3px; box-sizing: border-box; }
 .filmLength { font-weight: 700; color: #C9C1CF; margin-left: 2px; }
+.filmPause { position: absolute; top: 18px; right: 18px; width: 44px; height: 44px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer;
+  background: color-mix(in srgb, #2E2A33 72%, transparent); color: #FBF8F4; backdrop-filter: blur(8px); }
+.filmPause:hover { background: #2E2A33; }
 @media (prefers-reduced-motion: reduce) { .filmPill { transition: none; } }
 
 /* sections */
@@ -321,6 +324,7 @@
   .film { border-radius: var(--radius-lg); }
   .filmPill { margin: 0 0 14px 14px; font-size: 15px; padding: 7px 16px 7px 7px; }
   .filmIcon { width: 36px; height: 36px; }
+  .filmPause { top: 10px; right: 10px; width: 40px; height: 40px; }
   .dark { padding-block: 60px 68px; }
   .cta { padding-block: 72px; }
   .head { margin-bottom: 28px; }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cast, portraitSvg } from "@landing/motion/browser";
 import styles from "./page.module.css";
 import { CastPicker, type CastPerson } from "./cast-picker";
+import { CareList } from "./care-list";
 import { ExerciseLoop } from "./exercise-loop";
 import { latestGuides, liveGuide, liveGuides } from "@/content/guides";
 import { SiteFooter, SiteHeader } from "./site-chrome";
@@ -381,13 +382,14 @@ export default async function Home() {
               <li className={`${styles.tile} ${styles.tileInk}`}>
                 <div className={styles.tileText}>
                   <p className={styles.tileEyebrow}>On your side</p>
-                  <h3 className={styles.tileTitle}>A coach for tricky days, and a summary for your prescriber</h3>
+                  <h3 className={styles.tileTitle}>A coach for tricky days</h3>
+                  <p className={styles.tileBody}>Ideas for meals out, swaps and wobbly days, and a one-page summary for your prescriber.</p>
                 </div>
                 <p className={styles.tileBubble}>Dinner out tonight? Pick a protein you&apos;ll enjoy first, then add veg.</p>
               </li>
             </ul>
             <ul className={styles.alsoList} aria-label="Also included">
-              {["Three small habits a week", "A short lesson each week", "Swaps for every diet", "Shopping lists", "Gentle reminders", "Apple Health, if you like"].map((x) => <li key={x}><Icon name="check" size={16} />{x}</li>)}
+              {["Three small habits a week", "A short lesson each week", "Swaps for every diet", "Shopping lists", "A summary for your prescriber", "Gentle reminders", "Apple Health, if you like"].map((x) => <li key={x}><Icon name="check" size={16} />{x}</li>)}
             </ul>
           </div>
         </section>
@@ -444,15 +446,7 @@ export default async function Home() {
                 <span className={styles.careChip}><span className={styles.habitTick}><Icon name="check" size={14} /></span>Easier version on</span>
               </div>
             </div>
-            <ol className={styles.careList}>
-              {CARE.map((c, i) => (
-                <li key={c.title}>
-                  <span className={styles.careNum}>{String(i + 1).padStart(2, "0")}</span>
-                  <h3>{c.title}</h3>
-                  <p>{c.text}</p>
-                </li>
-              ))}
-            </ol>
+            <CareList items={CARE} />
           </div>
         </section>
 

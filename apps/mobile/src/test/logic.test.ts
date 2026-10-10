@@ -290,3 +290,18 @@ test("plans: everyone gets their own seeds, meals differ by person and week, and
   const back = migrate(JSON.parse(JSON.stringify(s)))!;
   assert.deepEqual(back.program, s.program); assert.deepEqual(back.food.plan, s.food.plan);
 });
+
+test("cook-along: timers, ingredients and swaps found in recipe steps", async () => {
+  const { timersIn, ingredientsIn, withSwaps, clock } = await import("@/data/cook");
+  const two = timersIn("Microwave for 45 seconds, stir, then 30 seconds at a time until just set.");
+  assert.deepEqual(two.map((t) => [t.label, t.seconds]), [["Microwave", 45], ["Microwave", 30]]);
+  const range = timersIn("Roast for 18 to 20 minutes, until the chicken is cooked through.")[0];
+  assert.equal(range.seconds, 1080); assert.equal(range.upTo, 1200); assert.equal(range.text, "18 to 20 min"); assert.equal(range.label, "Roast");
+  assert.equal(timersIn("Boil the eggs for 9 minutes, then cool under cold water and peel.")[0].label, "Boil eggs");
+  assert.equal(timersIn("Spread the cottage cheese over the crispbreads.").length, 0);
+  const names: Record<string, string> = { chicken: "chicken thighs", tofu: "firm tofu", rice: "microwave rice", peas: "frozen peas" };
+  const name = (id: string) => names[id] ?? id;
+  assert.deepEqual(ingredientsIn("Add the rice and peas, then the chicken thighs.", ["chicken", "rice", "peas", "tofu"], name), ["chicken", "rice", "peas"]);
+  assert.equal(withSwaps("Add the chicken thighs. Chicken thighs cook fast.", [{ from: "chicken", to: "tofu" }], name), "Add the firm tofu. Firm tofu cook fast.");
+  assert.equal(clock(65), "1:05"); assert.equal(clock(3725), "1:02:05"); assert.equal(clock(0), "0:00");
+});

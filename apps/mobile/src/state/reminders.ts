@@ -29,10 +29,11 @@ export async function cancelReminders() {
 }
 
 const TRIAL_ID = "trial-ending";
-/** The reminders set in Settings: everything except the trial reminder, which has its own schedule. */
+/** The reminders set in Settings: everything except the trial reminder and cooking timers. */
 async function cancelPlanReminders() {
   const all = await Notifications.getAllScheduledNotificationsAsync();
-  await Promise.all(all.filter((n) => n.identifier !== TRIAL_ID).map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)));
+  // Cooking timers (state/timers.ts) and the trial reminder have their own schedules.
+  await Promise.all(all.filter((n) => n.identifier !== TRIAL_ID && !n.identifier.startsWith("timer-")).map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier)));
 }
 
 /** True if notifications can be shown now (no asking). */

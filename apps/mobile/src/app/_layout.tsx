@@ -10,6 +10,7 @@ import { Platform, ScrollView, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { IntroSplash } from "@/components/IntroSplash";
+import { TimerTray } from "@/components/Timers";
 import { Toast } from "@/components/Toast";
 import { startBackup } from "@/state/account";
 import { flushEvents, track } from "@/state/events";
@@ -17,6 +18,7 @@ import { install, updateInstall } from "@/state/install";
 import { watchDay } from "@/state/rollover";
 import { Sentry, sentryOn, startSentry } from "@/state/sentry";
 import { startBilling } from "@/state/subscription";
+import { loadTimers } from "@/state/timers";
 import { applyCriticalUpdate } from "@/state/updates";
 import { get, hydrate } from "@/state/store";
 import { space, useColors } from "@/theme";
@@ -71,6 +73,7 @@ function RootLayout() {
     hydrate().finally(() => {
       stop = watchDay(); startBilling().catch(() => {}); setReady(true);
       applyCriticalUpdate().catch(() => {});
+      loadTimers().catch(() => {});
       install(get().startedOn).then((i) => {
         if (i.isNew) { track("app_first_open"); updateInstall({ isNew: false }); }
         flushEvents().catch(() => {});
@@ -98,10 +101,12 @@ function RootLayout() {
         <Stack.Screen name="swap-habit" options={SHEET} />
         <Stack.Screen name="journal/index" options={SHEET} />
         {/* These move on by themselves, so swiping back would only land somewhere half-done. */}
+        <Stack.Screen name="meals/cook" options={{ presentation: "fullScreenModal" }} />
         <Stack.Screen name="onboarding/building" options={{ gestureEnabled: false }} />
         <Stack.Screen name="onboarding/thanks" options={{ gestureEnabled: false }} />
       </Stack>
       </Sentry.ErrorBoundary>
+      <TimerTray />
       <Toast />
       {Platform.OS === "web" ? null : <NotificationLinks />}
       </> : null}

@@ -108,6 +108,10 @@ export default function Recipe() {
 
       <View style={{ gap: space[3] }}>
         <AppText variant="heading">Method</AppText>
+        {r.steps.length ? (
+          <Button label="Cook along, step by step" variant="brand" icon="play" block
+            onPress={() => router.push({ pathname: "/meals/cook", params: { id: r.id, portions: String(portions) } })} />
+        ) : null}
         {x.swaps.length ? (
           <Card tone="sunk" style={{ gap: 4 }}>
             <AppText variant="label" color="inkMuted">MADE FOR YOU</AppText>

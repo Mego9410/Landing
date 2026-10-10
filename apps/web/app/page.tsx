@@ -51,6 +51,7 @@ function Icon({ name, size = 24 }: { name: IconName; size?: number }) {
 // Real app screens (iPhone, 1.0.2). The hero phone slides through these.
 const TOUR: Screen[] = [
   { src: "/screens/today.webp", label: "Today" },
+  { src: "/screens/plan.webp", label: "Plan" },
   { src: "/screens/progress.webp", label: "Progress" },
   { src: "/screens/session.webp", label: "Strength session" },
   { src: "/screens/cook.webp", label: "Cook along" },
@@ -58,10 +59,10 @@ const TOUR: Screen[] = [
 
 const FAN: FanScreen[] = [
   { src: "/screens/welcome.webp", alt: "Steadie's welcome screen: Wobbles are normal. Let's keep you steady.", title: "A calm start", text: "A few questions, then your 12-month plan is ready." },
-  { src: "/screens/session.webp", alt: "A strength session: sit to stand, shown by Grace, with an easier version switch.", title: "Strength, shown for you", text: "Short sessions at home, with an easier version a tap away." },
-  { src: "/screens/today.webp", dark: "/screens/today-dark.webp", alt: "The Today screen: today's plan, your meal and strength plans, and a morning check-in.", title: "Your day at a glance", text: "Light or dark, to match your phone." },
+  { src: "/screens/plan.webp", alt: "The Plan screen: a week of days, tonight's dinner with a cook-along button, and the day's breakfast, lunch and snacks.", title: "Your plan, day by day", text: "Tonight's dinner and your next session, one tap away." },
+  { src: "/screens/today.webp", dark: "/screens/today-dark.webp", alt: "The Today screen: today's thought, the next thing to do, and the rest of today's list.", title: "One thing next", text: "A thought for the day and the next thing to do. Light or dark." },
+  { src: "/screens/progress.webp", alt: "The Progress screen: the steady score with habits, strength and check-ins, and a week of habit days.", title: "Your week, explained", text: "What built your steady score, habit by habit." },
   { src: "/screens/cook.webp", alt: "Cook along: a recipe step with the ingredients you need and a simmer timer.", title: "Cook along", text: "Step by step, with timers that keep running." },
-  { src: "/screens/month.webp", alt: "Your month: check-ins, strength sessions and the habit you kept most, with the option to swap a habit.", title: "Your month", text: "A kind look back, and a chance to swap a habit." },
 ];
 
 const trust = (live: boolean): { icon: IconName; text: string }[] => [

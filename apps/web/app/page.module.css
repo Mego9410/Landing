@@ -165,6 +165,21 @@
 .fanDark { position: absolute; inset: 0; clip-path: inset(0 0 0 100%); }
 .fan[data-open] .fanDark { animation: fanSweep 8s cubic-bezier(.65, 0, .35, 1) 1.6s infinite; }
 @keyframes fanSweep { 0%, 30% { clip-path: inset(0 0 0 100%); } 45%, 80% { clip-path: inset(0 0 0 0); } 95%, 100% { clip-path: inset(0 0 0 100%); } }
+.fanWrap { position: relative; }
+.fanNav { display: none; }
+.fanArrow { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; background: var(--surface-raised); color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--line), var(--shadow-sm); transition: opacity .2s ease-out; }
+.fanArrow:disabled { opacity: .35; cursor: default; }
+.fanMiddle { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.fanDots { display: flex; align-items: center; }
+.fanDot { width: 22px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.fanDot span { display: block; width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--line); transition: width .25s ease-out, background .25s ease-out; }
+.fanDot[aria-current] { width: 34px; }
+.fanDot[aria-current] span { width: 24px; background: var(--apricot-ink); }
+.fanHint { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 800; color: var(--ink-muted); transition: opacity .3s ease-out; }
+.fanHint svg { animation: fanHint 1.6s ease-in-out infinite; }
+.fanHint[data-hide] { opacity: 0; }
+@keyframes fanHint { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
 .fanCaption { display: flex; flex-direction: column; gap: 4px; text-align: center; font-size: 15px; line-height: 21px; color: var(--ink-muted); padding-inline: 4px; }
 .fanCaption strong { font-family: var(--font-display); font-weight: 500; font-size: 19px; line-height: 24px; color: var(--ink); }
 
@@ -173,6 +188,8 @@
   .tourScreen { transition: none; }
   .fanItem, .fanPhone { transition: none; }
   .fan[data-open] .fanDark { animation: none; }
+  .fanHint svg { animation: none; }
+  .fanDot span { transition: none; }
 }
 
 /* the intro film (app/film.tsx) */
@@ -506,6 +523,7 @@
   .fanItem { flex: 0 0 220px; scroll-snap-align: center; transform: translateY(40px); }
   .fan[data-open] .fanItem { transform: none; }
   .fan[data-open] .fanPhone { transform: rotate(calc(var(--k) * 1.5deg)); }
+  .fanNav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 4px; }
 }
 @media (max-width: 640px) {
   /* Phones: tighter sections, and side-scrolling rows instead of long stacks of cards, so the page is about half as

@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { progress } from "@landing/engine";
 import { AppText } from "@/components/AppText";
@@ -6,17 +7,65 @@ import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc, RowCard } from "@/components/ui";
 import { PHASES } from "@/data/content";
+import { fmt, today, weekDates, weekdayIndex } from "@/data/dates";
 import { sessionFor } from "@/data/sessions";
 import { thisWeek } from "@/state/food";
 import { nextSession, sessionTarget } from "@/state/habits";
 import { sessionsPaused } from "@/state/health";
 import { lessonNow, lessonRead } from "@/state/plans";
-import { gettingReady, jabWeek, sessionsInWeek, stageLabel, useApp } from "@/state/store";
+import { dayLog, gettingReady, jabWeek, sessionsInWeek, stageLabel, useApp, type AppState } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
-/** PL1 Your plan: this week, meals this week and next, and the three phases. */
+const SHORT = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/** What a day holds, for its dots and its spoken label: the dinner, and any strength session done that day. Sessions
+ *  aren't booked to days, so only done ones show. */
+function dayMarks(s: AppState, date: string, i: number) {
+  const dinner = thisWeek(s).days[i].dinner.kind, session = !!dayLog(s, date).sessions?.length;
+  return { dinner, session };
+}
+
+/** Mon to Sun of this week as seven buttons, with a dot for the dinner and one for a session done. */
+function DayStrip({ day, onPick }: { day: number; onPick: (i: number) => void }) {
+  const s = useApp(), c = useColors(), dates = weekDates(today()), now = weekdayIndex(today());
+  const dot = { cook: c.apricot, leftover: c.butter, takeaway: c.line, free: c.line } as const;
+  const said = { cook: "dinner to cook", leftover: "leftovers", takeaway: "takeaway night", free: "a free night" } as const;
+  return (
+    <View style={{ gap: space[2] }}>
+      <View accessibilityRole="tablist" style={{ flexDirection: "row", gap: 4 }}>
+        {dates.map((date, i) => {
+          const on = i === day, m = dayMarks(s, date, i);
+          return (
+            <Pressable key={date} accessibilityRole="tab" accessibilityState={{ selected: on }}
+              accessibilityLabel={`${fmt.long(date)}${i === now ? ", today" : ""}, ${said[m.dinner]}${m.session ? ", strength session done" : ""}`}
+              onPress={() => onPick(i)}
+              style={{ flex: 1, alignItems: "center", gap: 2, paddingVertical: space[2], borderRadius: 16, backgroundColor: on ? c.ink : "transparent" }}>
+              <AppText weight="800" maxFontSizeMultiplier={1.4} style={{ fontSize: 12, color: on ? c.surfaceSunk : c.inkMuted }}>{SHORT[i]}</AppText>
+              <AppText weight="800" maxFontSizeMultiplier={1.4} style={{ fontSize: 17, color: on ? c.surface : c.ink }}>{date.slice(8).replace(/^0/, "")}</AppText>
+              <View style={{ flexDirection: "row", gap: 3, height: 6 }}>
+                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: dot[m.dinner] }} />
+                {m.session ? <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: c.sageInk }} /> : null}
+              </View>
+            </Pressable>
+          );
+        })}
+      </View>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: space[3], rowGap: 4 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {[{ col: c.apricot, label: "Dinner to cook" }, { col: c.sageInk, label: "Strength session" }, { col: c.butter, label: "Leftovers" }].map((k) => (
+          <View key={k.label} style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: k.col }} />
+            <AppText color="inkMuted" style={{ fontSize: 12 }}>{k.label}</AppText>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+/** PL1 Your plan: this week day by day (dinner, meals, strength), with shortcuts and the week's lesson. */
 export default function Plan() {
   const s = useApp(), c = useColors();
+  const [day, setDay] = useState(() => weekdayIndex(today()));
   // For the phase strips: 0 while getting ready (nothing done yet); past 52 in year two (all done).
   const week = gettingReady(s) ? 0 : jabWeek(s), pick = lessonNow(s), lesson = pick.lesson;
   const meals = thisWeek(s), cooks = meals.days.filter((d) => d.dinner.kind === "cook").length;
@@ -34,6 +83,7 @@ export default function Plan() {
         </View>
         <Avatar name={s.name} />
       </View>
+      <DayStrip day={day} onPick={setDay} />
 
       <Pressable accessibilityRole="button" onPress={() => router.push("/week")}>
         <Card tone="apricot" hero style={{ gap: 6 }}>

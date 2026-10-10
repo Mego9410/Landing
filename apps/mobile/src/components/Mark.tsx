@@ -5,12 +5,14 @@ import { useColorScheme } from "react-native";
 // weight dot low down, on a ground line. The dot is a knock-out, so pass the colour behind the mark as `hole`.
 const BODY = "M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z";
 
-/** `height` in points; the width follows (56:76). Apricot on light, apricot-soft in dark mode, unless `color` is set. */
-export function Mark({ height, hole, color, ground = true }: { height: number; hole: string; color?: string; ground?: boolean }) {
+/** `height` in points; the width follows (56:76). Apricot on light, apricot-soft in dark mode, unless `color` is set.
+ *  `room` adds space around the drawing, so the leaning body's edge never touches the box (for a mark that's cropped
+ *  by something else, like a card's corner). */
+export function Mark({ height, hole, color, ground = true, room = 0 }: { height: number; hole: string; color?: string; ground?: boolean; room?: number }) {
   const dark = useColorScheme() === "dark";
   const fill = color ?? (dark ? "#F2A27A" : "#DE6F44");
   return (
-    <Svg width={(height * 56) / 76} height={height} viewBox="22 18 56 76" accessible={false}>
+    <Svg width={(height * (56 + 2 * room)) / (76 + 2 * room)} height={height} viewBox={`${22 - room} ${18 - room} ${56 + 2 * room} ${76 + 2 * room}`} accessible={false}>
       <G transform="rotate(-12 50 80)">
         <Path d={BODY} fill={fill} />
         <Circle cx={50} cy={64} r={7} fill={hole} />

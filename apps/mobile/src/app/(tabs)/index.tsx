@@ -6,6 +6,7 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { HabitCheck } from "@/components/HabitCheck";
+import { QuoteCard } from "@/components/QuoteCard";
 import { Icon } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
 import { Avatar, Choices, Field } from "@/components/ui";
@@ -229,7 +230,7 @@ export default function Today() {
     <Screen>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[3] }}>
         <View style={{ flex: 1, gap: 2 }}>
-          <AppText variant="caption" color="inkMuted">{fmt.long(today())}</AppText>
+          <AppText variant="caption" color="inkMuted">{fmt.long(today())} · {ready ? "Getting ready" : two ? `Year two, week ${two}` : `Week ${week}`}</AppText>
           <AppText variant="title" accessibilityRole="header">Good {part}{s.name ? `, ${s.name}` : ""}</AppText>
         </View>
         <Avatar name={s.name} />
@@ -239,6 +240,7 @@ export default function Today() {
       <MonthCard />
       <TrialEnding />
       <LapseCard />
+      <QuoteCard />
 
       <Card tone="apricot" hero style={{ gap: space[4] }}>
         <View style={{ flexDirection: large ? "column" : "row", alignItems: large ? "flex-start" : "center", gap: space[4] }}>

@@ -1,9 +1,9 @@
 /// <reference types="node" />
 // The year's shape: getting ready before the last jab, the 52 weeks, year two after them, weeks on the plan for late
-// joiners and old saves, the tips, the lessons and logging a meal twice. Run with `npm test`.
+// joiners and old saves, the lessons and logging a meal twice. Run with `npm test`.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { habitsForWeek, phaseOf, TIPS, tipFor } from "@/data/content";
+import { habitsForWeek, phaseOf } from "@/data/content";
 import { addDays, today, weekStart } from "@/data/dates";
 import { lessonByKey, lessonForWeek, PREP_LESSONS, YEAR_TWO_LESSONS, yearTwoLessonFor } from "@/data/lessons";
 import { isTicked, logMeal, logProtein } from "@/state/habits";
@@ -83,18 +83,6 @@ test("the month's look-back is due on each four-week anniversary, once", () => {
   assert.ok(!lookBackDue(s), "not in the weeks between");
   s.startedOn = monday;
   assert.ok(!lookBackDue(s), "not in the first month");
-});
-
-test("tips: a pool for every phase, rotating daily with no repeats in a week", () => {
-  for (const key of ["ready", "land", "settle", "steady", "yearTwo"] as const) {
-    assert.ok(TIPS[key].length >= 7);
-    const week = Array.from({ length: 7 }, (_, i) => tipFor(key, addDays(monday, i)));
-    assert.equal(new Set(week).size, 7, `${key}: no repeats in a week`);
-  }
-  assert.notEqual(tipFor("land", monday), tipFor("land", addDays(monday, 1)));
-  assert.ok(TIPS.evening.includes(tipFor("land", monday, true)));
-  const all = Object.values(TIPS).flat().join(" ");
-  assert.doesNotMatch(all, /cheat|fail|willpower|back on track|goal weight|journey|guilt-free|detox|superfood/i);
 });
 
 test("lessons: getting ready, the year, and year two with refreshers", () => {

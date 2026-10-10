@@ -1,5 +1,5 @@
-// Today's plan: the handful of things worth doing today, in the order they're best done. The hero ring on Today
-// counts these, and the first one not yet done is the "next up" button, so the screen always answers "what now?".
+// Today's plan: the handful of things worth doing today, in the order they're best done. Today counts these, and the
+// first one not yet done is "Up next", so the screen always answers "what now?".
 import { HABITS } from "@/data/content";
 import { sessionFor } from "@/data/sessions";
 import { today, yesterday } from "@/data/dates";
@@ -45,14 +45,4 @@ export function todayPlan(s: AppState): TodayItem[] {
   // Session habits are covered by the session above.
   for (const id of s.habits.ids) if (HABITS[id] && HABITS[id].kind !== "sessions") items.push({ kind: "habit", id, done: isTicked(s, id) });
   return items;
-}
-
-const WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight"];
-const word = (n: number) => WORDS[n] ?? String(n);
-
-/** The hero's headline: how the day's going, never how it isn't. */
-export function headline(done: number, total: number): string {
-  if (done >= total) return "That's today done";
-  if (done === 0) return `${word(total)} small things today`;
-  return `${word(total - done)} left for today`;
 }

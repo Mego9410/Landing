@@ -175,15 +175,17 @@ function seedDays(t: string, ids: string[]): Record<string, DayLog> {
   for (let i = 1; i <= 21 + weekdayIndex(t); i++) {
     const day = addDays(t, -i), wd = weekdayIndex(day), log: DayLog = { habits: {} };
     for (const id of ids) if (rand() < (id === "protein" ? 0.6 : 0.4)) log.habits![id] = true;
-    if (wd === 1 || wd === 4) log.sessions = [wd === 1 ? "A" : "B"];
+    // Sessions in earlier weeks; this week's are still to come, so Strength A is up next.
+    if ((wd === 1 || wd === 4) && day < weekStart(t)) log.sessions = [wd === 1 ? "A" : "B"];
     log.protein = { Breakfast: 22 + Math.round(rand() * 12), Lunch: 25 + Math.round(rand() * 12), Dinner: 30 + Math.round(rand() * 10) };
     out[day] = log;
   }
-  out[t] = { protein: { Breakfast: 30, Lunch: 34 }, habits: { protein: true } };
+  // Today so far: protein logged past the 100 g mark, habits still to tick.
+  out[t] = { protein: { Breakfast: 30, Lunch: 34, Snack: 38 }, habits: {} };
   return out;
 }
 
-// About six weeks of Hannah's journal, leaving yesterday for her to fill in. The answers lean on her weigh-ins so the
+// About six weeks of Hannah's journal, up to yesterday. The answers lean on her weigh-ins so the
 // insights show the patterns people usually see: drinks and eating out before a higher morning, sleep and protein
 // before fuller days. Seeded, so the demo is the same every time.
 function seedJournal(t: string, weights: Weight[]): Record<string, JournalEntry> {
@@ -192,7 +194,8 @@ function seedJournal(t: string, weights: Weight[]): Record<string, JournalEntry>
   const rand = () => (r = (r * 16807) % 2147483647) / 2147483647;
   const scale = (v: number) => Math.max(1, Math.min(5, Math.round(v)));
   const rise = (day: string) => (kg[day] != null && kg[addDays(day, 1)] != null ? kg[addDays(day, 1)] - kg[day] : 0);
-  const days = Array.from({ length: 42 }, (_, i) => addDays(t, -(i + 2))).filter((_, i) => i % 9 !== 3); // a few days missed, as happens
+  // Yesterday is logged too, so the check-in shows as done. A few days are missed, as happens.
+  const days = Array.from({ length: 42 }, (_, i) => addDays(t, -(i + 1))).filter((_, i) => i % 9 !== 4);
   const sorted = days.map(rise).sort((a, b) => a - b), q = (p: number) => sorted[Math.floor(p * (sorted.length - 1))];
   const out: Record<string, JournalEntry> = {};
   for (const day of days) {
@@ -213,7 +216,8 @@ function seedJournal(t: string, weights: Weight[]): Record<string, JournalEntry>
 
 /** Hannah, six weeks after her last injection, with a month of history: for previews, App Review and testing. */
 export function demoState(): AppState {
-  const t = today(), weights = seedWeights(t), ids = habitsForWeek(6);
+  // Week 6's habits, with a walk after dinner as the third (a swap Hannah made), so Today shows a realistic mix.
+  const t = today(), weights = seedWeights(t), ids = habitsForWeek(6).map((id, i) => (i === 2 ? "walk" : id));
   return {
     v: 3, name: "Hannah", onboarded: true, startedOn: addDays(t, -35), demo: true, lastSeen: t,
     ob: { status: "stopped", lastInjection: addDays(weekStart(t), -35), hungryTimes: ["Afternoon", "Evening"], lowestWeight: 78.0, proteinFreq: "Some meals" },

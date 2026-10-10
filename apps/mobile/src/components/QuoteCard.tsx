@@ -15,7 +15,7 @@ let wobbledOn = "";
  *  Motion off, the mark rocks and settles the first time Today shows each day. */
 export function QuoteCard() {
   const c = useColors(), large = useLargeText(), reduce = useReducedMotion(), dark = useColorScheme() === "dark";
-  const day = today(), quote = quoteFor(day), height = large ? 64 : 96;
+  const day = today(), quote = quoteFor(day), height = large ? 72 : 96;
   const tilt = useSharedValue(0);
   useEffect(() => {
     if (reduce || wobbledOn === day) return;
@@ -30,9 +30,10 @@ export function QuoteCard() {
       {/* The dark theme's apricot ink is made for dark surfaces, so on the pastel card it uses the card's own ink. */}
       <AppText variant="label" color={dark ? "onPastel" : "apricotInk"}>TODAY&apos;S THOUGHT</AppText>
       <AppText variant="display" color="onPastel" style={{ fontSize: 24, lineHeight: 32, letterSpacing: 0 }}>{quote}</AppText>
-      {large ? <View style={{ height: height * 0.6 }} /> : null}
+      {/* At large text sizes the quote runs full width, so leave room below it for the (smaller, less cropped) mark. */}
+      {large ? <View style={{ height: 36 }} /> : null}
       <Animated.View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" pointerEvents="none"
-        style={[{ position: "absolute", right: -10, bottom: -14, transformOrigin: ["50%", "90%", 0] }, rock]}>
+        style={[{ position: "absolute", right: large ? -4 : -10, bottom: large ? -6 : -14, transformOrigin: ["50%", "90%", 0] }, rock]}>
         <Mark height={height} hole={c.apricot} color="#DE6F44" room={4} />
       </Animated.View>
     </Card>

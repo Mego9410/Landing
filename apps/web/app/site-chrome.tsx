@@ -55,6 +55,7 @@ export function SiteFooter({ home = false }: { home?: boolean }) {
           {SECTIONS.map(([id, label]) => <a key={id} href={at(id)}>{label}</a>)}
           <Link href="/about">About us</Link>
           <Link href="/support">Support</Link>
+          <Link href="/whats-new">What&apos;s new</Link>
         </nav>
         <nav aria-label="Guides">
           <p className={styles.footerHead}>Guides</p>

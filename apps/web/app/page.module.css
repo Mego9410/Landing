@@ -205,7 +205,9 @@
 .tileBody { font-size: 15px; line-height: 1.5; opacity: .85; }
 .tileMoves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .tileMoves span { display: block; border-radius: var(--radius-lg); background: #FBF8F4; overflow: hidden; }
-.tilePeek .tileText { max-width: 62%; }
+.tileTimer { align-self: flex-start; display: flex; flex-direction: column; gap: 2px; padding: 12px 18px; border-radius: 18px; background: #CDE4D3; color: #2E2A33; box-shadow: 0 10px 24px rgba(158, 74, 32, .18); }
+.tileTimer span { font-size: 12px; font-weight: 800; }
+.tileTimer strong { font-family: var(--font-display); font-weight: 600; font-size: 30px; line-height: 1; letter-spacing: -.02em; }
 .tilePhone { position: absolute; right: -28px; bottom: -150px; width: 150px; height: auto; border-radius: 22px; box-shadow: 0 0 0 6px #2E2A33, 0 20px 40px rgba(46, 42, 51, .25); transform: rotate(-8deg); }
 .tileScore { display: flex; align-items: center; gap: 14px; font-size: 14px; line-height: 1.4; font-weight: 700; }
 .tileRing { flex: none; width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-display); font-size: 26px; font-weight: 600; color: #2E2A33;
@@ -266,7 +268,7 @@
 
 /* careful by design, as an editorial list */
 .careGrid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: 64px; }
-.careSide { display: flex; flex-direction: column; justify-content: space-between; gap: 32px; }
+.careSide { display: flex; flex-direction: column; justify-content: flex-start; gap: 40px; }
 .careSide .h2Light { margin-top: 12px; }
 .careArt { position: relative; height: 340px; }
 .careBlob { position: absolute; left: 20px; top: 50px; width: 260px; height: 260px; border-radius: 50%; background: var(--lilac); }

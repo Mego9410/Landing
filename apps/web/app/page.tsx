@@ -351,13 +351,13 @@ export default async function Home() {
                   <span><ExerciseLoop ids={["push-1"]} who="sue" /></span>
                 </div>
               </li>
-              <li className={`${styles.tile} ${styles.apricot} ${styles.tilePeek}`}>
+              <li className={`${styles.tile} ${styles.apricot}`}>
                 <div className={styles.tileText}>
                   <p className={styles.tileEyebrow}>Eat</p>
                   <h3 className={styles.tileTitle}>Meals easier than a takeaway</h3>
-                  <p className={styles.tileBody}>15 minutes hands-on, six ingredients, one pan. Swaps for every diet.</p>
+                  <p className={styles.tileBody}>15 minutes hands-on, six ingredients, one pan, with timers that keep running.</p>
                 </div>
-                <Image className={styles.tilePhone} src="/screens/cook.webp" alt="" width={780} height={1691} sizes="160px" />
+                <div className={styles.tileTimer} aria-hidden="true"><span>Cook along · simmer</span><strong>14:53</strong></div>
               </li>
               <li className={`${styles.tile} ${styles.sage}`}>
                 <div className={styles.tileText}>

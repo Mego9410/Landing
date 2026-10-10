@@ -6,17 +6,14 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { HabitCheck } from "@/components/HabitCheck";
-import { Icon, type IconName } from "@/components/Icon";
+import { Icon } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
-import { Avatar, Choices, Disc, Field } from "@/components/ui";
-import { HABITS, PHASES, READY, tipFor, type Phase } from "@/data/content";
-import { sessionFor } from "@/data/sessions";
-import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
-import { minutes, px, thisWeek } from "@/state/food";
-import { habitDetail, isWeekly, nextSession, sessionTarget, toggleHabit } from "@/state/habits";
+import { Avatar, Choices, Field } from "@/components/ui";
+import { HABITS, PHASES, READY, type Phase } from "@/data/content";
+import { fmt, partOfDay, today } from "@/data/dates";
+import { habitDetail, isWeekly, toggleHabit } from "@/state/habits";
 import { lessonNow, lessonRead, lookBackDue, markLessonRead } from "@/state/plans";
-import { gettingReady, jabWeek, monthOnPlan, needsDisclaimer, sessionsInWeek, set, stageOf, useApp, yearTwoWeek } from "@/state/store";
-import { sessionsPaused } from "@/state/health";
+import { gettingReady, jabWeek, monthOnPlan, needsDisclaimer, set, stageOf, useApp, yearTwoWeek } from "@/state/store";
 import { notificationsAllowed, trialMessage } from "@/state/reminders";
 import { askForReview } from "@/state/review";
 import { sendLapseFeedback, type LapseReason } from "@/state/events";
@@ -68,62 +65,6 @@ function TaskRow({ t }: { t: Task }) {
   );
 }
 
-/** A big way into one of the two plans, with what it holds for today. */
-function PlanTile({ icon, tone, title, line, detail, onPress }: { icon: IconName; tone: "apricot" | "sage"; title: string; line: string; detail: string; onPress: () => void }) {
-  const c = useColors();
-  return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${title}. ${line}. ${detail}`} onPress={onPress}
-      style={({ pressed }) => ({ flex: 1, gap: space[3], padding: space[4], borderRadius: radius.lg, backgroundColor: c.surfaceRaised, opacity: pressed ? 0.85 : 1,
-        shadowColor: "#6b4a30", shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 2 })}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <Disc icon={icon} tone={tone} size={44} />
-        <Icon name="chevron" size={18} color={c.inkMuted} />
-      </View>
-      <View style={{ gap: 2 }}>
-        <AppText variant="heading" style={{ fontSize: 18, lineHeight: 22 }}>{title}</AppText>
-        <AppText weight="700">{line}</AppText>
-        <AppText variant="caption" color="inkMuted">{detail}</AppText>
-      </View>
-    </Pressable>
-  );
-}
-
-/** Small pill links for the jobs people come back for. */
-function Shortcut({ icon, label, onPress }: { icon: IconName; label: string; onPress: () => void }) {
-  const c = useColors();
-  return (
-    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress}
-      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 6, minHeight: 44, paddingVertical: space[2], paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line, opacity: pressed ? 0.7 : 1 })}>
-      <Icon name={icon} size={16} color={c.ink} />
-      <AppText weight="700" style={{ fontSize: 14 }}>{label}</AppText>
-    </Pressable>
-  );
-}
-
-function Plans() {
-  const s = useApp(), large = useLargeText();
-  const day = weekdayIndex(today()), m = thisWeek(s).days[day].dinner;
-  const dinner = m.kind === "takeaway" ? { line: "Takeaway night", detail: "A night off cooking, planned in" }
-    : m.kind === "free" || !m.recipe ? { line: "A free night", detail: "Eat out, use the freezer or pick a recipe" }
-    : { line: px(s, m.recipe).name, detail: m.kind === "leftover" ? "Tonight's leftovers" : `Tonight · ${minutes(px(s, m.recipe).recipe)}` };
-  const next = nextSession(s), done = sessionsInWeek(s).length, paused = sessionsPaused(s), target = sessionTarget(s);
-  const strength = paused ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" } : next ? { line: `${sessionFor(s, next).name} next`, detail: `${done} of ${target} done this week · ${sessionFor(s, next).minutes} min` } : { line: target === 2 ? "Both sessions done" : `All ${target} sessions done`, detail: "Next ones arrive on Monday" };
-  return (
-    <View style={{ gap: space[3] }}>
-      <AppText variant="heading" accessibilityRole="header">Your plans</AppText>
-      <View style={{ flexDirection: large ? "column" : "row", gap: space[3] }}>
-        <PlanTile icon="meal" tone="apricot" title="Meal plan" line={dinner.line} detail={dinner.detail} onPress={() => router.push("/meals")} />
-        <PlanTile icon="workout" tone="sage" title="Strength plan" line={strength.line} detail={strength.detail} onPress={() => router.push("/workouts")} />
-      </View>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
-        <Shortcut icon="basket" label="Shopping list" onPress={() => router.push({ pathname: "/meals/shopping", params: { which: "this" } })} />
-        <Shortcut icon="doc" label="Recipes" onPress={() => router.push("/meals/recipes")} />
-        <Shortcut icon="plan" label={s.food.next ? "Next week's meals" : "Plan next week"} onPress={() => router.push("/meals/next")} />
-      </View>
-    </View>
-  );
-}
-
 const ORDER = ["ready", "land", "settle", "steady", "yearTwo"];
 
 /** Once, when a new phase starts: what it's about. Closing it may be followed by Apple's rating prompt (a milestone). */
@@ -155,19 +96,23 @@ function PhaseCelebration({ phase, week }: { phase: Phase; week: number }) {
   );
 }
 
-/** This week's lesson, small: its title and one thing to try. Opening it marks it read. */
-function LessonCard() {
-  const s = useApp(), pick = lessonNow(s), read = lessonRead(s, pick.key);
+/** This week's lesson, as a row in the day's list until it's been opened that week. */
+function LessonRow() {
+  const s = useApp(), c = useColors(), pick = lessonNow(s);
+  if (lessonRead(s, pick.key)) return null;
+  const title = pick.refresher ? "A refresher" : "This week's lesson";
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${pick.refresher ? "A refresher" : "This week's lesson"}: ${pick.lesson.title}. One thing to try: ${pick.lesson.tries[0]}${read ? ". Read" : ""}`}
-      onPress={() => { if (!read) set((st) => markLessonRead(st, pick.key)); router.push({ pathname: "/lesson", params: { key: pick.key } }); }}>
-      {({ pressed }) => (
-        <Card tone="sky" style={{ gap: 4, opacity: pressed ? 0.85 : 1 }}>
-          <AppText variant="label" color="onPastel">{pick.refresher ? "A REFRESHER" : "THIS WEEK'S LESSON"}{read ? " · READ" : ""}</AppText>
-          <AppText weight="800" color="onPastel" style={{ fontSize: 17 }}>{pick.lesson.title}</AppText>
-          <AppText variant="caption" color="onPastel">Try this: {pick.lesson.tries[0]}</AppText>
-        </Card>
-      )}
+    <Pressable accessibilityRole="button" accessibilityLabel={`${title}: ${pick.lesson.title}`}
+      onPress={() => { set((st) => markLessonRead(st, pick.key)); router.push({ pathname: "/lesson", params: { key: pick.key } }); }}
+      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], paddingVertical: space[3], paddingHorizontal: space[4], borderRadius: radius.md, backgroundColor: c.surfaceRaised, opacity: pressed ? 0.85 : 1 })}>
+      <View style={{ width: 32, height: 32, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceSunk }}>
+        <Icon name="book" size={18} color={c.ink} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <AppText weight="700">{title}</AppText>
+        <AppText variant="caption" color="inkMuted">{pick.lesson.title}</AppText>
+      </View>
+      <Icon name="chevron" size={18} color={c.inkMuted} />
     </Pressable>
   );
 }
@@ -279,7 +224,6 @@ export default function Today() {
   const done = items.filter((i) => i.done).length;
   const up = items.find((i): i is Task => i.kind === "task" && !i.done), habitsLeft = items.some((i) => i.kind === "habit" && !i.done);
   const part = partOfDay(), large = largeText;
-  const tip = { label: part === "evening" ? "TIP FOR TONIGHT" : "TIP FOR TODAY", text: tipFor(phase.key, today(), part === "evening") };
   const where = ready ? READY.name.toUpperCase() : two ? `YEAR TWO · WEEK ${two}` : `WEEK ${week} · ${phase.name.toUpperCase()}`;
   return (
     <Screen>
@@ -311,8 +255,6 @@ export default function Today() {
           : habitsLeft ? null : <Button variant="secondary" block label="See what shapes your days" onPress={() => router.push("/journal/insights")} />}
       </Card>
 
-      <Plans />
-
       <View style={{ gap: space[3] }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
           <AppText variant="heading" accessibilityRole="header">Today&apos;s plan</AppText>
@@ -322,18 +264,10 @@ export default function Today() {
           : <HabitCheck key={i.id} label={HABITS[i.id].label} detail={habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />)}
         {weekly.length ? <AppText variant="label" color="inkMuted" style={{ marginTop: space[2] }}>ONCE THIS WEEK</AppText> : null}
         {weekly.map((i) => <HabitCheck key={i.id} label={HABITS[i.id].label} detail={habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />)}
+        <LessonRow />
         <Button label="Swap a habit" variant="quiet" onPress={() => router.push("/swap-habit")} style={{ alignSelf: "center" }} />
       </View>
 
-      <LessonCard />
-
-      <Card tone="lilac" style={{ gap: 6 }}>
-        <AppText variant="label" color="onPastel">{tip.label}</AppText>
-        <AppText variant="bodyLg" color="onPastel">{tip.text}</AppText>
-        <Pressable accessibilityRole="button" onPress={() => router.push("/coach")} style={{ alignSelf: "flex-start", paddingVertical: space[2] }}>
-          <AppText weight="800" color="onPastel" style={{ textDecorationLine: "underline" }}>Ask the coach for more ideas</AppText>
-        </Pressable>
-      </Card>
     </Screen>
   );
 }

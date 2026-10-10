@@ -6,9 +6,12 @@ import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc, RowCard } from "@/components/ui";
 import { PHASES } from "@/data/content";
+import { sessionFor } from "@/data/sessions";
 import { thisWeek } from "@/state/food";
+import { nextSession, sessionTarget } from "@/state/habits";
+import { sessionsPaused } from "@/state/health";
 import { lessonNow, lessonRead } from "@/state/plans";
-import { gettingReady, jabWeek, stageLabel, useApp } from "@/state/store";
+import { gettingReady, jabWeek, sessionsInWeek, stageLabel, useApp } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
 /** PL1 Your plan: this week, meals this week and next, and the three phases. */
@@ -18,6 +21,10 @@ export default function Plan() {
   const week = gettingReady(s) ? 0 : jabWeek(s), pick = lessonNow(s), lesson = pick.lesson;
   const meals = thisWeek(s), cooks = meals.days.filter((d) => d.dinner.kind === "cook").length;
   const nx = s.food.next, pr = nx ? progress(nx.week) : null;
+  const next = nextSession(s), done = sessionsInWeek(s).length, target = sessionTarget(s);
+  const strength = sessionsPaused(s) ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" }
+    : next ? { line: `${sessionFor(s, next).name} next`, detail: `${done} of ${target} done this week · ${sessionFor(s, next).minutes} min` }
+    : { line: target === 2 ? "Both sessions done" : `All ${target} sessions done`, detail: "Next ones arrive on Monday" };
   return (
     <Screen contentContainerStyle={{ gap: space[5] }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -49,6 +56,15 @@ export default function Plan() {
           <AppText variant="label" color="inkMuted">NEXT WEEK</AppText>
           <AppText weight="800" style={{ fontSize: 16 }}>{pr ? `${pr.chosen} of ${pr.total} meals picked` : "Pick your meals for next week"}</AppText>
           <AppText variant="caption" color="inkMuted">{pr ? "Your shopping list adds it all up" : "Then get one shopping list for the lot"}</AppText>
+        </View>
+      </RowCard>
+
+      <RowCard onPress={() => router.push("/workouts")}>
+        <Disc icon="workout" tone="sage" />
+        <View style={{ flex: 1, gap: 2 }}>
+          <AppText variant="label" color="inkMuted">STRENGTH PLAN</AppText>
+          <AppText weight="800" style={{ fontSize: 16 }}>{strength.line}</AppText>
+          <AppText variant="caption" color="inkMuted">{strength.detail}</AppText>
         </View>
       </RowCard>
 

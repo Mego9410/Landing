@@ -27,6 +27,12 @@ export function profileOf(s: AppState, ahead = 0): Profile {
   return profiles.get(key)!;
 }
 
+/** This week's seed: the person's own seed mixed with the week, so every week (and every person) gets a different plan. */
+export function weekSeed(s: AppState, ahead = 0) {
+  const weeks = Math.round(Date.parse(`${addDays(weekStart(today()), ahead * 7)}T12:00:00Z`) / (7 * 86_400_000));
+  return (Math.imul(s.food.seed ^ 0x9e3779b9, 2654435761) + Math.imul(weeks, 40503)) >>> 0;
+}
+
 /** A plan belongs to its week, the preferences it was made for and the seed, so a new week gets a new plan. */
 export const planKey = (s: AppState) => weekStart(today()) + "#" + JSON.stringify(profileOf(s)) + "#" + s.food.seed;
 const weeks = new Map<string, Week>();
@@ -34,9 +40,11 @@ const weeks = new Map<string, Week>();
 export function thisWeek(s: AppState): Week {
   const key = planKey(s);
   if (s.food.plan && s.food.plan.key === key) return s.food.plan.week;
-  if (!weeks.has(key)) weeks.set(key, planWeek(profileOf(s), { seed: s.food.seed, includeDrafts: INCLUDE_DRAFTS }));
+  if (!weeks.has(key)) weeks.set(key, freshWeek(s));
   return weeks.get(key)!;
 }
+/** A newly made plan for this week (not saved: state/plans.ts saves it into the plan so it's backed up). */
+export const freshWeek = (s: AppState) => planWeek(profileOf(s), { seed: weekSeed(s), includeDrafts: INCLUDE_DRAFTS });
 export function saveThisWeek(s: AppState, week: Week) { s.food.plan = { key: planKey(s), week }; }
 
 export type Which = "this" | "next";
@@ -49,7 +57,7 @@ export const profileFor = (s: AppState, which: Which) => profileOf(s, which === 
 
 export function startNextWeek(s: AppState, from: "blank" | "suggested") {
   const p = profileOf(s, 1);
-  s.food.next = { from, ticked: {}, start: nextStart(), week: from === "blank" ? emptyWeek(p) : planWeek(p, { seed: s.food.seed + 7, includeDrafts: INCLUDE_DRAFTS }) };
+  s.food.next = { from, ticked: {}, start: nextStart(), week: from === "blank" ? emptyWeek(p) : planWeek(p, { seed: weekSeed(s, 1), includeDrafts: INCLUDE_DRAFTS }) };
 }
 
 export const mealAt = (week: Week, day: number, slot: Slot, index = 0) => (slot === "snack" ? week.days[day].snacks[index] : week.days[day][slot]);

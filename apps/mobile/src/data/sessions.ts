@@ -3,6 +3,7 @@
 // level and "Tough" moves them down. Anyone who said they feel much worse after activity stays on level 1 (pacing,
 // with no automatic progression).
 import { SESSIONS, type Move } from "./content";
+import { blockOf } from "./program";
 import type { AppState } from "@/state/store";
 import { weekOf } from "@/state/store";
 
@@ -28,8 +29,19 @@ function adjust(m: Move, level: Level): Move {
   return { ...m, reps, sets: level === 3 ? Math.min(4, m.sets + (m.sets >= 3 ? 1 : 0)) : m.sets };
 }
 
-/** A session as it should be done now. */
+/** The moves for a session from this person's own programme (the block for their week on the plan, or the latest built),
+ *  or the standard sessions before one exists. */
+function movesFor(s: AppState, id: "A" | "B"): Move[] {
+  const blocks = s.program?.blocks ?? [];
+  if (!blocks.length) return SESSIONS[id].moves;
+  const week = weekOf(s), weeks = Math.max(1, week - (s.food.joinedWeek ?? week) + 1);
+  const b = blocks.find((x) => x.block === blockOf(weeks)) ?? blocks[blocks.length - 1];
+  return b[id].length ? b[id] : SESSIONS[id].moves;
+}
+
+/** A session as it should be done now: about four minutes a move, a little longer at level 3. */
 export function sessionFor(s: AppState, id: "A" | "B") {
-  const base = SESSIONS[id], level = sessionLevel(s);
-  return { ...base, level, minutes: base.minutes + (level === 3 ? 5 : 0), moves: base.moves.map((m) => adjust(m, level)) };
+  const moves = movesFor(s, id), level = sessionLevel(s);
+  const minutes = s.program?.blocks.length ? Math.max(15, Math.round((moves.length * 4 + 5) / 5) * 5) : SESSIONS[id].minutes;
+  return { ...SESSIONS[id], level, minutes: minutes + (level === 3 ? 5 : 0), moves: moves.map((m) => adjust(m, level)) };
 }

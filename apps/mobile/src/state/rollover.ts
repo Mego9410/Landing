@@ -8,11 +8,14 @@ import { syncWeights } from "./appleHealth";
 import { saveThisWeek } from "./food";
 import { track } from "./events";
 import { install, updateInstall } from "./install";
+import { ensurePlans, plansDue } from "./plans";
 import { refreshReminders } from "./reminders";
 import { get, set, weekOf } from "./store";
 
 export function rollover() {
   const t = today(), s = get();
+  // This week's meals and the strength block, saved into the plan (and so the backup) as soon as they're due.
+  if (plansDue(s)) set(ensurePlans);
   if (s.lastSeen === t) return;
   set((st) => {
     const week = weekOf(st, t);

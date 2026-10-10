@@ -17,7 +17,7 @@ export default function Sessions() {
   return (
     <Screen header={<Header fallback="/" title="This week's sessions" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">This week&apos;s sessions</AppText>
-      <AppText color="inkMuted">Two short strength sessions at home. Most moves have an easier version.</AppText>
+      <AppText color="inkMuted">{s.program?.blocks.length ? `Your own two sessions, built for ${s.story.strengthAt === "gym" ? "the gym" : "home"}. They step up every eight weeks, and most moves have an easier version.` : "Two short strength sessions at home. Most moves have an easier version."}</AppText>
       <SessionHealth paused={sessionsPaused(s)} notes={sessionNotes(s)} onCleared={() => { set((st) => { st.health.gpCleared = true; }); toast("Thanks. Your sessions are ready."); }} />
       {(["A", "B"] as const).map((k) => {
         const on = sessionDoneOn(s, k), done = on ? fmt.weekday(on) : null;

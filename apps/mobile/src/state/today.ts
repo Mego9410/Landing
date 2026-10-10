@@ -39,7 +39,7 @@ export function todayPlan(s: AppState): TodayItem[] {
     items.push({ kind: "task", id: "session", icon: "workout", done: !!doneToday, href: { pathname: "/workouts/[id]", params: { id: k } },
       cta: `Start ${sessionFor(s, k).name}`,
       label: doneToday ? `${sessionFor(s, k).name} done` : `${sessionFor(s, k).name} · ${sessionFor(s, k).minutes} minutes`,
-      detail: doneToday ? "Nice work. That counts towards this week" : `${sessionFor(s, k).moves.length} exercises at home` });
+      detail: doneToday ? "Nice work. That counts towards this week" : `${sessionFor(s, k).moves.length} exercises ${s.story.strengthAt === "gym" ? "at the gym" : "at home"}` });
   }
 
   // Session habits are covered by the session above.

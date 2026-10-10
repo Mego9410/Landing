@@ -233,3 +233,60 @@ test("check-in reminders: daily at the chosen time from the day after onboarding
   s.journal.entries["2026-10-10"] = { yes: {} };
   assert.equal(checkInSchedule(s, 8, 0, now, 7).some((n) => n.day === "2026-10-11"), false);
 });
+
+test("strength programme: personal, safe for the health check, matched to kit, and stepping up by block", async () => {
+  const { buildBlock, kitFor, withBlock, blockOf } = await import("@/data/program");
+  const { byId } = await import("@landing/motion");
+  const home = { at: "home" as const, kit: [], answers: {}, perWeek: 2 };
+  const a = buildBlock(home, 12345, 0), b = buildBlock(home, 12345, 0);
+  assert.deepEqual(a, b, "same seed, same plan");
+  assert.equal(a.A.length, 5); assert.ok(a.B.length >= 5);
+  const ids = (x: typeof a) => [...x.A, ...x.B].map((m) => m.anim).join();
+  const seen = new Set(Array.from({ length: 40 }, (_, i) => ids(buildBlock(home, 1000 + i * 7919, 0))));
+  assert.ok(seen.size >= 10, `40 people should get many different plans (got ${seen.size})`);
+  // Only kit they have at home.
+  const kit = kitFor(home);
+  for (const m of [...a.A, ...a.B]) assert.ok(byId(m.anim)!.equipment.every((q) => kit.has(q)), `${m.anim} needs kit they don't have`);
+  // A gym plan can use gym kit; a later block is harder.
+  const gymIds = Array.from({ length: 10 }, (_, i) => ids(buildBlock({ ...home, at: "gym" }, 50 + i, 2))).join();
+  assert.match(gymIds, /squat-6|hinge-6|row-6|pulldown-5|press-6|push-6|lunge-6/);
+  const level = (x: typeof a) => [...x.A, ...x.B].reduce((n, m) => n + byId(m.anim)!.level, 0);
+  assert.ok(level(buildBlock(home, 9, 3)) > level(buildBlock(home, 9, 0)));
+  // Floor work left out when getting down is hard; pacing keeps everything easy with fewer sets.
+  const floor = buildBlock({ ...home, answers: { floor: true } }, 7, 2);
+  assert.ok([...floor.A, ...floor.B].every((m) => !/hinge-1|push-4|push-5|core-2|core-4|core-5|rotation-2|rotation-3|rotation-5/.test(m.anim)));
+  const tired = buildBlock({ ...home, answers: { fatigue: true } }, 7, 4);
+  assert.ok([...tired.A, ...tired.B].every((m) => byId(m.anim)!.level <= 2 && m.sets === 2));
+  // Falls: balance in both sessions.
+  const falls = buildBlock({ ...home, answers: { falls: true } }, 7, 0);
+  assert.ok(falls.A.some((m) => m.anim.startsWith("balance")) && falls.B.some((m) => m.anim.startsWith("balance")));
+  // Blocks are kept once built; changing kit rebuilds with the same seed.
+  const p1 = withBlock(null, home, 77, 0, "t");
+  assert.equal(withBlock(p1, home, 99, 0, "t"), p1);
+  const p2 = withBlock(p1, { ...home, kit: ["dumbbells"] }, 99, 0, "t");
+  assert.equal(p2.seed, 77); assert.notEqual(p2.inputs, p1.inputs);
+  assert.equal(blockOf(1), 0); assert.equal(blockOf(8), 0); assert.equal(blockOf(9), 1);
+});
+
+test("plans: everyone gets their own seeds, meals differ by person and week, and both plans are saved for the backup", async () => {
+  const { ensurePlans, seedPlans } = await import("@/state/plans");
+  const { weekSeed } = await import("@/state/food");
+  const { sessionFor } = await import("@/data/sessions");
+  const s = freshState(); s.onboarded = true; s.food.joinedWeek = 1;
+  seedPlans(s);
+  const t = freshState(); seedPlans(t);
+  assert.notEqual(s.food.seed, t.food.seed, "two people, two seeds");
+  assert.notEqual(weekSeed(s), weekSeed(t));
+  assert.notEqual(weekSeed(s), weekSeed(s, 1), "next week differs");
+  ensurePlans(s);
+  assert.ok(s.food.plan?.week, "this week's meals saved in the plan");
+  assert.equal(s.program?.blocks.length, 1, "first strength block saved");
+  const saved = JSON.stringify(s.program), seed = s.food.seed;
+  ensurePlans(s);
+  assert.equal(JSON.stringify(s.program), saved, "nothing changes when nothing is due");
+  assert.equal(s.food.seed, seed);
+  assert.deepEqual(sessionFor(s, "A").moves.map((m) => m.anim), s.program!.blocks[0].A.map((m) => m.anim), "sessions come from their own programme");
+  // The backup is the app state, so a round trip keeps both plans.
+  const back = migrate(JSON.parse(JSON.stringify(s)))!;
+  assert.deepEqual(back.program, s.program); assert.deepEqual(back.food.plan, s.food.plan);
+});

@@ -8,6 +8,7 @@ import { habitsForWeek } from "@/data/content";
 import { addDays, daysBetween, today, weekDates, weekdayIndex, weekStart } from "@/data/dates";
 import { STARTER } from "@/data/journal";
 import { REMINDER_DEFAULTS, type Reminders } from "@/data/reminders";
+import type { Program } from "@/data/program";
 
 export type Hungry = "Morning" | "Lunchtime" | "Afternoon" | "Evening" | "Late night";
 
@@ -27,6 +28,8 @@ export interface FoodPrefs {
   /** The week of the plan someone joined, for the fibre ramp. */
   joinedWeek: number | null;
   seed: number;
+  /** Set once this person has their own random seed (new installs used to share seed 1). */
+  seeded?: boolean;
   /** This week's plan once edited, tied to the preferences and seed it came from. */
   plan: { key: string; week: Week } | null;
   ticked: Record<string, boolean>;
@@ -87,6 +90,9 @@ export interface AppState {
   subscription: { active: boolean; checkedAt: string; plan?: "yearly" | "monthly" | null; trial?: boolean; until?: string | null; willRenew?: boolean; /** Had the plan before and it has ended (not just never subscribed). */ ended?: boolean } | null;
   /** Onboarding answers that shape the plan's wording and later nudges (src/state/onboarding.ts). */
   story: Story;
+  /** Their own strength programme: built from their answers and seed, a block per eight weeks, saved so it's backed up
+   *  and stays the same across app updates (data/program.ts, state/plans.ts). */
+  program?: Program | null;
   /** The phase whose start has been celebrated on Today (or that someone started in), so each change shows once. */
   phaseSeen?: "land" | "settle" | "steady" | null;
   /** When this copy last changed, so the newer of two copies wins when a backup and a phone disagree. */
@@ -107,6 +113,8 @@ export interface Story {
   /** How weight shows: as numbers, as a trend only, or not at all (which is safe mode). */
   weightView: "show" | "trend" | "hide";
   strengthAt: "home" | "gym";
+  /** Extra kit at home for strength sessions: band, dumbbells, kettlebell. */
+  kit?: string[];
   /** Their answer to the first check-in, "how are you feeling this morning?". */
   mood: string | null;
   /** Which welcome screen they saw (A/B test), and when they made their promise, if they did. */

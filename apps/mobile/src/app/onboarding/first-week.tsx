@@ -10,6 +10,8 @@ import { mealAt, px, thisWeek } from "@/state/food";
 import { sessionsPaused } from "@/state/health";
 import { track } from "@/state/events";
 import { daysPhrase, ifThenSentence, mealsPhrase, noiseMoment, WHERE_PHRASE } from "@/state/onboarding";
+import { buildBlock } from "@/data/program";
+import { ensurePlans, programInput } from "@/state/plans";
 import { refreshReminders } from "@/state/reminders";
 import { PROTEIN_TARGET } from "@/state/today";
 import { get, set, useApp, weekOf } from "@/state/store";
@@ -29,6 +31,7 @@ export default function FirstWeek() {
     const p = px(s, m.recipe);
     return { name: p.name, protein: Math.round(p.nutrition.protein) };
   };
+  const strengthA = buildBlock(programInput(s), s.program?.seed ?? 1, 0).A;
   const meals = [{ slot: "Breakfast", m: meal("breakfast"), tone: c.butter }, { slot: "Dinner", m: meal("dinner"), tone: c.sage }].filter((x) => x.m);
   const ticks = [
     s.story.where ? `Planned around ${WHERE_PHRASE[s.story.where]}` : null,
@@ -45,6 +48,7 @@ export default function FirstWeek() {
       st.food.joinedWeek = week; // the fibre ramp starts today
       st.food.plan = null;
       st.phaseSeen = phase.key; // no celebration for the phase they start in
+      ensurePlans(st); // their own seeds, this week's meals and the first strength block, saved and backed up
     });
     refreshReminders(get()); // the check-in reminder, if turned on, starts tomorrow
     track("onboarding_completed", { week });
@@ -78,6 +82,15 @@ export default function FirstWeek() {
             </View>
           </View>
         ))}
+        {strengthA.length && !sessionsPaused(s) ? (
+          <View style={{ flexDirection: "row", gap: 10, alignItems: "center", backgroundColor: c.surfaceRaised, borderRadius: radius.md, padding: 10, paddingHorizontal: space[3] }}>
+            <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: c.lilac }} />
+            <View style={{ flex: 1 }}>
+              <AppText weight="800" style={{ fontSize: 14 }}>Strength A: {strengthA.slice(0, 3).map((m) => m.name.toLowerCase()).join(", ").replace(/^./, (x) => x.toUpperCase())} and more</AppText>
+              <AppText variant="caption" color="inkMuted">{strengthA.length} moves, built for you{s.story.strengthAt === "gym" ? " at the gym" : " at home"}</AppText>
+            </View>
+          </View>
+        ) : null}
         {s.story.ifThen ? (
           <View style={{ flexDirection: "row", gap: 10, alignItems: "center", backgroundColor: c.surfaceRaised, borderRadius: radius.md, padding: 10, paddingHorizontal: space[3] }}>
             <View style={{ width: 36, height: 36, borderRadius: 11, backgroundColor: c.ink }} />

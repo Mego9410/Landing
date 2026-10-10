@@ -24,7 +24,7 @@ export default function SessionOverview() {
   return (
     <Screen header={<Header fallback="/workouts" title={session.name} />} contentContainerStyle={{ gap: space[4], paddingBottom: 48 }}>
       <AppText variant="title" accessibilityRole="header">{session.name}</AppText>
-      <AppText color="inkMuted">{session.minutes} minutes at home · {session.moves.length} exercises · level {session.level} of 3</AppText>
+      <AppText color="inkMuted">{session.minutes} minutes {s.story.strengthAt === "gym" ? "at the gym" : "at home"} · {session.moves.length} exercises · level {session.level} of 3</AppText>
       <SessionHealth paused={sessionsPaused(s)} notes={sessionNotes(s)} onCleared={() => { set((st) => { st.health.gpCleared = true; }); toast("Thanks. Your sessions are ready."); }} />
       <View style={{ borderRadius: radius.lg, backgroundColor: c.sky, overflow: "hidden" }}>
         <ExerciseAnimation id={move.anim} who={who} paused={s.demos.still} />

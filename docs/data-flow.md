@@ -7,7 +7,8 @@ should all match this page. Update it whenever data handling changes.
 ## On the phone (always)
 
 Everything the app keeps lives on the phone first: the health check, weight (if logged), check-ins, habits, strength
-sessions, food preferences, coach messages, settings, the health-information consent and, if connected, Apple Health
+sessions, their own plans (this week's meal plan and their strength programme, each made from their answers and a random
+seed of their own, and saved rather than worked out again, so the backup restores exactly the same plans), food preferences, coach messages, settings, the health-information consent and, if connected, Apple Health
 weight and steps. Signed in, the session key is in the iPhone Keychain.
 
 ## On our servers (only if signed in)

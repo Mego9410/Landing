@@ -100,7 +100,7 @@ export async function applyReminders(s: AppState) {
   if (r.sessions.on && !sessionsPaused(s)) {
     for (const d of r.sessions.days) {
       await Notifications.scheduleNotificationAsync({
-        content: { title: "Strength session today", body: "25 minutes at home. The easier version of any move is a tap away." },
+        content: { title: "Strength session today", body: "About 25 minutes. The easier version of any move is a tap away." },
         trigger: { type: WEEKLY, weekday: expoWeekday(d), hour: r.sessions.hour, minute: r.sessions.minute },
       });
     }

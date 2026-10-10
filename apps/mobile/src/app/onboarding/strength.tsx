@@ -4,15 +4,15 @@ import * as Haptics from "expo-haptics";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
-import { Lede, OnbScreen, Opt, Title } from "@/components/Onboarding";
+import { Chip, Chips, Lede, OnbScreen, Opt, Title, toggle } from "@/components/Onboarding";
 import { sessionsPaused } from "@/state/health";
 import { set, useApp } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
 const DAYS = [["M", "Mon"], ["T", "Tue"], ["W", "Wed"], ["T", "Thu"], ["F", "Fri"], ["S", "Sat"], ["S", "Sun"]];
 
-/** 16 · Which days could you fit in 20 minutes of strength, and where. The days set the session reminders (switched on
- *  in Settings); gym sessions aren't built yet, so the gym choice says so. */
+/** 16 · Which days could you fit in 20 minutes of strength, where, and (at home) any kit they have. The days set the
+ *  session reminders (switched on in Settings); where and kit decide which moves their own programme uses. */
 export default function Strength() {
   const s = useApp(), c = useColors();
   const days = s.settings.reminders.sessions.days, at = s.story.strengthAt;
@@ -39,9 +39,20 @@ export default function Strength() {
           <AppText variant="caption" weight="600" color={at === "home" ? "onPastel" : "inkMuted"}>Just a chair to start</AppText>
         </Opt></View>
         <View style={{ flex: 1 }}><Opt label="At a gym" on={at === "gym"} onPress={() => set((st) => { st.story.strengthAt = "gym"; })}>
-          <AppText variant="caption" weight="600" color={at === "gym" ? "onPastel" : "inkMuted"}>Home sessions work there too. Gym versions are on the way.</AppText>
+          <AppText variant="caption" weight="600" color={at === "gym" ? "onPastel" : "inkMuted"}>Machines and weights</AppText>
         </Opt></View>
       </View>
+      {at === "home" ? (
+        <View style={{ gap: space[2], marginTop: space[2] }}>
+          <AppText weight="800" style={{ fontSize: 16 }}>Got any of these at home?</AppText>
+          <Chips>
+            {[["band", "Resistance band"], ["dumbbells", "Dumbbells"], ["kettlebell", "Kettlebell"]].map(([id, label]) => (
+              <Chip key={id} multi label={label} on={(s.story.kit ?? []).includes(id)} onPress={() => set((st) => { st.story.kit = toggle(st.story.kit ?? [], id); })} />
+            ))}
+          </Chips>
+          <AppText variant="caption" color="inkMuted">None is fine: a chair, a wall and the stairs are enough to start. Your moves are picked to match.</AppText>
+        </View>
+      ) : null}
       <View style={{ flexDirection: "row", gap: space[2], alignItems: "center", marginTop: space[2], padding: space[3], borderRadius: radius.md, backgroundColor: c.surfaceSunk }}>
         <Icon name={at === "gym" ? "gym" : "home"} size={18} color={c.ink} />
         <AppText variant="caption" style={{ flex: 1 }}>{days.length ? `${days.length} ${days.length === 1 ? "day" : "days"} a week. You can change them any time.` : "Pick a day or two, or skip for now."}</AppText>

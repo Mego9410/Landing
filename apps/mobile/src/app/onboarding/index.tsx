@@ -10,6 +10,7 @@ import { readable } from "@/components/Screen";
 import { accountsAvailable } from "@/state/account";
 import { track } from "@/state/events";
 import { welcomeVariant } from "@/state/onboarding";
+import { seedPlans } from "@/state/plans";
 import { demoState, replace, set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
@@ -24,7 +25,7 @@ export default function Welcome() {
   useEffect(() => { if (!variant) welcomeVariant().then(setVariant, () => setVariant("A")); }, [variant]);
   const demo = () => { replace({ ...demoState(), disclaimer: s.disclaimer }); toast("Demo mode: Hannah, six weeks in."); router.replace("/"); };
   const start = () => {
-    set((st) => { st.story.welcome = variant; });
+    set((st) => { st.story.welcome = variant; seedPlans(st); });
     track("onboarding_started", { welcome: variant ?? "A" });
     router.push("/onboarding/name");
   };

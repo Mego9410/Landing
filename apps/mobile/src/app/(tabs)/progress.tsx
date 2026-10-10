@@ -3,6 +3,7 @@ import { View } from "react-native";
 import Svg, { Circle, Line, Path, Rect, Text as SvgText } from "react-native-svg";
 import { AppText } from "@/components/AppText";
 import { Card } from "@/components/Card";
+import { PhaseStrip } from "@/components/PhaseStrip";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc, List, Row, RowCard } from "@/components/ui";
 import { HABITS } from "@/data/content";
@@ -125,6 +126,7 @@ export default function Progress() {
         <AppText variant="title" accessibilityRole="header">Progress</AppText>
         <Avatar name={s.name} />
       </View>
+      <PhaseStrip s={s} />
       {last ? (
         <Card tone="sage" hero style={{ flexDirection: "row", alignItems: "center", gap: space[4] }}>
           <View style={{ width: 84, height: 84, borderRadius: 42, borderWidth: 9, borderColor: c.sageInk, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceRaised }}>

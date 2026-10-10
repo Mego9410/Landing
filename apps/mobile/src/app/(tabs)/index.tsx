@@ -9,13 +9,13 @@ import { HabitCheck } from "@/components/HabitCheck";
 import { Icon, type IconName } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
 import { Avatar, Choices, Disc, Field } from "@/components/ui";
-import { HABITS, PHASES, READY, tipFor, YEAR_TWO, type Phase } from "@/data/content";
+import { HABITS, PHASES, READY, tipFor, type Phase } from "@/data/content";
 import { sessionFor } from "@/data/sessions";
 import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
 import { minutes, px, thisWeek } from "@/state/food";
 import { habitDetail, isWeekly, nextSession, sessionTarget, toggleHabit } from "@/state/habits";
 import { lessonNow, lessonRead, lookBackDue, markLessonRead } from "@/state/plans";
-import { gettingReady, jabWeek, monthOnPlan, needsDisclaimer, sessionsInWeek, set, stageOf, useApp, weeksToLastJab, yearTwoWeek, type AppState } from "@/state/store";
+import { gettingReady, jabWeek, monthOnPlan, needsDisclaimer, sessionsInWeek, set, stageOf, useApp, yearTwoWeek } from "@/state/store";
 import { sessionsPaused } from "@/state/health";
 import { notificationsAllowed, trialMessage } from "@/state/reminders";
 import { askForReview } from "@/state/review";
@@ -119,32 +119,6 @@ function Plans() {
         <Shortcut icon="basket" label="Shopping list" onPress={() => router.push({ pathname: "/meals/shopping", params: { which: "this" } })} />
         <Shortcut icon="doc" label="Recipes" onPress={() => router.push("/meals/recipes")} />
         <Shortcut icon="plan" label={s.food.next ? "Next week's meals" : "Plan next week"} onPress={() => router.push("/meals/next")} />
-      </View>
-    </View>
-  );
-}
-
-/** The year at a glance: Land, Settle and Steady as one strip, sized by their weeks, filled up to this week. Empty while
- *  getting ready, and full in year two. */
-function PhaseStrip({ s }: { s: AppState }) {
-  const c = useColors(), phase = stageOf(s), ready = gettingReady(s), two = yearTwoWeek(s), week = ready ? 0 : jabWeek(s);
-  const toGo = weeksToLastJab(s);
-  const label = ready ? `${READY.name} · last jab in about ${toGo} ${toGo === 1 ? "week" : "weeks"}` : two ? `${YEAR_TWO.name} · week ${two}` : `Week ${week} of 52 · ${phase.name}`;
-  return (
-    <View accessible accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 52, now: Math.min(52, week) }} style={{ gap: 6 }}>
-      <View style={{ flexDirection: "row", gap: 4 }}>
-        {PHASES.map((p) => {
-          const len = p.to - p.from + 1, filled = Math.max(0, Math.min(len, week - p.from + 1));
-          return (
-            <View key={p.key} style={{ flex: len, height: 8, borderRadius: radius.full, backgroundColor: c.surfaceSunk, overflow: "hidden" }}>
-              <View style={{ width: `${(filled / len) * 100}%`, height: "100%", backgroundColor: c[p.tone] }} />
-            </View>
-          );
-        })}
-      </View>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space[2] }}>
-        <AppText variant="caption" weight="700" style={{ flexShrink: 1 }}>{label}</AppText>
-        <AppText variant="caption" color="inkMuted">{two ? "A year done" : PHASES.map((p) => p.name).join(" › ")}</AppText>
       </View>
     </View>
   );
@@ -300,7 +274,6 @@ export default function Today() {
   if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
   if (!s.consent) return <Redirect href="/consent" />;
   const phase = stageOf(s), ready = gettingReady(s), week = jabWeek(s), two = yearTwoWeek(s);
-  const nextPhase = ready ? null : phase.key === "steady" ? YEAR_TWO : PHASES[PHASES.indexOf(phase) + 1];
   // Weekly habits (done once in the week) sit below the day's list, outside the ring.
   const all = todayPlan(s), weekly = all.filter((i) => i.kind === "habit" && isWeekly(i.id)), items = all.filter((i) => !weekly.includes(i));
   const done = items.filter((i) => i.done).length;
@@ -308,7 +281,6 @@ export default function Today() {
   const part = partOfDay(), large = largeText;
   const tip = { label: part === "evening" ? "TIP FOR TONIGHT" : "TIP FOR TODAY", text: tipFor(phase.key, today(), part === "evening") };
   const where = ready ? READY.name.toUpperCase() : two ? `YEAR TWO · WEEK ${two}` : `WEEK ${week} · ${phase.name.toUpperCase()}`;
-  const ahead = ready ? " Week 1 begins after your last jab." : nextPhase ? ` ${nextPhase.from - week} ${nextPhase.from - week === 1 ? "week" : "weeks"} until ${nextPhase.key === "yearTwo" ? "year two" : nextPhase.name}.` : "";
   return (
     <Screen>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[3] }}>
@@ -319,7 +291,6 @@ export default function Today() {
         <Avatar name={s.name} />
       </View>
 
-      <PhaseStrip s={s} />
       <PhaseCelebration phase={phase} week={week} />
       <MonthCard />
       <TrialEnding />
@@ -333,7 +304,6 @@ export default function Today() {
             <AppText variant="heading" color="onPastel" style={{ fontSize: 22, lineHeight: 26 }}>{headline(done, items.length)}</AppText>
             <AppText variant="caption" color="onPastel">
               {up ? "Small steps that add up to a steady week." : habitsLeft ? "Just your habits left. Tick them off below as you do them." : "Rest up. Tomorrow's check-in will be here in the morning."}
-              {ahead}
             </AppText>
           </View>
         </View>

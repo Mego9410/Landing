@@ -85,7 +85,7 @@ const SUPPORT: { icon: IconName; tone: string; title: string; text: string }[] =
 ];
 
 const STEPS = [
-  { title: "Answer a few questions", text: "A few minutes on when you stopped, a quick health check, and how you like to eat. No weigh-in needed." },
+  { title: "Answer a few questions", text: "A few minutes on when you stopped (or plan to), a quick health check, and how you like to eat. No weigh-in needed." },
   { title: "Get your 12-month plan", text: "Three phases, three small habits a week and short strength sessions that fit your week and your body." },
   { title: "Keep it, with support", text: "A morning check-in, a weekly steady score and a coach for tricky days, with a calm plan if things start to drift." },
 ];
@@ -93,7 +93,7 @@ const STEPS = [
 const PHASES = [
   { name: "Land", weeks: "Weeks 1–8", tone: "sky", text: "Your appetite starts to come back. Protein at every meal and two short strength sessions a week." },
   { name: "Settle", weeks: "Weeks 9–26", tone: "sage", text: "Meal structure that fits your week, eating out without overthinking it, and a plan for cravings." },
-  { name: "Steady", weeks: "Weeks 27–52", tone: "lilac", text: "The routines are yours now. Fewer prompts, and a check-in each month." },
+  { name: "Steady", weeks: "Weeks 27–52", tone: "lilac", text: "The routines are yours now, with a calm look back at your month every four weeks." },
 ] as const;
 
 const BRIEFS: Record<string, { build: string; move: string; ids: string[] }> = {
@@ -121,7 +121,8 @@ const PROMISES: { icon: IconName; title: string; text: string }[] = [
 const faqs = (live: boolean) => [
   { q: "Who is Steadie for?", a: "Adults who have stopped a weight-loss jab such as Wegovy or Mounjaro, are stopping soon, or want a plan ready for when they do." },
   { q: "Is Steadie medical advice?", a: "No. Steadie is a general wellness app for building food, activity and eating habits. It doesn't diagnose or treat anything, and decisions about medication are always for your prescriber." },
-  { q: "I'm still on my jab. Can I start now?", a: "Yes. Many people start building the habits before their last injection, so the routines are in place when appetite returns." },
+  { q: "I'm still on my jab. Can I start now?", a: "Yes. You start with a few weeks of getting ready: protein, strength basics and a plan. Week 1 begins after your last jab, so the routines are in place when appetite returns." },
+  { q: "What happens after the 12 months?", a: "Your plan carries on into a calm year two: habits you choose, a new lesson each month and a look back every four weeks." },
   { q: "Do I have to weigh myself?", a: "No. Weigh-ins are optional, and Habit Only mode hides weight completely. Your weekly score can come from habits and your morning check-ins alone." },
   { q: "I have a health condition. Can I use Steadie?", a: "Steadie gives general guidance, not medical advice. A quick health check at the start suggests checking with your GP, midwife or specialist where it matters, pauses strength sessions until you have, and adjusts food and sessions to suit. It asks again every 12 weeks." },
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
@@ -300,7 +301,7 @@ export default async function Home() {
               </div>
               <div className={styles.statCard}>
                 <p className={styles.statBig}>52</p>
-                <p className={styles.statNote}>weeks of plan, counted from your last injection</p>
+                <p className={styles.statNote}>weeks of plan from when you start, then a calm year two</p>
               </div>
               <div className={styles.statCard}>
                 <p className={styles.statBig}>1</p>
@@ -312,7 +313,7 @@ export default async function Home() {
               </div>
               <div className={styles.statCard}>
                 <p className={styles.statBig}>25</p>
-                <p className={styles.statNote}>minute strength sessions, twice a week</p>
+                <p className={styles.statNote}>minute strength sessions, two or three a week</p>
               </div>
               <div className={styles.statCard}>
                 <p className={styles.statBig}>6</p>
@@ -426,7 +427,7 @@ export default async function Home() {
               <p className={styles.price}>{PRICE.yearly}<span> a year</span></p>
               <p className={styles.muted}>About {PRICE.weekly} a week. Or {PRICE.monthly} a month. Both start with 7 days free.</p>
               <ul className={styles.priceList}>
-                {["Your 12-month plan, with a lesson each week", "Strength sessions that step up as you do", "Easy meals, swaps and shopping lists", "A morning check-in and your weekly steady score", "A coach for tricky days", "A summary for your prescriber", "Reminders and Apple Health"].map((x) => (
+                {["Your 12-month plan, with a lesson each week", "Strength sessions that step up as you do", "Easy meals, swaps and shopping lists", "A morning check-in and your weekly steady score", "A look back at your month, every four weeks", "A coach for tricky days", "A summary for your prescriber", "Reminders and Apple Health"].map((x) => (
                   <li key={x}><Icon name="check" size={18} />{x}</li>
                 ))}
               </ul>

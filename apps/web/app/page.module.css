@@ -175,6 +175,20 @@
   .fan[data-open] .fanDark { animation: none; }
 }
 
+/* the intro film (app/film.tsx) */
+.filmSection { padding-block: 72px 88px; }
+.film { position: relative; max-width: 1040px; margin: 0 auto; aspect-ratio: 16 / 9; border-radius: var(--radius-xl); overflow: hidden; background: #FBF8F4; box-shadow: var(--shadow-lg); }
+.filmVideo { display: block; width: 100%; height: 100%; object-fit: cover; background: #FBF8F4; }
+.filmPlay { position: absolute; inset: 0; border: 0; padding: 0; margin: 0; background: transparent; cursor: pointer; display: flex; align-items: flex-end; justify-content: flex-start; font: inherit; }
+.filmPlay:focus-visible { outline: none; box-shadow: none; }
+.filmPlay:focus-visible .filmPill { box-shadow: var(--focus-ring); }
+.filmPill { margin: 0 0 28px 28px; display: inline-flex; align-items: center; gap: 12px; padding: 10px 22px 10px 10px; border-radius: var(--radius-full); background: #2E2A33; color: #FBF8F4;
+  font-weight: 800; font-size: 17px; box-shadow: var(--shadow-lg); transition: transform .2s ease-out; }
+.filmPlay:hover .filmPill, .filmPlay:focus-visible .filmPill { transform: scale(1.04); }
+.filmIcon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #DE6F44; color: #FBF8F4; padding-left: 3px; box-sizing: border-box; }
+.filmLength { font-weight: 700; color: #C9C1CF; margin-left: 2px; }
+@media (prefers-reduced-motion: reduce) { .filmPill { transition: none; } }
+
 /* sections */
 .section { padding-block: 88px; }
 .sunk { background: var(--surface-sunk); }
@@ -303,6 +317,10 @@
   /* Phones: tighter sections, and side-scrolling rows instead of long stacks of cards, so the page is about half as
      long. Rows bleed to the screen edge so the next card peeks in, which says "swipe". */
   .section, .pillars { padding-block: 52px; }
+  .filmSection { padding-block: 44px 52px; }
+  .film { border-radius: var(--radius-lg); }
+  .filmPill { margin: 0 0 14px 14px; font-size: 15px; padding: 7px 16px 7px 7px; }
+  .filmIcon { width: 36px; height: 36px; }
   .dark { padding-block: 60px 68px; }
   .cta { padding-block: 72px; }
   .head { margin-bottom: 28px; }

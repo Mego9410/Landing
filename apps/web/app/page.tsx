@@ -11,6 +11,7 @@ import { AppStoreButton } from "./app-store";
 import { GuideArt } from "./guides/art";
 import { PhoneTour, type Screen } from "./phone-tour";
 import { ScreenFan, type FanScreen } from "./screen-fan";
+import { FilmPlayer } from "./film";
 
 // New guides go live on their date (see content/guides), so the home page refreshes hourly to show the latest.
 export const revalidate = 3600;
@@ -184,6 +185,18 @@ const homeLd = (live: boolean, FAQS: ReturnType<typeof faqs>) => ({
         { "@type": "Offer", name: "Yearly", price: PRICE_GBP.yearly, priceCurrency: "GBP", description: "7 days free, then billed yearly." },
       ],
     },
+    {
+      "@type": "VideoObject",
+      "@id": `${abs("/")}#film`,
+      name: "Meet Steadie",
+      description: "A 53-second introduction to Steadie: a 12-month plan for the year after you stop a weight-loss jab, with strength sessions, easy meals, a morning check-in and a weekly steady score.",
+      thumbnailUrl: [abs("/film/steadie-intro-poster.webp")],
+      contentUrl: abs("/film/steadie-intro.mp4"),
+      uploadDate: "2026-10-10",
+      duration: "PT53S",
+      inLanguage: "en-GB",
+      publisher: { "@id": ORGANIZATION["@id"] },
+    },
     { "@type": "FAQPage", "@id": `${abs("/")}#faq`, mainEntity: FAQS.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
   ],
 });
@@ -235,6 +248,15 @@ export default async function Home() {
         <ul className={styles.trust} aria-label="Why people trust Steadie">
           {TRUST.map((t) => <li key={t.text}><Icon name={t.icon} size={18} />{t.text}</li>)}
         </ul>
+        <section id="film" className={styles.filmSection} aria-labelledby="film-title">
+          <div className={styles.wrap}>
+            <div className={styles.head}>
+              <p className={styles.eyebrow}>Steadie in under a minute</p>
+              <h2 id="film-title" className={styles.h2Light}>See how it works</h2>
+            </div>
+            <FilmPlayer src="/film/steadie-intro.mp4" poster="/film/steadie-intro-poster.webp" title="Meet Steadie" length="53 sec" />
+          </div>
+        </section>
         <section className={styles.newsBand} aria-labelledby="prices-title">
           <div className={`${styles.wrap} ${styles.news}`}>
             <div className={styles.newsCopy}>

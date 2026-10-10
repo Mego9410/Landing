@@ -3,8 +3,8 @@
 // `pnpm --filter @landing/mobile test`.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { byId } from "@landing/motion";
-import { buildBlock, withBlock, type Block, type Program, type ProgramInput } from "@/data/program";
+import { byId, EXERCISES, PATTERNS } from "@landing/motion";
+import { buildBlock, kitFor, ladder, withBlock, type Block, type Program, type ProgramInput } from "@/data/program";
 import { addDays, today, weekDates, weekStart } from "@/data/dates";
 import { scoreHistory, steadiestStretch, weekScore } from "@/state/score";
 import { freshState, weekOf } from "@/state/store";
@@ -30,7 +30,9 @@ function year(input: ProgramInput, seed: number): Block[] {
   return p!.blocks;
 }
 const levelOf = (id: string) => byId(id)!.level;
-const FLOOR = /^(hinge-1|push-4|push-5|press-4|row-1|row-5|pulldown-3|core-1|core-2|core-4|core-5|core-6|rotation-2|rotation-3|rotation-5|rotation-6)$/;
+const LEGACY_FLOOR = /^(hinge-1|push-4|push-5|press-4|row-1|row-5|pulldown-3|core-1|core-2|core-4|core-5|core-6|rotation-2|rotation-3|rotation-5|rotation-6)$/;
+/** A floor move: the library's own flag (worked out from the poses), or one of the original list. */
+const FLOOR = { test: (id: string) => LEGACY_FLOOR.test(id) || !!byId(id)?.floor };
 
 test("no floor moves for anyone who finds the floor hard, or in pregnancy, in any block", () => {
   for (const answers of [{ floor: true }, { pregnant: true }, { falls: true, floor: true }]) {
@@ -151,4 +153,69 @@ test("score history and the steadiest stretch", () => {
   const h = [60, 70, null, 80, 85, 82, 50].map((score, i) => ({ week: 10 + i, score }));
   assert.deepEqual(steadiestStretch(h), { from: 13, to: 15 });
   assert.equal(steadiestStretch([{ week: 1, score: 50 }, { week: 2, score: null }]), null);
+});
+
+test("the library's floor flag covers every move on the original floor list", () => {
+  for (const e of EXERCISES) if (LEGACY_FLOOR.test(e.id)) assert.ok(e.floor, e.id);
+});
+
+test("pregnancy: nothing lying on the back and no loaded twisting; falls: no unsupported single-leg work", () => {
+  for (const kit of [[], ["band"], ["dumbbells"], ["kettlebell"]]) {
+    for (const seed of SEEDS) {
+      for (const b of year({ ...home, kit, answers: { pregnant: true } }, seed)) {
+        const bad = [...b.A, ...b.B].find((m) => byId(m.anim)!.supine || byId(m.anim)!.twist);
+        assert.equal(bad, undefined, `pregnant ${kit} seed ${seed} block ${b.block}: ${bad?.anim}`);
+      }
+      for (const b of year({ ...home, kit, answers: { falls: true } }, seed)) {
+        const bad = [...b.A, ...b.B].find((m) => byId(m.anim)!.unsteady);
+        assert.equal(bad, undefined, `falls ${kit} seed ${seed} block ${b.block}: ${bad?.anim}`);
+      }
+    }
+  }
+});
+
+const VARIETY: Record<string, ProgramInput> = {
+  ...PROFILES,
+  "home, band": { ...home, kit: ["band"] },
+  "home, kettlebell": { ...home, kit: ["kettlebell"] },
+  bones: { ...home, answers: { bones: true } },
+};
+
+test("every level a profile actually reaches has at least two different exercises for it", () => {
+  for (const [name, input] of Object.entries(VARIETY)) {
+    const reached = new Set<string>();
+    for (const seed of SEEDS) for (const b of year(input, seed)) for (const m of [...b.A, ...b.B]) { const e = byId(m.anim)!; reached.add(`${e.pattern}:${e.level}`); }
+    for (const slot of reached) {
+      const [pattern, level] = slot.split(":");
+      const n = ladder(pattern as (typeof PATTERNS)[number]["id"], kitFor(input), input).filter((e) => e.level === Number(level)).length;
+      assert.ok(n >= 2, `${name}: only ${n} option at ${slot}`);
+    }
+  }
+});
+
+test("at the same level as the block before, a different exercise is chosen when there is one", () => {
+  for (const [name, input] of Object.entries(VARIETY)) {
+    for (const seed of SEEDS) {
+      const blocks = year(input, seed);
+      for (let i = 1; i < blocks.length; i++) {
+        const before = new Set([...blocks[i - 1].A, ...blocks[i - 1].B].map((m) => m.anim));
+        const now = [...blocks[i].A, ...blocks[i].B].map((m) => m.anim);
+        for (const id of now.filter((x) => before.has(x))) {
+          const e = byId(id)!;
+          // A repeat is only allowed when every other option at that level is already in this block or was last block.
+          const others = ladder(e.pattern, kitFor(input), input).filter((x) => x.level === e.level && x.id !== id && !now.includes(x.id) && !before.has(x.id));
+          assert.equal(others.length, 0, `${name} seed ${seed} block ${i}: repeated ${id} though ${others.map((x) => x.id)} was free`);
+        }
+      }
+    }
+  }
+});
+
+test("capped profiles meet many more distinct moves across the year", () => {
+  for (const [name, input, least] of [["falls and floor", { ...home, answers: { falls: true, floor: true } }, 24], ["pregnant, no kit", { ...home, answers: { pregnant: true } }, 24], ["fatigue", { ...home, answers: { fatigue: true } }, 22]] as const) {
+    for (const seed of SEEDS) {
+      const ids = new Set(year(input, seed).flatMap((b) => [...b.A, ...b.B].map((m) => m.anim)));
+      assert.ok(ids.size >= least, `${name} seed ${seed}: only ${ids.size} distinct moves`);
+    }
+  }
 });

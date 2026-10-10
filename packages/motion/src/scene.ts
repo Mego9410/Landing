@@ -23,6 +23,7 @@ export const COLOR = {
   band: "#E0A13C",
   bag: "#2F6142",
   cushion: "#F6E5AC",
+  towel: "#EFC3A0",
 };
 
 const W = { torso: 21, limb: 13, foot: 10 };
@@ -35,7 +36,7 @@ const circle = (id: string, c: Pt, r: number, fill: string): Shape => ({ id, kin
 export type Prop =
   | { kind: "chair"; x: number; seat: number; flip?: boolean } // x = front edge of the seat, seat = seat top y; back rest behind (−x), or ahead when flipped
   | { kind: "counter"; x: number; top: number } // a kitchen counter or table edge facing the figure, extends to +x
-  | { kind: "wall"; x: number }
+  | { kind: "wall"; x: number; flip?: boolean } // wall face at x, extending to +x (or to −x when flipped: a wall behind the figure)
   | { kind: "step"; x: number; w: number; h: number }
   | { kind: "bench"; x: number; w: number; top: number }
   | { kind: "mat"; x: number; w: number }
@@ -49,12 +50,15 @@ export type Prop =
   | { kind: "bandBetween" } // a band held between the hands // resistance band from an anchor to the hand(s)
   | { kind: "cable"; hand: 0 | 1 | "both" } // cable from the stack pulley to the hand(s)
   | { kind: "bandUnderFeet"; hand: "both" | 0 | 1 } // standing on the band
-  | { kind: "held"; item: "dumbbell" | "dumbbellV" | "kettlebell" | "bottle" | "bag" | "backpack" | "handle" | "wheel"; hand: 0 | 1 | "both" | "chest" }
+  | { kind: "held"; item: "dumbbell" | "dumbbellV" | "kettlebell" | "bottle" | "bag" | "backpack" | "handle" | "wheel" | "pole"; hand: 0 | 1 | "both" | "chest" }
   | { kind: "dowel" } // broom handle along the back
   | { kind: "wornBackpack" }
   | { kind: "sled"; x: number; y: number } // leg press footplate, moves with the feet
   | { kind: "barbell"; hands: true } // a bar held in both hands (side view: a disc at the hands)
-  | { kind: "towel"; foot: 0 | 1 };
+  | { kind: "towel"; foot: 0 | 1 }
+  | { kind: "towelHands" } // a towel held in both hands, its ends hanging
+  | { kind: "towelFeet" } // a towel looped round the soles of the feet, an end in each hand
+  | { kind: "kneeCushion" }; // a cushion squeezed between the knees
 
 /** The drawing box: a little headroom above y = 0 for overhead reaches and raised steps. Ratio about 6:5. */
 export const VIEWBOX = { x: -15, y: -22, w: 270, h: 224 };
@@ -78,7 +82,9 @@ function staticProp(p: Prop, i: number): Shape[] {
       rect(id("leg2"), p.x - 4, p.seat + 6, 5, FLOOR - p.seat - 6, COLOR.propEdge, 2),
     ];
     case "counter": return [rect(id("top"), p.x, p.top, 240 - p.x, 8, COLOR.propEdge, 3), rect(id("body"), p.x + 4, p.top + 8, 240 - p.x, FLOOR - p.top - 8, COLOR.prop, 3)];
-    case "wall": return [rect(id("wall"), p.x, 0, 240 - p.x, FLOOR, COLOR.prop, 0), rect(id("edge"), p.x, 0, 4, FLOOR, COLOR.propEdge, 0)];
+    case "wall": return p.flip
+      ? [rect(id("wall"), 0, 0, p.x, FLOOR, COLOR.prop, 0), rect(id("edge"), p.x - 4, 0, 4, FLOOR, COLOR.propEdge, 0)]
+      : [rect(id("wall"), p.x, 0, 240 - p.x, FLOOR, COLOR.prop, 0), rect(id("edge"), p.x, 0, 4, FLOOR, COLOR.propEdge, 0)];
     case "step": return [rect(id("step"), p.x, FLOOR - p.h, p.w, p.h, COLOR.prop, 4), rect(id("lip"), p.x, FLOOR - p.h, p.w, 5, COLOR.propEdge, 3)];
     case "bench": return [rect(id("top"), p.x, p.top, p.w, 9, COLOR.propEdge, 4), rect(id("l1"), p.x + 8, p.top + 8, 6, FLOOR - p.top - 8, COLOR.prop, 2), rect(id("l2"), p.x + p.w - 14, p.top + 8, 6, FLOOR - p.top - 8, COLOR.prop, 2)];
     case "mat": return [rect(id("mat"), p.x, FLOOR - 4, p.w, 6, COLOR.cushion, 3)];
@@ -106,6 +112,7 @@ function held(item: string, at: Pt, idp: string): Shape[] {
     case "bottle": return [rect(`${idp}-body`, x - 5, y - 9, 10, 20, COLOR.bottle, 4), rect(`${idp}-cap`, x - 3, y - 12, 6, 4, COLOR.weight, 1)];
     case "bag": return [rect(`${idp}-bag`, x - 10, y + 2, 20, 22, COLOR.bag, 4), line(`${idp}-h`, [x, y + 3], [x, y - 1], COLOR.bag, 3)];
     case "backpack": return [rect(`${idp}-pack`, x - 11, y - 6, 22, 24, COLOR.bag, 7)];
+    case "pole": return [circle(`${idp}-pole`, [x, y], 4, "#B98A5A")]; // a broom handle seen end-on
     default: return [];
   }
 }
@@ -151,6 +158,15 @@ function dynamicProp(p: Prop, i: number, s: Skeleton, props: Prop[], who: string
     case "towel": {
       const f = s.legs[p.foot];
       return { back: [rect(id("towel"), f.toe[0] - 6, FLOOR - 9, 18, 9, COLOR.cushion, 3)], front: [] };
+    }
+    case "towelHands": {
+      const c = mid(s.arms[0].hand, s.arms[1].hand);
+      return { back: [line(id("tw1"), [c[0] - 3, c[1]], [c[0] - 5, c[1] + 15], COLOR.towel, 7), line(id("tw2"), [c[0] + 3, c[1]], [c[0] + 5, c[1] + 15], COLOR.towel, 7)], front: [] };
+    }
+    case "towelFeet": return { back: [], front: [0, 1].map((k) => line(id(`tf${k}`), s.legs[k].toe, s.arms[k].hand, COLOR.towel, 5)) };
+    case "kneeCushion": {
+      const k = s.legs[0].knee;
+      return { back: [rect(id("kc"), k[0] - 22, k[1] - 24, 24, 32, COLOR.cushion, 8)], front: [] };
     }
     default: return { back: [], front: [] };
   }

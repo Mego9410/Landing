@@ -1,7 +1,7 @@
 # @landing/motion
 
-The exercise loops. Six people, the movement cast, demonstrate 81 exercises (every level of the 12 movement
-patterns plus the seated versions). Each person is drawn from the brand's shapes: tapered pill limbs, a soft torso
+The exercise loops. Six people, the movement cast, demonstrate 182 exercises (every level of the 12 movement
+patterns plus the seated versions, with two or three different exercises at most levels). Each person is drawn from the brand's shapes: tapered pill limbs, a soft torso
 with a real profile, and a round head in profile with no eyes or mouth. Any of them can do any exercise, because
 the exercises are keyframes for a skeleton and the cast is drawn on top. Open [gallery.html](gallery.html) to see
 every loop with any of the cast.
@@ -26,7 +26,7 @@ src/scene.ts      Props (chair, counter, bands, weights, machines) and the full 
 src/exercises.ts  The library: name, level, equipment, cue, props and keyframes for each exercise
 src/browser.ts    window.LandingMotion for web pages: mount(), stillSvg(), portraitSvg(), mixFor()
 src/svg.ts        Self-contained animated or still SVG for one exercise and one person
-dist/             Generated: landing-motion.js (the browser bundle, about 45 KB)
+dist/             Generated: landing-motion.js (the browser bundle, about 75 KB)
 svg/index.json    Generated: the catalogue of exercises, patterns and cast
 ```
 
@@ -43,7 +43,7 @@ Node 22.18 or later runs the TypeScript directly; esbuild builds the browser bun
 
 ## Every exercise, every person
 
-No exercise belongs to one body. The exercises are keyframes for a skeleton and the cast is drawn on top, so all 81
+No exercise belongs to one body. The exercises are keyframes for a skeleton and the cast is drawn on top, so all 182
 work with all six people, and "Mix it up" can give anyone any session. Bodies lying down rest on the floor whatever
 their size, and props worn against the back (a backpack, a broom handle) sit at each person's own back.
 `scripts/check-cast.ts` samples every loop for every person and fails CI if anything can't be drawn or goes through
@@ -65,11 +65,16 @@ faint outline of where the move begins). Reduce Motion always shows still frames
 
 ## Adding an exercise
 
-1. Add an `ex(...)` entry in `src/exercises.ts`: id `<pattern>-<level>`, name, equipment, one cue in the brand's voice
+1. Add an `ex(...)` entry in `src/exercises.ts`: id `<pattern>-<level>` (a letter after the level for another exercise
+   at that level, as in `squat-3b`), name, equipment, one cue in the brand's voice
    (UK English, sentence case, calm), props, and two to five keys built from the helpers in `poses.ts`.
 2. Run `pnpm --filter @landing/motion contact` and check the sheet: knees bend the right way, feet stay on the floor,
    hands reach what they hold. The sheet cycles through the cast, so every body gets checked.
 3. Run `pnpm motion` and commit `dist/`, `svg/` and `gallery.html` with the change.
+
+Each exercise works out from its poses whether it is done lying or kneeling on the floor (`floor`) or on the back
+(`supine`); pass `{ twist: true }` for loaded trunk turning (left out in pregnancy) and `{ unsteady: true }` for
+unsupported single-leg work outside the balance and lunge ladders (left out for anyone at risk of falls).
 
 Coordinates are a 240 × 200 box, y down, the figure facing right; the floor's top edge is at y = 186. A pose sets the
 hips, the torso angle (0 upright, 90 face down, −90 on the back) and where the hands and ankles go; elbows and knees

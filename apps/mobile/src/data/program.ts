@@ -27,7 +27,7 @@ export const PROGRAM_VERSION = 1;
 export const WEEKS_PER_BLOCK = 8;
 
 // Everyday things most homes have; the rest only if they say so (or at a gym).
-const HOME_KIT: Equipment[] = ["chair", "wall", "counter", "step", "mat", "bottles", "bags", "backpack", "broom", "cushion", "table"];
+const HOME_KIT: Equipment[] = ["chair", "wall", "counter", "step", "mat", "bottles", "bags", "backpack", "broom", "cushion", "table", "towel"];
 const EXTRA: Record<string, Equipment[]> = { band: ["band"], dumbbells: ["dumbbells"], kettlebell: ["kettlebell"] };
 const GYM_KIT: Equipment[] = [...HOME_KIT, "band", "dumbbells", "kettlebell", "bench", "barbell", "cable", "machine", "pull-up bar"];
 
@@ -54,7 +54,22 @@ function rng(seed: number) {
 }
 
 // Moves done lying or kneeling on the floor: left out for anyone who finds getting down and up hard, and in pregnancy.
+// The library works this out from each exercise's poses (`floor`); this list is the original one, kept as a fallback
+// and as the test for blocks already saved (so a saved block is only ever changed for the moves it always was).
 const FLOOR = new Set(["hinge-1", "push-4", "push-5", "press-4", "row-1", "row-5", "pulldown-3", "core-1", "core-2", "core-4", "core-5", "core-6", "rotation-2", "rotation-3", "rotation-5", "rotation-6"]);
+
+const isFloor = (e: Exercise) => e.floor || FLOOR.has(e.id);
+
+/** Whether an exercise suits someone's health check: no floor work for anyone who finds the floor hard or in pregnancy;
+ *  in pregnancy also nothing lying on the back (even on a bench) and no loaded twisting; and no unsupported single-leg
+ *  work outside the balance and lunge ladders for anyone at risk of falls. */
+function suits(e: Exercise, input: ProgramInput): boolean {
+  const a = input.answers;
+  if ((a.floor || a.pregnant) && isFloor(e)) return false;
+  if (a.pregnant && (e.supine || e.twist)) return false;
+  if (a.falls && e.unsteady) return false;
+  return true;
+}
 
 /** Where each pattern starts (1 to 6), and the highest it may reach, from the health check and where they train. */
 function levels(input: ProgramInput): { start: number; cap: Record<Pattern, number> } {
@@ -73,12 +88,25 @@ const REPS: Record<Pattern, string> = {
   squat: "10", hinge: "10", push: "8", press: "10", row: "10", pulldown: "12", lunge: "8 each leg", carry: "30 seconds",
   core: "8 each side", rotation: "20 seconds each side", balance: "20 seconds each side", calf: "12",
 };
-const SIDED: Partial<Record<string, string>> = { "row-4": "10 each arm", "core-3": "20 seconds", "core-4": "20 seconds", "core-5": "6 each side", "carry-3": "30 seconds each side", "lunge-1": "20 seconds each side" };
+const SIDED: Partial<Record<string, string>> = {
+  "row-4": "10 each arm", "core-3": "20 seconds", "core-4": "20 seconds", "core-5": "6 each side", "carry-3": "30 seconds each side", "lunge-1": "20 seconds each side",
+  // One side at a time, holds and walks among the newer moves.
+  "squat-2b": "10", "squat-0b": "10 squeezes",
+  "hinge-1c": "10 each leg", "hinge-3b": "8 each leg", "hinge-4c": "8 each side", "hinge-4d": "8 each leg", "hinge-5b": "8 each leg",
+  "push-3b": "6 each arm", "press-3c": "8 each arm", "press-4c": "8 each arm",
+  "row-2b": "10 each arm", "row-3b": "10 each arm", "row-4c": "10 each arm", "pulldown-5b": "10 each arm",
+  "lunge-1b": "10 each leg",
+  "carry-2b": "30 seconds each side", "carry-3b": "30 seconds each side", "carry-5b": "30 seconds each side", "carry-6b": "30 seconds each side",
+  "core-1b": "20 seconds", "core-4b": "20 seconds", "core-2c": "10 each side", "core-3b": "10 each side", "core-5b": "8 each side", "core-4c": "6 each side", "core-5c": "6 each side",
+  "rotation-1b": "5 each way", "rotation-2b": "5 each way", "rotation-3c": "5 each way", "rotation-4b": "8 each side", "rotation-5c": "8 each side", "rotation-6b": "8 each side",
+  "balance-0b": "10 each way", "balance-1b": "10 each way", "balance-1c": "30 seconds", "balance-2b": "30 seconds", "balance-3b": "6 each leg", "balance-3c": "6 each leg",
+  "calf-4b": "10 each leg", "calf-5b": "10 each leg", "calf-6b": "8 each leg",
+};
 
 /** The exercises someone can do for a pattern, easiest first. Seated versions only for pacing. */
-function ladder(pattern: Pattern, kit: Set<Equipment>, input: ProgramInput): Exercise[] {
-  const noFloor = !!(input.answers.floor || input.answers.pregnant), lowest = input.answers.fatigue ? 0 : 1;
-  return EXERCISES.filter((e) => e.pattern === pattern && e.level >= lowest && e.equipment.every((q) => kit.has(q)) && !(noFloor && FLOOR.has(e.id)))
+export function ladder(pattern: Pattern, kit: Set<Equipment>, input: ProgramInput): Exercise[] {
+  const lowest = input.answers.fatigue ? 0 : 1;
+  return EXERCISES.filter((e) => e.pattern === pattern && e.level >= lowest && e.equipment.every((q) => kit.has(q)) && suits(e, input))
     .sort((x, y) => x.level - y.level);
 }
 
@@ -98,18 +126,21 @@ const schemesFor = (pattern: Pattern, reps: string) =>
 
 /** What the block before had (its exercises, the highest level of each pattern, how each move was done), and every
  *  scheme each exercise has had in any block so far. */
-interface Prev { ids: Set<string>; level: Partial<Record<Pattern, number>>; scheme: Record<string, Scheme | undefined>; tried: Record<string, Set<Scheme>> }
+interface Prev { ids: Set<string>; seen: Set<string>; level: Partial<Record<Pattern, number>>; scheme: Record<string, Scheme | undefined>; tried: Record<string, Set<Scheme>> }
 function prevOf(earlier: Block[]): Prev | null {
   const b = earlier[earlier.length - 1];
   if (!b) return null;
-  const prev: Prev = { ids: new Set(), level: {}, scheme: {}, tried: {} };
+  const prev: Prev = { ids: new Set(), seen: new Set(), level: {}, scheme: {}, tried: {} };
   for (const m of [...b.A, ...b.B]) {
     const e = byId(m.anim);
     prev.ids.add(m.anim);
     prev.scheme[m.anim] = m.scheme;
     if (e) prev.level[e.pattern] = Math.max(prev.level[e.pattern] ?? 0, e.level);
   }
-  for (const m of earlier.flatMap((x) => [...x.A, ...x.B])) if (m.scheme) (prev.tried[m.anim] ??= new Set()).add(m.scheme);
+  for (const m of earlier.flatMap((x) => [...x.A, ...x.B])) {
+    prev.seen.add(m.anim);
+    if (m.scheme) (prev.tried[m.anim] ??= new Set()).add(m.scheme);
+  }
   return prev;
 }
 
@@ -127,13 +158,20 @@ function pick(pattern: Pattern, level: number, max: number, kit: Set<Equipment>,
   const same = floor == null ? [] : fatigue ? ok.filter((e) => e.level <= top && e.level >= top - 1) : top <= floor ? ok.filter((e) => e.level >= floor && e.level <= Math.max(top, floor)) : [];
   let chosen: Exercise;
   if (same.length) {
-    const order = [same.filter((e) => !prev!.ids.has(e.id) && !used.has(e.id)), same.filter((e) => !prev!.ids.has(e.id)), same.filter((e) => !used.has(e.id)), same];
+    // Something they haven't done yet this year first, then anything not in last block, then a repeat.
+    const p = prev!;
+    const order = [
+      same.filter((e) => !p.seen.has(e.id) && !used.has(e.id)), same.filter((e) => !p.ids.has(e.id) && !used.has(e.id)),
+      same.filter((e) => !p.ids.has(e.id)), same.filter((e) => !used.has(e.id)), same,
+    ];
     const pool = order.find((x) => x.length)!;
     chosen = pool[Math.floor(rand() * pool.length)];
   } else {
     // An exercise already in the other session beats a harder one; nothing easier than last block if it can be helped.
     const steady = floor != null && ok.some((e) => e.level >= floor) ? ok.filter((e) => e.level >= floor) : ok;
-    const fresh = steady.filter((e) => !used.has(e.id)), all = fresh.length ? fresh : steady;
+    // Prefer one not in the other session, and then one not done in the block before.
+    const free = steady.filter((e) => !used.has(e.id)), notUsed = free.length ? free : steady;
+    const fresh = notUsed.filter((e) => !prev?.ids.has(e.id)), all = fresh.length ? fresh : notUsed;
     const near = all.filter((e) => e.level === level || e.level === level - 1);
     const pool = near.length ? near : [all.reduce((best, e) => (Math.abs(e.level - level) < Math.abs(best.level - level) ? e : best))];
     // Prefer the target level two times in three.
@@ -218,14 +256,16 @@ export function withBlock(program: Program | null, input: ProgramInput, seed: nu
 }
 
 const noFloor = (input: ProgramInput) => !!(input.answers.floor || input.answers.pregnant);
-const unsafe = (b: Block, input: ProgramInput) => noFloor(input) && [...b.A, ...b.B].some((m) => FLOOR.has(m.anim));
+// A saved move done on the floor: the old list, or the library's own flag (which also catches the hip thrust, sat on the floor).
+const floorMove = (id: string) => FLOOR.has(id) || !!byId(id)?.floor;
+const unsafe = (b: Block, input: ProgramInput) => noFloor(input) && [...b.A, ...b.B].some((m) => floorMove(m.anim));
 
 /** The block with each floor move swapped for the same slot from a fresh build (or left out if that's a repeat). */
 function safeBlock(b: Block, input: ProgramInput, seed: number): Block {
   const fresh = buildBlock(input, seed, b.block);
   const fix = (ms: ProgramMove[], alt: ProgramMove[]) => ms.flatMap((m, i) => {
-    if (!FLOOR.has(m.anim)) return [m];
-    const swap = alt[i] && !FLOOR.has(alt[i].anim) ? alt[i] : alt.find((x) => byId(x.anim)?.pattern === byId(m.anim)?.pattern);
+    if (!floorMove(m.anim)) return [m];
+    const swap = alt[i] && !floorMove(alt[i].anim) ? alt[i] : alt.find((x) => byId(x.anim)?.pattern === byId(m.anim)?.pattern);
     return swap && !ms.some((x) => x.anim === swap.anim) ? [swap] : [];
   });
   return { ...b, A: fix(b.A, fresh.A), B: fix(b.B, fresh.B) };

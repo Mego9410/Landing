@@ -254,7 +254,7 @@ test("strength programme: personal, safe for the health check, matched to kit, a
   assert.ok(level(buildBlock(home, 9, 3)) > level(buildBlock(home, 9, 0)));
   // Floor work left out when getting down is hard; pacing keeps everything easy with fewer sets.
   const floor = buildBlock({ ...home, answers: { floor: true } }, 7, 2);
-  assert.ok([...floor.A, ...floor.B].every((m) => !/hinge-1|push-4|push-5|core-2|core-4|core-5|rotation-2|rotation-3|rotation-5/.test(m.anim)));
+  assert.ok([...floor.A, ...floor.B].every((m) => !/^(hinge-1|push-4|push-5|core-2|core-4|core-5|rotation-2|rotation-3|rotation-5)$/.test(m.anim) && !byId(m.anim)!.floor));
   const tired = buildBlock({ ...home, answers: { fatigue: true } }, 7, 4);
   assert.ok([...tired.A, ...tired.B].every((m) => byId(m.anim)!.level <= 2 && m.sets === 2));
   // Falls: balance in both sessions.

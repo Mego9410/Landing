@@ -13,7 +13,7 @@ export type Pattern =
 
 export type Equipment =
   | "chair" | "wall" | "counter" | "step" | "band" | "bottles" | "bags" | "backpack" | "broom" | "mat" | "cushion"
-  | "table" | "dumbbells" | "kettlebell" | "bench" | "barbell" | "cable" | "machine" | "pull-up bar" | "ab wheel";
+  | "table" | "towel" | "dumbbells" | "kettlebell" | "bench" | "barbell" | "cable" | "machine" | "pull-up bar" | "ab wheel";
 
 export interface Exercise {
   id: string;
@@ -26,7 +26,19 @@ export interface Exercise {
   cue: string;
   props: Prop[];
   keys: Key[];
+  /** Done lying or kneeling on the floor at some point (worked out from the poses). */
+  floor: boolean;
+  /** Lying on the back at some point, on the floor or a bench (worked out from the poses). */
+  supine: boolean;
+  /** Turns through the trunk under load (a wood chop): left out in pregnancy. */
+  twist?: boolean;
+  /** Unsupported single-leg work outside the balance and lunge ladders: left out for anyone at risk of falls. */
+  unsteady?: boolean;
 }
+
+/** Lying or kneeling on the floor: a knee resting on it, or the body low and near horizontal. */
+const onFloor = (p: Pose): boolean =>
+  !!p.kneeAt?.some((k) => k && k[1] >= KNEE_Y - 8) || p.hip[1] >= 160 || (p.hip[1] >= 150 && Math.abs(p.torso) >= 55);
 
 export const PATTERNS: { id: Pattern; name: string; seated: string }[] = [
   { id: "squat", name: "Squat", seated: "squat-0" },
@@ -44,10 +56,15 @@ export const PATTERNS: { id: Pattern; name: string; seated: string }[] = [
 ];
 
 const list: Exercise[] = [];
-function ex(id: string, name: string, equipment: Equipment[], cue: string, props: Prop[], keys: Key[]): void {
-  // A letter after the level marks a second exercise at that level ("row-2b").
+function ex(id: string, name: string, equipment: Equipment[], cue: string, props: Prop[], keys: Key[], flags: { twist?: boolean; unsteady?: boolean; floor?: boolean } = {}): void {
+  // A letter after the level marks another exercise at that level ("row-2b", "row-2c").
   const [pattern, level] = id.split("-");
-  list.push({ id, name, pattern: pattern as Pattern, level: Number.parseInt(level, 10), equipment, cue, props, keys });
+  const floor = flags.floor ?? keys.some((k) => onFloor(k.pose));
+  const supine = keys.some((k) => k.pose.torso <= -60);
+  list.push({
+    id, name, pattern: pattern as Pattern, level: Number.parseInt(level, 10), equipment, cue, props, keys, floor, supine,
+    ...(flags.twist ? { twist: true } : {}), ...(flags.unsteady ? { unsteady: true } : {}),
+  });
 }
 
 const crossed = (p: Pose): Pose => ({ ...p, hands: [{ t: [40, 9] }, { t: [38, 6] }] });
@@ -595,6 +612,601 @@ const singleCalf = (up: number, hold: number, down: number, weighted = false): K
 ex("calf-4", "Single-leg heel raise, supported", ["counter"], "One foot hooked behind. Rise up, then lower with control.", [counter], singleCalf(1, 0.4, 1.1));
 ex("calf-5", "Single-leg heel raise, 3-2-3", ["counter"], "Three seconds up, hold for two, three seconds down.", [counter], singleCalf(3, 2, 3));
 ex("calf-6", "Weighted single-leg heel raise", ["counter", "dumbbells"], "Weight in your free hand. Full range, slow on the way down.", [counter, { kind: "held", item: "dumbbell", hand: 1 }], singleCalf(1, 0.5, 2, true));
+
+// ================================================================ more ways at each level
+// A second or third exercise at most levels, so a new block can bring a new move even once a pattern has reached
+// someone's ceiling. Most need no floor and no kit beyond what's at home, because the people with the most caps
+// (pacing, pregnancy, falls, sore joints, no kit) are the ones who'd otherwise see the same move for months.
+
+const keysOf = (id: string): Key[] => list.find((e) => e.id === id)!.keys;
+const wallBehind = (x: number): Prop => ({ kind: "wall", x, flip: true });
+const reachOut = (p: Pose): Pose => ({ ...p, hands: [{ t: [48, 56] }, { t: [48, 53] }] });
+/** Hands just behind the neck, holding a bar across the upper back. */
+const barOnBack = (p: Pose): Pose => ({ ...p, hands: [{ t: [60, -8] }, { t: [60, -11] }] });
+/** Heels resting on a rolled towel, toes on the floor. */
+const heelsUp = (p: Pose, ax: number): Pose => ({ ...p, ankles: [[ax, 171], [ax - 4, 171]], toes: [[ax + 13, 184], [ax + 9, 184]] });
+const heelWedge: Prop = { kind: "block", x: 96, y: 174, w: 18, h: 12 };
+/** One hand on the hip (the far one by default). */
+const handOnHip = (p: Pose, i: 0 | 1 = 1): Pose => {
+  const hs = [...p.hands] as Pose["hands"];
+  hs[i] = { t: [8, i ? -2 : 2] };
+  return { ...p, hands: hs };
+};
+/** Marching on the spot: one knee up, down, the other knee up. */
+const march = (base: Pose, arms: (p: Pose) => Pose = (p) => p, ankle: Pt = [22, 150]): Key[] => {
+  const x = base.hip[0];
+  const knee = (i: 0 | 1): Pose => {
+    const ankles = [...base.ankles] as [Pt, Pt], toes = [...(base.toes ?? [null, null])] as [Pt | null, Pt | null];
+    ankles[i] = [x + ankle[0] - i * 3, ankle[1]];
+    toes[i] = [x + ankle[0] + 14 - i * 3, ankle[1] + 2];
+    return arms({ ...base, hip: [x, base.hip[1] - 1], ankles, toes });
+  };
+  return [key(arms(base), 0.6, 0.2), key(knee(0), 0.6, 0.5), key(arms(base), 0.6, 0.2), key(knee(1), 0.6, 0.5)];
+};
+/** In an incline plank, drive one knee in, then the other. */
+const plankMarch = (base: Pose, pivot: Pt, lift = 18): Key[] => {
+  const knee = (i: 0 | 1): Pose => {
+    const ankles = [...base.ankles] as [Pt, Pt], toes = [...(base.toes ?? [null, null])] as [Pt | null, Pt | null];
+    ankles[i] = [pivot[0] + 30 - i * 3, pivot[1] - lift];
+    toes[i] = [pivot[0] + 43 - i * 3, pivot[1] - lift + 7];
+    return { ...base, ankles, toes };
+  };
+  return [key(base, 0.8, 0.2), key(knee(0), 0.8, 0.4), key(base, 0.8, 0.2), key(knee(1), 0.8, 0.4)];
+};
+/** In an incline plank, reach one arm forward, then the other. */
+const plankReach = (base: Pose): Key[] => {
+  const s = shoulderOf(base);
+  const a = { ...base, hands: [[s[0] + 52, s[1] - 22], base.hands[1]] as Pose["hands"] };
+  const b = { ...base, hands: [base.hands[0], [s[0] + 49, s[1] - 22]] as Pose["hands"] };
+  return [key(base, 0.8, 0.3), key(a, 0.8, 0.8), key(base, 0.8, 0.3), key(b, 0.8, 0.8)];
+};
+/** Bent over with a long back: arms hang, then row to the ribs. */
+const bentRow = (torso: number, hip: Pt, ank: [Pt, Pt] = [[114, G], [102, G]]): Key[] => {
+  const base: Pose = hang({ hip, torso, hands: [[0, 0], [0, 0]], ankles: ank }, 52);
+  return [key(base, 1, 0.3), key({ ...base, hands: [{ t: [26, 16] }, { t: [26, 13] }] }, 1.2, 0.5)];
+};
+/** Arms long from overhead down to the thighs, elbows straight. */
+const straightPull = (base: Pose): Key[] => {
+  const at = (d: number, side: number): Pose => ({ ...base, hands: [{ t: [d, side] }, { t: [d, side - 3] }] });
+  return [key(at(100, 26), 0.7, 0.3), key(at(60, 56), 0.7, 0), key(at(-6, 18), 0.7, 0.5), key(at(60, 56), 0.7, 0)];
+};
+/** Something held in both hands, circled slowly round the head. */
+const halo = (base: Pose): Key[] => {
+  const at = (d: number, side: number): Pose => ({ ...base, hands: [{ t: [d, side] }, { t: [d, side - 3] }] });
+  return [key(at(72, 24), 0.8, 0.1), key(at(92, 2), 0.8, 0), key(at(76, -22), 0.8, 0.1), key(at(92, 2), 0.8, 0)];
+};
+/** A side plank with the far forearm on a raised surface (elbow at `elbow`), feet stacked on the floor. */
+const raisedSidePlank = (elbow: Pt): Key[] => {
+  const S: Pt = [elbow[0] - 1, elbow[1] - 30];
+  const py = 177, dx = Math.sqrt(130 * 130 - (py - S[1]) ** 2);
+  const a = (Math.atan2(dx, py - S[1]) * 180) / Math.PI;
+  const pivot: Pt = [S[0] - dx, py];
+  const arms = (p: Pose): Pose => {
+    const s = shoulderOf(p);
+    return { ...p, elbowAt: [null, elbow], hands: [[s[0] + 2, s[1] - 56], [elbow[0] + 27, elbow[1] - 1]] };
+  };
+  const up = arms(plankLine(pivot, a, "feet"));
+  const hip: Pt = [up.hip[0] - 3, up.hip[1] + 11];
+  const down = arms({ ...up, hip, torso: (Math.atan2(S[0] - hip[0], hip[1] - S[1]) * 180) / Math.PI });
+  return [key(down, 0.9, 0.3), key(up, 0.9, 1.6)];
+};
+
+// ---------------- squat
+
+ex("squat-0b", "Seated cushion squeeze", ["chair", "cushion"], "A cushion between your knees. Squeeze it gently for a slow count of five, then relax.", [chairFor(96, 140), { kind: "kneeCushion" }], (() => {
+  const sit = sitting(96, 140, { torso: 0 });
+  const squeeze = { ...sit, torso: -2, hands: [[122, 126], [118, 126]] as [Pt, Pt] };
+  return [key(sit, 0.9, 0.6), key(squeeze, 0.9, 2)];
+})());
+
+ex("squat-1b", "Counter mini squat", ["counter"], "Hands resting on the counter. Bend your knees and sit back a little, then stand tall.", [counter], (() => {
+  const top: Pose = { ...standing(112, { ankles: [[116, G], [110, G]] }), hands: [[146, 99], [143, 99]] };
+  const bottom: Pose = { ...top, hip: [100, 122], torso: 22 };
+  return [key(top, 1.1, 0.4), key(bottom, 1, 0.3)];
+})());
+
+ex("squat-2b", "Wall slide squat", ["wall"], "Back against the wall, feet a step forward. Slide down a little way, then press back up.", [wallBehind(86)], (() => {
+  const ank: [Pt, Pt] = [[132, G], [128, G]];
+  const top = crossed({ ...standing(100), hip: [100, 106], ankles: ank });
+  const bottom = crossed({ ...top, hip: [100, 130] });
+  return [key(top, 1.3, 0.4), key(bottom, 1.2, 0.5)];
+})());
+
+ex("squat-3b", "Sit to stand holding a bag", ["chair", "backpack"], "Hug the bag to your chest. Stand up tall, then lower slowly to the seat.", [chairFor(96, 140), { kind: "held", item: "backpack", hand: "chest" }],
+  sitToStand(140, (p) => atChest(p, 20)));
+
+ex("squat-4b", "Backpack squat", ["backpack"], "Hug the bag to your chest, elbows down. Sit between your heels, then stand.", [{ kind: "held", item: "backpack", hand: "chest" }], gobletKeys(1.2, 0.3));
+
+ex("squat-4c", "Heel-raised squat", ["towel"], "Heels on a rolled towel, arms out in front. Sit straight down with your chest tall, then stand.", [heelWedge], (() => {
+  const top = reachOut(heelsUp({ ...standing(104), hip: [105, 96] }, 112));
+  const bottom = reachOut({ ...top, hip: [92, 134], torso: 16 });
+  return [key(top, 1.2, 0.4), key(bottom, 1.1, 0.3)];
+})());
+
+ex("squat-5b", "Heel-raised goblet squat", ["dumbbells", "towel"], "Heels on a rolled towel, weight at your chest. Sit straight down, slow, then stand.", [heelWedge, { kind: "held", item: "dumbbellV", hand: "chest" }], (() => {
+  const top = atChest(heelsUp({ ...standing(104), hip: [105, 96] }, 112));
+  const bottom = atChest({ ...top, hip: [92, 136], torso: 16 });
+  return [key(top, 2.4, 0.4), key(bottom, 1.1, 0.6)];
+})());
+
+ex("squat-6b", "Barbell back squat", ["barbell"], "Bar across your upper back, chest proud. Sit down between your heels, then drive up.", [{ kind: "barbell", hands: true }], (() => {
+  const top = barOnBack(standing(104, { ankles: [[112, G], [106, G]] }));
+  const bottom = barOnBack({ ...top, hip: [84, 140], torso: 36 });
+  return [key(top, 1.2, 0.4), key(bottom, 1.1, 0.3)];
+})());
+
+// ---------------- hinge
+
+ex("hinge-0b", "Seated shin slide", ["chair"], "Sit tall. Tip forward from your hips as your hands slide down your shins, then sit back up.", [chairFor(96, 140)], (() => {
+  const sit = sitting(96, 140, { torso: 2 });
+  const down = { ...sit, torso: 46, hands: [[131, 154], [127, 154]] as [Pt, Pt] };
+  return [key(sit, 1.2, 0.4), key(down, 1.2, 0.4)];
+})());
+
+ex("hinge-1b", "Counter hip hinge", ["counter"], "Hands on the counter. Push your hips back as your hands slide forward, back long, then stand tall.", [counter], (() => {
+  const top: Pose = { ...standing(112, { ankles: [[116, G], [110, G]] }), hands: [[144, 99], [141, 99]] };
+  const bottom: Pose = { ...top, hip: [90, 106], torso: 62, hands: [[184, 99], [181, 99]] };
+  return [key(top, 1.3, 0.4), key(bottom, 1.2, 0.5)];
+})());
+
+ex("hinge-1c", "Standing hip extension", ["counter"], "Hands on the counter, stand tall. Take one straight leg back, squeeze your bottom, then return.", [counter], (() => {
+  const st: Pose = { ...standing(116, { ankles: [[118, G], [114, G]] }), hands: [[146, 99], [143, 99]] };
+  const back: Pose = { ...st, torso: 10, ankles: [[72, 164], [114, G]], toes: [[64, 177], null] };
+  return [key(st, 1, 0.3), key(back, 1, 0.8)];
+})());
+
+ex("hinge-2b", "Hip hinge to a wall", ["wall"], "Stand a foot from the wall, back to it. Push your bottom back to touch it, then stand tall.", [wallBehind(74)], (() => {
+  const top = crossed(standing(104, { ankles: [[108, G], [102, G]] }));
+  const bottom = crossed({ ...top, hip: [88, 104], torso: 54 });
+  return [key(top, 1.2, 0.4), key(bottom, 1.1, 0.5)];
+})());
+
+ex("hinge-3b", "Supported single-leg deadlift", ["counter"], "One hand on the counter. Tip forward as one leg reaches back long, then return to tall.", [counter], (() => {
+  const hold = (p: Pose): Pose => ({ ...p, hands: [p.hands[0], [146, 99]] });
+  const st = hold(standing(114, { ankles: [[118, G], [106, 170]], toes: [null, [116, 178]] }));
+  const down = hold(hands({ ...st, hip: [108, 104], torso: 62, ankles: [[118, G], [32, 128]], toes: [null, [28, 141]] }, [2, 52]));
+  return [key(st, 1.3, 0.4), key(down, 1.2, 0.5)];
+})());
+
+ex("hinge-4b", "Backpack good morning", ["backpack"], "Backpack on, arms crossed. Soft knees, hinge forward with a long back, then stand tall.", [{ kind: "wornBackpack" }], (() => {
+  const top = crossed(standing(104, { ankles: [[110, G], [104, G]] }));
+  return [key(top, 1.3, 0.4), key(crossed({ ...top, hip: [88, 106], torso: 60 }), 1.2, 0.4)];
+})());
+
+ex("hinge-4c", "Staggered-stance bag deadlift", ["bags"], "Front foot flat, back toes down for balance. Hinge with the bags close to your front leg, then stand.", [{ kind: "held", item: "bag", hand: "both" }], (() => {
+  const top = hang({ ...standing(106), ankles: [[116, G], [96, 176]], toes: [null, [109, 185]] });
+  const bottom = hang({ ...top, hip: [92, 106], torso: 60 }, 56);
+  return [key(top, 1.3, 0.4), key(bottom, 1.2, 0.4)];
+})());
+
+const singleLegDeadlift = (drop: number): Key[] => {
+  const st = hang(standing(116, { ankles: [[119, G], [108, 168]], toes: [null, [120, 174]] }));
+  const down = hang({ ...st, hip: [108, 104], torso: 62, ankles: [[119, G], [32, 128]], toes: [null, [28, 141]] }, drop);
+  return [key(st, 1.3, 0.4), key(down, 1.2, 0.5)];
+};
+ex("hinge-4d", "Single-leg deadlift with a bag", ["backpack"], "The bag in both hands. Tip forward as one leg reaches back, hips level, then return to tall.", [{ kind: "held", item: "backpack", hand: "chest" }], singleLegDeadlift(50), { unsteady: true });
+ex("hinge-5b", "Kettlebell single-leg deadlift", ["kettlebell"], "Bell in both hands. Tip forward as one leg reaches back long, then push the floor away to stand.", [{ kind: "held", item: "kettlebell", hand: "chest" }], singleLegDeadlift(52), { unsteady: true });
+
+ex("hinge-6b", "Barbell Romanian deadlift", ["barbell"], "Soft knees, bar close to your legs. Push your hips back until you feel your hamstrings, then stand tall.", [{ kind: "barbell", hands: true }], rdl(68, 84, 52));
+
+// ---------------- push
+
+ex("push-0b", "Seated wall press-up", ["chair", "wall"], "Sit facing the wall, hands flat on it. Bend your elbows to lean in, then push back to tall.", [chairFor(96, 140), { kind: "wall", x: 162 }], (() => {
+  const out: Pose = { ...sitting(96, 140), torso: 8, hands: [[161, 82], [158, 82]] };
+  return [key(out, 1.1, 0.3), key({ ...out, torso: 28 }, 1, 0.3)];
+})());
+
+ex("push-0c", "Seated palm press", ["chair"], "Palms together in front of your chest. Press them firmly together as you push forward, then draw back.", [chairFor(96, 140)], (() => {
+  const sit = sitting(96, 140, { torso: 0 });
+  return [key(atChest(sit, 22), 1, 0.3), key({ ...sit, hands: [{ t: [44, 50] }, { t: [44, 48] }] }, 1.1, 0.8)];
+})());
+
+ex("push-1b", "Wall press-up plus", ["wall"], "Arms straight, hands on the wall. Let your chest sink a little, then push the wall away so your shoulder blades spread.", [{ kind: "wall", x: 168 }], (() => {
+  const { up, pivot } = incline([167, 66], 14, 14, "feet", 57, G);
+  return [key(plankLine(pivot, 17, "feet", { hands: up.hands }), 1, 0.3), key(up, 1, 0.6)];
+})());
+
+ex("push-2b", "Table press-up", ["table"], "Hands on the edge of a sturdy table, body in one line. Lower your chest towards it, then press away.", [{ kind: "bar", x1: 150, x2: 222, y: 124, posts: true }],
+  pressUp([162, 123], 44, 60, "feet", G));
+
+ex("push-3b", "One-arm wall press-up", ["wall"], "One hand on the wall, the other on your hip. Lower your chest towards the wall, then press away.", [{ kind: "wall", x: 168 }], (() => {
+  const { up, down } = incline([167, 66], 14, 28, "feet", 55, G);
+  return [key(handOnHip(up), 1.2, 0.4), key(handOnHip(down), 1, 0.2)];
+})());
+
+ex("push-4b", "Step press-up", ["step"], "Hands on a low step, body in one line from head to heels. Lower your chest to the step, then press away.", [{ kind: "step", x: 160, w: 62, h: 30 }],
+  pressUp([176, 155], 58, 74, "feet", 176));
+
+ex("push-5b", "Lower-down press-up", ["mat"], "From a full press-up, lower slowly for three seconds. Knees down to press up, then step back out.", [{ kind: "mat", x: 20, w: 200 }], (() => {
+  const hand: Pt = [190, 181];
+  const toes = incline(hand, 66, 80, "feet", 55, 176), kn = incline(hand, 54, 74, "knees");
+  // Give the straight-leg poses a knee point too, so the move between toes and knees blends smoothly.
+  const straight = (p: Pose): Pose => ({ ...p, kneeAt: p.ankles.map((a) => {
+    const d = Math.hypot(a[0] - p.hip[0], a[1] - p.hip[1]);
+    return [p.hip[0] + ((a[0] - p.hip[0]) * 42) / d, p.hip[1] + ((a[1] - p.hip[1]) * 42) / d];
+  }) as [Pt, Pt] });
+  return [key(straight(toes.up), 3, 0.4), key(straight(toes.down), 0.6, 0.1), key(kn.down, 1, 0.1), key(kn.up, 0.9, 0.3)];
+})());
+
+ex("push-6b", "Machine chest press", ["machine"], "Back against the pad, handles at chest height. Press forward without locking your elbows, then return slowly.", [
+  { kind: "block", x: 90, y: 150, w: 14, h: 36 },
+  { kind: "pad", a: [80, 66], b: [80, 140], w: 12 },
+  { kind: "pad", a: [80, 145], b: [114, 145], w: 10 },
+  { kind: "held", item: "handle", hand: "both" },
+], (() => {
+  const sit = sitting(96, 145, { torso: 0 });
+  return [key(pressIn(sit), 1, 0.3), key(pressOut(sit), 1.2, 0.3)];
+})());
+
+// ---------------- overhead press
+
+const standPress = (st: Pose): Key[] => [key(byShoulders(st), 1, 0.3), key(overhead(st), 1.2, 0.3)];
+const oneArmPress = (st: Pose): Key[] => [
+  key({ ...st, hands: [{ t: [52, 10] }, st.hands[1]] }, 1, 0.3),
+  key({ ...st, hands: [{ t: [105, 5] }, st.hands[1]] }, 1.2, 0.3),
+];
+
+ex("press-1b", "Broom overhead press", ["broom"], "Hold a broom handle across the front of your shoulders. Press it straight up, ribs down, then lower slowly.", [{ kind: "held", item: "pole", hand: "chest" }],
+  standPress(standing(104, { ankles: [[108, G], [102, G]] })));
+
+ex("press-2b", "Standing bottle press", ["bottles"], "Stand tall, a bottle in each hand. Press them overhead, then lower to your shoulders.", [{ kind: "held", item: "bottle", hand: "both" }],
+  standPress(standing(104, { ankles: [[108, G], [102, G]] })));
+
+ex("press-3b", "Backpack overhead press", ["backpack"], "Hold the bag by its sides at your chest. Press it overhead, ribs down, then lower slowly.", [{ kind: "held", item: "backpack", hand: "chest" }], (() => {
+  const st = standing(104, { ankles: [[108, G], [102, G]] });
+  return [key({ ...st, hands: [{ t: [50, 16] }, { t: [50, 13] }] }, 1, 0.3), key({ ...st, hands: [{ t: [105, 10] }, { t: [105, 7] }] }, 1.2, 0.3)];
+})());
+
+ex("press-3c", "Staggered-stance one-arm press", ["bottles"], "One foot a little ahead, a bottle in one hand. Press it straight up, then lower to your shoulder.", [{ kind: "held", item: "bottle", hand: 0 }],
+  oneArmPress(handOnHip(standing(104, { ankles: [[118, G], [92, G]] }))));
+
+ex("press-4b", "Wall pike press", ["wall"], "Hands high on the wall, hips back so your body makes an L. Bend your elbows to bring your head towards the wall, then press away.", [{ kind: "wall", x: 196 }], (() => {
+  const up: Pose = { hip: [92, 100], torso: 82, head: -6, hands: [[195, 86], [192, 86]], ankles: [[100, G], [96, G]] };
+  return [key(up, 1.2, 0.3), key({ ...up, hip: [102, 100], torso: 84 }, 1.1, 0.3)];
+})());
+
+ex("press-4c", "One-arm backpack press", ["backpack"], "Hold the bag by its top handle at your shoulder. Press it overhead, ribs down, then lower slowly.", [{ kind: "held", item: "backpack", hand: 0 }],
+  oneArmPress(handOnHip(standing(104, { ankles: [[108, G], [102, G]] }))));
+
+ex("press-5b", "Dumbbell Arnold press", ["dumbbells"], "Start with the weights in front of your face, palms towards you. Turn them out as you press up, then reverse on the way down.", [{ kind: "held", item: "dumbbell", hand: "both" }], (() => {
+  const st = standing(104, { ankles: [[108, G], [102, G]] });
+  return [key({ ...st, hands: [{ t: [58, 22] }, { t: [58, 19] }] }, 1.2, 0.3), key(overhead(st), 1.3, 0.3)];
+})());
+
+ex("press-6b", "Barbell overhead press", ["barbell"], "Bar at the front of your shoulders, ribs down. Press it straight up, head through at the top, then lower.", [{ kind: "barbell", hands: true }],
+  standPress(standing(104, { ankles: [[108, G], [102, G]] })));
+
+// ---------------- row
+
+ex("row-1b", "Back-to-wall elbow press", ["wall"], "Back to the wall, elbows bent at your sides. Press your elbows back into the wall, hold for five, then relax.", [wallBehind(86)], (() => {
+  const arms = (p: Pose): Pose => ({ ...p, elbowAt: [[89, 80], [86, 80]], hands: [[114, 72], [111, 72]] });
+  const st = standing(100, { ankles: [[106, G], [100, G]] });
+  return [key(arms(st), 1, 0.4), key(arms({ ...st, hip: [101, 101], torso: 5 }), 1, 1.6)];
+})());
+
+ex("row-1c", "Seated towel row", ["chair", "towel"], "Towel round the soles of your feet, legs long. Pull your elbows back and squeeze your shoulder blades.", [chairFor(96, 140), { kind: "towelFeet" }], (() => {
+  const sit: Pose = { ...sitting(96, 140, { torso: 0 }), ankles: [[166, 178], [162, 178]], toes: [[174, 165], [170, 165]] };
+  return [key({ ...sit, hands: [{ t: [30, 56] }, { t: [30, 53] }] }, 1, 0.3), key(rowIn(sit), 1.2, 0.6)];
+})());
+
+ex("row-2c", "Bent-over bottle row", ["bottles"], "Soft knees, hinge forward with a long back. Pull both bottles up towards your ribs, then lower slowly.", [{ kind: "held", item: "bottle", hand: "both" }],
+  bentRow(48, [104, 103]));
+
+ex("row-3b", "Supported backpack row", ["counter", "backpack"], "One hand on the counter, back long. Pull the bag up towards your hip, then lower slowly.", [
+  { kind: "counter", x: 150, top: 112 },
+  { kind: "held", item: "backpack", hand: 0 },
+], (() => {
+  const base: Pose = { hip: [104, 104], torso: 56, hands: [[0, 0], [160, 112]], ankles: [[116, G], [92, G]] };
+  const s = shoulderOf(base);
+  const low = { ...base, hands: [[s[0] + 2, s[1] + 50], [160, 112]] as Pose["hands"] };
+  const high = { ...base, hands: [{ t: [24, 16] }, [160, 112]] as Pose["hands"] };
+  return [key(low, 1, 0.3), key(high, 1.2, 0.5)];
+})());
+
+ex("row-3c", "Bent-over backpack row", ["backpack"], "Hold the bag by its straps, back long. Pull it up to your tummy, then lower slowly.", [{ kind: "held", item: "backpack", hand: "chest" }],
+  bentRow(56, [102, 104]));
+
+ex("row-4b", "Bent-over bag row", ["bags"], "A loaded bag in each hand, hinge forward with a flat back. Pull the bags up to your ribs, then lower slowly.", [{ kind: "held", item: "bag", hand: "both" }],
+  bentRow(64, [100, 106], [[116, G], [104, G]]));
+
+ex("row-4c", "Chair-supported bag row", ["chair", "bags"], "One hand on a sturdy chair, back flat. Pull the bag up to your hip, then lower slowly.", [
+  { kind: "chair", x: 160, seat: 140, flip: true },
+  { kind: "held", item: "bag", hand: 0 },
+], (() => {
+  const base: Pose = { hip: [108, 106], torso: 68, hands: [[0, 0], [170, 139]], ankles: [[122, G], [92, G]] };
+  const s = shoulderOf(base);
+  const low = { ...base, hands: [[s[0] + 2, s[1] + 50], [170, 139]] as Pose["hands"] };
+  const high = { ...base, hands: [{ t: [22, 16] }, [170, 139]] as Pose["hands"] };
+  return [key(low, 1, 0.3), key(high, 1.2, 0.5)];
+})());
+
+// Face up under the table, head towards it: the table is on the left here so the chest can face the ceiling.
+ex("row-5b", "Table row, knees bent", ["table"], "Under a sturdy table, knees bent and feet flat. Pull your chest up to the edge, then lower slowly.", [{ kind: "bar", x1: 18, x2: 94, y: 86, posts: true }], (() => {
+  const hs: [Pt, Pt] = [[62, 88], [65, 88]];
+  const down: Pose = { hip: [134, 159], torso: -66, head: 4, hands: hs, ankles: [[168, G], [164, G]] };
+  const up: Pose = { ...down, hip: [128, 142], torso: -52 };
+  return [key(down, 1, 0.3), key(up, 1.2, 0.5)];
+})());
+
+ex("row-6b", "Barbell bent-over row", ["barbell"], "Hinge forward with a flat back, bar hanging. Pull it to your lower ribs, then lower with control.", [{ kind: "barbell", hands: true }],
+  bentRow(58, [100, 106], [[116, G], [104, G]]));
+
+// ---------------- pull down
+
+ex("pulldown-1b", "Wall angel", ["wall"], "Back and head against the wall. Slide your arms up as high as is comfortable, then draw your elbows down to your sides.", [wallBehind(86)], (() => {
+  const st = standing(100, { ankles: [[110, G], [104, G]] });
+  const up = { ...st, hands: [{ t: [104, -4] }, { t: [104, -7] }] as Pose["hands"] };
+  const down = { ...st, hands: [{ t: [52, -2] }, { t: [52, -5] }] as Pose["hands"], elbows: [1, 1] as [number, number] };
+  return [key(up, 1.2, 0.4), key(down, 1.2, 0.5)];
+})());
+
+ex("pulldown-1c", "Seated towel pull-down", ["chair", "towel"], "Hold a towel overhead, hands wide, pulling it tight. Draw your elbows down to your sides, then reach back up.", [chairFor(96, 140), { kind: "towelHands" }],
+  pulldown(sitting(96, 140, { torso: 0 })));
+
+ex("pulldown-2b", "Towel pull-down", ["towel"], "Stand tall, a towel overhead pulled tight. Draw your elbows down to your sides, keep the pull, then reach back up.", [{ kind: "towelHands" }],
+  pulldown(standing(104, { ankles: [[108, G], [102, G]] })));
+
+ex("pulldown-2c", "Straight-arm towel pull-down", ["towel"], "Lean forward a little, towel pulled tight, arms long. Sweep it down to your thighs, elbows straight, then back up.", [{ kind: "towelHands" }],
+  straightPull(standing(102, { hip: [102, 102], torso: 14, ankles: [[110, G], [104, G]] })));
+
+ex("pulldown-3b", "Standing band pull-down", ["band"], "Band over the top of a door. Stand tall and pull your elbows down to your sides.", [
+  { kind: "anchor", at: [150, -6] },
+  { kind: "band", from: [150, -6], hand: "both" },
+], pulldown(standing(104, { ankles: [[108, G], [102, G]] })));
+
+ex("pulldown-3c", "Straight-arm band pull-down", ["band"], "Band anchored high in front. Arms long, sweep your hands down to your thighs, then let them rise slowly.", [
+  { kind: "anchor", at: [216, -4] },
+  { kind: "band", from: [216, -4], hand: "both" },
+], straightPull(standing(100, { hip: [100, 102], torso: 14, ankles: [[108, G], [100, G]] })));
+
+ex("pulldown-4b", "Straight-arm cable pull-down", ["cable"], "Pulley set high. Arms long, sweep the bar down to your thighs, then let it rise slowly.", [
+  { kind: "stack", x: 214, pulley: [216, 10] },
+  { kind: "cable", hand: "both" },
+  { kind: "held", item: "handle", hand: "chest" },
+], straightPull(standing(100, { hip: [100, 102], torso: 14, ankles: [[108, G], [100, G]] })));
+
+ex("pulldown-5b", "Single-arm cable pull-down", ["cable"], "Pulley above you. Pull your elbow down to your side, then let your arm rise all the way.", [
+  { kind: "stack", x: 200, pulley: [136, -6] },
+  { kind: "cable", hand: 0 },
+  { kind: "held", item: "handle", hand: 0 },
+], (() => {
+  const st = handOnHip(standing(110, { ankles: [[116, G], [108, G]] }));
+  return [key({ ...st, hands: [{ t: [104, 12] }, st.hands[1]] }, 1, 0.3), key({ ...st, hands: [{ t: [54, 18] }, st.hands[1]] }, 1.2, 0.5)];
+})());
+
+ex("pulldown-6b", "Slow lowering chin-up", ["pull-up bar", "step"], "Step up so your chin is by the bar. Lower yourself as slowly as you can, then step back up.", [
+  { kind: "bar", x1: 40, x2: 200, y: 8, posts: true },
+  { kind: "step", x: 96, w: 52, h: 14 },
+], (() => {
+  const hs: [Pt, Pt] = [[124, 10], [121, 10]];
+  const top: Pose = { hip: [120, 88], torso: -4, hands: hs, ankles: [[124, 167], [120, 167]] };
+  const low: Pose = { hip: [118, 116], torso: -6, hands: hs, ankles: [[84, 160], [82, 158]] };
+  return [key(top, 3.4, 0.5), key(low, 1.2, 0.3)];
+})());
+
+// ---------------- lunge and step
+
+ex("lunge-0b", "Seated straight-leg lift", ["chair"], "Sit tall, one leg out straight with the heel down. Lift it a little, pause, and lower slowly.", [chairFor(96, 140)], (() => {
+  const sit = sitting(96, 140, { torso: 0, hands: [[104, 134], [100, 134]] });
+  const long = { ...sit, ankles: [[160, 180], sit.ankles[1]] as [Pt, Pt], toes: [[166, 166], null] as [Pt | null, Pt | null] };
+  const lift = { ...long, ankles: [[172, 150], sit.ankles[1]] as [Pt, Pt], toes: [[178, 136], null] as [Pt | null, Pt | null] };
+  return [key(long, 0.9, 0.4), key(lift, 0.9, 1)];
+})());
+
+ex("lunge-1b", "Step taps", ["step"], "Stand tall in front of a low step. Tap one foot on top, bring it back, then the other.", [{ kind: "step", x: 140, w: 50, h: 22 }], (() => {
+  const st = standing(118, { ankles: [[121, G], [115, G]] });
+  const a = hang({ ...st, hip: [121, 102], ankles: [[150, 159], [115, G]], toes: [[164, 162], null] });
+  const b = hang({ ...st, hip: [121, 102], ankles: [[121, G], [147, 159]], toes: [null, [161, 162]] });
+  return [key(st, 0.6, 0.2), key(a, 0.6, 0.3), key(st, 0.6, 0.2), key(b, 0.6, 0.3)];
+})());
+
+ex("lunge-2b", "Supported back step", ["counter"], "Hand on the counter. Step one foot back, bend both knees a little, then step in again.", [{ kind: "counter", x: 156, top: 112 }], (() => {
+  const sup = (p: Pose): Pose => ({ ...p, hands: [[160, 111], p.hands[1]] });
+  const st = hang({ ...standing(140, { ankles: [[144, G], [138, G]] }), hip: [140, 104] });
+  const back = hang({ hip: [116, 122], torso: 4, hands: [[0, 0], [0, 0]], ankles: [[144, G], [92, 174]], toes: [null, [104, 184]] });
+  return [key(sup(st), 0.8, 0.3), key(sup(back), 1, 0.5)];
+})());
+
+ex("lunge-3b", "Split squat", [], "One foot forward, hands on your hips. Lower your back knee towards the floor, then push back up.", [],
+  [key(onHips(split([113, 106])), 1.2, 0.3), key(onHips(split([110, 140])), 1.1, 0.3)]);
+
+ex("lunge-4b", "Backpack step-up", ["step", "backpack"], "Backpack on. Whole foot on the step, push through it to stand up, then step down slowly.", [{ kind: "step", x: 130, w: 56, h: 22 }, { kind: "wornBackpack" }],
+  keysOf("lunge-3"));
+
+ex("lunge-5b", "Chair Bulgarian split squat", ["chair"], "Back foot on a chair behind you. Lower until your front thigh is nearly level, then stand.", [{ kind: "chair", x: 76, seat: 140 }], (() => {
+  const bulg = (hip: Pt) => onHips({ hip, torso: 6, hands: [[0, 0], [0, 0]], ankles: [[142, G], [64, 132]], toes: [null, [50, 137]] });
+  return [key(bulg([110, 106]), 1.2, 0.3), key(bulg([102, 140]), 1.1, 0.3)];
+})());
+
+ex("lunge-5c", "Backpack reverse lunge", ["backpack"], "Backpack on. Step back and lower your back knee towards the floor, then push through your front foot to return.", [{ kind: "wornBackpack" }],
+  keysOf("lunge-4"));
+
+ex("lunge-6b", "Barbell reverse lunge", ["barbell"], "Bar across your upper back. Step back into a lunge, then drive through your front foot to stand.", [{ kind: "barbell", hands: true }],
+  keysOf("lunge-4").map((k) => ({ ...k, pose: barOnBack(k.pose) })));
+
+// ---------------- carry
+
+ex("carry-0b", "Seated backpack hug", ["chair", "backpack"], "Sit tall, hugging a loaded bag to your chest. Shoulders down, breathe and hold.", [chairFor(96, 140), { kind: "held", item: "backpack", hand: "chest" }], (() => {
+  const slump = atChest(sitting(96, 140, { torso: 10 }), 20);
+  const tall = atChest(sitting(96, 140, { torso: -2 }), 20);
+  return [key(slump, 1.2, 0.3), key(tall, 1.2, 2)];
+})());
+
+const swingFar = (p: Pose, phase: number): Pose => hands(p, [3, 55], [-1 + [14, 0, -14, 0][phase], 54]);
+ex("carry-1b", "Backpack walk", ["backpack"], "A loaded backpack on both shoulders. Walk tall, slow and steady.", [{ kind: "wornBackpack" }], gait(112));
+ex("carry-2b", "One-bag carry", ["bags"], "One loaded bag in one hand. Walk tall and don't let it pull you sideways.", [{ kind: "held", item: "bag", hand: 0 }], gait(112, { arms: swingFar }));
+ex("carry-3b", "Waiter carry", ["bottles"], "A full bottle held straight up overhead. Ribs down, walk slowly.", [{ kind: "held", item: "bottle", hand: 0 }], gait(112, {
+  arms: (p, phase) => { const q = swingFar(p, phase); return { ...q, hands: [{ t: [104, 6] }, q.hands[1]] }; },
+}));
+ex("carry-3c", "Backpack front carry", ["backpack"], "Hug a loaded bag to your chest, elbows in. Walk tall and breathe.", [{ kind: "held", item: "backpack", hand: "chest" }], gait(112, { stride: 18, arms: (p) => atChest(p, 20) }));
+ex("carry-4b", "Backpack and bags walk", ["backpack", "bags"], "Backpack on and a bag in each hand. Tall posture, small steady steps.", [{ kind: "wornBackpack" }, { kind: "held", item: "bag", hand: "both" }], gait(112, { arms: still }));
+ex("carry-4c", "Marching bag hold", ["bags"], "A loaded bag in each hand. March slowly on the spot, knees up, staying tall.", [{ kind: "held", item: "bag", hand: "both" }],
+  march(standing(112, { ankles: [[115, G], [109, G]] }), (p) => hands(p, [3, 55], [-1, 55])));
+ex("carry-5b", "Kettlebell waiter carry", ["kettlebell"], "Bell held straight up overhead, wrist strong. Ribs down, walk slowly.", [{ kind: "held", item: "kettlebell", hand: 0 }], gait(112, {
+  stride: 18,
+  arms: (p, phase) => { const q = swingFar(p, phase); return { ...q, hands: [{ t: [104, 6] }, q.hands[1]] }; },
+}));
+ex("carry-6b", "Mixed carry", ["kettlebell"], "One bell at your chest, one by your side. Stay level and walk slowly.", [{ kind: "held", item: "kettlebell", hand: "both" }], gait(112, {
+  stride: 18,
+  arms: (p) => { const q = hands(p, [3, 55], [-1, 55]); return { ...q, hands: [{ t: [42, 16] }, q.hands[1]] }; },
+}));
+
+// ---------------- core
+
+ex("core-0b", "Seated dead bug", ["chair"], "Sit tall, leaning back a touch, arms forward. Reach one arm up as the opposite leg straightens, then swap.", [chairFor(96, 140)], (() => {
+  const base: Pose = { ...sitting(96, 140, { torso: -6 }), hands: [{ t: [56, 54] }, { t: [56, 51] }] };
+  const a: Pose = { ...base, hands: [{ t: [104, 6] }, base.hands[1]], ankles: [base.ankles[0], [172, 146]], toes: [null, [178, 132]] };
+  const b: Pose = { ...base, hands: [base.hands[0], { t: [104, 3] }], ankles: [[175, 146], base.ankles[1]], toes: [[181, 132], null] };
+  return [key(base, 0.9, 0.2), key(a, 0.9, 0.6), key(base, 0.9, 0.2), key(b, 0.9, 0.6)];
+})());
+
+ex("core-1b", "Forearm wall plank", ["wall"], "Forearms on the wall, step your feet back, body in one line. Breathe and hold.", [{ kind: "wall", x: 184 }], (() => {
+  const p = plankLine([110, G], 18, "feet");
+  const s = shoulderOf(p);
+  const elbow: Pt = [s[0] + 29, s[1] + 6];
+  return breathe({ ...p, elbowAt: [elbow, [elbow[0] - 3, elbow[1]]], hands: [[elbow[0] + 1, elbow[1] - 27], [elbow[0] - 2, elbow[1] - 27]] }, 1.2);
+})());
+
+ex("core-1c", "Standing marching dead bug", [], "Stand tall, arms forward, tummy braced. Lift one knee as the opposite arm reaches up, then lower and swap.", [], (() => {
+  const base: Pose = { ...standing(112, { ankles: [[115, G], [109, G]] }), hands: [{ t: [56, 54] }, { t: [56, 51] }] };
+  const knee = (i: 0 | 1): Pose => {
+    const ankles = [...base.ankles] as [Pt, Pt], toes: [Pt | null, Pt | null] = [null, null], hs = [...base.hands] as Pose["hands"];
+    ankles[i] = [134 - i * 3, 150]; toes[i] = [148 - i * 3, 152]; hs[1 - i] = { t: [104, 4] };
+    return { ...base, hip: [112, 100], ankles, toes, hands: hs };
+  };
+  return [key(base, 0.7, 0.2), key(knee(0), 0.7, 0.5), key(base, 0.7, 0.2), key(knee(1), 0.7, 0.5)];
+})());
+
+ex("core-2b", "Counter bird dog", ["counter"], "One hand on the counter, hinge forward a little. Reach the other arm forward and the opposite leg back, then return.", [{ kind: "counter", x: 150, top: 100 }], (() => {
+  const hold = (p: Pose): Pose => ({ ...p, hands: [p.hands[0], [154, 99]] });
+  const base = hold(hang({ hip: [106, 103], torso: 45, hands: [[0, 0], [0, 0]], ankles: [[114, G], [100, G]] }, 52));
+  const reach = hold({ ...base, hands: [{ t: [91, 37] }, [0, 0]], ankles: [[114, G], [36, 138]], toes: [null, [30, 150]] });
+  return [key(base, 1, 0.3), key(reach, 1, 1)];
+})());
+
+const wallPlank = incline([167, 66], 22, 22, "feet", 55, G);
+ex("core-2c", "Wall plank march", ["wall"], "Hands on the wall, body in one line. Lift one knee towards the wall, lower, then the other.", [{ kind: "wall", x: 168 }], plankMarch(wallPlank.up, wallPlank.pivot, 16));
+
+const counterPlank = incline([168, 111], 40, 40, "feet", 55, G);
+ex("core-3b", "Slow counter climber", ["counter"], "Hands on the counter, body in one line. Slowly bring one knee in, step it back, then the other.", [{ kind: "counter", x: 164, top: 112 }], plankMarch(counterPlank.up, counterPlank.pivot));
+
+const chairPlank = incline([170, 139], 54, 54, "feet", 55, 176);
+const plankChair: Prop = { kind: "chair", x: 160, seat: 140, flip: true };
+ex("core-4b", "Chair plank", ["chair"], "Chair against a wall, hands on the seat, body in one line. Breathe and hold.", [plankChair], breathe(chairPlank.up, 1.5));
+ex("core-4c", "Counter plank with reach", ["counter"], "Hands on the counter, body in one line. Reach one arm forward without letting your hips turn, then swap.", [{ kind: "counter", x: 164, top: 112 }], plankReach(counterPlank.up));
+ex("core-5b", "Chair plank knee drive", ["chair"], "Hands on the chair seat, body in one line. Slowly bring one knee in, step it back, then the other.", [plankChair], plankMarch(chairPlank.up, chairPlank.pivot, 16));
+ex("core-5c", "Chair plank with reach", ["chair"], "Hands on the chair seat, body in one line. Reach one arm forward, hips still, then swap.", [plankChair], plankReach(chairPlank.up));
+
+// ---------------- side and rotation
+
+ex("rotation-1b", "Seated bottle halo", ["chair", "bottles"], "Sit tall, a bottle in both hands. Circle it slowly round your head, then go the other way.", [chairFor(96, 140), { kind: "held", item: "bottle", hand: "chest" }],
+  halo(sitting(96, 140, { torso: 0 })));
+ex("rotation-2b", "Bottle halo", ["bottles"], "Stand tall, ribs down, a bottle in both hands. Circle it slowly round your head without leaning.", [{ kind: "held", item: "bottle", hand: "chest" }],
+  halo(standing(104, { ankles: [[108, G], [102, G]] })));
+ex("rotation-2c", "Suitcase hold", ["bags"], "A loaded bag in one hand. Stand tall without leaning towards it. Breathe and hold.", [{ kind: "held", item: "bag", hand: 0 }], (() => {
+  const st = standing(110, { ankles: [[114, G], [108, G]] });
+  return [key(hands({ ...st, torso: 3 }, [3, 56], [-1, 55]), 1.2, 0.3), key(hands({ ...st, torso: -1 }, [3, 56], [-1, 55]), 1.2, 1.8)];
+})());
+ex("rotation-3b", "Suitcase march", ["bags"], "A loaded bag in one hand. March slowly on the spot, staying level.", [{ kind: "held", item: "bag", hand: 0 }],
+  march(standing(112, { ankles: [[115, G], [109, G]] }), (p) => hands(p, [3, 55], [-1, 52])));
+ex("rotation-3c", "Backpack halo", ["backpack"], "Hold the bag by its sides. Circle it slowly round your head, ribs down, then go the other way.", [{ kind: "held", item: "backpack", hand: "chest" }],
+  halo(standing(104, { ankles: [[110, G], [102, G]] })));
+
+const chopKeys = (high: Pose, low: Pose, up = 0.9, down = 0.9): Key[] => [key(high, down, 0.3), key(low, up, 0.4)];
+ex("rotation-4b", "Backpack wood chop", ["backpack"], "Hold the bag up by one shoulder. Bring it down across your body towards the other knee, turning through your middle, then lift it back.", [{ kind: "held", item: "backpack", hand: "chest" }], (() => {
+  const st = standing(108, { ankles: [[116, G], [104, G]] });
+  return chopKeys({ ...st, torso: -2, hands: [{ t: [100, -12] }, { t: [100, -15] }] }, { ...st, hip: [104, 112], torso: 22, hands: [{ t: [10, 40] }, { t: [10, 37] }] });
+})(), { twist: true });
+ex("rotation-4c", "Counter side plank", ["counter"], "Side on, forearm on the counter, feet stacked. Lift your hips into a straight line and hold.", [{ kind: "counter", x: 150, top: 112 }], raisedSidePlank([162, 111]));
+ex("rotation-5b", "Chair side plank", ["chair"], "Chair against a wall, forearm on the seat, feet stacked. Lift your hips into a straight line and hold.", [plankChair], raisedSidePlank([172, 139]));
+ex("rotation-5c", "Backpack lift", ["backpack"], "Squat with the bag by one hip. Stand and lift it up across your body, over the other shoulder, then lower back down.", [{ kind: "held", item: "backpack", hand: "chest" }], (() => {
+  const st = standing(108, { ankles: [[116, G], [104, G]] });
+  const low = { ...st, hip: [94, 132], torso: 30, hands: [{ t: [2, 32] }, { t: [2, 29] }] } as Pose;
+  const high = { ...raise(st, 6, [1]), torso: -4, hands: [{ t: [102, -8] }, { t: [102, -11] }] } as Pose;
+  return [key(low, 1, 0.3), key(high, 1.2, 0.4)];
+})(), { twist: true });
+ex("rotation-6b", "Standing band chop", ["band"], "Band anchored high behind you. Pull it down across your body, turning through your middle, hips facing forward.", [
+  { kind: "anchor", at: [28, 4] },
+  { kind: "band", from: [28, 4], hand: "both" },
+], (() => {
+  const st = standing(112, { ankles: [[120, G], [108, G]] });
+  return chopKeys({ ...st, torso: -2, hands: [{ t: [96, -18] }, { t: [96, -21] }] }, { ...st, hip: [108, 110], torso: 18, hands: [{ t: [12, 42] }, { t: [12, 39] }] });
+})(), { twist: true });
+
+// ---------------- balance
+
+ex("balance-0b", "Seated heel-toe rock", ["chair"], "Sit tall, feet flat. Lift your toes, then roll forward and lift your heels. Keep it slow.", [chairFor(96, 140)], (() => {
+  const sit = sitting(96, 140, { torso: 0 });
+  const toesUp: Pose = { ...sit, toes: sit.ankles.map((a) => [a[0] + 13, a[1] - 8]) as [Pt, Pt] };
+  const heelsUpP: Pose = { ...sit, ankles: sit.ankles.map((a) => [a[0] + 4, a[1] - 10]) as [Pt, Pt], toes: sit.ankles.map((a) => [a[0] + 14, a[1] + 3]) as [Pt, Pt] };
+  return [key(sit, 0.7, 0.2), key(toesUp, 0.8, 0.4), key(sit, 0.7, 0.2), key(heelsUpP, 0.8, 0.4)];
+})());
+
+ex("balance-1b", "Supported rock forward and back", ["counter"], "Fingertips on the counter. Rock onto your toes, then back onto your heels, slow and small.", [counter], (() => {
+  const st = steady(standing(116, { ankles: [[119, G], [113, G]] }));
+  const fwd = steady(hang({ ...raise(st, 6), hip: [119, 95] }));
+  const back = steady(hang({ ...st, hip: [113, 101], torso: -2, toes: st.ankles.map((a) => [a[0] + 13, a[1] - 8]) as [Pt, Pt] }));
+  return [key(st, 0.9, 0.2), key(fwd, 0.9, 0.6), key(st, 0.9, 0.2), key(back, 0.9, 0.6)];
+})());
+
+ex("balance-1c", "Supported march", ["counter"], "Fingertips on the counter. March slowly on the spot, lifting each knee a little.", [counter],
+  march(standing(110, { ankles: [[113, G], [107, G]] }), (p) => steady(hang(p)), [18, 160]));
+
+ex("balance-2b", "Heel-to-toe walk, with support", ["counter"], "A hand along the counter. Heel touches toe with every step, eyes ahead.", [counter],
+  gait(112, { stride: 9, arms: (p) => steady(hands(p, [3, 55], [-12, 48])) }));
+
+const oneFoot = standing(117, { ankles: [[119, G], [98, 150]], toes: [null, [108, 160]] });
+ex("balance-3b", "Single-leg reach, with support", ["counter"], "Standing on one leg, a hand on the counter. Reach the other arm forward slowly, then back.", [counter], (() => {
+  const st = steady(hang(oneFoot));
+  const reach = { ...steady(hang({ ...oneFoot, torso: 12, hip: [116, 102] })), hands: [[146, 99], { t: [70, 50] }] as Pose["hands"] };
+  return [key(st, 1.2, 0.3), key(reach, 1.2, 0.6)];
+})());
+
+ex("balance-3c", "Single-leg toe taps, with support", ["counter"], "Standing on one leg, a hand on the counter. Tap the other toe forward, then back, without putting weight on it.", [counter], (() => {
+  const base = steady(hang(standing(116, { ankles: [[119, G], [108, 168]], toes: [null, [120, 174]] })));
+  const fwd: Pose = { ...base, ankles: [[119, G], [126, 177]], toes: [null, [139, 183]] };
+  const back: Pose = { ...base, hip: [117, 101], torso: 4, ankles: [[119, G], [78, 172]], toes: [null, [88, 183]] };
+  return [key(base, 0.7, 0.2), key(fwd, 0.7, 0.4), key(base, 0.7, 0.2), key(back, 0.7, 0.4)];
+})());
+
+// ---------------- calf
+
+ex("calf-1b", "Standing toe raise", ["counter"], "Fingertips on the counter. Lift the fronts of your feet, heels down, then lower slowly.", [counter], (() => {
+  const st = steady(standing(116, { ankles: [[119, G], [113, G]] }));
+  const up = steady(hang({ ...st, hip: [114, 101], toes: st.ankles.map((a) => [a[0] + 12, a[1] - 9]) as [Pt, Pt] }));
+  return [key(st, 0.8, 0.3), key(up, 1, 0.5)];
+})());
+
+ex("calf-2b", "Bent-knee heel raise", ["counter"], "Fingertips on the counter, knees softly bent. Rise onto the balls of your feet, keep the bend, then lower.", [counter], (() => {
+  const st = steady(standing(116, { hip: [113, 110], torso: 4, ankles: [[119, G], [113, G]] }));
+  return [key(st, 0.8, 0.3), key(steady(hang(raise(st, 9))), 1.1, 0.5)];
+})());
+
+ex("calf-3b", "Heel raise holding bags", ["bags"], "A bag in each hand, standing tall. Rise onto the balls of your feet, then lower slowly.", [{ kind: "held", item: "bag", hand: "both" }], (() => {
+  const st = standing(112, { ankles: [[115, G], [109, G]] });
+  return [key(st, 0.8, 0.3), key(hang(raise(st, 10)), 1.1, 0.5)];
+})());
+
+ex("calf-4b", "Bent-knee single-leg heel raise", ["counter"], "One foot hooked behind, standing knee softly bent. Rise up, keep the bend, then lower with control.", [counter], (() => {
+  const base = oneLeg(standing(117, { hip: [114, 110], torso: 4, ankles: [[120, G], [106, 168]] }));
+  return [key(steady(hang(base)), 1, 0.3), key(steady(hang(raise(base, 9, [0]))), 1.1, 0.4)];
+})());
+
+const stepCalf = (weighted: boolean): Key[] => {
+  const top = 186 - 14;
+  const mk = (dy: number, ax: number): Pose => {
+    const p: Pose = {
+      hip: [102, top - 85 + dy], torso: 0, hands: [[149, 72 + dy], [0, 0]],
+      ankles: [[ax, top - 5 + dy], [86, top - 16 + dy]], toes: [[118, top - 2], [94, top - 10 + dy]],
+    };
+    const s = shoulderOf(p);
+    return { ...p, hands: [p.hands[0], weighted ? [s[0] - 1, s[1] + 55] : { t: [8, -2] }] };
+  };
+  return [key(mk(-9, 109), 3, 0.3), key(mk(9, 104), 1.2, 0.5)];
+};
+ex("calf-5b", "Single-leg heel raise on a step", ["step", "wall"], "Ball of one foot on the step edge, a hand on the wall. Lower the heel slowly below the step, then rise.", [{ kind: "step", x: 104, w: 40, h: 14 }, { kind: "wall", x: 150 }], stepCalf(false));
+ex("calf-6b", "Weighted single-leg heel raise on a step", ["step", "wall", "dumbbells"], "Weight in your free hand, a hand on the wall. Lower the heel below the step, then rise all the way.", [{ kind: "step", x: 104, w: 40, h: 14 }, { kind: "wall", x: 150 }, { kind: "held", item: "dumbbell", hand: 1 }], stepCalf(true));
+
 
 export const EXERCISES: Exercise[] = list;
 export const byId = (id: string): Exercise | undefined => list.find((e) => e.id === id);

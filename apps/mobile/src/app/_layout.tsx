@@ -21,7 +21,7 @@ import { startBilling } from "@/state/subscription";
 import { loadTimers } from "@/state/timers";
 import { applyCriticalUpdate } from "@/state/updates";
 import { get, hydrate, useApp } from "@/state/store";
-import { applyTheme } from "@/state/theme";
+import { applyTheme, launchScheme, loadTheme } from "@/state/theme";
 import { space, useColors } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -75,6 +75,9 @@ function RootLayout() {
   const [loaded, error] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold, Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold });
   const [ready, setReady] = useState(false);
   const [intro, setIntro] = useState(!introPlayed);
+  // The saved light or dark choice, applied before anything draws, so the intro is in the app's colours.
+  const [themed, setThemed] = useState(false);
+  useEffect(() => { loadTheme().finally(() => setThemed(true)); }, []);
 
   useEffect(() => {
     let stop: (() => void) | undefined, stopBackup: (() => void) | undefined, gone = false;
@@ -96,7 +99,7 @@ function RootLayout() {
   }, [intro, loaded, error, ready]);
 
   // The native splash stays up until the fonts are in (the intro needs Nunito 800).
-  if (!loaded && !error) return null;
+  if ((!loaded && !error) || !themed) return null;
   return (
     <View style={{ flex: 1, backgroundColor: c.surface }}>
       {ready ? <>
@@ -121,7 +124,7 @@ function RootLayout() {
       </> : null}
       {intro ? <>
         <StatusBar style="light" />
-        <IntroSplash ready={ready} onDone={() => { introPlayed = true; setIntro(false); }} />
+        <IntroSplash ready={ready} from={launchScheme} onDone={() => { introPlayed = true; setIntro(false); }} />
       </> : null}
     </View>
   );

@@ -6,7 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AccessibilityInfo, type LayoutChangeEvent, Pressable, StyleSheet, useColorScheme, useWindowDimensions } from "react-native";
 import Animated, { cancelAnimation, Easing, runOnJS, type SharedValue, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import Svg, { Circle, Path, Rect } from "react-native-svg";
+import Svg, { Circle, G, Path, Rect } from "react-native-svg";
 import { LETTERS, LOCKUP } from "./wordmark";
 
 const ROCK = [[0, -12], [110, -21], [270, 6], [410, -16], [530, -9], [640, -12]];
@@ -61,7 +61,9 @@ function Letter({ i, t, color, left, top }: { i: number; t: SharedValue<number>;
 }
 
 /** Plays once per cold start. Hides the native splash itself, then calls onDone after fading out. */
-export function IntroSplash({ ready, onDone }: { ready: boolean; onDone: () => void }) {
+/** `from` is what the native launch screen showed (the phone's mode). When the app is set the other way, the intro
+ *  fades in over a copy of that screen instead of cutting to it. */
+export function IntroSplash({ ready, onDone, from }: { ready: boolean; onDone: () => void; from?: "light" | "dark" }) {
   const win = useWindowDimensions();
   // The overlay's own size once laid out (on web the window size can read as zero on the first render).
   const [box, setBox] = useState<{ width: number; height: number } | null>(null);
@@ -69,6 +71,7 @@ export function IntroSplash({ ready, onDone }: { ready: boolean; onDone: () => v
   // The palette it started with: a saved light or dark choice applies once the plan has loaded, which can be mid-intro.
   const scheme = useColorScheme();
   const [c] = useState(() => PALETTE[scheme === "dark" ? "dark" : "light"]);
+  const [was] = useState(() => (from && from !== (scheme === "dark" ? "dark" : "light") ? PALETTE[from] : null));
   const t = useSharedValue(0);
   const [held, setHeld] = useState(false);
   const started = useRef(false);
@@ -106,6 +109,7 @@ export function IntroSplash({ ready, onDone }: { ready: boolean; onDone: () => v
   const { cx, cy, r } = LOCKUP.dot;
 
   const overlayStyle = useAnimatedStyle(() => ({ opacity: 1 - cubicInOut(seg(t.value, T.holdEnd, T.exitEnd)) }));
+  const fadeIn = useAnimatedStyle(() => ({ opacity: was ? cubicInOut(seg(t.value, 0, 300)) : 1 }));
   const liftStyle = useAnimatedStyle(() => {
     const e = cubicInOut(seg(t.value, T.holdEnd, T.exitEnd));
     return { transform: [{ translateY: -6 * e }, { scale: 1 + 0.03 * e }] };
@@ -123,8 +127,19 @@ export function IntroSplash({ ready, onDone }: { ready: boolean; onDone: () => v
   });
 
   return (
-    <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: c.bg }, overlayStyle]} onLayout={onFirstLayout}
+    <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: was?.bg ?? c.bg }, overlayStyle]} onLayout={onFirstLayout}
       accessible accessibilityLabel="Steadie" accessibilityRole="image">
+      {was ? (
+        // The native launch screen as it was, in the phone's colours, for the intro to fade in over.
+        <Svg width={S0} height={S0} viewBox="0 6 100 100" style={{ position: "absolute", left: W / 2 - S0 / 2, top: H / 2 - S0 / 2 }}>
+          <Rect x={31} y={85} width={38} height={5} rx={2.5} fill={was.mark} opacity={0.5} />
+          <G transform="rotate(-12 50 80)">
+            <Path d={BODY} fill={was.mark} />
+            <Circle cx={50} cy={64} r={7} fill={was.bg} />
+          </G>
+        </Svg>
+      ) : null}
+      <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: c.bg }, fadeIn]}>
       <Pressable style={StyleSheet.absoluteFill} onPress={() => (ready ? exit(200) : setHeld(true))} accessibilityLabel="Skip intro">
         <Animated.View style={[StyleSheet.absoluteFill, liftStyle]}>
           <Animated.View style={[{ position: "absolute", left: W / 2 - S0 / 2, top: H / 2 - S0 / 2, width: S0, height: S0 }, markStyle]}>
@@ -143,6 +158,7 @@ export function IntroSplash({ ready, onDone }: { ready: boolean; onDone: () => v
           <Animated.View style={[{ position: "absolute", left: left + (cx - r) * K, top: top + (cy - r) * K, width: 2 * r * K, height: 2 * r * K, borderRadius: r * K, backgroundColor: c.dot }, dotStyle]} />
         </Animated.View>
       </Pressable>
+      </Animated.View>
     </Animated.View>
   );
 }

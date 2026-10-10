@@ -358,7 +358,7 @@ export default async function Home() {
                   <h3 className={styles.tileTitle}>Meals easier than a takeaway</h3>
                   <p className={styles.tileBody}>15 minutes hands-on, six ingredients, one pan, with timers that keep running.</p>
                 </div>
-                <div className={styles.tileTimer} aria-hidden="true"><span>Cook along · simmer</span><strong>14:53</strong></div>
+                <div className={styles.tileTimer} aria-hidden="true"><span>Simmer</span><strong>14:53</strong></div>
               </li>
               <li className={`${styles.tile} ${styles.sage}`}>
                 <div className={styles.tileText}>

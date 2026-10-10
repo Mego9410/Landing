@@ -10,7 +10,8 @@ interface Draft {
   /** Minutes: hands-on to the table, then waiting while it cooks (including any oven preheat the prep doesn't cover). */
   time: [number, number]; ahead?: string; kit: Kit[]; washUp: number;
   collections?: Collection[]; cuisine: Cuisine; cost: 1 | 2 | 3; spicy?: boolean;
-  ingredients: Line[]; steps: string[]; only?: Record<string, string[]>; fridgeDays: number; freezes?: boolean; storeCupboard?: string;
+  ingredients: Line[]; steps: string[]; only?: Record<string, string[]>;
+  stepsFor?: Record<string, string[] | Record<number, string>>; nameFor?: Record<string, string>; fridgeDays: number; freezes?: boolean; storeCupboard?: string;
 }
 const r = (slot: Slot, id: string, { time: [active, wait], ...d }: Draft): Recipe => ({
   id, slot, serves: 1, collections: [], freezes: false, ...d,
@@ -25,6 +26,7 @@ export const RECIPES: Recipe[] = [
     time: [2, 0], kit: ["none"], washUp: 2, collections: ["no-cook", "gentle", "on-the-go"], cuisine: "Mediterranean", cost: 1,
     ingredients: [L("greek-yoghurt", 200), L("berries", 80), L("oats", 30), L("seeds", 15)],
     steps: ["Spoon the yoghurt into a bowl or a lidded pot.", "Top with the berries straight from frozen, the oats and the seeds. They thaw by the time you eat."],
+    nameFor: { "soya-yoghurt": "Soya yoghurt bowl" },
     fridgeDays: 1,
   }),
   r("breakfast", "overnight-oats", {
@@ -40,6 +42,8 @@ export const RECIPES: Recipe[] = [
     time: [5, 0], kit: ["microwave"], washUp: 2, collections: ["microwave"], cuisine: "British", cost: 1,
     ingredients: [L("eggs", 174), L("spinach", 40), L("wholemeal-bread", 36)],
     steps: ["Beat the eggs in a microwave-safe mug or bowl with a pinch of salt and pepper. Stir in the spinach.", "Microwave for 45 seconds, stir, then 30 seconds at a time until just set.", "Pile onto the toast."],
+    stepsFor: { "eggs>tofu": ["Crumble the tofu into a microwave-safe mug or bowl with a pinch of turmeric, salt and pepper. Stir in the spinach.", "Microwave for 1 minute, stir, then 30 seconds more until piping hot.", "Pile onto the toast."] },
+    nameFor: { "eggs>tofu": "Microwave tofu scramble on toast" },
     fridgeDays: 0,
   }),
   r("breakfast", "cottage-salmon-crispbreads", {
@@ -54,6 +58,8 @@ export const RECIPES: Recipe[] = [
     time: [6, 1], kit: ["microwave"], washUp: 3, collections: ["microwave", "store-cupboard"], cuisine: "British", cost: 1,
     ingredients: [L("baked-beans", 200), L("eggs", 116), L("wholemeal-bread", 36)],
     steps: ["Microwave the beans in a covered bowl for 2 minutes, stirring halfway.", "Beat the eggs in a mug and microwave in 30-second bursts, stirring, until just set.", "Serve both on the toast."],
+    stepsFor: { "eggs>tofu": { 2: "Crumble the tofu into a mug with a pinch of turmeric, salt and pepper, and microwave for 1 minute, stirring halfway." } },
+    nameFor: { "eggs>tofu": "Beans and tofu scramble on toast" },
     fridgeDays: 0,
   }),
   r("breakfast", "breakfast-wrap", {
@@ -61,6 +67,7 @@ export const RECIPES: Recipe[] = [
     time: [9, 0], kit: ["hob"], washUp: 2, collections: ["on-the-go", "one-pan"], cuisine: "British", cost: 2,
     ingredients: [L("bacon-medallions", 50), L("eggs", 116), L("salsa", 30), L("wrap", 62)],
     steps: ["Fry the bacon in a non-stick pan with a little oil spray for 3 minutes, turning once. Push to one side.", "Scramble the eggs in the same pan.", "Spoon everything into the wrap with the salsa and roll it up."],
+    stepsFor: { "eggs>tofu": { 2: "Crumble the tofu into the same pan with a pinch of turmeric and fry for 3 minutes." } },
     fridgeDays: 0,
   }),
   r("breakfast", "protein-porridge", {
@@ -76,6 +83,8 @@ export const RECIPES: Recipe[] = [
     time: [2, 2], kit: ["none"], washUp: 2, collections: ["no-cook"], cuisine: "American", cost: 1,
     ingredients: [L("wholemeal-bread", 36), L("peanut-butter", 15), L("banana", 100), L("skyr", 150)],
     steps: ["Toast the bread and spread with the peanut butter.", "Slice the banana on top. Have the skyr on the side."],
+    stepsFor: { seeds: { 1: "Toast the bread.", 2: "Slice the banana on top and scatter over the seeds. Have the skyr on the side." } },
+    nameFor: { seeds: "Banana toast with seeds and skyr" },
     fridgeDays: 0,
   }),
   r("breakfast", "tofu-scramble", {
@@ -105,6 +114,7 @@ export const RECIPES: Recipe[] = [
     time: [3, 2], kit: ["microwave"], washUp: 2, collections: ["store-cupboard", "microwave"], cuisine: "British", cost: 1,
     ingredients: [L("sardines-tin", 120), L("cherry-tomatoes", 80), L("wholemeal-bread", 36)],
     steps: ["Warm the sardines and halved tomatoes in a covered bowl in the microwave for 1 minute.", "Pile onto the toast and mash lightly with a fork."],
+    nameFor: { "sardines-tin>baked-beans": "Beans and tomatoes on toast", "sardines-tin>mackerel-smoked": "Smoked mackerel and tomatoes on toast", "sardines-tin>tuna-tin": "Tuna and tomatoes on toast" },
     fridgeDays: 0, storeCupboard: "Use tinned chopped tomatoes instead of fresh.",
   }),
   r("breakfast", "salmon-bagel", {
@@ -129,6 +139,7 @@ export const RECIPES: Recipe[] = [
     time: [6, 0], kit: ["none"], washUp: 1, collections: ["no-cook", "store-cupboard", "on-the-go"], cuisine: "Mediterranean", cost: 2,
     ingredients: [L("tuna-tin", 112), L("cannellini", 120), L("red-onion", 30), L("salad-leaves", 50), L("cherry-tomatoes", 60), L("lemon", 15)],
     steps: ["Drain the tuna and rinse the beans.", "Toss everything in a bowl with the lemon juice, a little olive oil, salt and pepper."],
+    stepsFor: { "tuna-tin>chickpeas": { 1: "Rinse the chickpeas and beans." }, "tuna-tin>cooked-chicken": { 1: "Rinse the beans and tear the chicken into pieces." } },
     fridgeDays: 1, storeCupboard: "Skip the leaves and tomatoes and add tinned sweetcorn.",
   }),
   r("lunch", "chicken-hummus-wrap", {
@@ -151,6 +162,7 @@ export const RECIPES: Recipe[] = [
     ingredients: [L("eggs", 174), L("light-mayo", 15), L("pitta", 58), L("cherry-tomatoes", 80), L("salad-leaves", 20)],
     steps: ["Boil the eggs for 9 minutes, then cool under cold water and peel.", "Mash with the mayo, salt and pepper.", "Fill the pitta with the egg and leaves. Tomatoes on the side."],
     only: { eggs: [] },
+    nameFor: { "light-mayo>greek-yoghurt": "Egg and yoghurt pitta with tomatoes", "light-mayo>soya-yoghurt": "Egg and yoghurt pitta with tomatoes" },
     fridgeDays: 2,
   }),
   r("lunch", "prawn-rice-bowl", {
@@ -158,6 +170,11 @@ export const RECIPES: Recipe[] = [
     time: [4, 2], ahead: "Defrost the prawns in the fridge overnight", kit: ["microwave"], washUp: 1, collections: ["microwave", "on-the-go"], cuisine: "Thai", cost: 2,
     ingredients: [L("prawns", 120), L("rice-pouch", 125), L("sweetcorn", 60), L("edamame", 50), L("sweet-chilli", 15)],
     steps: ["Defrost the prawns in the fridge overnight, or under cold running water for 5 minutes.", "Microwave the rice and edamame together for 2 minutes.", "Top with the prawns and sweetcorn and drizzle with the sweet chilli sauce."],
+    stepsFor: {
+      tofu: ["Cut the tofu into small cubes.", "Microwave the rice, edamame and tofu together for 2 minutes.", "Top with the sweetcorn and drizzle with the sweet chilli sauce."],
+      "cooked-chicken": ["Microwave the rice and edamame together for 2 minutes.", "Top with the chicken and sweetcorn and drizzle with the sweet chilli sauce."],
+      edamame: ["Microwave the rice and edamame together for 2 minutes.", "Top with the sweetcorn and drizzle with the sweet chilli sauce."],
+    },
     fridgeDays: 1,
   }),
   r("lunch", "red-lentil-soup", {
@@ -172,6 +189,7 @@ export const RECIPES: Recipe[] = [
     time: [5, 11], kit: ["none"], washUp: 1, collections: ["no-cook"], cuisine: "Eastern European", cost: 2,
     ingredients: [L("mackerel-smoked", 100), L("new-potatoes", 100), L("beetroot", 80), L("salad-leaves", 40), L("greek-yoghurt", 30)],
     steps: ["Halve the potatoes and microwave them in a covered bowl for 6 minutes, then spread out to cool for 5. Cooked ones from yesterday save the wait.", "Flake the mackerel over the leaves, potatoes and beetroot.", "Thin the yoghurt with a splash of water and lemon for a dressing."],
+    stepsFor: { "mackerel-smoked>smoked-tofu": { 2: "Slice the smoked tofu over the leaves, potatoes and beetroot." } },
     fridgeDays: 1,
   }),
   r("lunch", "chickpea-smash", {
@@ -186,6 +204,7 @@ export const RECIPES: Recipe[] = [
     time: [6, 2], kit: ["kettle", "hob"], washUp: 2, collections: [], cuisine: "Mediterranean", cost: 2,
     ingredients: [L("couscous", 50), L("halloumi", 80), L("roasted-peppers", 80), L("spinach", 30), L("lemon", 10)],
     steps: ["Pour 75 ml of boiling water over the couscous, cover and leave for 5 minutes.", "Meanwhile fry the sliced halloumi in a dry pan for 2 minutes a side.", "Fluff the couscous, stir in the spinach, peppers and lemon juice, and top with the halloumi."],
+    stepsFor: { "quinoa-pouch": { 1: "Microwave the quinoa for 1 minute, or as the pouch says." } },
     fridgeDays: 1,
   }),
   r("lunch", "turkey-bagel", {
@@ -200,6 +219,10 @@ export const RECIPES: Recipe[] = [
     time: [6, 0], kit: ["none"], washUp: 1, collections: ["no-cook", "on-the-go"], cuisine: "Japanese", cost: 2,
     ingredients: [L("salmon-tin", 100), L("noodles", 100), L("edamame", 60), L("cucumber", 60), L("soy-sauce", 10)],
     steps: ["Loosen the noodles under the cold tap. Defrost the edamame the same way.", "Toss with the cucumber, soy sauce and a few drops of lemon or vinegar. Flake the salmon on top."],
+    stepsFor: {
+      "salmon-tin>chickpeas": { 2: "Toss with the cucumber, soy sauce and a few drops of lemon or vinegar. Scatter the chickpeas on top." },
+      "salmon-tin>cooked-chicken": { 2: "Toss with the cucumber, soy sauce and a few drops of lemon or vinegar. Scatter the chicken on top." },
+    },
     fridgeDays: 1,
   }),
   r("lunch", "greek-chickpea-salad", {
@@ -222,13 +245,17 @@ export const RECIPES: Recipe[] = [
     time: [4, 10], kit: ["microwave"], washUp: 2, collections: ["microwave", "store-cupboard"], cuisine: "British", cost: 1,
     ingredients: [L("potato", 250), L("tuna-tin", 112), L("sweetcorn", 60), L("light-mayo", 15), L("salad-leaves", 40)],
     steps: ["Prick the potato and microwave for 8 to 10 minutes, turning halfway, until soft.", "Mix the tuna, sweetcorn and mayo, and pile on top. Leaves on the side."],
+    stepsFor: { "potato>courgette": { 1: "Halve the courgette lengthways and microwave in a covered bowl for 4 minutes until soft." } },
+    nameFor: { "potato>courgette": "Tuna and sweetcorn stuffed courgette" },
     fridgeDays: 1,
   }),
   r("lunch", "tofu-peanut-slaw", {
     name: "Smoked tofu and peanut slaw", blurb: "Crunchy carrot and pepper slaw with a peanut dressing. Plant-based.",
     time: [9, 0], kit: ["none"], washUp: 2, collections: ["no-cook", "on-the-go"], cuisine: "Thai", cost: 2,
     ingredients: [L("smoked-tofu", 120), L("carrots", 80), L("peppers", 60), L("edamame", 40), L("peanut-butter", 15), L("soy-sauce", 5)],
-    steps: ["Grate the carrot and slice the pepper thinly.", "Whisk the peanut butter, soy sauce and a splash of hot water into a dressing.", "Toss with the veg, edamame and cubed tofu."],
+    steps: ["Grate the carrot and slice the pepper thinly.", "Whisk the peanut butter, soy sauce and a splash of hot water into a dressing.", "Toss with the veg, edamame and cubed smoked tofu."],
+    stepsFor: { seeds: { 2: "Whisk the soy sauce with a squeeze of lemon and a splash of water into a dressing.", 3: "Toss with the veg, edamame and cubed smoked tofu, and scatter over the seeds." } },
+    nameFor: { seeds: "Smoked tofu slaw with seeds" },
     fridgeDays: 2,
   }),
 
@@ -245,6 +272,7 @@ export const RECIPES: Recipe[] = [
     serves: 2, time: [8, 24], kit: ["tray", "microwave"], washUp: 2, collections: ["one-pan"], cuisine: "Mediterranean", cost: 3,
     ingredients: [L("salmon-fillet", 120), L("green-beans", 100), L("cherry-tomatoes", 80), L("pesto", 15), L("new-potatoes", 150)],
     steps: ["Heat the oven to 200°C fan. Halve the potatoes and microwave them in a covered bowl for 4 minutes, then roast on a tray with a little oil for 10 minutes.", "Add the beans, tomatoes and salmon. Spread the pesto over the salmon.", "Roast for 10 to 12 minutes more, until the salmon flakes."],
+    stepsFor: { tofu: { 3: "Roast for 10 to 12 minutes more, until the tofu is golden." }, "chicken-breast": { 3: "Roast for 10 to 12 minutes more, until the chicken is cooked through." } },
     fridgeDays: 1,
   }),
   r("dinner", "turkey-chilli", {
@@ -259,6 +287,7 @@ export const RECIPES: Recipe[] = [
     time: [10, 0], ahead: "Defrost the prawns in the fridge overnight", kit: ["hob"], washUp: 1, collections: ["fakeaway", "one-pan"], cuisine: "Chinese", cost: 2,
     ingredients: [L("prawns", 100), L("eggs", 58), L("rice-pouch", 125), L("peas", 80), L("spring-onions", 15), L("soy-sauce", 10)],
     steps: ["Heat a little oil in a big frying pan or wok. Scramble the egg, then push it to the side.", "Add the rice (straight from the pouch), peas and prawns. Stir-fry for 4 minutes until piping hot.", "Stir through the soy sauce and sliced spring onions."],
+    stepsFor: { "eggs>tofu": ["Heat a little oil in a big frying pan or wok. Crumble in the tofu with a pinch of turmeric and fry for 3 minutes, then push it to the side.", "Add the rice (straight from the pouch) and peas. Stir-fry for 4 minutes until piping hot.", "Stir through the soy sauce and sliced spring onions."] },
     fridgeDays: 1,
   }),
   r("dinner", "chicken-fajita-tray", {
@@ -273,6 +302,7 @@ export const RECIPES: Recipe[] = [
     serves: 2, time: [6, 29], kit: ["tray"], washUp: 1, collections: ["one-pan", "family"], cuisine: "Italian", cost: 2,
     ingredients: [L("chicken-sausages", 134), L("gnocchi", 150), L("peppers", 100), L("cherry-tomatoes", 80)],
     steps: ["Heat the oven to 200°C fan. Toss the gnocchi, peppers and tomatoes with a little oil and dried herbs on a tray.", "Snip the sausages into chunks and add.", "Roast for 20 to 25 minutes, shaking halfway, until golden."],
+    stepsFor: { "chicken-sausages>quorn-pieces": { 2: "Add the Quorn pieces." }, "chicken-sausages>smoked-tofu": { 2: "Cut the smoked tofu into chunks and add." } },
     fridgeDays: 2,
   }),
   r("dinner", "cod-tomato-olive", {
@@ -280,6 +310,13 @@ export const RECIPES: Recipe[] = [
     time: [7, 9], ahead: "Defrost the cod in the fridge overnight, or allow 4 more minutes from frozen", kit: ["hob", "kettle"], washUp: 2, collections: ["gentle"], cuisine: "Mediterranean", cost: 2,
     ingredients: [L("cod-fillet", 130), L("chopped-tomatoes", 200), L("olives", 20), L("spinach", 40), L("couscous", 50)],
     steps: ["Simmer the tomatoes with a little garlic and the olives in a frying pan for 3 minutes.", "Sit the defrosted cod in the sauce, cover and cook for 8 to 10 minutes (12 to 14 from frozen), until it flakes.", "Meanwhile pour 75 ml boiling water over the couscous and cover. Stir the spinach into the sauce at the end."],
+    stepsFor: {
+      tofu: { 2: "Add the cubed tofu, cover and cook for 6 minutes until hot through." },
+      prawns: { 2: "Add the prawns, cover and cook for 4 minutes until piping hot." },
+      "chicken-breast": { 2: "Add the sliced chicken, cover and cook for 8 to 10 minutes until cooked through." },
+      "quinoa-pouch": { 3: "Meanwhile microwave the quinoa for 1 minute. Stir the spinach into the sauce at the end." },
+    },
+    nameFor: { prawns: "Prawns in tomato and olive sauce with couscous" },
     fridgeDays: 1,
   }),
   r("dinner", "paneer-pea-curry", {
@@ -301,6 +338,8 @@ export const RECIPES: Recipe[] = [
     serves: 2, time: [13, 5], kit: ["hob"], washUp: 1, collections: ["one-pan", "family"], cuisine: "Mediterranean", cost: 2,
     ingredients: [L("chicken-breast", 120), L("chorizo", 25), L("peppers", 80), L("chopped-tomatoes", 100), L("peas", 50), L("rice-pouch", 125)],
     steps: ["Fry the diced chorizo for 2 minutes until it releases its oil. Add the chicken pieces and peppers and cook for 6 minutes.", "Add the tomatoes and a pinch of paprika and simmer for 3 minutes.", "Stir in the rice and peas and cook until piping hot."],
+    stepsFor: { "chorizo>smoked-tofu": { 1: "Fry the diced smoked tofu in a little oil for 2 minutes. Add the chicken pieces and peppers and cook for 6 minutes." } },
+    nameFor: { "chorizo>smoked-tofu": "Smoky chicken one-pot rice" },
     fridgeDays: 2,
   }),
   r("dinner", "wrap-pizza", {
@@ -308,6 +347,10 @@ export const RECIPES: Recipe[] = [
     time: [4, 13], kit: ["tray"], washUp: 1, collections: ["fakeaway", "family"], cuisine: "Italian", cost: 2,
     ingredients: [L("wrap", 62), L("passata", 50), L("mozzarella-light", 60), L("cooked-chicken", 60), L("peppers", 50), L("salad-leaves", 50)],
     steps: ["Heat the oven to 200°C fan or the air fryer to 180°C.", "Spread the passata over the wrap and top with the chicken, peppers and torn mozzarella.", "Bake for 6 to 8 minutes until crisp. Salad on the side."],
+    stepsFor: {
+      "mozzarella-light>smoked-tofu": { 2: "Spread the passata over the wrap and top with the chicken, peppers and thin slices of smoked tofu." },
+      "mozzarella-light>smoked-tofu+cooked-chicken>smoked-tofu": { 2: "Spread the passata over the wrap and top with thin slices of smoked tofu and the peppers." },
+    },
     fridgeDays: 0,
   }),
   r("dinner", "lentil-bolognese", {
@@ -336,6 +379,8 @@ export const RECIPES: Recipe[] = [
     time: [7, 23], kit: ["tray", "microwave"], washUp: 2, collections: ["fakeaway", "family"], cuisine: "British", cost: 2,
     ingredients: [L("cod-fillet", 150), L("potato", 200), L("peas", 100), L("lemon", 15)],
     steps: ["Cut the potato into chips, toss with a teaspoon of oil and salt, and air-fry at 200°C for 18 to 20 minutes (or oven-bake at 220°C fan for 25), shaking halfway.", "Add the fish, seasoned with salt, pepper and lemon zest, for the last 10 to 12 minutes.", "Microwave the peas and serve with lemon."],
+    stepsFor: { prawns: { 2: "Add the prawns, seasoned with salt, pepper and lemon zest, for the last 4 to 5 minutes, until piping hot." } },
+    nameFor: { prawns: "Air-fryer prawns, chips and peas", tofu: "Air-fryer tofu, chips and peas" },
     fridgeDays: 0,
   }),
   r("dinner", "smash-burger", {
@@ -344,6 +389,8 @@ export const RECIPES: Recipe[] = [
     ingredients: [L("beef-mince", 125), L("roll", 60), L("cheddar-light", 15), L("salad-leaves", 40), L("cherry-tomatoes", 60)],
     steps: ["Roll the mince into balls. Heat a dry heavy frying pan until very hot.", "Add a ball, press flat with a spatula and cook for 2 minutes a side until cooked through. Top with the cheese for the last minute.", "Serve in the toasted roll with leaves and sliced tomato."],
     only: { "beef-mince": ["turkey-mince"] },
+    stepsFor: { "roll>gf-bread": { 3: "Serve on toasted gluten-free bread with leaves and sliced tomato." } },
+    nameFor: { "roll>gf-bread": "Smash burger on toast with salad" },
     fridgeDays: 0,
   }),
   r("dinner", "chicken-shawarma", {
@@ -365,6 +412,8 @@ export const RECIPES: Recipe[] = [
     time: [13, 0], kit: ["hob"], washUp: 2, collections: ["one-pan"], cuisine: "Thai", cost: 2,
     ingredients: [L("tofu", 200), L("stir-fry-veg", 150), L("rice-noodles", 150), L("peanut-butter", 15), L("soy-sauce", 10)],
     steps: ["Pat the tofu dry, cube it and fry in a little oil for 6 minutes until golden.", "Add the veg and stir-fry for 3 minutes.", "Whisk the peanut butter, soy sauce and 3 tablespoons of hot water. Add with the noodles and toss until hot."],
+    stepsFor: { seeds: { 3: "Mix the soy sauce with 3 tablespoons of hot water. Add with the noodles and toss until hot, then scatter over the seeds." } },
+    nameFor: { seeds: "Crispy tofu stir-fry with seeds" },
     fridgeDays: 2,
   }),
   r("dinner", "turkey-meatballs", {
@@ -387,6 +436,7 @@ export const RECIPES: Recipe[] = [
     serves: 4, time: [12, 22], kit: ["hob", "kettle"], washUp: 2, collections: ["batch", "family", "one-pan"], cuisine: "Middle Eastern", cost: 2,
     ingredients: [L("chicken-thigh", 130), L("chickpeas", 100), L("chopped-tomatoes", 200), L("onion", 50), L("spices", 3), L("couscous", 40)],
     steps: ["Brown the chicken pieces with the chopped onion for 6 minutes. Stir in cumin, cinnamon and paprika.", "Add the tomatoes and chickpeas and simmer for 20 minutes.", "Pour 60 ml boiling water over the couscous, cover for 5 minutes and serve with the stew."],
+    stepsFor: { "quinoa-pouch": { 3: "Microwave the quinoa for 1 minute and serve with the stew." } },
     fridgeDays: 3, freezes: true,
   }),
   r("dinner", "jerk-chicken-rice-peas", {
@@ -401,6 +451,8 @@ export const RECIPES: Recipe[] = [
     serves: 4, time: [11, 22], kit: ["hob"], washUp: 2, collections: ["batch", "family", "one-pan"], cuisine: "West African", cost: 1,
     ingredients: [L("chicken-thigh", 130), L("peanut-butter", 20), L("chopped-tomatoes", 150), L("sweet-potato", 100), L("spinach", 60), L("onion", 40), L("stock", 150)],
     steps: ["Brown the chicken and onion (frozen chopped onion saves time) for 6 minutes.", "Stir in the peanut butter, tomatoes, stock and cubed sweet potato. Simmer for 20 minutes.", "Stir through the spinach until wilted."],
+    stepsFor: { seeds: { 2: "Stir in the tomatoes, stock and cubed sweet potato. Simmer for 20 minutes.", 3: "Stir through the spinach until wilted, and scatter over the seeds." } },
+    nameFor: { seeds: "West African-style chicken and sweet potato stew" },
     fridgeDays: 3, freezes: true,
   }),
   r("dinner", "chicken-goulash", {
@@ -415,6 +467,7 @@ export const RECIPES: Recipe[] = [
     serves: 2, time: [9, 23], kit: ["tray", "kettle"], washUp: 2, collections: ["one-pan"], cuisine: "Mediterranean", cost: 2,
     ingredients: [L("halloumi", 100), L("courgette", 100), L("peppers", 100), L("red-onion", 40), L("cherry-tomatoes", 60), L("couscous", 40)],
     steps: ["Heat the oven to 200°C fan. Roast the chopped veg with a little oil for 12 minutes.", "Add the sliced halloumi and roast for 8 to 10 minutes more.", "Pour 60 ml boiling water over the couscous, cover for 5 minutes and serve underneath."],
+    stepsFor: { "quinoa-pouch": { 3: "Microwave the quinoa for 1 minute and serve it underneath." } },
     fridgeDays: 1,
   }),
   r("dinner", "black-bean-chilli", {
@@ -429,6 +482,7 @@ export const RECIPES: Recipe[] = [
     time: [6, 11], kit: ["hob"], washUp: 1, collections: ["gentle", "one-pan"], cuisine: "Chinese", cost: 2,
     ingredients: [L("chicken-breast", 130), L("broccoli", 100), L("rice-pouch", 125), L("stock", 300), L("ginger", 5), L("soy-sauce", 5)],
     steps: ["Bring the stock and ginger to a simmer in a saucepan. Add the thinly sliced chicken and poach for 8 minutes.", "Add the broccoli for the last 4 minutes and the rice for the last 2.", "Season with a few drops of soy sauce."],
+    nameFor: { "ginger>spices": "Spiced chicken, rice and greens" },
     fridgeDays: 2,
   }),
   r("dinner", "salmon-pea-pasta", {
@@ -436,6 +490,12 @@ export const RECIPES: Recipe[] = [
     time: [6, 11], kit: ["hob"], washUp: 2, collections: [], cuisine: "Italian", cost: 2,
     ingredients: [L("salmon-fillet", 100), L("fresh-pasta", 125), L("peas", 80), L("spinach", 50), L("greek-yoghurt", 40), L("lemon", 15)],
     steps: ["Boil a kettle and pour it into a saucepan. Poach the salmon in the simmering water for 8 minutes, adding the fresh pasta and peas for the last 3.", "Drain, keeping a splash of water. Lift out the salmon and flake it.", "Stir the spinach, yoghurt, lemon and salmon through the pasta with a little cooking water."],
+    stepsFor: {
+      tofu: ["Boil a kettle and pour it into a saucepan. Meanwhile fry the cubed tofu in a little oil in a frying pan for 5 minutes until golden.", "Cook the fresh pasta and peas in the simmering water for 3 minutes, then drain, keeping a splash of water.", "Stir the spinach, yoghurt, lemon and tofu through the pasta with a little cooking water."],
+      "gf-pasta": ["Boil a kettle and pour it into a saucepan. Cook the pasta for 2 minutes, then add the salmon and poach for 8 minutes more, adding the peas for the last 3. Dried pasta can take longer, so check the pack.", "Drain, keeping a splash of water. Lift out the salmon and flake it.", "Stir the spinach, yoghurt, lemon and salmon through the pasta with a little cooking water."],
+      "tofu+gf-pasta": ["Boil a kettle and pour it into a saucepan. Cook the pasta for 10 minutes, or the time on the pack, adding the peas for the last 3.", "Meanwhile fry the cubed tofu in a little oil in a frying pan for 5 minutes until golden.", "Drain the pasta, keeping a splash of water. Stir the spinach, yoghurt, lemon and tofu through with a little cooking water."],
+      "chicken-breast": { 2: "Drain, keeping a splash of water. Lift out the chicken and shred it with two forks." },
+    },
     fridgeDays: 1,
   }),
   r("dinner", "red-lentil-dhal", {
@@ -474,6 +534,7 @@ export const RECIPES: Recipe[] = [
     time: [0, 0], kit: ["none"], washUp: 0, collections: ["no-cook", "on-the-go"], cuisine: "British", cost: 2,
     ingredients: [L("cooked-chicken", 75)],
     steps: ["Open and eat. Add a few cherry tomatoes if you have them."],
+    nameFor: { "tuna-tin": "Tinned tuna", "smoked-tofu": "Smoked tofu pieces", "quorn-pieces": "Quorn pieces" },
     fridgeDays: 2,
   }),
   r("snack", "chilli-edamame", {
@@ -509,6 +570,7 @@ export const RECIPES: Recipe[] = [
     time: [2, 0], kit: ["none"], washUp: 1, collections: ["no-cook"], cuisine: "American", cost: 1,
     ingredients: [L("apple", 150), L("peanut-butter", 15), L("greek-yoghurt", 100)],
     steps: ["Stir the peanut butter into the yoghurt.", "Dip in the sliced apple."],
+    nameFor: { seeds: "Apple with a seedy yoghurt dip" },
     fridgeDays: 0,
   }),
   r("snack", "cheese-oatcakes", {

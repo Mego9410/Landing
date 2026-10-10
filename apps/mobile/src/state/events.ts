@@ -9,7 +9,8 @@ import { get } from "./store";
 export type EventName =
   | "app_first_open" | "onboarding_started" | "onboarding_completed" | "consent_given" | "paywall_viewed" | "trial_started"
   | "purchase_completed" | "subscription_paid" | "restore_completed" | "check_in_completed" | "week_1_completed"
-  | "notification_permission_granted" | "notification_permission_denied" | "account_deleted";
+  | "notification_permission_granted" | "notification_permission_denied" | "account_deleted" | "signed_out"
+  | "subscription_renewed" | "subscription_ended";
 type Props = Record<string, string | number | boolean>;
 interface Queued { name: EventName; at: string; props?: Props }
 

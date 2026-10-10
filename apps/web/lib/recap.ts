@@ -1,10 +1,11 @@
 // The weekly recap email: Sunday at 6pm UK time, to signed-in people who turned it on (off by default), built from
 // their backup. Days checked in, strength sessions, the steady score against last week, and a tip from next week's
-// lesson. Weight appears only if they log it and safe mode is off; never in the subject line. Sent one email each
+// lesson. Weight appears only if they log it, safe mode is off and they chose to see the numbers ("Just show the trend"
+// and "Not at all" leave it out); never in the subject line. Sent one email each
 // through Resend, at most once a week each (recap_sent), with a one-click unsubscribe link.
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { sql } from "drizzle-orm";
-import { lessonFor } from "@landing/content/lessons";
+import { lessonForWeek } from "@landing/content/lessons";
 import { SITE_URL } from "@/app/site";
 import { getDb } from "./db";
 import { ensureExtraTables } from "./db/extra";
@@ -22,7 +23,9 @@ const weekDates = (monday: string) => Array.from({ length: 7 }, (_, i) => addDay
 interface Doc {
   name?: string;
   settings?: { safeMode?: boolean; units?: "kg" | "stlb" };
+  story?: { weightView?: "show" | "trend" | "hide" };
   ob?: { lastInjection?: string };
+  startedOn?: string | null;
   journal?: { entries?: Record<string, unknown> };
   days?: Record<string, { sessions?: unknown[] }>;
   weights?: { date: string; kg: number }[];
@@ -31,12 +34,16 @@ interface Doc {
 
 export interface Recap { checkIns: number; sessions: number; score: number | null; lastScore: number | null; weight: { avg: number; change: number } | null; week: number; tip: { title: string; text: string } | null }
 
-/** The plan week (1 to 52) on a date, counted from the week of the last injection, as the app does. */
+/** The plan week on a date, counted from the week of the last injection, as the app does (jabWeek): 0 or less while
+ *  the last jab is still to come, 53 and on in year two. */
 export function planWeek(doc: Doc, on: string) {
   const li = doc.ob?.lastInjection;
   if (!li) return 1;
-  return Math.max(1, Math.min(52, Math.floor((at(mondayOf(on)) - at(mondayOf(li))) / DAY / 7) + 1));
+  return Math.floor((at(mondayOf(on)) - at(mondayOf(li))) / DAY / 7) + 1;
 }
+/** How the week reads: "week 12 of 52" (or "week 12" when short), "year two, week 3", or "getting ready". */
+export const weekText = (week: number, short = false) =>
+  week < 1 ? "getting ready" : week > 52 ? `year two, week ${week - 52}` : short ? `week ${week}` : `week ${week} of 52`;
 
 /** The week ending on `sunday`, from someone's backup. */
 export function recapFor(doc: Doc, sunday: string): Recap {
@@ -46,16 +53,18 @@ export function recapFor(doc: Doc, sunday: string): Recap {
   const sessions = dates.reduce((n, d) => n + (doc.days?.[d]?.sessions?.length ?? 0), 0);
   const scores = doc.derived?.scores ?? {};
   let weight: Recap["weight"] = null;
-  if (!doc.settings?.safeMode) {
+  if (!doc.settings?.safeMode && (doc.story?.weightView ?? "show") === "show") {
     const avg = (ds: string[]) => { const ws = (doc.weights ?? []).filter((w) => ds.includes(w.date)); return ws.length >= 3 ? ws.reduce((a, w) => a + w.kg, 0) / ws.length : null; };
     const now = avg(dates), before = avg(last);
     if (now != null && before != null) weight = { avg: now, change: now - before };
   }
   const week = planWeek(doc, sunday);
-  const next = week < 52 ? lessonFor(week + 1) : null;
+  // Next week's lesson: before the last jab, the getting-ready one for their next week since starting.
+  const prepWeek = doc.startedOn ? Math.max(1, Math.floor((at(mondayOf(sunday)) - at(mondayOf(doc.startedOn))) / DAY / 7) + 2) : 1;
+  const next = lessonForWeek(week + 1, prepWeek).lesson;
   return {
     checkIns, sessions, score: scores[monday] ?? null, lastScore: scores[addDays(monday, -7)] ?? null, weight, week,
-    tip: next ? { title: next.title, text: next.tries[0] } : null,
+    tip: { title: next.title, text: next.tries[0] },
   };
 }
 
@@ -98,15 +107,15 @@ export function validUnsubscribe(userId: string, token: string) {
 export function recapEmail(doc: Doc, sunday: string, userId: string) {
   const r = recapFor(doc, sunday), lines = recapLines(doc, r);
   const hi = doc.name ? `Hi ${doc.name},` : "Hi,";
-  const subject = `Your week with Steadie: week ${r.week}`;
+  const subject = `Your week with Steadie: ${weekText(r.week, true)}`;
   const preview = lines[0];
   const unsubscribe = unsubscribeUrl(userId);
-  const body = `<p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${C.apricotInk};">Your week · week ${r.week} of 52</p>
+  const body = `<p style="margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${C.apricotInk};">Your week · ${esc(weekText(r.week))}</p>
 <h1 style="margin:0 0 16px;font-size:26px;line-height:32px;font-weight:700;">${esc(hi)} here's how it went</h1>
 <ul style="margin:0 0 20px;padding-left:20px;font-size:16px;line-height:24px;">${lines.map((l) => `<li style="margin:0 0 8px;">${esc(l)}</li>`).join("")}</ul>
 ${r.tip ? `<div style="background:${C.cream};border-radius:14px;padding:18px 20px;margin:0 0 8px;"><p style="margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${C.apricotInk};">Next week · ${esc(r.tip.title)}</p><p style="margin:0;font-size:16px;line-height:24px;">One thing to try: ${esc(r.tip.text)}</p></div>` : ""}
 ${button(`${SITE_URL}/guides?utm_source=email&utm_medium=email&utm_campaign=weekly-recap`, "Read this week's guides")}`;
-  const text = `${hi} here's how your week went (week ${r.week} of 52).\n\n${lines.map((l) => `- ${l}`).join("\n")}${r.tip ? `\n\nNext week: ${r.tip.title}. One thing to try: ${r.tip.text}` : ""}\n\n---\nYou're getting this because you turned on the weekly recap in Steadie. Unsubscribe: ${unsubscribe}\nSteadie is general information, not medical advice.`;
+  const text = `${hi} here's how your week went (${weekText(r.week)}).\n\n${lines.map((l) => `- ${l}`).join("\n")}${r.tip ? `\n\nNext week: ${r.tip.title}. One thing to try: ${r.tip.text}` : ""}\n\n---\nYou're getting this because you turned on the weekly recap in Steadie. Unsubscribe: ${unsubscribe}\nSteadie is general information, not medical advice.`;
   const html = shell(preview, body, { why: "You're getting this because you turned on the weekly recap in Steadie.", unsubscribe, where: "turn it off in the app's Settings" });
   return { subject, html, text, unsubscribe };
 }

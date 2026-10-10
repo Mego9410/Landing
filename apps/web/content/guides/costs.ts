@@ -46,7 +46,7 @@ export const COSTS: Guide[] = [
         { note: "Steadie doesn't give advice about medicines, doses or stopping. Those decisions are for you and your prescriber.", tone: "butter" },
       ] },
       { heading: "If you've already had to stop", blocks: [
-        "You're not alone, and it isn't a failure. Hunger usually returns over the weeks after the last dose, and some weight often comes back, but habits make a real difference. Start with [what happens when you stop](/guides/what-happens-when-you-stop-weight-loss-injections) and [keeping weight off after a GLP-1](/guides/keep-weight-off-after-glp-1).",
+        "You're not alone, and it isn't something you've done wrong. Hunger usually returns over the weeks after the last dose, and some weight often comes back, but habits make a real difference. Start with [what happens when you stop](/guides/what-happens-when-you-stop-weight-loss-injections) and [keeping weight off after a GLP-1](/guides/keep-weight-off-after-glp-1).",
       ] },
     ],
     faqs: [

@@ -16,6 +16,8 @@ export default function FoodNoise() {
   const pick = (id: string) => set((st) => {
     const next = id === NOT_REALLY ? (picked.includes(NOT_REALLY) ? [] : [NOT_REALLY]) : toggle(picked.filter((x) => x !== NOT_REALLY), id);
     st.story.foodNoise = next;
+    // "Not really" (or nothing) skips the if-then plan, so an earlier one shouldn't linger.
+    if (!next.length || next.includes(NOT_REALLY)) st.story.ifThen = null;
     st.ob.hungryTimes = FOOD_NOISE.filter((f) => next.includes(f.id) && f.hungry).map((f) => f.hungry!);
   });
   return (

@@ -8,8 +8,8 @@ import Purchases, { INTRO_ELIGIBILITY_STATUS, LOG_LEVEL, PURCHASES_ERROR_CODE, t
 import { period } from "@/data/period";
 import { track } from "./events";
 import { install, updateInstall } from "./install";
-import { trialReminder } from "./reminders";
-import { get, set } from "./store";
+import { lockRemindersWhen, refreshReminders, renewalReminder, trialReminder } from "./reminders";
+import { get, set, type AppState } from "./store";
 
 const KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? "";
 /** The RevenueCat entitlement that unlocks the plan. */
@@ -18,21 +18,48 @@ export const ENTITLEMENT = "plan";
 /** Billing is on only with a key, and only on iPhone for now. */
 export const billingEnabled = () => !!KEY && Platform.OS === "ios";
 
+/** With billing on, once onboarding is done the plan needs an active subscription. The demo never asks. Without it,
+ *  Settings, export, delete, the legal pages and the health check stay open; everything else goes to the paywall. */
+export const planLocked = (s: Pick<AppState, "onboarded" | "demo" | "subscription">) => billingEnabled() && s.onboarded && !s.demo && !s.subscription?.active;
+lockRemindersWhen(planLocked);
+
 let started = false;
 const active = (info: CustomerInfo) => !!info.entitlements.active[ENTITLEMENT];
 
-/** Saves what the app needs to know offline and in Settings, and keeps the trial reminder in step: set while a trial
- *  will turn into a subscription, cancelled once it's paid for or cancelled. */
+// App Store prices by product, for the reminders' wording. Looked up once; null if the store can't say.
+const prices = new Map<string, string | null>();
+async function priceOf(productId: string): Promise<string | null> {
+  if (!prices.has(productId)) {
+    const found = await Purchases.getProducts([productId]).catch(() => []);
+    prices.set(productId, found[0]?.priceString ?? null);
+  }
+  return prices.get(productId) ?? null;
+}
+
+/** Saves what the app needs to know offline and in Settings, and keeps the reminders in step: the trial reminder while a
+ *  trial will turn into a subscription, the renewal note while a yearly plan will renew, and the plan's own reminders
+ *  only while it's active. Saved quietly: it's a status check, not a change to the plan. */
 function remember(info: CustomerInfo, askForReminder = false) {
   const e = info.entitlements.active[ENTITLEMENT];
   const trial = e?.periodType?.toUpperCase() === "TRIAL";
   const plan = !e ? null : /annual|year/i.test(e.productIdentifier) ? "yearly" : "monthly";
   const ended = !e && !!info.entitlements.all[ENTITLEMENT];
-  set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false, ended }; });
+  const before = get().subscription;
+  set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false, ended }; }, { quiet: true });
   const wanted = get().settings.trialReminder !== false;
-  trialReminder(e && trial && e.willRenew && wanted ? e.expirationDate : null, e?.latestPurchaseDate ?? null, askForReminder).catch(() => {});
+  const trialUntil = e && trial && e.willRenew && wanted ? e.expirationDate : null;
+  const renewUntil = e && !trial && plan === "yearly" && e.willRenew ? e.expirationDate : null;
+  (e && (trialUntil || renewUntil) ? priceOf(e.productIdentifier) : Promise.resolve(null)).then((price) => Promise.all([
+    trialReminder(trialUntil, e?.latestPurchaseDate ?? null, askForReminder, { plan, price }),
+    renewalReminder(renewUntil, price),
+  ])).catch(() => {});
+  // Plan reminders stop while the subscription isn't active and come back when it is.
+  if (!!before?.active !== !!e) refreshReminders(get());
   // The first time this install sees a paid (not trial) subscription: after a trial converts, or bought outright.
   if (e && !trial) install().then((i) => { if (!i.paidSent) { updateInstall({ paidSent: true }); track("subscription_paid", { plan: plan ?? "unknown" }); } }).catch(() => {});
+  // Funnel: a paid period rolling on to the next, and a subscription that has ended. Seen as changes on this phone.
+  if (e && !trial && before?.active && !before.trial && before.until && e.expirationDate && e.expirationDate > before.until) track("subscription_renewed", { plan: plan ?? "unknown" });
+  if (!e && ended && before?.active) track("subscription_ended", { plan: before.plan ?? "unknown", trial: !!before.trial });
 }
 
 /** Connects to RevenueCat once and keeps the saved subscription status up to date. */
@@ -103,6 +130,7 @@ export function plansProblem(e: unknown): { text: string; detail: string } {
 export async function buy(plan: Plan): Promise<boolean> {
   try {
     const { customerInfo } = await Purchases.purchasePackage(plan.pkg);
+    prices.set(plan.pkg.product.identifier, plan.price); // the price they just saw, for the trial reminder
     remember(customerInfo, !!plan.trial); // starting a trial is the moment to ask about the reminder
     if (active(customerInfo)) track(plan.trial ? "trial_started" : "purchase_completed", { plan: plan.pkg.packageType === "ANNUAL" ? "yearly" : "monthly" });
     return active(customerInfo);

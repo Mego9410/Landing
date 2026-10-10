@@ -7,7 +7,7 @@ import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Disc, Header } from "@/components/ui";
-import { dayName, INCLUDE_DRAFTS, mealAt, minutes, profileFor, proteinText, px, saveWeekFor, SLOT_NAME, SLOT_TONE, weekFor, type Which } from "@/state/food";
+import { dayName, INCLUDE_DRAFTS, mealAt, minutes, planOptions, profileFor, proteinText, px, saveWeekFor, SLOT_NAME, SLOT_TONE, weekFor, type Which } from "@/state/food";
 import { set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
@@ -35,7 +35,8 @@ export default function Pick() {
   if (!week) return null;
   const p = profileFor(s, which), current = mealAt(week, day, slot, index);
   const lefts = leftoverOptions(week, p, day, slot);
-  const options = swapOptions(week, p, day, slot, { n: 4, includeDrafts: INCLUDE_DRAFTS, seed: s.food.seed + day });
+  const { recent, favourites, avoid } = planOptions(s, which === "next" ? 1 : 0);
+  const options = swapOptions(week, p, day, slot, { n: 4, includeDrafts: INCLUDE_DRAFTS, seed: s.food.seed + day, recent, favourites, avoid });
   function choose(choice: Choice) {
     set((st) => { const w = weekFor(st, which); if (w) saveWeekFor(st, which, setMeal(w, profileFor(st, which), day, slot, choice, index)); });
     if (which === "this") toast(`Updated for ${dayName(day)}. Your shopping list follows.`);

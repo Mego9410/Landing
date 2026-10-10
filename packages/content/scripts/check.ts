@@ -21,9 +21,12 @@ for (const [from, list] of Object.entries(SWAPS)) {
 for (const t of TOP_UPS) if (!INGREDIENT[t.i]) err(`Top-up uses unknown ${t.i}`);
 
 // Brand language (docs and the design-system README): no diet-culture words, no emoji.
-const BANNED = /\b(cheat|guilt|guilty|sinful|junk|clean eating|burn|fail|back on track|naughty|skinny|diet food)\b/i;
+const BANNED = /\b(cheat|guilt|guilty|guilt-free|sinful|junk|clean eating|burn|fail|failure|back on track|naughty|skinny|diet food|willpower|journey|detox|superfoods?|goal weight)\b/i;
 const EMOJI = /\p{Extended_Pictographic}/u;
-const words = (r: (typeof RECIPES)[number]) => [r.name, r.blurb, ...r.steps, r.storeCupboard ?? ""];
+const words = (r: (typeof RECIPES)[number]) => [
+  r.name, r.blurb, ...r.steps, r.storeCupboard ?? "", ...Object.values(r.nameFor ?? {}),
+  ...Object.values(r.stepsFor ?? {}).flatMap((v) => (Array.isArray(v) ? v : Object.values(v))),
+];
 
 for (const r of RECIPES) {
   const where = `${r.id}:`;
@@ -53,6 +56,13 @@ for (const r of RECIPES) {
   if (r.collections.includes("no-cook") && !r.kit.includes("none")) err(`${where} tagged no-cook but needs ${r.kit.join(", ")}`);
   if (r.collections.includes("microwave") && r.kit.some((k) => k !== "microwave" && k !== "none")) err(`${where} tagged microwave but needs ${r.kit.join(", ")}`);
   if (!r.steps.length) err(`${where} has no steps`);
+  // A recipe's own wording for a swap names substitutes it can actually get.
+  for (const key of [...Object.keys(r.stepsFor ?? {}), ...Object.keys(r.nameFor ?? {})]) {
+    for (const part of key.split("+")) {
+      const [a, b] = part.split(">");
+      if (!INGREDIENT[b ?? a] || (b && !r.ingredients.some((l) => l.i === a))) err(`${where} has wording for an unknown swap ${part}`);
+    }
+  }
   for (const [from, alts] of Object.entries(r.only ?? {})) {
     if (!r.ingredients.some((l) => l.i === from)) err(`${where} limits swaps for ${from}, which it doesn't use`);
     for (const a of alts) if (!INGREDIENT[a]) err(`${where} allows unknown swap ${a}`);

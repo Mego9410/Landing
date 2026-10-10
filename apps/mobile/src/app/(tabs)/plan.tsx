@@ -6,22 +6,23 @@ import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
 import { Avatar, Disc, RowCard } from "@/components/ui";
 import { PHASES } from "@/data/content";
-import { lessonFor } from "@/data/lessons";
 import { thisWeek } from "@/state/food";
-import { useApp, weekOf } from "@/state/store";
+import { lessonNow, lessonRead } from "@/state/plans";
+import { gettingReady, jabWeek, stageLabel, useApp } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
 /** PL1 Your plan: this week, meals this week and next, and the three phases. */
 export default function Plan() {
   const s = useApp(), c = useColors();
-  const week = weekOf(s), lesson = lessonFor(week);
+  // For the phase strips: 0 while getting ready (nothing done yet); past 52 in year two (all done).
+  const week = gettingReady(s) ? 0 : jabWeek(s), pick = lessonNow(s), lesson = pick.lesson;
   const meals = thisWeek(s), cooks = meals.days.filter((d) => d.dinner.kind === "cook").length;
   const nx = s.food.next, pr = nx ? progress(nx.week) : null;
   return (
     <Screen contentContainerStyle={{ gap: space[5] }}>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
         <View style={{ gap: 2 }}>
-          <AppText variant="caption" color="inkMuted">Week {week} of 52</AppText>
+          <AppText variant="caption" color="inkMuted">{stageLabel(s)}</AppText>
           <AppText variant="title" accessibilityRole="header">Your plan</AppText>
         </View>
         <Avatar name={s.name} />
@@ -31,7 +32,7 @@ export default function Plan() {
         <Card tone="apricot" hero style={{ gap: 6 }}>
           <AppText variant="label" color="onPastel">THIS WEEK</AppText>
           <AppText variant="heading" color="onPastel" style={{ fontSize: 22 }}>{lesson.week}</AppText>
-          <AppText color="onPastel">{s.lessonsRead[week] ? "Lesson read · three habits and two sessions" : "Lesson, three habits and two sessions"}</AppText>
+          <AppText color="onPastel">{lessonRead(s, pick.key) ? "Lesson read · three habits and two sessions" : "Lesson, three habits and two sessions"}</AppText>
         </Card>
       </Pressable>
 

@@ -9,12 +9,13 @@ import { HabitCheck } from "@/components/HabitCheck";
 import { Icon, type IconName } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
 import { Avatar, Choices, Disc, Field } from "@/components/ui";
-import { HABITS, phaseOf, PHASES, TIPS } from "@/data/content";
+import { HABITS, PHASES, READY, tipFor, YEAR_TWO, type Phase } from "@/data/content";
 import { sessionFor } from "@/data/sessions";
 import { fmt, partOfDay, today, weekdayIndex } from "@/data/dates";
 import { minutes, px, thisWeek } from "@/state/food";
-import { habitDetail, nextSession, sessionTarget, toggleHabit } from "@/state/habits";
-import { needsDisclaimer, sessionsInWeek, set, useApp, weekOf } from "@/state/store";
+import { habitDetail, isWeekly, nextSession, sessionTarget, toggleHabit } from "@/state/habits";
+import { lessonNow, lessonRead, lookBackDue, markLessonRead } from "@/state/plans";
+import { gettingReady, jabWeek, monthOnPlan, needsDisclaimer, sessionsInWeek, set, stageOf, useApp, weeksToLastJab, yearTwoWeek, type AppState } from "@/state/store";
 import { sessionsPaused } from "@/state/health";
 import { notificationsAllowed, trialMessage } from "@/state/reminders";
 import { askForReview } from "@/state/review";
@@ -105,8 +106,8 @@ function Plans() {
   const dinner = m.kind === "takeaway" ? { line: "Takeaway night", detail: "A night off cooking, planned in" }
     : m.kind === "free" || !m.recipe ? { line: "A free night", detail: "Eat out, use the freezer or pick a recipe" }
     : { line: px(s, m.recipe).name, detail: m.kind === "leftover" ? "Tonight's leftovers" : `Tonight · ${minutes(px(s, m.recipe).recipe)}` };
-  const next = nextSession(s), done = sessionsInWeek(s).length, paused = sessionsPaused(s);
-  const strength = paused ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" } : next ? { line: `${sessionFor(s, next).name} next`, detail: `${done} of ${sessionTarget(s)} done this week · ${sessionFor(s, next).minutes} min` } : { line: "Both sessions done", detail: "Next ones arrive on Monday" };
+  const next = nextSession(s), done = sessionsInWeek(s).length, paused = sessionsPaused(s), target = sessionTarget(s);
+  const strength = paused ? { line: "Waiting for a word with your GP", detail: "Your food and habits carry on" } : next ? { line: `${sessionFor(s, next).name} next`, detail: `${done} of ${target} done this week · ${sessionFor(s, next).minutes} min` } : { line: target === 2 ? "Both sessions done" : `All ${target} sessions done`, detail: "Next ones arrive on Monday" };
   return (
     <View style={{ gap: space[3] }}>
       <AppText variant="heading" accessibilityRole="header">Your plans</AppText>
@@ -123,11 +124,14 @@ function Plans() {
   );
 }
 
-/** The year at a glance: Land, Settle and Steady as one strip, sized by their weeks, filled up to this week. */
-function PhaseStrip({ week }: { week: number }) {
-  const c = useColors(), phase = phaseOf(week);
+/** The year at a glance: Land, Settle and Steady as one strip, sized by their weeks, filled up to this week. Empty while
+ *  getting ready, and full in year two. */
+function PhaseStrip({ s }: { s: AppState }) {
+  const c = useColors(), phase = stageOf(s), ready = gettingReady(s), two = yearTwoWeek(s), week = ready ? 0 : jabWeek(s);
+  const toGo = weeksToLastJab(s);
+  const label = ready ? `${READY.name} · last jab in about ${toGo} ${toGo === 1 ? "week" : "weeks"}` : two ? `${YEAR_TWO.name} · week ${two}` : `Week ${week} of 52 · ${phase.name}`;
   return (
-    <View accessible accessibilityRole="progressbar" accessibilityLabel={`Week ${week} of 52, ${phase.name} phase`} accessibilityValue={{ min: 1, max: 52, now: week }} style={{ gap: 6 }}>
+    <View accessible accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 52, now: Math.min(52, week) }} style={{ gap: 6 }}>
       <View style={{ flexDirection: "row", gap: 4 }}>
         {PHASES.map((p) => {
           const len = p.to - p.from + 1, filled = Math.max(0, Math.min(len, week - p.from + 1));
@@ -139,33 +143,75 @@ function PhaseStrip({ week }: { week: number }) {
         })}
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space[2] }}>
-        <AppText variant="caption" weight="700">Week {week} of 52 · {phase.name}</AppText>
-        <AppText variant="caption" color="inkMuted">{PHASES.map((p) => p.name).join(" › ")}</AppText>
+        <AppText variant="caption" weight="700" style={{ flexShrink: 1 }}>{label}</AppText>
+        <AppText variant="caption" color="inkMuted">{two ? "A year done" : PHASES.map((p) => p.name).join(" › ")}</AppText>
       </View>
     </View>
   );
 }
 
+const ORDER = ["ready", "land", "settle", "steady", "yearTwo"];
+
 /** Once, when a new phase starts: what it's about. Closing it may be followed by Apple's rating prompt (a milestone). */
-function PhaseCelebration({ week }: { week: number }) {
-  const s = useApp(), phase = phaseOf(week);
+function PhaseCelebration({ phase, week }: { phase: Phase; week: number }) {
+  const s = useApp();
   const seen = s.phaseSeen;
-  // People who had the app before this existed: start from where they are, without a card.
-  useEffect(() => { if (seen === undefined) set((st) => { st.phaseSeen = phase.key; }); }, [seen, phase.key]);
-  const order = PHASES.map((p) => p.key);
-  if (!seen || order.indexOf(phase.key) <= order.indexOf(seen)) return null;
-  const done = PHASES[order.indexOf(phase.key) - 1];
+  // People who had the app before this existed start from where they are, without a card. Anyone getting ready is
+  // marked as such, so week 1 gets its card when the last jab has passed.
+  useEffect(() => { if (seen === undefined || (phase.key === "ready" && seen !== "ready")) set((st) => { st.phaseSeen = phase.key; }); }, [seen, phase.key]);
+  if (!seen || ORDER.indexOf(phase.key) <= ORDER.indexOf(seen)) return null;
+  // Only say a phase is finished when it's the one just before (not after a jump, like a corrected date).
+  const done = ORDER.indexOf(seen) === ORDER.indexOf(phase.key) - 1 ? [READY, ...PHASES].find((p) => p.key === seen) ?? null : null;
   function close() {
     set((st) => { st.phaseSeen = phase.key; });
     askForReview("phase").catch(() => {});
   }
+  const line = phase.key === "yearTwo" ? "A whole year of steady habits. That's a real achievement, and the habits are yours now."
+    : done?.key === "ready" ? "Your last jab is behind you, and the habits you've practised are ready for the weeks ahead."
+    : done ? `You've finished ${done.name}, weeks ${done.from} to ${done.to}. That's a real stretch of steady habits.`
+    : `A new phase starts this week, week ${week}.`;
   return (
     <Card tone={phase.tone} style={{ gap: space[2] }}>
-      <AppText variant="label" color="onPastel">{done.name.toUpperCase()} DONE · WEEK {week}</AppText>
-      <AppText variant="heading" color="onPastel" accessibilityRole="header">Welcome to {phase.name}</AppText>
-      <AppText color="onPastel">You&apos;ve finished {done.name}, weeks {done.from} to {done.to}. That&apos;s a real stretch of steady habits.</AppText>
-      <AppText color="onPastel"><AppText weight="800" color="onPastel">What {phase.name} is about: </AppText>{phase.focus}</AppText>
-      <Button variant="secondary" label={`On to ${phase.name}`} onPress={close} />
+      <AppText variant="label" color="onPastel">{done ? `${done.name.toUpperCase()} DONE · ` : ""}WEEK {week}</AppText>
+      <AppText variant="heading" color="onPastel" accessibilityRole="header">Welcome to {phase.key === "yearTwo" ? "year two" : phase.name}</AppText>
+      <AppText color="onPastel">{line}</AppText>
+      <AppText color="onPastel"><AppText weight="800" color="onPastel">What {phase.key === "yearTwo" ? "year two" : phase.name} is about: </AppText>{phase.focus}</AppText>
+      <Button variant="secondary" label={`On to ${phase.key === "yearTwo" ? "year two" : phase.name}`} onPress={close} />
+    </Card>
+  );
+}
+
+/** This week's lesson, small: its title and one thing to try. Opening it marks it read. */
+function LessonCard() {
+  const s = useApp(), pick = lessonNow(s), read = lessonRead(s, pick.key);
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={`${pick.refresher ? "A refresher" : "This week's lesson"}: ${pick.lesson.title}. One thing to try: ${pick.lesson.tries[0]}${read ? ". Read" : ""}`}
+      onPress={() => { if (!read) set((st) => markLessonRead(st, pick.key)); router.push({ pathname: "/lesson", params: { key: pick.key } }); }}>
+      {({ pressed }) => (
+        <Card tone="sky" style={{ gap: 4, opacity: pressed ? 0.85 : 1 }}>
+          <AppText variant="label" color="onPastel">{pick.refresher ? "A REFRESHER" : "THIS WEEK'S LESSON"}{read ? " · READ" : ""}</AppText>
+          <AppText weight="800" color="onPastel" style={{ fontSize: 17 }}>{pick.lesson.title}</AppText>
+          <AppText variant="caption" color="onPastel">Try this: {pick.lesson.tries[0]}</AppText>
+        </Card>
+      )}
+    </Pressable>
+  );
+}
+
+/** Every four weeks on the plan: one calm card offering a look back at the month. Closing it hides it until next time. */
+function MonthCard() {
+  const s = useApp();
+  if (!lookBackDue(s)) return null;
+  const m = monthOnPlan(s), close = () => set((st) => { st.lookBackSeen = m; });
+  return (
+    <Card tone="butter" style={{ gap: space[2] }}>
+      <AppText variant="label" color="onPastel">FOUR WEEKS ON</AppText>
+      <AppText weight="800" color="onPastel" style={{ fontSize: 17 }}>Your month, in two minutes</AppText>
+      <AppText color="onPastel">Check-ins, sessions and the habit you kept most, with a chance to keep, change or swap a habit.</AppText>
+      <View style={{ flexDirection: "row", gap: space[2], flexWrap: "wrap" }}>
+        <Button variant="secondary" label="Have a look" onPress={() => router.push("/look-back")} />
+        <Button variant="quiet" label="Not now" onPress={close} />
+      </View>
     </Card>
   );
 }
@@ -253,10 +299,16 @@ export default function Today() {
   if (!s.onboarded) return <Redirect href="/onboarding" />;
   if (needsDisclaimer(s)) return <Redirect href="/disclaimer" />;
   if (!s.consent) return <Redirect href="/consent" />;
-  const week = weekOf(s), phase = phaseOf(week), nextPhase = PHASES[PHASES.indexOf(phase) + 1];
-  const items = todayPlan(s), done = items.filter((i) => i.done).length;
+  const phase = stageOf(s), ready = gettingReady(s), week = jabWeek(s), two = yearTwoWeek(s);
+  const nextPhase = ready ? null : phase.key === "steady" ? YEAR_TWO : PHASES[PHASES.indexOf(phase) + 1];
+  // Weekly habits (done once in the week) sit below the day's list, outside the ring.
+  const all = todayPlan(s), weekly = all.filter((i) => i.kind === "habit" && isWeekly(i.id)), items = all.filter((i) => !weekly.includes(i));
+  const done = items.filter((i) => i.done).length;
   const up = items.find((i): i is Task => i.kind === "task" && !i.done), habitsLeft = items.some((i) => i.kind === "habit" && !i.done);
-  const part = partOfDay(), tip = part === "evening" ? TIPS.evening : TIPS.day, large = largeText;
+  const part = partOfDay(), large = largeText;
+  const tip = { label: part === "evening" ? "TIP FOR TONIGHT" : "TIP FOR TODAY", text: tipFor(phase.key, today(), part === "evening") };
+  const where = ready ? READY.name.toUpperCase() : two ? `YEAR TWO · WEEK ${two}` : `WEEK ${week} · ${phase.name.toUpperCase()}`;
+  const ahead = ready ? " Week 1 begins after your last jab." : nextPhase ? ` ${nextPhase.from - week} ${nextPhase.from - week === 1 ? "week" : "weeks"} until ${nextPhase.key === "yearTwo" ? "year two" : nextPhase.name}.` : "";
   return (
     <Screen>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: space[3] }}>
@@ -267,8 +319,9 @@ export default function Today() {
         <Avatar name={s.name} />
       </View>
 
-      <PhaseStrip week={week} />
-      <PhaseCelebration week={week} />
+      <PhaseStrip s={s} />
+      <PhaseCelebration phase={phase} week={week} />
+      <MonthCard />
       <TrialEnding />
       <LapseCard />
 
@@ -276,11 +329,11 @@ export default function Today() {
         <View style={{ flexDirection: large ? "column" : "row", alignItems: large ? "flex-start" : "center", gap: space[4] }}>
           <DayRing done={done} total={items.length} />
           <View style={{ flex: 1, gap: 4 }}>
-            <AppText variant="label" color="onPastel">WEEK {week} · {phase.name.toUpperCase()}</AppText>
+            <AppText variant="label" color="onPastel">{where}</AppText>
             <AppText variant="heading" color="onPastel" style={{ fontSize: 22, lineHeight: 26 }}>{headline(done, items.length)}</AppText>
             <AppText variant="caption" color="onPastel">
               {up ? "Small steps that add up to a steady week." : habitsLeft ? "Just your habits left. Tick them off below as you do them." : "Rest up. Tomorrow's check-in will be here in the morning."}
-              {nextPhase ? ` ${nextPhase.from - week} ${nextPhase.from - week === 1 ? "week" : "weeks"} until ${nextPhase.name}.` : ""}
+              {ahead}
             </AppText>
           </View>
         </View>
@@ -297,8 +350,12 @@ export default function Today() {
         </View>
         {items.map((i) => i.kind === "task" ? <TaskRow key={i.id} t={i} />
           : <HabitCheck key={i.id} label={HABITS[i.id].label} detail={habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />)}
+        {weekly.length ? <AppText variant="label" color="inkMuted" style={{ marginTop: space[2] }}>ONCE THIS WEEK</AppText> : null}
+        {weekly.map((i) => <HabitCheck key={i.id} label={HABITS[i.id].label} detail={habitDetail(s, i.id)} checked={i.done} onChange={(v) => toggleHabit(i.id, v)} />)}
         <Button label="Swap a habit" variant="quiet" onPress={() => router.push("/swap-habit")} style={{ alignSelf: "center" }} />
       </View>
+
+      <LessonCard />
 
       <Card tone="lilac" style={{ gap: 6 }}>
         <AppText variant="label" color="onPastel">{tip.label}</AppText>

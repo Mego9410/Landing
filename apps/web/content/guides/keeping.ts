@@ -21,7 +21,7 @@ export const KEEPING: Guide[] = [
     ],
     sections: [
       { heading: "Why holding steady is hard after a GLP-1", blocks: [
-        "Your body adapts to weight loss: appetite hormones shift and you need a little less energy than before. While you're on a GLP-1 the medicine dampens that pull. When it stops, the pull returns. That's why regain is so common, and why it isn't about willpower. See [what happens when you stop](/guides/what-happens-when-you-stop-weight-loss-injections).",
+        "Your body adapts to weight loss: appetite hormones shift and you need a little less energy than before. While you're on a GLP-1 the medicine dampens that pull. When it stops, the pull returns. That's why regain is so common, and why it isn't about trying harder. See [what happens when you stop](/guides/what-happens-when-you-stop-weight-loss-injections).",
         "The good news: some people do hold most of their loss, and the habits below have good evidence behind them.",
       ] },
       { heading: "1. Protein first, at every meal", blocks: [
@@ -193,7 +193,7 @@ export const KEEPING: Guide[] = [
         ] },
       ] },
       { heading: "Stress and eating", blocks: [
-        "When life is busy or hard, comfort eating and skipped routines are human, not a failure. Rather than trying to keep everything going, pick one or two anchors: protein at breakfast and a short walk, for example. Doing the minimum on a hard week still counts.",
+        "When life is busy or hard, comfort eating and skipped routines are human, and happen to everyone. Rather than trying to keep everything going, pick one or two anchors: protein at breakfast and a short walk, for example. Doing the minimum on a hard week still counts.",
       ] },
       { heading: "When to get support", blocks: [
         "If low mood, anxiety or stress are affecting your eating or sleep for more than a couple of weeks, talk to your GP. NHS talking therapies can be accessed without a GP referral in England.",

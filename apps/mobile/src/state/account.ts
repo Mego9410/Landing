@@ -201,7 +201,7 @@ function reconcile(): Promise<Outcome> {
         if (status === "offline") { status = "idle"; emit(); }
         // Nothing new on the server and nothing changed here: no need to upload again.
         if (backup && account.linked && backup.revision === account.revision && (get().savedAt ?? "") <= (account.syncedAt ?? "")) return { kind: "none" as const };
-        const choice = decide(get(), backup?.data ?? null, account.linked);
+        const choice = decide(get(), backup?.data ?? null, account.linked, backup ? { revision: account.revision, syncedAt: account.syncedAt, serverRevision: backup.revision } : undefined);
         if (choice === "restore") { restore(backup!); return { kind: "restored" as const }; }
         if (choice === "ask") {
           pending = backup!;
@@ -274,13 +274,22 @@ async function forget() {
   setAccount(null);
 }
 
-/** Signs out and clears this phone. The backup stays, ready for the next sign-in. Backs up first so nothing is lost. */
-export async function signOut(): Promise<void> {
-  if (account?.linked) await backUpNow();
+/** True when signing out keeps the plan: this phone backs up to the account and is allowed to (consent not withdrawn).
+ *  Otherwise signing out deletes the plan for good, and Settings warns as it does for deleting. */
+export const signOutKeepsPlan = (a: Account | null, s: Pick<AppState, "consent">) => !!a?.linked && backupAllowed(s);
+
+/** Signs out and clears this phone. The backup stays, ready for the next sign-in. Backs up first so nothing is lost;
+ *  if there's no backup to come back to, it only goes ahead when `discard` says the person chose to delete. */
+export async function signOut({ discard = false }: { discard?: boolean } = {}): Promise<void> {
+  if (signOutKeepsPlan(account, get())) {
+    const done = await backUpNow();
+    // Two plans waiting to be picked between: nothing has been saved yet, so don't clear anything.
+    if (done.kind === "ask") throw new AccountError("Your account holds a different plan, so this one isn't backed up yet. Nothing has changed.");
+  } else if (!discard) throw new AccountError("Your plan isn't backed up, so signing out would delete it.");
   const token = await readToken();
   if (token) await call("/api/auth/sign-out", { method: "POST", body: "{}" }, token).catch(() => {});
   await forget();
-  track("account_deleted");
+  track("signed_out");
   await flushEvents().catch(() => {}); // before the install record is reset
   await deleteEverything();
 }
@@ -350,5 +359,7 @@ export async function deleteAccount(): Promise<void> {
     if (!r.ok && r.status !== 401) throw new AccountError("Couldn't delete your account just now. Nothing has been deleted. Try again.");
   }
   await forget();
+  track("account_deleted");
+  await flushEvents().catch(() => {}); // before the install record is reset
   await deleteEverything();
 }

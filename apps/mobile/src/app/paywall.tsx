@@ -65,7 +65,7 @@ export default function Paywall() {
   const steps = [
     { when: "Today", what: "Your full plan unlocks: meals, strength and morning check-ins.", tone: "#E07A52", icon: "check" as const },
     { when: `Day ${days - 2} · ${fmt.short(addDays(t, days - 2))}`, what: remind ? `We’ll remind you that your trial ends in 2 days.` : "Your trial ends in 2 days. (You’ve turned the reminder off.)", tone: c.butter, icon: "bell" as const },
-    { when: `Day ${days} · ${fmt.short(addDays(t, days))}`, what: "Your subscription starts, unless you cancel before then.", tone: c.surfaceSunk, icon: "star" as const },
+    { when: `Day ${days} · ${fmt.short(addDays(t, days))}`, what: chosen ? `Your plan starts at ${chosen.price} ${chosen.per}, unless you cancel before then.` : "Your plan starts, unless you cancel before then.", tone: c.surfaceSunk, icon: "star" as const },
   ];
 
   return (
@@ -90,7 +90,7 @@ export default function Paywall() {
         </AppText>
       </View>
       <AppText color="inkMuted" style={{ fontSize: 16, lineHeight: 23 }}>
-        {lapsed ? "Your subscription has ended. Everything you logged is still here." : chosen?.trial ? `Start with ${days} days free. We’ll remind you before it ends.` : "Your plan, check-ins and meals, all in one place."}
+        {lapsed ? "Your subscription has ended. Everything you logged is still here." : chosen?.trial ? `Start with ${days} days free.${remind ? " We’ll remind you before it ends." : ""}` : "Your plan, check-ins and meals, all in one place."}
       </AppText>
 
       {chosen?.trial ? (
@@ -117,8 +117,8 @@ export default function Paywall() {
           <Pressable onLongPress={() => setShowDetail((v) => !v)} delayLongPress={2000} accessibilityRole="header">
             <AppText weight="800">Plans aren’t loading just now</AppText>
           </Pressable>
-          <AppText color="inkMuted">Check your connection and try again.</AppText>
-          {(__DEV__ || showDetail) && failed.detail ? <AppText variant="caption" color="inkMuted">{failed.text} {failed.detail}</AppText> : null}
+          <AppText color="inkMuted">{failed.text}</AppText>
+          {(__DEV__ || showDetail) && failed.detail ? <AppText variant="caption" color="inkMuted">{failed.detail}</AppText> : null}
           <Button label="Try again" variant="secondary" onPress={load} />
         </OnbCard>
       ) : !options ? (

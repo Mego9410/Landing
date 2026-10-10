@@ -53,7 +53,7 @@ export const COMING_OFF: Guide[] = [
         "If weighing yourself makes things harder, you don't have to. Habits, hunger and how your clothes fit are useful signals too.",
       ] },
       { heading: "If weight starts to come back", blocks: [
-        "It's common, and it isn't a failure. Go back to the basics that worked: protein first, regular meals, two strength sessions and more walking. Talk to your prescriber or GP if you're worried; they can talk you through your options, including whether further treatment is right for you.",
+        "It's common, and it's nothing to blame yourself for. Go back to the basics that worked: protein first, regular meals, two strength sessions and more walking. Talk to your prescriber or GP if you're worried; they can talk you through your options, including whether further treatment is right for you.",
         { note: "If eating feels hard or out of control, Beat, the UK's eating disorder charity, has a helpline you can talk to.", tone: "sky" },
       ] },
     ],

@@ -447,6 +447,18 @@
       "seconds": 3
     },
     {
+      "id": "row-2b",
+      "name": "Supported bottle row",
+      "pattern": "row",
+      "level": 2,
+      "equipment": [
+        "counter",
+        "bottles"
+      ],
+      "cue": "One hand on the counter, back long. Pull the bottle up towards your ribs, then lower slowly.",
+      "seconds": 3
+    },
+    {
       "id": "row-4",
       "name": "One-arm dumbbell row",
       "pattern": "row",

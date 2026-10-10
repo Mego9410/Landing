@@ -1,20 +1,21 @@
 import { useKeepAwake } from "expo-keep-awake";
 import { router, useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { INGREDIENT } from "@landing/content";
-import { LABELS, plainName, quantity } from "@landing/engine";
+import { LABELS, quantity } from "@landing/engine";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
 import { Mark } from "@/components/Mark";
+import { MadeForYou, MealVerdict } from "@/components/meals";
 import { readable } from "@/components/Screen";
 import { TimerCard, useNow } from "@/components/Timers";
 import { IconButton, Stepper } from "@/components/ui";
-import { clock, ingredientsIn, timersIn, withSwaps } from "@/data/cook";
-import { profileFor, px, SLOT_NAME } from "@/state/food";
+import { chipLabel, clock, ingredientsIn, timersIn } from "@/data/cook";
+import { markHad, profileFor, px, SLOT_NAME } from "@/state/food";
 import { logProtein } from "@/state/habits";
 import { startTimer, useTimers } from "@/state/timers";
 import { set, useApp } from "@/state/store";
@@ -30,7 +31,8 @@ export default function Cook() {
   const q = useLocalSearchParams<{ id: string; portions?: string; step?: string }>();
   const p = profileFor(s, "this"), x = px(s, q.id, "this"), r = x.recipe;
   const [portions, setPortions] = useState(Number(q.portions) || (r.slot === "dinner" ? p.household : 1));
-  const steps = useMemo(() => r.steps.map((st) => withSwaps(st, x.swaps, plainName)), [r.steps, x.swaps]);
+  // The method with this person's swaps already written in (and the recipe's own wording where a swap changes it).
+  const steps = x.steps;
   const last = steps.length + 1;
   const [page, setPage] = useState(() => Math.min(last, Math.max(0, Number(q.step) || 0)));
   const [got, setGot] = useState<Record<string, boolean>>({});
@@ -81,6 +83,7 @@ export default function Cook() {
                 );
               })}
             </View>
+            {x.swaps.length ? <MadeForYou swaps={x.swaps} /> : null}
             {r.kit.length ? <AppText color="inkMuted">You’ll need: {r.kit.map((k) => ((LABELS.kit as Record<string, string>)[k] ?? k).toLowerCase()).join(", ")}.</AppText> : null}
             {r.kit.includes("tray") ? <AppText variant="caption" color="inkMuted">Times are for a fan oven. Put it on now if a step uses it; an air fryer is usually a few minutes quicker.</AppText> : null}
           </>
@@ -89,20 +92,24 @@ export default function Cook() {
             <Mark height={110} hole={c.surface} />
             <AppText variant="title" accessibilityRole="header" style={{ textAlign: "center", fontSize: 30, lineHeight: 36 }}>Enjoy your {x.name.toLowerCase()}</AppText>
             <AppText color="inkMuted" style={{ textAlign: "center" }}>{r.fridgeDays ? `Leftovers keep ${r.fridgeDays} ${r.fridgeDays === 1 ? "day" : "days"} in the fridge${r.freezes ? ", or freeze" : ""}.` : "Best eaten fresh."}</AppText>
+            <View style={{ alignSelf: "stretch", gap: space[2], marginTop: space[2] }}>
+              <AppText variant="label" color="inkMuted" style={{ textAlign: "center" }}>HOW WAS IT?</AppText>
+              <MealVerdict id={r.id} />
+            </View>
           </View>
         ) : (
           <>
             <AppText variant="label" color="apricotInk">STEP {page} OF {steps.length}</AppText>
             <AppText weight="600" accessibilityRole="header" style={{ fontSize: 24, lineHeight: 34 }}>{steps[page - 1]}</AppText>
             {(() => {
-              const need = ingredientsIn(steps[page - 1], ids, plainName);
+              const need = ingredientsIn(steps[page - 1], ids);
               return need.length ? (
                 <View style={{ gap: space[2] }}>
                   <AppText variant="label" color="inkMuted">YOU’LL NEED</AppText>
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2] }}>
                     {need.map((id) => (
                       <View key={id} style={{ paddingVertical: 8, paddingHorizontal: space[3], borderRadius: radius.full, backgroundColor: c.surfaceRaised, borderWidth: 1.5, borderColor: c.line }}>
-                        <AppText weight="700" style={{ fontSize: 15 }}>{plainName(id)} · {qty(id)}</AppText>
+                        <AppText weight="700" style={{ fontSize: 15 }}>{chipLabel(id)} · {qty(id)}</AppText>
                       </View>
                     ))}
                   </View>
@@ -140,12 +147,15 @@ export default function Cook() {
           <View style={{ flex: 1, gap: space[2] }}>
             {s.settings.safeMode ? null : (
               <Button label={`Log ${protein} g protein for ${SLOT_NAME[r.slot].toLowerCase()}`} variant="brand" block onPress={() => {
-                set((st) => logProtein(st, SLOT_NAME[r.slot], protein));
+                set((st) => { logProtein(st, SLOT_NAME[r.slot], protein); markHad(st, r.id); });
                 toast("Logged. Nice cooking.");
                 if (router.canGoBack()) router.back(); else router.replace("/meals");
               }} />
             )}
-            <Button label="Done" variant={s.settings.safeMode ? "brand" : "quiet"} block onPress={() => (router.canGoBack() ? router.back() : router.replace("/meals"))} />
+            <Button label="Done" variant={s.settings.safeMode ? "brand" : "quiet"} block onPress={() => {
+              set((st) => markHad(st, r.id));
+              if (router.canGoBack()) router.back(); else router.replace("/meals");
+            }} />
           </View>
         ) : (
           <>

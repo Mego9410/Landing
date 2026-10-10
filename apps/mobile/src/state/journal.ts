@@ -1,11 +1,12 @@
 import { MIN_DAYS, questionById, type YesNoQuestion } from "@/data/journal";
 import { addDays, daysBetween, yesterday } from "@/data/dates";
-import { set, type AppState, type JournalEntry } from "./store";
+import { change } from "@/data/units";
+import { set, type AppState, type JournalEntry, type Units } from "./store";
 
 export type Metric = "fullness" | "energy" | "weight";
 
 /** One thing compared on days with and without a yes. */
-export interface Effect { metric: Metric; withAvg: number; withoutAvg: number; diff: number; nWith: number; nWithout: number }
+export interface Effect { metric: Metric; withAvg: number; withoutAvg: number; diff: number; nWith: number; nWithout: number; units?: Units }
 export interface Insight { q: YesNoQuestion; nYes: number; nNo: number; effects: Effect[]; lead: Effect | null }
 
 // Below these, a difference is shown as "no clear difference": a third of a step on a scale, 0.1 kg overnight.
@@ -38,7 +39,7 @@ export function insights(s: AppState): { ready: Insight[]; learning: Insight[] }
       const wo = no.map(([d, e]) => value(s, d, e, metric)).filter((v): v is number => v != null);
       if (w.length < MIN_DAYS || wo.length < MIN_DAYS) return [];
       const withAvg = mean(w), withoutAvg = mean(wo);
-      return [{ metric, withAvg, withoutAvg, diff: withAvg - withoutAvg, nWith: w.length, nWithout: wo.length }];
+      return [{ metric, withAvg, withoutAvg, diff: withAvg - withoutAvg, nWith: w.length, nWithout: wo.length, units: s.settings.units }];
     });
     const lead = effects.filter(clear).sort((a, b) => Math.abs(b.diff) / UNIT[b.metric] - Math.abs(a.diff) / UNIT[a.metric])[0] ?? null;
     return { q, nYes: yes.length, nNo: no.length, effects, lead };
@@ -58,14 +59,15 @@ export function describe(e: Effect, short = false): string {
   const up = e.diff > 0;
   if (e.metric === "fullness") return up ? "Fuller, less hungry" : "Hungrier";
   if (e.metric === "energy") return up ? "More energy" : "Less energy";
-  return `${Math.abs(e.diff).toFixed(1)} kg ${up ? "higher" : "lower"}${short ? "" : " the next morning"}`;
+  return `${change(e.diff, e.units ?? "kg")} ${up ? "higher" : "lower"}${short ? "" : " the next morning"}`;
 }
 
 export function figures(e: Effect): string {
   const f = (v: number) => {
     if (e.metric !== "weight") return v.toFixed(1);
-    const r = Math.round(v * 10) / 10;
-    return r === 0 ? "no change" : `${r > 0 ? "+" : "−"}${Math.abs(r).toFixed(1)} kg`;
+    const r = Math.round(v * 10) / 10, units = e.units ?? "kg";
+    if (r === 0) return "no change";
+    return `${r > 0 ? "+" : "−"}${change(v, units)}`;
   };
   return `With: ${f(e.withAvg)} · without: ${f(e.withoutAvg)}`;
 }

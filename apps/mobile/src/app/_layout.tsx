@@ -2,7 +2,7 @@ import { Fredoka_500Medium, Fredoka_600SemiBold } from "@expo-google-fonts/fredo
 import { Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold } from "@expo-google-fonts/nunito";
 import { useFonts } from "expo-font";
 import * as Notifications from "expo-notifications";
-import { router, Stack, type Href } from "expo-router";
+import { router, Stack, useSegments, type Href } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
@@ -17,7 +17,7 @@ import { flushEvents, track } from "@/state/events";
 import { install, updateInstall } from "@/state/install";
 import { watchDay } from "@/state/rollover";
 import { Sentry, sentryOn, startSentry } from "@/state/sentry";
-import { startBilling } from "@/state/subscription";
+import { planLocked, startBilling } from "@/state/subscription";
 import { loadTimers } from "@/state/timers";
 import { applyCriticalUpdate } from "@/state/updates";
 import { get, hydrate, useApp } from "@/state/store";
@@ -63,6 +63,22 @@ function Fallback({ resetError }: { resetError: () => void }) {
   );
 }
 
+// Screens that stay open without a subscription: onboarding (and the health check and sign-in in it), the paywall,
+// Settings (export, delete, sign out), the legal pages and the health information. The tabs check for themselves.
+const OPEN = new Set(["onboarding", "paywall", "settings", "legal", "disclaimer", "consent", "+not-found", "(tabs)"]);
+
+/** With billing on and no active subscription, any paid screen (opened from a notification, a cooking timer or a link)
+ *  goes to the paywall instead. */
+function PlanGate() {
+  const s = useApp();
+  const first = useSegments()[0] as string | undefined;
+  const locked = planLocked(s);
+  useEffect(() => {
+    if (locked && first && !OPEN.has(first)) setTimeout(() => router.replace("/paywall"), 0);
+  }, [locked, first]);
+  return null;
+}
+
 /** Keeps the app's light or dark look in line with the setting. */
 function ThemeSync() {
   const theme = useApp().settings.theme;
@@ -104,6 +120,7 @@ function RootLayout() {
     <View style={{ flex: 1, backgroundColor: c.surface }}>
       {ready ? <>
       <ThemeSync />
+      <PlanGate />
       <StatusBar style={intro ? "light" : "auto"} />
       <Sentry.ErrorBoundary fallback={({ resetError }) => <Fallback resetError={resetError} />}>
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.surface } }}>

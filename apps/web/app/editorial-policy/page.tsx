@@ -24,7 +24,7 @@ export default function EditorialPolicy() {
             <h2>How guides are checked</h2>
             <p>Guides are written by the Steadie team and checked against their sources before publishing. They are general information, not medical advice, and are not reviewed by a clinician. If you have a health condition, follow the advice of your own healthcare team.</p>
             <h2>Language</h2>
-            <p>We write in plain UK English, kindly. Weight regain after these medicines is common and is biology, not a failing, and we write that way. We avoid language that shames, and we signpost Beat, the UK&apos;s eating disorder charity, where it may help.</p>
+            <p>We write in plain UK English, kindly. Weight regain after these medicines is common and is biology, not a personal shortcoming, and we write that way. We avoid language that shames, and we signpost Beat, the UK&apos;s eating disorder charity, where it may help.</p>
             <h2>Brand names</h2>
             <p>We use names like Wegovy, Ozempic and Mounjaro so people can find information about the medicine they took. They are trademarks of their owners (Novo Nordisk and Eli Lilly). Steadie isn&apos;t connected with either company and doesn&apos;t promote any medicine.</p>
             <h2>Updates and corrections</h2>

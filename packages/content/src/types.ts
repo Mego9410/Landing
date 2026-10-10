@@ -18,6 +18,10 @@ export interface Ingredient {
   name: string;
   /** The word for it in a recipe name ("chicken" in "Chicken tikka traybake"), so a swap can rename the dish. */
   short?: string;
+  /** The word a method uses for it ("tofu", "soya milk"), written into steps when it replaces something. */
+  step?: string;
+  /** Other words a method or a dish name uses for it ("fish" for cod, "eggs"), so swaps and step chips find it. */
+  words?: string[];
   /** Per 100 g as used (drained for tins, dry for pasta and lentils): protein, carbs, fibre (AOAC), fat, salt. */
   per100: { protein: number; carbs: number; fibre: number; fat: number; salt: number };
   kind: Kind;
@@ -98,6 +102,14 @@ export interface Recipe {
    * become tofu). Without an entry, any vetted swap is fine and the method gets a "use X where it says Y" note.
    */
   only?: Record<string, string[]>;
+  /**
+   * The method's own wording where a swap changes how it's cooked, keyed by the substitute ("tofu"), a swap
+   * ("eggs>tofu"), or several joined with "+" ("tofu+gf-pasta"). A list replaces every step; an object replaces steps
+   * by number (from 1). Every match applies, the most specific last. Other swaps are still written in afterwards.
+   */
+  stepsFor?: Record<string, string[] | Record<number, string>>;
+  /** A better name when a swap makes the usual rename read oddly, keyed the same way. */
+  nameFor?: Record<string, string>;
   fridgeDays: number;
   freezes: boolean;
   /** A store-cupboard version, in a sentence, where one makes sense. */

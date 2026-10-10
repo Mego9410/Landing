@@ -10,7 +10,7 @@ import { Screen } from "@/components/Screen";
 import { Banner, DraftNote, Header, List } from "@/components/ui";
 import { today as dateToday, weekdayIndex } from "@/data/dates";
 import { profileOf, thisWeek } from "@/state/food";
-import { set, useApp, weekOf } from "@/state/store";
+import { set, stageLabel, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
 import { MealRow, TakeawayCard } from "@/components/meals";
@@ -27,7 +27,7 @@ export default function Meals() {
   const cooks = week.days.filter((d) => d.dinner.kind === "cook").length;
   const isToday = day === weekdayIndex(dateToday());
   return (
-    <Screen header={<Header fallback="/plan" middle={<Chip label={`Week ${weekOf(s)} · ${PHASE_NAME[t.phase]}`} tone="apricot" />} title="This week's meals" />} contentContainerStyle={{ gap: space[5] }}>
+    <Screen header={<Header fallback="/plan" middle={<Chip label={`${stageLabel(s)} · ${PHASE_NAME[t.phase]}`} tone="apricot" />} title="This week's meals" />} contentContainerStyle={{ gap: space[5] }}>
       <View style={{ gap: 6 }}>
         <AppText variant="title" accessibilityRole="header">This week&apos;s meals</AppText>
         <AppText color="inkMuted">{cooks} dinners to cook, leftovers, a takeaway night and a free night. Planned {GOAL_LINE[p.goal]}.</AppText>

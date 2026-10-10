@@ -7,7 +7,7 @@ import { Button } from "@/components/Button";
 import { ExerciseAnimation } from "@/components/ExerciseAnimation";
 import { Screen } from "@/components/Screen";
 import { Header, List, SessionHealth } from "@/components/ui";
-import { sessionFor } from "@/data/sessions";
+import { newThisBlock, sessionFor } from "@/data/sessions";
 import { whoFor } from "@/state/demos";
 import { sessionNotes, sessionsPaused } from "@/state/health";
 import { set, useApp } from "@/state/store";
@@ -19,6 +19,7 @@ export default function SessionOverview() {
   const s = useApp(), c = useColors();
   const { id } = useLocalSearchParams<{ id: "A" | "B" }>();
   const session = sessionFor(s, id === "B" ? "B" : "A");
+  const fresh = newThisBlock(s);
   const [open, setOpen] = useState(0);
   const move = session.moves[open], who = whoFor(s, `${move.anim}-${id}`);
   return (
@@ -36,10 +37,15 @@ export default function SessionOverview() {
         {session.moves.map((m, i) => (
           <Pressable key={m.name} accessibilityRole="button" accessibilityState={{ selected: i === open }} onPress={() => setOpen(i)}
             style={{ paddingVertical: space[3], paddingHorizontal: space[4], gap: 2, borderTopWidth: i ? 1 : 0, borderTopColor: c.line, backgroundColor: i === open ? c.surfaceSunk : "transparent" }}>
-            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <AppText weight="800">{i + 1}. {m.name}</AppText>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space[2] }}>
+              <AppText weight="800" style={{ flexShrink: 1 }}>{i + 1}. {m.name}</AppText>
               <AppText variant="caption" color="inkMuted">{m.sets} × {m.reps}</AppText>
             </View>
+            {fresh.has(m.anim) ? (
+              <View style={{ alignSelf: "flex-start", backgroundColor: c.butter, borderRadius: radius.full, paddingHorizontal: 8, paddingVertical: 2 }}>
+                <AppText variant="caption" weight="800" color="onPastel">New this block</AppText>
+              </View>
+            ) : null}
             {i === open ? <AppText variant="caption" color="inkMuted">{m.cue}</AppText> : null}
           </Pressable>
         ))}

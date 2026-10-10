@@ -26,7 +26,9 @@ export default function Recipes() {
   const [slot, setSlot] = useState<string>(picking ? q.slot! : "all");
   const [coll, setColl] = useState<string[]>([]);
   const [all, setAll] = useState(false);
-  const lib = library(profileFor(s, which), { all: true, includeDrafts: INCLUDE_DRAFTS });
+  const no = s.food.notForMe ?? [];
+  // "Not for me" recipes are listed with the ones that don't suit, so they can still be found.
+  const lib = library(profileFor(s, which), { all: true, includeDrafts: INCLUDE_DRAFTS }).map((x) => (no.includes(x.recipe.id) ? { ...x, ok: false, blocked: [] } : x));
   const shown = lib.filter((x) => {
     const r = x.recipe;
     if (slot !== "all" && r.slot !== slot) return false;
@@ -54,7 +56,7 @@ export default function Recipes() {
               <View style={{ flex: 1, gap: 2 }}>
                 <AppText weight="800">{x.name}</AppText>
                 <AppText variant="caption" color="inkMuted">{minutes(x.recipe)} · {proteinText(s, x.nutrition.protein)}{x.swaps.length ? " · adapted for you" : ""}</AppText>
-                {x.ok ? null : <AppText variant="caption" color="roseInk">Not for you: {x.blocked.join(", ")}</AppText>}
+                {x.ok ? null : <AppText variant="caption" color="roseInk">{x.blocked.length ? `Not for you: ${x.blocked.join(", ")}` : "You said this one's not for you"}</AppText>}
               </View>
             </RowCard>
           </View>

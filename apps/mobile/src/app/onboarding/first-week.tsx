@@ -4,7 +4,7 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
 import { OnbScreen, Title } from "@/components/Onboarding";
-import { habitsForWeek, phaseOf, PHASES } from "@/data/content";
+import { phaseOf, PHASES } from "@/data/content";
 import { today, weekdayIndex } from "@/data/dates";
 import { mealAt, px, thisWeek } from "@/state/food";
 import { sessionsPaused } from "@/state/health";
@@ -14,7 +14,7 @@ import { buildBlock } from "@/data/program";
 import { ensurePlans, programInput } from "@/state/plans";
 import { refreshReminders } from "@/state/reminders";
 import { PROTEIN_TARGET } from "@/state/today";
-import { get, set, useApp, weekOf } from "@/state/store";
+import { get, habitsNow, set, useApp, weekOf } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
 const DAY = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -44,7 +44,7 @@ export default function FirstWeek() {
     set((st) => {
       st.onboarded = true;
       st.startedOn = today();
-      st.habits = { week, ids: habitsForWeek(week), swappedFrom: null };
+      st.habits = { ...habitsNow(st), swappedFrom: null };
       st.food.joinedWeek = week; // the fibre ramp starts today
       st.food.plan = null;
       st.phaseSeen = phase.key; // no celebration for the phase they start in

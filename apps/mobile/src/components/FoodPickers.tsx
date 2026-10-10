@@ -1,14 +1,15 @@
 // The food questions, shared by onboarding and Food preferences. Every change clears this week's edited plan so
-// the week is rebuilt for the new answers.
+// the week is rebuilt for the new answers, and swaps out any of next week's meals that no longer suit.
 import { View } from "react-native";
 import { LABELS } from "@landing/engine";
+import { refitNext } from "@/state/food";
 import { set, useApp, type FoodPrefs } from "@/state/store";
 import { space } from "@/theme";
 import { AppText } from "./AppText";
 import { Choices, Options, ToggleRow } from "./ui";
 
 export function setFood(patch: Partial<FoodPrefs>) {
-  set((s) => { Object.assign(s.food, patch, { plan: null }); });
+  set((s) => { Object.assign(s.food, patch, { plan: null }); refitNext(s); });
 }
 const opts = <K extends string>(names: Record<K, string>, ids: K[]) => ids.map((id) => ({ id, label: names[id] }));
 

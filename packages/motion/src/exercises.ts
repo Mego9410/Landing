@@ -45,8 +45,9 @@ export const PATTERNS: { id: Pattern; name: string; seated: string }[] = [
 
 const list: Exercise[] = [];
 function ex(id: string, name: string, equipment: Equipment[], cue: string, props: Prop[], keys: Key[]): void {
+  // A letter after the level marks a second exercise at that level ("row-2b").
   const [pattern, level] = id.split("-");
-  list.push({ id, name, pattern: pattern as Pattern, level: Number(level), equipment, cue, props, keys });
+  list.push({ id, name, pattern: pattern as Pattern, level: Number.parseInt(level, 10), equipment, cue, props, keys });
 }
 
 const crossed = (p: Pose): Pose => ({ ...p, hands: [{ t: [40, 9] }, { t: [38, 6] }] });
@@ -254,6 +255,18 @@ ex("row-3", "Standing band row", ["band"], "Soft knees, chest proud. Pull your e
 ], (() => {
   const st = standing(100, { hip: [100, 103], torso: 6, ankles: [[106, G], [100, G]] });
   return [key(pressOut(st), 1, 0.3), key(rowIn(st), 1.2, 0.5)];
+})());
+
+// A pull for anyone with no band who can't get down to the floor: standing, one hand on the counter.
+ex("row-2b", "Supported bottle row", ["counter", "bottles"], "One hand on the counter, back long. Pull the bottle up towards your ribs, then lower slowly.", [
+  { kind: "counter", x: 150, top: 112 },
+  { kind: "held", item: "bottle", hand: 0 },
+], (() => {
+  const base: Pose = { hip: [104, 103], torso: 50, hands: [[0, 0], [160, 112]], ankles: [[116, G], [94, G]] };
+  const s = shoulderOf(base);
+  const low = { ...base, hands: [[s[0] + 2, s[1] + 52], [160, 112]] as Pose["hands"] };
+  const high = { ...base, hands: [{ t: [22, 16] }, [160, 112]] as Pose["hands"] };
+  return [key(low, 1, 0.3), key(high, 1.2, 0.5)];
 })());
 
 ex("row-4", "One-arm dumbbell row", ["dumbbells", "bench"], "Hand on the bench, back flat. Pull the weight to your hip.", [

@@ -1,6 +1,7 @@
-// A short lesson for each of the 52 weeks. General guidance in Steadie's voice: kind, plain, never about medication,
-// never about willpower. Each has a title, a two-word week name for the Plan screen, a one-line blurb, two short
-// paragraphs and two things to try. Land is weeks 1 to 8, Settle 9 to 26, Steady 27 to 52.
+// A short lesson for each of the 52 weeks, plus a few for the weeks before the last jab and one a month in year two.
+// General guidance in Steadie's voice: kind, plain, never about medication doses. Each has a title, a two-word week
+// name for the Plan screen, a one-line blurb, two short paragraphs and two things to try. Land is weeks 1 to 8,
+// Settle 9 to 26, Steady 27 to 52.
 
 export interface Lesson { title: string; week: string; blurb: string; paras: [string, string]; tries: [string, string] }
 
@@ -51,7 +52,7 @@ export const WEEKLY_LESSONS: Lesson[] = [
     "Beans, lentils, oats, wholegrains, fruit and vegetables all add fibre. Your meal plan adds a little more each week.",
     "Going up gradually, with plenty to drink, gives your gut time to adjust.",
     "Add a handful of beans or lentils to one meal.", "Swap one white bread or pasta for a wholegrain one."),
-  L("Planning beats willpower", "Plan the week", "Ten minutes on Sunday saves a lot of tired decisions on a Wednesday.",
+  L("A plan beats tired decisions", "Plan the week", "Ten minutes on Sunday saves a lot of tired decisions on a Wednesday.",
     "Most food decisions happen when we're tired or busy. A plan made earlier, when you're calm, does the deciding for you.",
     "Your meal plan and shopping list are there for exactly this. A plan you change halfway through still did its job.",
     "Pick next week's meals before Sunday evening.", "Do one shop from the list, and tick it off as you go."),
@@ -80,7 +81,7 @@ export const WEEKLY_LESSONS: Lesson[] = [
     "If the moves feel too easy, say so after a session and the next ones will step up.",
     "Try a third session this week, even a short one.", "Tell us how each session felt when you finish."),
   L("Stress and eating", "Under pressure", "Stress changes appetite for many people. Small, kind routines help more than strict rules.",
-    "When life is stressful, routines often slip and comfort eating can creep in. That's human, not a failure.",
+    "When life is stressful, routines often slip and comfort eating can creep in. That's human, and nothing to be hard on yourself about.",
     "Keeping one or two anchors, like protein at breakfast and a short walk, gives the week some shape when everything else is busy.",
     "On a stressful day, keep just one habit and let the rest go.", "Try five slow breaths before you eat when you're wound up."),
   L("Hunger signals", "Know your hunger", "Rating your hunger before you eat helps you match the meal to what you need.",
@@ -111,16 +112,16 @@ export const WEEKLY_LESSONS: Lesson[] = [
     "Your 7-day average may drift above your steady zone at some point. That's common, and it's the reason the zone exists.",
     "A reset week means going back to the basics that worked: protein first, regular meals, two sessions, more walking. Nothing extreme.",
     "If your trend is above the zone, pick two basics to focus on for one week.", "Check in with the coach if you'd like ideas."),
-  L("Halfway through Settle", "Look back", "Take a moment to notice what's changed since you started.",
+  L("Six months in", "Look back", "Settle ends this week. Take a moment to notice what's changed since you started.",
     "Habits that felt like effort a few months ago may now feel normal. That's the whole point of this year.",
     "Looking back at your check-ins and your trend can show you what works for you specifically.",
     "Read your 'what shapes your days' page.", "Write down the two habits that helped most."),
 
   // Steady: weeks 27 to 52
-  L("Making it yours", "Your own routines", "The habits that stuck are now yours. Fewer prompts, same steady ground.",
-    "By now, the habits that worked are yours. Steady is about keeping them with fewer reminders.",
-    "Check in once a month. If things shift, a reset week is always there.",
-    "Pick the two habits that matter most to you and keep them.", "Put a monthly check-in in your calendar."),
+  L("Making it yours", "Your own routines", "The habits that stuck are now yours. Same steady ground, your way.",
+    "By now, the habits that worked are yours. Steady is about keeping them in your own way.",
+    "Every four weeks, Today offers a short look back at your month. If things shift, a reset week is always there.",
+    "Pick the two habits that matter most to you and keep them.", "When your month's look back appears, give it two minutes."),
   L("Your own rules", "Personal rules", "A few simple rules of your own beat any diet plan.",
     "Rules like 'protein at breakfast' or 'walk after dinner' work because they're yours and they're easy to follow.",
     "Write them down. Three is plenty.",
@@ -139,7 +140,7 @@ export const WEEKLY_LESSONS: Lesson[] = [
     "Say yes to a meal out this month.", "Have your usual breakfast the next day."),
   L("Noticing drift early", "Early signals", "Small changes are easier to steer than big ones.",
     "Your trend, your check-ins and how your clothes feel are all early signals. Noticing them early means small adjustments are enough.",
-    "If you notice a drift, it isn't a failure. It's information.",
+    "If you notice a drift, it isn't something to worry about. It's information.",
     "Look at your trend once this week.", "If it's drifting, pick one basic to focus on."),
   L("Comfort without food", "Other comforts", "Having comfort that isn't food makes hard days easier.",
     "Food is a natural comfort, and it's fine sometimes. Having other comforts ready gives you a choice.",
@@ -173,9 +174,9 @@ export const WEEKLY_LESSONS: Lesson[] = [
     "Harsh self-talk tends to make hard days harder. Kindness isn't letting yourself off; it makes it easier to carry on.",
     "When something doesn't go to plan, ask what a friend would say to you.",
     "Notice one harsh thought this week and rephrase it.", "Write down one thing you did well."),
-  L("Halfway through Steady", "Look back again", "Six months of steady habits is something to be proud of.",
+  L("Halfway through Steady", "Look back again", "Most of a year of steady habits is something to be proud of.",
     "Take a moment to look back at where you started and what you've kept.",
-    "The habits that stuck are worth naming. They'll carry you through the next six months.",
+    "The habits that stuck are worth naming. They'll carry you through the months ahead.",
     "Read back through your 'what shapes your days' page.", "Pick one habit to recommit to."),
   L("Busy weeks", "When life is full", "On busy weeks, the minimum still counts.",
     "Some weeks there's no room for everything. Having a minimum version, like one session and protein at breakfast, keeps the thread.",
@@ -205,17 +206,17 @@ export const WEEKLY_LESSONS: Lesson[] = [
     "Sometimes we eat because we're hungry, and sometimes because we're tired, bored or sad. Both are human.",
     "Asking 'am I hungry?' before eating gives you a moment to choose.",
     "Ask yourself 'am I hungry?' before two snacks this week.", "If you're not, try a non-food comfort first."),
-  L("Planning for winter", "Darker months", "Darker evenings call for a different routine.",
-    "Less daylight can mean less walking and more comfort food. Planning for it helps.",
-    "Indoor sessions, earlier walks and warming, protein-rich meals keep you on track.",
-    "Plan one indoor activity for dark evenings.", "Add a warming soup or stew to next week's meals."),
+  L("The season ahead", "Season ahead", "Light, weather and the calendar all change a week. A little planning keeps it steady.",
+    "Whatever the time of year, the next few months will bring their own changes: lighter or darker evenings, holidays, busy spells.",
+    "Choosing activities and meals that suit the season makes the routine easier to keep, rather than fighting it.",
+    "Plan one activity that suits the weather over the next month.", "Add a meal that suits the season to next week's plan."),
   L("Protein, still", "Protein habits", "Protein at each meal is still one of the simplest steady habits.",
     "It's easy for habits from the early months to fade. Protein at each meal is worth keeping, because it helps with fullness and muscle at any stage.",
     "A quick look at your meals this week will tell you whether it's still there.",
     "Check that each meal had some protein on three days this week.", "Restock your easy protein options: eggs, yoghurt, tinned fish or beans."),
   L("Almost a year", "Nearly there", "You're nearly a year in. Time to plan the next one.",
     "Look back at what's changed and what's stayed steady. That's a great base for the year ahead.",
-    "The plan winds down, but the habits are yours to keep.",
+    "After week 52 the plan gets lighter: year two has a new lesson each month, and the habits are yours to choose.",
     "Write down what you want to keep doing next year.", "Make your summary from Progress to remember the year."),
   L("Keep what you've worked for", "The year ahead", "A year of steady habits. The next one is yours.",
     "You've spent a year building routines that work for you. That's the hardest part done.",
@@ -225,3 +226,123 @@ export const WEEKLY_LESSONS: Lesson[] = [
 
 /** The lesson for a plan week (1 to 52). */
 export const lessonFor = (week: number): Lesson => WEEKLY_LESSONS[Math.max(1, Math.min(WEEKLY_LESSONS.length, week)) - 1];
+
+// Getting ready: for the weeks before the last jab, in order from someone's first week.
+export const PREP_LESSONS: Lesson[] = [
+  L("Getting ready, gently", "Getting ready", "A few weeks before your last jab is a lovely time to set up habits, while appetite is still quiet.",
+    "Habits are easier to start when nothing else is changing. These weeks are a chance to practise the basics before your appetite comes back.",
+    "There's nothing to get right yet. Think of it as a gentle rehearsal for the months ahead.",
+    "Tick off this week's habits on the days you can.", "Notice which one feels easiest, and start there."),
+  L("Protein, before you need it", "Protein early", "Building meals around protein now makes it second nature by the time hunger returns.",
+    "Protein helps meals feel filling and helps your body hold on to muscle. Getting used to it now means one less thing to learn later.",
+    "It needn't be big portions. A little at each meal, like eggs, yoghurt, fish, tofu or beans, is a good start.",
+    "Have some protein at breakfast on three days this week.", "Write down three protein foods you actually enjoy."),
+  L("Strength basics", "First sessions", "Two short sessions a week help protect muscle. Starting now makes them routine.",
+    "The first sessions are about learning the moves, not working hard. Stopping a couple of reps before it gets tough is exactly right.",
+    "Muscle helps you feel strong in everyday life, and it's part of staying steady over the year.",
+    "Do one session this week, even a short one.", "Pick the easier version of any move whenever you like."),
+  L("Talking to your prescriber", "A good conversation", "Your prescriber knows your situation best. A few notes beforehand make the conversation easier.",
+    "How and when to stop is a decision for you and your prescriber. They can explain what to expect and answer questions about your medication.",
+    "It helps to say what you're planning around it: meals with protein, strength sessions and a routine you're building now.",
+    "Write down any questions you'd like to ask before your next appointment.", "Make your summary from Progress to take with you, if it helps."),
+  L("A plan for the week", "Plan ahead", "Ten minutes of planning saves a lot of tired decisions later.",
+    "Most food decisions happen when we're busy or tired. A plan made when you're calm does the deciding for you.",
+    "Your meal plan and shopping list are there for exactly this. A plan you change halfway through still did its job.",
+    "Look through next week's meals and swap any you don't fancy.", "Do one shop from your list."),
+  L("Know your hungry times", "Hungry times", "Knowing when hunger tends to arrive lets you get ahead of it.",
+    "Many people find hunger comes back at the same times each day. Knowing yours means a meal or snack can be ready first.",
+    "Your morning check-in will start to show patterns too, like how sleep or a busy day changes things.",
+    "Notice the time of day you think about food most this week.", "Plan a protein snack for that time."),
+  L("Sleep and routine", "Steady days", "Steady sleep and regular meals give the weeks ahead a calm shape.",
+    "Short nights can turn up hunger the next day. A steadier bedtime is one of the kindest things you can do for the months ahead.",
+    "Regular mealtimes help too. They don't need to be strict, just roughly the same most days.",
+    "Pick a bedtime and keep it on five nights.", "Have your meals at roughly the same times for three days."),
+  L("What the first weeks bring", "Looking ahead", "Knowing what's coming makes the first weeks after your last jab easier.",
+    "As the jabs wear off, appetite often returns over a few weeks. It's expected, and it's what this year is planned around.",
+    "The habits you've practised here, protein, strength and a plan, are the ones that help most. You've already started.",
+    "Read back over your habits and pick the one you'll lean on most.", "Have easy protein foods in for your first week."),
+];
+
+/** One lesson a month in year two, each with three earlier lessons on the same theme for the weeks in between. */
+export const YEAR_TWO_LESSONS: { lesson: Lesson; again: [number, number, number] }[] = [
+  { again: [27, 28, 42], lesson: L("A lighter second year", "Year two", "The plan gets lighter now. The habits you've kept do the steady work.",
+    "A year of practice means many habits now happen without much thought. Year two is about keeping the ones that matter, your way.",
+    "There's a new lesson each month, and a look back every four weeks. In between, you'll see earlier lessons again as refreshers.",
+    "Choose the habit you'd like in place of 'Your own routine'.", "Notice one habit that now happens without trying.") },
+  { again: [1, 50, 22], lesson: L("Protein, a year on", "Protein still", "Protein at each meal is still one of the simplest habits to keep.",
+    "Habits from the early months can quietly fade. Protein is worth keeping, because it helps with fullness and muscle at any stage.",
+    "If it's slipped, start with the meal it's easiest at, often breakfast.",
+    "Check that each meal had some protein on three days this week.", "Try one new protein food this month.") },
+  { again: [3, 23, 44], lesson: L("Strength that lasts", "Keep lifting", "Strength holds well with regular sessions, even short ones.",
+    "Once built, strength needs less to keep it. One or two sessions a week at a steady effort keeps most of what you've gained.",
+    "Changing a move now and then keeps sessions interesting and your body adapting.",
+    "Keep at least one session in every week this month.", "Try a harder version of one move.") },
+  { again: [2, 19, 13], lesson: L("Hunger, a year on", "Know your hunger", "Hunger still comes and goes. You know your patterns better than ever.",
+    "By now you've seen how sleep, stress and busy days change your appetite. That knowledge is one of the year's best results.",
+    "Rating hunger before a meal is still a useful check when things feel louder than usual.",
+    "Rate your hunger before two meals this week.", "Have a plan for your hungriest time of day.") },
+  { again: [12, 31, 45], lesson: L("Occasions and meals out", "Eating out", "Meals out and celebrations belong in a steady life.",
+    "A year in, you've had plenty of meals out and special days. Most of them simply became part of the routine.",
+    "Enjoying the occasion, then having your usual breakfast the next day, is all it takes.",
+    "Say yes to a meal out this month.", "Choose your main first, then decide on extras.") },
+  { again: [7, 36, 4], lesson: L("Rest, revisited", "Rest well", "Sleep still shapes hunger and energy. Small tweaks keep it working.",
+    "Your check-ins may show how much sleep matters for you. A steady bedtime remains one of the simplest habits to keep.",
+    "A cool, dark room and a wind-down without screens make a difference over time.",
+    "Keep the same bedtime for a week.", "Swap screen time for something calmer in the last half hour.") },
+  { again: [8, 38, 35], lesson: L("Moving for the fun of it", "Find your movement", "The best activity is the one you look forward to.",
+    "Walking, swimming, dancing, gardening or a class all count. Enjoying it is what keeps it going.",
+    "Trying something new now and then keeps movement feeling fresh rather than a task.",
+    "Try a new kind of activity this month.", "Book it in like an appointment.") },
+  { again: [32, 25, 47], lesson: L("Steering early", "Early signals", "Small drifts are easy to steer when you notice them early.",
+    "How your clothes feel, your check-ins and your routines are all early signals. Noticing them early means small changes are enough.",
+    "A reset week, back to the basics that worked, is always there and never needs to be dramatic.",
+    "Look back at your last month once this week.", "If something has drifted, pick one basic to focus on.") },
+  { again: [11, 20, 37], lesson: L("Kitchen habits", "Cook simply", "A few kitchen habits make the steady choice the easy one.",
+    "A planned week, a batch in the freezer and a few go-to meals take the effort out of busy evenings.",
+    "You can cook without a recipe now: protein, veg, something filling and a sauce.",
+    "Cook one batch recipe and freeze a portion.", "Make one meal without a recipe.") },
+  { again: [18, 33, 48], lesson: L("Comfort and stress", "Under pressure", "Hard weeks happen. A short list of comforts makes them easier.",
+    "Stress changes appetite for many people. Food is a natural comfort, and having other comforts ready gives you a choice.",
+    "On a hard week, keeping one or two anchors is plenty.",
+    "Write a short list of non-food comforts.", "On a stressful day, keep just one habit.") },
+  { again: [46, 24, 16], lesson: L("The people around you", "Who helps you", "Friends and family can make steady habits easier.",
+    "People close to you usually want to help but may not know how. Telling them what's useful makes a real difference.",
+    "Cooking together, walking together or simply not commenting on food can all help.",
+    "Tell one person what would help you.", "Plan one active thing with someone else.") },
+  { again: [40, 34, 51], lesson: L("Another year ahead", "The year ahead", "Two years of steady habits. The next one is yours too.",
+    "Look back at what's become easy and what still takes a little care. Both are worth knowing.",
+    "Keep the habits that matter, use a reset week whenever you need one, and be kind to yourself on harder weeks.",
+    "Pick three habits for the year ahead.", "Write down one thing that's easier than a year ago.") },
+];
+
+/** A lesson with a key for marking it read: "w12" for plan week 12, "r3" for the third getting-ready week, "y5" for a
+ *  year-two week. Refreshers are earlier lessons shown again in year two. */
+export interface LessonPick { key: string; lesson: Lesson; refresher: boolean }
+
+/** The lesson for the nth week of getting ready (1 is their first), cycling if there are more weeks than lessons. */
+export const prepLessonFor = (n: number): LessonPick => {
+  const i = (Math.max(1, n) - 1) % PREP_LESSONS.length;
+  return { key: `r${i + 1}`, lesson: PREP_LESSONS[i], refresher: false };
+};
+
+/** The lesson for the nth week of year two: a new one every four weeks, and earlier ones on its theme in between. */
+export const yearTwoLessonFor = (n: number): LessonPick => {
+  const k = Math.max(1, n) - 1, month = YEAR_TWO_LESSONS[Math.floor(k / 4) % YEAR_TWO_LESSONS.length], step = k % 4;
+  if (step === 0) return { key: `y${Math.floor(k / 4) % YEAR_TWO_LESSONS.length + 1}`, lesson: month.lesson, refresher: false };
+  const week = month.again[step - 1];
+  return { key: `w${week}`, lesson: lessonFor(week), refresher: true };
+};
+
+/** The lesson for a plan week counted from the last jab: getting ready (0 or less), the 52 weeks, then year two. */
+export const lessonForWeek = (week: number, prepWeek = 1): LessonPick =>
+  week < 1 ? prepLessonFor(prepWeek) : week > 52 ? yearTwoLessonFor(week - 52) : { key: `w${week}`, lesson: lessonFor(week), refresher: false };
+
+/** Finds a lesson by its key, for opening it again. */
+export function lessonByKey(key: string): Lesson | null {
+  const n = Number(key.slice(1));
+  if (!Number.isInteger(n) || n < 1) return null;
+  if (key[0] === "w") return WEEKLY_LESSONS[n - 1] ?? null;
+  if (key[0] === "r") return PREP_LESSONS[n - 1] ?? null;
+  if (key[0] === "y") return YEAR_TWO_LESSONS[n - 1]?.lesson ?? null;
+  return null;
+}

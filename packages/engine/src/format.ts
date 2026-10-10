@@ -23,6 +23,8 @@ export function quantity(id: string, g: number): string {
   if (LIQUID.has(id)) return `${Math.max(5, Math.round(g / 5) * 5)} ml`;
   if (id === "oil") return g <= 5 ? "1 tsp" : `${half(g / 5)} tsp`;
   if (PINCH.has(id)) return g <= 1 ? "a pinch" : `${half(g / 2)} tsp`;
+  // A shopping total of dip or nut butter reads better in grams than "17½ tbsp".
+  if (SPOON.has(id) && g > 90) return `${Math.round(g / 10) * 10} g`;
   if (SPOON.has(id)) return g < 12 ? `${half(g / 5)} tsp` : `${half(g / 15)} tbsp`;
   return `${Math.max(5, Math.round(g / 5) * 5)} g`;
 }

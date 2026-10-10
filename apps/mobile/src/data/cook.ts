@@ -1,5 +1,7 @@
 // Cook-along helpers: the timers a recipe step mentions ("Simmer for 10 to 15 minutes"), the ingredients it uses, and
-// the step reworded for this person's swaps. Pure, so it can be tested.
+// the step reworded for this person's swaps. Pure, so it can be tested. The words for each ingredient live with the
+// ingredient (@landing/content `step`, `short` and `words`), and the engine does the matching.
+import { chipName, mentioned, swapText } from "@landing/engine";
 
 export interface StepTimer {
   /** Seconds to set: the shorter time when the step gives a range. */
@@ -15,7 +17,7 @@ export interface StepTimer {
 const UNIT: Record<string, number> = { second: 1, sec: 1, minute: 60, min: 60, hour: 3600, hr: 3600 };
 const TIME = /(\d+(?:\.\d+)?)(?:\s*(?:to|-|–)\s*(\d+(?:\.\d+)?))?\s*(seconds?|secs?|minutes?|mins?|hours?|hrs?)\b/gi;
 const SHORT: Record<string, string> = { second: "sec", sec: "sec", minute: "min", min: "min", hour: "hr", hr: "hr" };
-const VERBS = "microwave|stir-fry|fry|cook|bake|roast|simmer|boil|warm|soften|leave|brown|grill|toast|rest|poach|steam|defrost|heat|chill|marinate|soak|stand|sear|reduce|blitz|whisk|knead|bubble";
+const VERBS = "microwave|stir-fry|fry|cook|bake|roast|simmer|boil|warm|soften|leave|brown|grill|toast|rest|poach|steam|defrost|heat|chill|marinate|soak|stand|sear|reduce|blitz|whisk|knead|bubble|cover|add|air-fry";
 const VERB = new RegExp(`\\b(${VERBS})\\b((?:\\s+(?!in\\b|for\\b|with\\b|and\\b|on\\b|to\\b|until\\b|together\\b|over\\b|under\\b|at\\b|a\\b|an\\b)[a-z-]+){0,2})?`, "gi");
 const SKIP = new Set(["the", "it", "them", "your", "some", "all", "everything"]);
 
@@ -28,7 +30,7 @@ function labelFor(step: string, at: number) {
     const all = [...text.matchAll(VERB)];
     const m = all[all.length - 1];
     if (!m) continue;
-    const obj = (m[2] ?? "").trim().split(/\s+/).filter((w) => w && !SKIP.has(w.toLowerCase())).filter((w) => !/^(sliced|chopped|diced|cubed|grated|halved|defrosted|frozen)$/i.test(w)).slice(0, 1);
+    const obj = (m[2] ?? "").trim().split(/\s+/).filter((w) => w && !SKIP.has(w.toLowerCase())).filter((w) => !/^(sliced|chopped|diced|cubed|grated|halved|defrosted|frozen|smoked|thinly)$/i.test(w)).slice(0, 1);
     const label = [m[1].toLowerCase(), ...obj].join(" ");
     return label[0].toUpperCase() + label.slice(1);
   }
@@ -43,6 +45,8 @@ export function timersIn(step: string): StepTimer[] {
     const unit = UNIT[unitKey] ?? 60;
     const lo = parseFloat(m[1]), hi = m[2] ? parseFloat(m[2]) : undefined;
     if (!(lo > 0) || lo * unit > 6 * 3600) continue;
+    // "Add the peas for the last 3 minutes" happens inside a timer that's already running.
+    if (/for the last\s*$/i.test(step.slice(0, m.index ?? 0))) continue;
     // "Defrost overnight, or ... for 5 minutes" is fine; "cool for 5" without a unit isn't caught, and that's fine too.
     const short = SHORT[unitKey] ?? "min";
     out.push({ seconds: Math.round(lo * unit), ...(hi && hi > lo ? { upTo: Math.round(hi * unit) } : {}), label: labelFor(step, m.index ?? 0), text: `${m[1]}${hi ? ` to ${m[2]}` : ""} ${short}` });
@@ -51,39 +55,18 @@ export function timersIn(step: string): StepTimer[] {
   return out.map((t, i) => (out.slice(0, i).some((p) => p.label === t.label) ? { ...t, label: `${t.label} again` } : t));
 }
 
-const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const ADJ = /^(tinned|frozen|fresh|dried|cooked|chopped|sliced|grated|plain|light|low-fat|reduced-fat|wholemeal|wholegrain|smoked|ready-cooked|microwave|turkey breast|chicken breast|kidney|baby|cherry|red|green|spring|greek|skimmed|semi-skimmed)\s+/;
-// Main nouns too vague to match on their own.
-const VAGUE = new Set(["oil", "spray", "water", "salt", "pepper", "pinch", "spices", "herbs", "pouch", "stock", "mix", "paste"]);
-/** Simple forms of a name to look for in a step: "tinned chopped tomatoes" also matches "chopped tomatoes" and
- *  "tomatoes"; "tinned kidney beans, drained" matches "beans". */
-function forms(name: string) {
-  const n = name.toLowerCase().replace(/\([^)]*\)/g, "").split(",")[0].replace(/\s+/g, " ").trim();
-  const out = [n];
-  let bare = n;
-  while (ADJ.test(bare)) { bare = bare.replace(ADJ, ""); out.push(bare); }
-  const head = n.split(" ").pop() ?? "";
-  if (head.length >= 4 && !VAGUE.has(head) && !n.includes(" and ")) out.push(head);
-  return [...new Set(out)].filter((f) => f.length >= 3);
-}
-
-/** The ingredients (ids) a step mentions, by their plain names. */
-export function ingredientsIn(step: string, ids: string[], nameOf: (id: string) => string): string[] {
-  const t = step.toLowerCase();
-  return ids.filter((id) => forms(nameOf(id)).some((f) => new RegExp(`\\b${esc(f)}`, "i").test(t)));
+/** The ingredients (ids) a step mentions: "the chicken" finds chicken breast, "saucepan" doesn't find a sauce. */
+export function ingredientsIn(step: string, ids: string[]): string[] {
+  return mentioned(step, ids);
 }
 
 /** The step with this person's swaps written in: "Add the chicken" becomes "Add the tofu". */
-export function withSwaps(step: string, swaps: { from: string; to: string }[], nameOf: (id: string) => string): string {
-  let out = step;
-  for (const sw of swaps) {
-    const to = nameOf(sw.to).toLowerCase();
-    for (const f of forms(nameOf(sw.from)).sort((a, b) => b.length - a.length)) {
-      out = out.replace(new RegExp(`\\b${esc(f)}\\b`, "gi"), (m) => (m[0] === m[0].toUpperCase() ? to[0].toUpperCase() + to.slice(1) : to));
-    }
-  }
-  return out;
+export function withSwaps(step: string, swaps: { from: string; to: string }[]): string {
+  return swapText(step, swaps);
 }
+
+/** A short name for an ingredient chip: "tinned chickpeas", not "tinned chickpeas, drained". */
+export const chipLabel = chipName;
 
 /** "4:05", "1:02:30". */
 export function clock(seconds: number) {

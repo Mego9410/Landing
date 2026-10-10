@@ -1,24 +1,36 @@
 import { HABITS } from "@/data/content";
-import { today, weekDates } from "@/data/dates";
+import { fmt, today, weekDates } from "@/data/dates";
 import { dayLog, habitDays, sessionsInWeek, set, type AppState } from "./store";
 
-/** Ticked today. */
-export const isTicked = (s: AppState, id: string) => !!dayLog(s).habits?.[id];
+/** Done once in the week, not every day (like planning the week's meals). These sit outside the day's ring. */
+export const isWeekly = (id: string) => HABITS[id]?.kind === "weekly";
+
+/** Ticked today, or for a weekly habit, on any day this week. */
+export const isTicked = (s: AppState, id: string) => (isWeekly(id) ? habitDays(s, id) > 0 : !!dayLog(s).habits?.[id]);
 
 /** How a habit's going this week, for under its name. */
 export function habitDetail(s: AppState, id: string) {
   const h = HABITS[id];
   if (h.kind === "days") return `${h.note} · ${habitDays(s, id)} of ${h.target} days`;
   if (h.kind === "sessions") return `${sessionsInWeek(s).length} of ${h.target} done`;
+  if (h.kind === "weekly") {
+    const on = weekDates(today()).find((d) => d <= today() && dayLog(s, d).habits?.[id]);
+    return on ? `Done on ${fmt.weekday(on)} · that's this week sorted` : h.note;
+  }
   return h.note;
 }
 
 export function toggleHabit(id: string, on: boolean) {
   const t = today();
   set((s) => {
-    const log = (s.days[t] ??= {});
-    log.habits = { ...log.habits };
-    if (on) log.habits[id] = true; else delete log.habits[id];
+    // Unticking a weekly habit clears whichever day this week it was ticked on.
+    const days = !on && isWeekly(id) ? weekDates(t).filter((d) => d <= t) : [t];
+    for (const d of days) {
+      if (!on && !s.days[d]?.habits?.[id]) continue;
+      const log = (s.days[d] ??= {});
+      log.habits = { ...log.habits };
+      if (on) log.habits[id] = true; else delete log.habits[id];
+    }
   });
 }
 
@@ -44,9 +56,17 @@ export function logSession(id: "A" | "B") {
   set((s) => { const log = (s.days[t] ??= {}); log.sessions = [...(log.sessions ?? []), id]; });
 }
 
-/** Protein for one meal today. Breakfast with 25 g or more ticks "Protein at breakfast" too. */
+/** Protein for one meal today, added to anything already logged for it (a second snack adds up). Breakfast reaching
+ *  25 g or more ticks "Protein at breakfast" too. */
 export function logProtein(s: AppState, meal: string, g: number) {
   const log = (s.days[today()] ??= {});
-  log.protein = { ...log.protein, [meal]: Math.round(g) };
-  if (meal === "Breakfast" && g >= 25 && s.habits.ids.includes("protein")) log.habits = { ...log.habits, protein: true };
+  const total = Math.round((log.protein?.[meal] ?? 0) + g);
+  log.protein = { ...log.protein, [meal]: total };
+  if (meal === "Breakfast" && total >= 25 && s.habits.ids.includes("protein")) log.habits = { ...log.habits, protein: true };
+}
+
+/** A meal logged without grams, for Habit Only mode: it counts towards "Protein at each meal", with no number kept. */
+export function logMeal(s: AppState, meal: string) {
+  const log = (s.days[today()] ??= {});
+  if (!log.meals?.includes(meal)) log.meals = [...(log.meals ?? []), meal];
 }

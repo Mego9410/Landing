@@ -2,7 +2,7 @@
 // two or three breakfasts and lunches on rotation; a protein snack at the hungriest times. Deterministic for a seed,
 // so "shuffle" gives a new week and the same seed always gives the same one.
 import { INGREDIENT, RECIPES, type Recipe, type Slot } from "@landing/content";
-import { personalise, plainName, type Personalised } from "./personalise.ts";
+import { personalise, plainName, swapReason, type Personalised } from "./personalise.ts";
 import type { Profile } from "./profile.ts";
 import { targets, type Targets } from "./targets.ts";
 import { quantity } from "./format.ts";
@@ -42,7 +42,32 @@ export function library(p: Profile, { all = false, includeDrafts = false } = {})
 
 const shoppingIds = (x: Personalised) => x.lines.filter((l) => !l.optional && !INGREDIENT[l.i].pantry).map((l) => l.i);
 
-interface Ctx { p: Profile; t: Targets; rand: () => number; used: Map<string, number>; cuisines: Set<string>; basket: Set<string> }
+interface Ctx {
+  p: Profile; t: Targets; rand: () => number; used: Map<string, number>; cuisines: Set<string>; basket: Set<string>;
+  /** Recipes from recent weeks: how many weeks ago each was last planned (1 is last week), and how much it rests. */
+  recent?: Map<string, { ago: number; rest: number }>;
+  favourites?: Set<string>;
+}
+
+/** How hard a recipe planned 1, 2, 3 or 4 weeks ago is held back, so a dinner rests three or four weeks. */
+const REST = [0, 12, 9, 6, 2.5];
+/** Dinners rest fully; breakfasts and snacks rotate through a small set, so recency counts for less there. */
+const REST_WEIGHT: Record<Slot, number> = { dinner: 1, lunch: 0.6, breakfast: 0.25, snack: 0.2 };
+/** Weeks a favourite rests before it gets a nudge back in. */
+const FAVOURITE_REST = 4;
+
+/** Recent weeks' recipes (newest first) by id: when each was last planned, and a rest that adds up over the weeks it
+ *  was in, so where a few recipes must repeat they take turns. */
+function recency(recent: string[][] = []): Map<string, { ago: number; rest: number }> {
+  const out = new Map<string, { ago: number; rest: number }>();
+  recent.slice(0, REST.length - 1).forEach((ids, k) => {
+    for (const id of new Set(ids)) {
+      const e = out.get(id);
+      if (e) e.rest += REST[k + 1]; else out.set(id, { ago: k + 1, rest: REST[k + 1] });
+    }
+  });
+  return out;
+}
 
 /** How well a recipe suits this slot this week. Higher is better. */
 export function score(x: Personalised, ctx: Ctx, slot: Slot): number {
@@ -68,8 +93,12 @@ export function score(x: Personalised, ctx: Ctx, slot: Slot): number {
   // Ingredient overlap: prefer meals that use up packs already on the list (plan §5.5).
   const shared = shoppingIds(x).filter((i) => ctx.basket.has(i)).length;
   s += Math.min(3, shared * 0.6);
-  s -= (ctx.used.get(r.id) ?? 0) * 5;
+  s -= (ctx.used.get(r.id) ?? 0) * 14; // twice in one week is worse than a dinner from last week
   if (x.swaps.length) s -= 0.3 * x.swaps.length;
+  // Freshness: recent recipes rest, and favourites come back once they've rested (roughly monthly).
+  const rested = ctx.recent?.get(r.id);
+  if (rested) s -= rested.rest * REST_WEIGHT[slot];
+  if (ctx.favourites?.has(r.id) && (!rested || rested.ago >= FAVOURITE_REST)) s += 4;
   return s + ctx.rand() * 1.5;
 }
 
@@ -95,12 +124,20 @@ const DINNER_PATTERN: Record<3 | 4 | 5, (MealKind | number)[]> = {
   5: ["cook", "cook", "cook", 2, "takeaway", "cook", "cook"],
 };
 
-export interface PlanOptions { seed?: number; includeDrafts?: boolean }
+export interface PlanOptions {
+  seed?: number; includeDrafts?: boolean;
+  /** Recipe ids planned in recent weeks, newest first (recent[0] is last week), so meals rest before they come back. */
+  recent?: string[][];
+  /** Recipes to bring back now and then ("Have it again"). */
+  favourites?: string[];
+  /** Recipes never to plan ("Not for me"). */
+  avoid?: string[];
+}
 
-export function planWeek(p: Profile, { seed = 1, includeDrafts = false }: PlanOptions = {}): Week {
+export function planWeek(p: Profile, { seed = 1, includeDrafts = false, recent, favourites, avoid = [] }: PlanOptions = {}): Week {
   const t = targets(p);
-  const ctx: Ctx = { p, t, rand: rng(seed), used: new Map(), cuisines: new Set(), basket: new Set() };
-  const lib = library(p, { includeDrafts });
+  const ctx: Ctx = { p, t, rand: rng(seed), used: new Map(), cuisines: new Set(), basket: new Set(), recent: recency(recent), favourites: new Set(favourites) };
+  const lib = library(p, { includeDrafts }).filter((x) => !avoid.includes(x.recipe.id));
   const bySlot = (s: Slot) => lib.filter((x) => x.recipe.slot === s);
   const days: Day[] = DAYS.map((name, day) => ({ day, name, breakfast: { slot: "breakfast", kind: "free" }, lunch: { slot: "lunch", kind: "free" }, dinner: { slot: "dinner", kind: "free" }, snacks: [] }));
 
@@ -185,15 +222,15 @@ export function dayTotals(day: Day, p: Profile): { protein: number; fibre: numbe
 }
 
 /** Up to `n` alternatives for one meal: same slot, similar effort, enough protein, not already this week. */
-export function swapOptions(week: Week, p: Profile, day: number, slot: Slot, { n = 3, includeDrafts = false, seed = 7 } = {}): Personalised[] {
+export function swapOptions(week: Week, p: Profile, day: number, slot: Slot, { n = 3, includeDrafts = false, seed = 7, recent, favourites, avoid = [] }: { n?: number; includeDrafts?: boolean; seed?: number } & Omit<PlanOptions, "seed" | "includeDrafts"> = {}): Personalised[] {
   const meal = slot === "snack" ? week.days[day].snacks[0] : week.days[day][slot];
   const current = meal?.recipe ? personaliseById(meal.recipe, p) : undefined;
   const t = targets(p);
   const inWeek = new Set(week.days.flatMap((d) => [d.breakfast, d.lunch, d.dinner, ...d.snacks].map((m) => m.recipe)).filter(Boolean));
-  const ctx: Ctx = { p, t, rand: rng(seed + day * 31 + slot.length), used: new Map(), cuisines: new Set(), basket: new Set() };
+  const ctx: Ctx = { p, t, rand: rng(seed + day * 31 + slot.length), used: new Map(), cuisines: new Set(), basket: new Set(), recent: recency(recent), favourites: new Set(favourites) };
   for (const d of week.days) for (const m of [d.breakfast, d.lunch, d.dinner, ...d.snacks]) if (m.recipe && m.recipe !== meal?.recipe) for (const i of shoppingIds(personaliseById(m.recipe, p))) ctx.basket.add(i);
   return library(p, { includeDrafts })
-    .filter((x) => x.recipe.slot === slot && !inWeek.has(x.recipe.id))
+    .filter((x) => x.recipe.slot === slot && !inWeek.has(x.recipe.id) && !avoid.includes(x.recipe.id))
     .filter((x) => !current || x.recipe.handsOn <= current.recipe.handsOn + 5)
     .filter((x) => x.nutrition.protein >= Math.min(t.protein[slot], current?.nutrition.protein ?? Infinity) - 2)
     .map((x) => ({ x, s: score(x, ctx, slot) }))
@@ -313,6 +350,8 @@ export function shoppingList(week: Week, p: Profile): ShoppingList {
   for (const d of week.days) for (const m of [d.breakfast, d.lunch, d.dinner, ...d.snacks]) {
     if (m.kind !== "cook" || !m.recipe) continue;
     const x = personaliseById(m.recipe, p);
+    // A meal planned before a change of diet or allergies may no longer be safe: leave it off and say so.
+    if (x.unsafe) { batchNotes.push(`${x.name} isn't on the list as it doesn't suit your diet or allergies now. Swap it from the meal plan.`); continue; }
     const used = new Map<string, number>();
     let portions = m.cook ?? 1;
     if (x.recipe.serves >= 4 && portions < x.recipe.serves) {
@@ -358,7 +397,7 @@ export function reasons(x: Personalised, p: Profile, week?: Week): string[] {
   if (r.collections.includes("fakeaway")) out.push("A takeaway favourite, made at home");
   if (p.goal === "fuller" && n.fibre >= 8) out.push(p.safeMode ? "Plenty of fibre" : `About ${n.fibre} g fibre`);
   if (p.cuisines.includes(r.cuisine)) out.push(`${r.cuisine}, as you asked`);
-  for (const s of x.swaps) { const t = plainName(s.to); out.push(`${t.charAt(0).toUpperCase() + t.slice(1)} instead of ${plainName(s.from)}, for ${s.why}`); }
+  for (const s of x.swaps) { const t = plainName(s.to); out.push(`${t.charAt(0).toUpperCase() + t.slice(1)} instead of ${plainName(s.from)}, ${swapReason(s.why)}`); }
   if (week) {
     const others = new Set<string>();
     for (const d of week.days) for (const m of [d.breakfast, d.lunch, d.dinner, ...d.snacks]) if (m.recipe && m.recipe !== r.id) for (const i of shoppingIds(personaliseById(m.recipe, p))) others.add(i);

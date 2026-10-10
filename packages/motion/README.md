@@ -1,6 +1,6 @@
 # @landing/motion
 
-The exercise loops. Six people, the movement cast, demonstrate 80 exercises (every level of the 12 movement
+The exercise loops. Six people, the movement cast, demonstrate 81 exercises (every level of the 12 movement
 patterns plus the seated versions). Each person is drawn from the brand's shapes: tapered pill limbs, a soft torso
 with a real profile, and a round head in profile with no eyes or mouth. Any of them can do any exercise, because
 the exercises are keyframes for a skeleton and the cast is drawn on top. Open [gallery.html](gallery.html) to see
@@ -43,7 +43,7 @@ Node 22.18 or later runs the TypeScript directly; esbuild builds the browser bun
 
 ## Every exercise, every person
 
-No exercise belongs to one body. The exercises are keyframes for a skeleton and the cast is drawn on top, so all 80
+No exercise belongs to one body. The exercises are keyframes for a skeleton and the cast is drawn on top, so all 81
 work with all six people, and "Mix it up" can give anyone any session. Bodies lying down rest on the floor whatever
 their size, and props worn against the back (a backpack, a broom handle) sit at each person's own back.
 `scripts/check-cast.ts` samples every loop for every person and fails CI if anything can't be drawn or goes through

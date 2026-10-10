@@ -44,3 +44,40 @@ export function checkInSchedule(
   }
   return out;
 }
+
+/* ---------- the plan's own reminders: the end of a free trial and a yearly renewal ---------- */
+/** The plan someone chose, as far as the phone knows it: "yearly" or "monthly" and the App Store price ("£69.99"). */
+export interface Chosen { plan?: "yearly" | "monthly" | null; price?: string | null }
+
+const longDay = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+const planName = (plan: Chosen["plan"]) => (plan === "yearly" ? "yearly plan" : plan === "monthly" ? "monthly plan" : "plan");
+const per = (plan: Chosen["plan"]) => (plan === "yearly" ? " a year" : plan === "monthly" ? " a month" : "");
+
+/** The trial reminder's wording: what happens, when, and the price of the plan they chose when it's known. */
+export function trialMessage(until: string, chosen: Chosen = {}) {
+  const day = longDay(until);
+  const starts = chosen.price ? `your Steadie ${planName(chosen.plan)} starts at ${chosen.price}${per(chosen.plan)}, charged to your Apple ID` : "your Steadie plan starts and your Apple ID is charged";
+  return { title: "Your free week ends in 2 days", body: `On ${day} ${starts}. If you’d rather not carry on, cancel in your Apple settings before then.` };
+}
+
+/** The note a week before a yearly plan renews, so nobody is charged for a year by surprise. */
+export function renewalMessage(until: string, price: string | null = null) {
+  return {
+    title: "Your yearly plan renews in 7 days",
+    body: `It renews on ${longDay(until)}${price ? ` for ${price}` : ""}. Nothing to do if you’d like to carry on. To change or cancel, use Manage subscription.`,
+  };
+}
+
+/** The renewal note goes off at 9am local time, 7 days before a yearly plan renews. Null if that moment has passed. */
+export function renewalReminderAt(until: string, now = Date.now()): Date | null {
+  const at = new Date(new Date(until).getTime() - 7 * 24 * 60 * 60 * 1000);
+  at.setHours(9, 0, 0, 0);
+  return at.getTime() > now + 5 * 1000 ? at : null;
+}
+
+/** True in the 7 days before a yearly plan renews (not during a trial, and not if it's been cancelled). */
+export function renewalSoon(sub: { active: boolean; plan?: "yearly" | "monthly" | null; trial?: boolean; until?: string | null; willRenew?: boolean } | null, now = Date.now()) {
+  if (!sub?.active || sub.trial || sub.plan !== "yearly" || !sub.willRenew || !sub.until) return false;
+  const left = new Date(sub.until).getTime() - now;
+  return left > 0 && left <= 7 * 24 * 60 * 60 * 1000;
+}

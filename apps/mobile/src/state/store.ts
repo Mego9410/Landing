@@ -4,7 +4,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSyncExternalStore } from "react";
 import type { Week } from "@landing/engine";
-import { habitsForWeek } from "@/data/content";
+import { habitsForWeek, OWN_HABITS, phaseOf, type Phase, type PhaseKey } from "@/data/content";
 import { addDays, daysBetween, today, weekDates, weekdayIndex, weekStart } from "@/data/dates";
 import { STARTER } from "@/data/journal";
 import { REMINDER_DEFAULTS, type Reminders } from "@/data/reminders";
@@ -35,6 +35,14 @@ export interface FoodPrefs {
   ticked: Record<string, boolean>;
   /** Next week's meals, picked the week before. */
   next: { from: "blank" | "suggested"; week: Week; ticked: Record<string, boolean>; /** The Monday it starts. */ start?: string } | null;
+  /** Recipes planned in recent weeks, newest first, so meals rest before they come back. */
+  recent?: { start: string; ids: string[] }[];
+  /** Every recipe planned in an earlier week or cooked along, for the "New to you" tag. */
+  had?: string[];
+  /** "Have it again": recipes that come back now and then. */
+  favourites?: string[];
+  /** "Not for me": recipes never planned again. */
+  notForMe?: string[];
 }
 
 export interface Weight { date: string; kg: number; source: string }
@@ -50,6 +58,8 @@ export interface DayLog {
   habits?: Record<string, boolean>;
   /** Strength sessions finished that day. */
   sessions?: ("A" | "B")[];
+  /** Meals logged without grams (Habit Only mode). Each counts as a protein entry, with no number kept. */
+  meals?: string[];
 }
 
 export type Units = "kg" | "stlb";
@@ -96,7 +106,13 @@ export interface AppState {
    *  and stays the same across app updates (data/program.ts, state/plans.ts). */
   program?: Program | null;
   /** The phase whose start has been celebrated on Today (or that someone started in), so each change shows once. */
-  phaseSeen?: "land" | "settle" | "steady" | null;
+  phaseSeen?: PhaseKey | null;
+  /** The habit they chose in place of "Your own routine" (Steady and year two). */
+  ownHabit?: string | null;
+  /** Lessons opened, by key ("w12", "r3", "y5"; see lessonForWeek). Older saves only have `lessonsRead`. */
+  lessonKeys?: Record<string, boolean>;
+  /** The last month on the plan whose look-back card was closed, so each shows once. */
+  lookBackSeen?: number;
   /** When this copy last changed, so the newer of two copies wins when a backup and a phone disagree. */
   savedAt?: string;
 }
@@ -261,11 +277,13 @@ function save() {
   saveTimer = setTimeout(() => { AsyncStorage.setItem(KEY, JSON.stringify(state)).catch(() => {}); }, 250);
 }
 
-/** Changes state with a function that edits a copy. */
-export function set(fn: (s: AppState) => void) {
+/** Changes state with a function that edits a copy. `quiet` is for housekeeping the app does by itself (a new day, the
+ *  subscription check): it's saved, but doesn't count as a change, so it can't make an older copy look newer than a
+ *  backup made since. */
+export function set(fn: (s: AppState) => void, { quiet = false }: { quiet?: boolean } = {}) {
   const next: AppState = JSON.parse(JSON.stringify(state));
   fn(next);
-  next.savedAt = new Date().toISOString();
+  if (!quiet) next.savedAt = new Date().toISOString();
   state = next;
   save();
   emit();
@@ -320,19 +338,60 @@ export async function hydrate(): Promise<void> {
 }
 
 /* ---------- derived values ---------- */
-/** The plan week, counted in calendar weeks (Monday to Sunday) from the week of the last injection. */
-export const weekOf = (s: AppState, on = today()) =>
-  Math.max(1, Math.min(52, Math.floor(daysBetween(weekStart(s.ob.lastInjection), weekStart(on)) / 7) + 1));
+/** Calendar weeks (Monday to Sunday) from the week of the last injection, uncapped: 0 or less while it's still to come,
+ *  53 and on in year two. */
+export const jabWeek = (s: AppState, on = today()) => Math.floor(daysBetween(weekStart(s.ob.lastInjection), weekStart(on)) / 7) + 1;
+/** The plan week, 1 to 52, for the year's content. Week 1 before the last jab, and 52 after the year. */
+export const weekOf = (s: AppState, on = today()) => Math.max(1, Math.min(52, jabWeek(s, on)));
+/** The last jab is still to come: the weeks of getting ready. */
+export const gettingReady = (s: AppState, on = today()) => s.ob.lastInjection > on;
+/** Whole weeks until the last jab, at least 1, while getting ready. */
+export const weeksToLastJab = (s: AppState, on = today()) => Math.max(1, Math.ceil(daysBetween(on, s.ob.lastInjection) / 7));
+/** The last jab has happened, whether they said so or the planned date has passed. */
+export const jabStopped = (s: AppState, on = today()) => s.ob.status === "stopped" || !gettingReady(s, on);
+/** The week of year two (1 is week 53), or 0 before it. */
+export const yearTwoWeek = (s: AppState, on = today()) => Math.max(0, jabWeek(s, on) - 52);
+/** Where someone is now: getting ready, Land, Settle, Steady or year two. */
+export const stageOf = (s: AppState, on = today()): Phase => (gettingReady(s, on) ? phaseOf(0) : phaseOf(jabWeek(s, on)));
+/** A short label for where someone is: "Getting ready", "Week 12 of 52" or "Year two, week 3". */
+export const stageLabel = (s: AppState, on = today()) =>
+  gettingReady(s, on) ? "Getting ready" : yearTwoWeek(s, on) ? `Year two, week ${yearTwoWeek(s, on)}` : `Week ${weekOf(s, on)} of 52`;
+/** Weeks since they started the plan, uncapped (week 1 is their first). Counted from the day onboarding finished; older
+ *  saves without it count from the plan week they joined, or else from the last jab. */
+export function weeksOnPlan(s: AppState, on = today()) {
+  if (s.startedOn) return Math.max(1, Math.floor(daysBetween(weekStart(s.startedOn), weekStart(on)) / 7) + 1);
+  return Math.max(1, jabWeek(s, on) - (s.food.joinedWeek ?? 1) + 1);
+}
+/** Whole four-week months on the plan so far: 0 in the first four weeks, 1 from week 5, and so on. */
+export const monthOnPlan = (s: AppState, on = today()) => Math.floor((weeksOnPlan(s, on) - 1) / 4);
+/** This week's habits: the plan's, with their own pick in place of "Your own routine". `week` changes every calendar
+ *  week (getting ready and year two included), so a swap ends when the week does. */
+export function habitsNow(s: AppState, on = today()): { week: number; ids: string[] } {
+  const week = jabWeek(s, on), ids = habitsForWeek(week), own = s.ownHabit;
+  if (own && ids[0] === "ownRoutine") {
+    ids[0] = own;
+    if (ids[2] === own) ids[2] = OWN_HABITS.find((id) => !ids.includes(id)) ?? "pause";
+  }
+  return { week, ids };
+}
 export function setWeek(s: AppState, week: number) {
   s.ob.lastInjection = addDays(weekStart(today()), -((week - 1) * 7));
-  s.habits = { week, ids: habitsForWeek(week), swappedFrom: null };
+  s.habits = { ...habitsNow(s), swappedFrom: null };
+}
+/** Sets the last jab's date (or when it's planned). A date today or earlier means they've stopped; a later one, soon. */
+export function setLastJab(s: AppState, date: string) {
+  s.ob.lastInjection = date;
+  if (date <= today()) s.ob.status = "stopped";
+  else if (s.ob.status === "stopped") s.ob.status = "soon";
+  s.habits = { ...habitsNow(s), swappedFrom: null };
 }
 
 export const dayLog = (s: AppState, day = today()): DayLog => s.days[day] ?? {};
 const sum = (r: Record<string, number> | undefined) => Object.values(r ?? {}).reduce((a, b) => a + (+b || 0), 0);
 export const proteinOn = (s: AppState, day = today()) => sum(dayLog(s, day).protein);
 export const proteinToday = (s: AppState) => proteinOn(s);
-export const mealsLogged = (s: AppState, day = today()) => Object.keys(dayLog(s, day).protein ?? {}).length;
+/** Meals with protein logged, with or without grams. */
+export const mealsLogged = (s: AppState, day = today()) => new Set([...Object.keys(dayLog(s, day).protein ?? {}), ...(dayLog(s, day).meals ?? [])]).size;
 
 /** Sessions finished in the week a date falls in, in the order they were done. */
 export function sessionsInWeek(s: AppState, on = today()): ("A" | "B")[] {

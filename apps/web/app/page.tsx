@@ -94,7 +94,7 @@ const SAFETY: { icon: IconName; title: string; text: string }[] = [
 ];
 
 const PROMISES: { icon: IconName; title: string; text: string }[] = [
-  { icon: "heart", title: "No goal weight", text: "We help you hold steady, and help you reset gently if things drift. Never a telling-off." },
+  { icon: "heart", title: "No target weight to chase", text: "We help you hold steady, and help you reset gently if things drift. Never a telling-off." },
   { icon: "habit", title: "Numbers only if they help", text: "Habit Only mode hides weight entirely and builds your score from habits and check-ins." },
   { icon: "shield", title: "Your prescriber stays in charge", text: "Steadie never gives advice about medication, doses or stopping treatment." },
   { icon: "lock", title: "Your data stays yours", text: "Kept on your phone, with an encrypted backup in the UK if you sign in. Never sold, never used for ads. Export it or delete it from Settings." },
@@ -264,7 +264,7 @@ export default async function Home() {
           <div className={styles.wrap}>
             <div className={styles.head}>
               <p className={styles.eyebrowDark}>Why the year after matters</p>
-              <h2 id="proof-title" className={styles.h2}>Weight often comes back after the jab. That&apos;s biology, not willpower.</h2>
+              <h2 id="proof-title" className={styles.h2}>Weight often comes back after the jab. That&apos;s biology, not a lack of effort.</h2>
             </div>
             <div className={styles.statGrid}>
               <div className={`${styles.statCard} ${styles.statChart}`}>

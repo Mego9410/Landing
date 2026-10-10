@@ -34,14 +34,14 @@ export default function LastJab() {
       </View>
       <OnbCard style={{ marginTop: space[5], gap: space[3] }}>
         <AppText variant="label" color="inkMuted">YOUR 12 MONTHS</AppText>
-        <View style={{ flexDirection: "row", gap: 6, height: 56 }} accessible accessibilityLabel={`Your 12 months: ${PHASES.map((p) => p.name).join(", ")}. You start in ${phase.name}.`}>
+        <View style={{ flexDirection: "row", gap: 6, height: 56 }} accessible accessibilityLabel={`Your 12 months: ${PHASES.map((p) => p.name).join(", ")}. ${ahead ? "You start by getting ready, then Land after your last jab." : `You start in ${phase.name}.`}`}>
           {PHASES.map((p) => <View key={p.key} style={{ flex: p.to - p.from + 1, borderRadius: 10, backgroundColor: p.key === phase.key ? c.apricot : c.surfaceSunk }} />)}
         </View>
         <View style={{ flexDirection: "row", gap: 6 }} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
           {PHASES.map((p) => <AppText key={p.key} weight="800" color={p.key === phase.key ? "ink" : "inkMuted"} style={{ flex: p.to - p.from + 1, fontSize: 13 }}>{p.name}</AppText>)}
         </View>
         <AppText weight="700" color="apricotInk" style={{ fontSize: 14, lineHeight: 20 }}>
-          {ahead ? "You’ll start at week 1 of Land, so the habits are in place before your last jab." : `You’ll start in week ${week} of 52, in ${phase.name}.`}
+          {ahead ? "You’ll start with a few weeks of getting ready: protein, strength basics and a plan. Week 1 of Land begins after your last jab." : `You’ll start in week ${week} of 52, in ${phase.name}.`}
         </AppText>
       </OnbCard>
     </OnbScreen>

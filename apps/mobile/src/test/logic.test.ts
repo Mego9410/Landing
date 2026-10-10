@@ -301,9 +301,7 @@ test("cook-along: timers, ingredients and swaps found in recipe steps", async ()
   assert.equal(timersIn("Spread the cottage cheese over the crispbreads.").length, 0);
   const porridge = timersIn("Mix the oats and milk in a big microwave-safe bowl. Cook for 2 minutes, stir, then 1 minute more.");
   assert.deepEqual(porridge.map((t) => [t.label, t.seconds]), [["Cook", 120], ["Cook again", 60]]);
-  const names: Record<string, string> = { chicken: "chicken thighs", tofu: "firm tofu", rice: "microwave rice", peas: "frozen peas" };
-  const name = (id: string) => names[id] ?? id;
-  assert.deepEqual(ingredientsIn("Add the rice and peas, then the chicken thighs.", ["chicken", "rice", "peas", "tofu"], name), ["chicken", "rice", "peas"]);
-  assert.equal(withSwaps("Add the chicken thighs. Chicken thighs cook fast.", [{ from: "chicken", to: "tofu" }], name), "Add the firm tofu. Firm tofu cook fast.");
+  assert.deepEqual(ingredientsIn("Add the rice and peas, then the chicken thighs.", ["chicken-thigh", "rice-pouch", "peas", "tofu"]), ["chicken-thigh", "rice-pouch", "peas"]);
+  assert.equal(withSwaps("Add the chicken thighs. Chicken thighs cook fast.", [{ from: "chicken-thigh", to: "tofu" }]), "Add the tofu. Tofu cook fast.");
   assert.equal(clock(65), "1:05"); assert.equal(clock(3725), "1:02:05"); assert.equal(clock(0), "0:00");
 });

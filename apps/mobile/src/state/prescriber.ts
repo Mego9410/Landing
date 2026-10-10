@@ -7,8 +7,8 @@ import { Platform } from "react-native";
 import { LOCKUP_SVG } from "@/data/brand";
 import { addDays, fmt, today, weekDates, weekStart } from "@/data/dates";
 import { weight } from "@/data/units";
-import { HABITS, habitsForWeek } from "@/data/content";
-import { avg7, dayLog, sessionsInWeek, weekOf, type AppState } from "./store";
+import { habitSlots } from "./score";
+import { avg7, jabStopped, sessionsInWeek, stageLabel, type AppState } from "./store";
 
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 const avg = (xs: number[]) => (xs.length ? Math.round((xs.reduce((a, b) => a + b, 0) / xs.length) * 10) / 10 : null);
@@ -20,14 +20,13 @@ export function summaryWeeks(s: AppState): WeekRow[] {
   const t = today();
   return [0, 1, 2, 3, 4].map((n) => {
     const monday = addDays(weekStart(t), -7 * n), dates = weekDates(monday).filter((d) => d <= t), end = dates[dates.length - 1];
-    const ids = habitsForWeek(weekOf(s, monday)).filter((id) => HABITS[id]?.kind !== "sessions");
-    const ticked = ids.reduce((a, id) => a + dates.filter((d) => dayLog(s, d).habits?.[id]).length, 0);
+    const slots = habitSlots(s, monday, dates), ticked = slots.reduce((a, h) => a + h.days, 0);
     const entries = dates.map((d) => s.journal.entries[d]).filter(Boolean);
     const w = avg7(s, end);
     const scale = (k: "fullness" | "energy") => { const v = avg(entries.map((e) => e[k]).filter((x): x is number => x != null)); return v == null ? "–" : `${v} / 5`; };
     return {
       from: monday, weight: w == null ? "–" : weight(w, s.settings.units),
-      habits: `${ticked} of ${ids.length * dates.length} habit days`, sessions: sessionsInWeek(s, end).length,
+      habits: `${ticked} of ${slots.length * dates.length} habit days`, sessions: sessionsInWeek(s, end).length,
       checkIns: entries.length, hunger: scale("fullness"), energy: scale("energy"),
     };
   });
@@ -37,7 +36,7 @@ export function prescriberHtml(s: AppState): string {
   const weeks = summaryWeeks(s), safe = s.settings.safeMode, t = today();
   const name = s.name ? esc(s.name) : "Steadie user";
   const rows = weeks.map((w, i) => `<tr><td>${i === 0 ? "This week so far" : `Week of ${fmt.dayMonth(w.from)}`}</td>${safe ? "" : `<td>${esc(w.weight)}</td>`}<td>${esc(w.habits)}</td><td>${w.sessions}</td><td>${w.checkIns}</td><td>${w.hunger}</td><td>${w.energy}</td></tr>`).join("");
-  const status = s.ob.status === "stopped" ? `Last injection around ${fmt.dayMonth(s.ob.lastInjection)} (week ${weekOf(s)} of the plan)` : s.ob.status === "soon" ? "Planning to stop soon" : "Still taking it";
+  const status = jabStopped(s) ? `Last injection around ${fmt.dayMonth(s.ob.lastInjection)} (plan: ${stageLabel(s).toLowerCase()})` : s.ob.status === "soon" ? "Planning to stop soon" : "Still taking it";
   return `<!doctype html><html><head><meta charset="utf-8"><style>
     body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #2B2730; margin: 36px; font-size: 12px; line-height: 1.45; }
     h1 { font-size: 20px; margin: 0 0 4px; } h2 { font-size: 13px; margin: 22px 0 6px; }

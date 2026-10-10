@@ -60,7 +60,7 @@ export const BASICS: Guide[] = [
           "**GLP-1:** a gut hormone that signals fullness. See [what are GLP-1 medicines](/guides/what-are-glp-1-medicines).",
           "**Lean mass:** everything in your body that isn't fat, including muscle, water and organs. Some of the weight lost on GLP-1s is lean mass. See [strength training](/guides/strength-training-after-glp-1).",
           "**Maintenance:** keeping your weight roughly steady after losing it. See [how to keep weight off](/guides/keep-weight-off-after-glp-1).",
-          "**Regain:** weight coming back after stopping treatment. Common, and not a personal failing. See [what happens when you stop](/guides/what-happens-when-you-stop-weight-loss-injections).",
+          "**Regain:** weight coming back after stopping treatment. Common, and not your fault. See [what happens when you stop](/guides/what-happens-when-you-stop-weight-loss-injections).",
           "**Steady zone:** a small range just above your lowest weight. While your 7-day average sits inside it, you're holding steady. See [weight after stopping](/guides/weight-after-stopping-glp-1).",
           "**Titration:** changing a dose step by step. Decisions about doses are always for your prescriber.",
           "**7-day average:** your average weight across a week. It smooths out day-to-day water changes.",

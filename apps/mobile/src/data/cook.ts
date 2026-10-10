@@ -47,7 +47,8 @@ export function timersIn(step: string): StepTimer[] {
     const short = SHORT[unitKey] ?? "min";
     out.push({ seconds: Math.round(lo * unit), ...(hi && hi > lo ? { upTo: Math.round(hi * unit) } : {}), label: labelFor(step, m.index ?? 0), text: `${m[1]}${hi ? ` to ${m[2]}` : ""} ${short}` });
   }
-  return out;
+  // Two timers for the same thing in one step ("Cook for 2 minutes, stir, then 1 minute more"): the later ones say so.
+  return out.map((t, i) => (out.slice(0, i).some((p) => p.label === t.label) ? { ...t, label: `${t.label} again` } : t));
 }
 
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

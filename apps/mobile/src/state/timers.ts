@@ -16,6 +16,8 @@ export interface Timer {
   recipeId: string;
   recipeName: string;
   step: number;
+  /** Which of the step's timers it is (a step can have two: "2 minutes, stir, then 1 minute more"). */
+  slot?: number;
   total: number;
   /** When it ends (ms), while running. */
   endsAt: number | null;
@@ -55,8 +57,8 @@ async function schedule(t: Timer) {
 const unschedule = (id: string) => (supported ? Notifications.cancelScheduledNotificationAsync(id).catch(() => {}) : Promise.resolve());
 
 /** Starts a timer. Asks about notifications the first time, so it can ring with the app in the background. */
-export async function startTimer(o: { label: string; seconds: number; recipeId: string; recipeName: string; step: number }) {
-  const t: Timer = { id: `timer-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, label: o.label, recipeId: o.recipeId, recipeName: o.recipeName, step: o.step, total: o.seconds, endsAt: Date.now() + o.seconds * 1000, left: o.seconds, done: false };
+export async function startTimer(o: { label: string; seconds: number; recipeId: string; recipeName: string; step: number; slot?: number }) {
+  const t: Timer = { id: `timer-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, label: o.label, recipeId: o.recipeId, recipeName: o.recipeName, step: o.step, slot: o.slot ?? 0, total: o.seconds, endsAt: Date.now() + o.seconds * 1000, left: o.seconds, done: false };
   timers.push(t);
   emit();
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});

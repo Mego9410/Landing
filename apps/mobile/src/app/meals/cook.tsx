@@ -110,11 +110,11 @@ export default function Cook() {
               ) : null;
             })()}
             {timersIn(steps[page - 1]).map((tm, i) => {
-              const running = mine.find((t) => t.step === page && t.label === tm.label);
+              const running = mine.find((t) => t.step === page && (t.slot ?? 0) === i);
               if (running) return <TimerCard key={i} t={running} now={now} />;
               return (
                 <Pressable key={i} accessibilityRole="button" accessibilityLabel={`Start a ${clock(tm.seconds)} timer for ${tm.label}`}
-                  onPress={() => startTimer({ label: tm.label, seconds: tm.seconds, recipeId: r.id, recipeName: x.name, step: page })}
+                  onPress={() => startTimer({ label: tm.label, seconds: tm.seconds, recipeId: r.id, recipeName: x.name, step: page, slot: i })}
                   style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], minHeight: 64, paddingHorizontal: space[4], borderRadius: radius.lg, backgroundColor: c.sage, opacity: pressed ? 0.85 : 1 })}>
                   <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: c.surfaceRaised, alignItems: "center", justifyContent: "center" }}><Icon name="bell" size={20} color={c.onPastel} /></View>
                   <View style={{ flex: 1 }}>

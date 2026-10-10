@@ -26,7 +26,7 @@ const POINTS: { title: string; text: string }[] = [
  *  Readable later from Settings. */
 export default function Disclaimer() {
   const s = useApp();
-  const review = useLocalSearchParams<{ review?: string }>().review === "1" && !!s.disclaimer;
+  const review = useLocalSearchParams<{ review?: string }>().review === "1"; // read-only (from Settings, or "in full" in onboarding)
   const [understood, setUnderstood] = useState(false), [adult, setAdult] = useState(false);
   const [error, setError] = useState("");
   const onboarding = !review && !s.onboarded;
@@ -35,11 +35,11 @@ export default function Disclaimer() {
     if (!understood || !adult) { setError("Tick both boxes to carry on."); return; }
     set((st) => { st.disclaimer = { acceptedAt: new Date().toISOString(), version: DISCLAIMER_VERSION }; });
     // During onboarding this sits just before consent and the health check; for someone already set up (new wording), back to Today.
-    router.replace(s.onboarded ? "/" : s.consent ? "/onboarding/health" : "/consent");
+    router.replace(s.onboarded ? "/" : "/onboarding/where");
   }
 
   return (
-    <Screen header={review ? <Header fallback="/settings" title="Health and safety" /> : onboarding ? <Header fallback="/onboarding/start" title={TITLE} /> : undefined} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
+    <Screen header={review ? <Header fallback="/settings" title="Health and safety" /> : onboarding ? <Header fallback="/onboarding" title={TITLE} /> : undefined} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">{review ? "Health and safety" : TITLE}</AppText>
         <AppText variant="bodyLg" color="inkMuted">{review ? "How Steadie works, and when to talk to a professional." : "Steadie gives calm, everyday guidance for the year after your jab. Here's how it works, and when it's worth checking with your GP."}</AppText>

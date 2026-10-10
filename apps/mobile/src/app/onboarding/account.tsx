@@ -3,23 +3,24 @@ import { useEffect, useState } from "react";
 import { useColorScheme, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
-import { Mark } from "@/components/Mark";
-import { Screen } from "@/components/Screen";
-import { Banner, Field, Header, ToggleRow } from "@/components/ui";
+import { Icon } from "@/components/Icon";
+import { Lede, OnbScreen, Title } from "@/components/Onboarding";
+import { Banner, Field, IconButton, ToggleRow } from "@/components/ui";
 import { fmt } from "@/data/dates";
 import { AccountError, appleAvailable, choose, sendCode, setGuideEmails, setWeeklyRecap, signInWithApple, verifyCode, type Outcome } from "@/state/account";
 import { toast } from "@/state/toast";
-import { radius, space, useColors } from "@/theme";
+import { space, useColors } from "@/theme";
 
 type Stage = "choose" | "email" | "code" | "pick";
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** O0b Your account: sign in so the plan is backed up and moves to a new phone. Encouraged, never required. Also opened
- *  from Settings (from=settings) and from "I already have an account" on the welcome screen (existing=1). */
+/** 25 · Keep your plan safe: sign in so the plan is backed up and moves to a new phone. Encouraged, never required. The
+ *  last step of onboarding (from=onboarding), and also opened from Settings (from=settings) and from "I already have an
+ *  account" on the welcome screen (existing=1). */
 export default function AccountStep() {
   const c = useColors();
   const { from, existing } = useLocalSearchParams<{ from?: string; existing?: string }>();
-  const fromSettings = from === "settings";
+  const fromSettings = from === "settings", atEnd = from === "onboarding";
   const [stage, setStage] = useState<Stage>("choose");
   const [twoPlans, setTwoPlans] = useState<Extract<Outcome, { kind: "ask" }> | null>(null);
   const [email, setEmail] = useState("");
@@ -32,7 +33,8 @@ export default function AccountStep() {
   const [recap, setRecap] = useState(false);
   useEffect(() => { appleAvailable().then(setApple).catch(() => setApple(false)); }, []);
 
-  const carryOn = () => (fromSettings ? router.back() : router.push("/onboarding/start"));
+  // Not now: back to Settings, on to Today at the end of onboarding, or (from the welcome screen) start a new plan.
+  const carryOn = () => (fromSettings ? router.back() : atEnd ? router.replace("/") : router.replace("/onboarding/name"));
 
   async function finish(outcome: Outcome) {
     if (emails) setGuideEmails(true).catch(() => toast("Signed in, but we couldn't turn on guide emails. You can do it in Settings."));
@@ -40,7 +42,7 @@ export default function AccountStep() {
     if (outcome.kind === "ask") { setTwoPlans(outcome); setStage("pick"); return; }
     if (outcome.kind === "restored") { toast("Welcome back. Your plan is on this phone."); router.replace("/"); return; }
     toast(outcome.kind === "uploaded" ? "Signed in. Your plan is backed up." : "Signed in. Your plan will be backed up as you go.");
-    if (fromSettings) router.back(); else router.replace("/onboarding/start");
+    if (fromSettings) router.back(); else if (atEnd) router.replace("/"); else router.replace("/onboarding/name");
   }
 
   /** Both this phone and the backup have a plan: keep the one they pick. */
@@ -70,31 +72,35 @@ export default function AccountStep() {
     if (stage !== "choose") { setStage(stage === "code" ? "email" : "choose"); setError(undefined); return; }
     if (router.canGoBack()) router.back(); else router.replace("/onboarding");
   };
+  const showBack = stage !== "pick" && (stage !== "choose" || !atEnd);
   const title = existing ? "Welcome back" : fromSettings ? "Back up your plan" : "Keep your plan safe";
   const lede = existing ? "Sign in with the same Apple ID or email as before, and your plan, logs and check-ins come to this phone."
     : "Sign in and Steadie backs up your plan, logs and check-ins as you go, so they come with you to a new phone.";
 
   return (
-    <Screen contentContainerStyle={{ gap: space[5], paddingBottom: 48, flexGrow: 1 }} header={<Header onBack={back} title={stage === "code" ? "Check your email" : title} />}>
-      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ height: 140, borderRadius: radius.xl, backgroundColor: c.sage, overflow: "hidden" }}>
-        <View style={{ position: "absolute", left: -30, right: -30, bottom: -20, height: 70, borderRadius: 35, backgroundColor: c.sky }} />
-        <View style={{ position: "absolute", right: 56, bottom: 44 }}><Mark height={84} hole={c.sage} /></View>
+    <OnbScreen footer={stage === "choose" && !fromSettings ? <Button label={existing ? "Start a new plan instead" : "Maybe later"} variant="quiet" onPress={carryOn} style={{ alignSelf: "center" }} /> : undefined}>
+      {showBack ? <View style={{ alignSelf: "flex-start", marginBottom: space[2] }}><IconButton icon="back" label="Back" onPress={back} /></View> : null}
+      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{ width: 72, height: 72, borderRadius: 24, backgroundColor: c.sage, alignItems: "center", justifyContent: "center", marginTop: space[2] }}>
+        <Icon name="lock" size={30} color={c.onPastel} />
       </View>
-      <View style={{ gap: space[2] }}>
-        <AppText variant="title" accessibilityRole="header">{stage === "code" ? "Check your email" : title}</AppText>
-        <AppText color="inkMuted">{stage === "code" ? `We've sent a six-digit code to ${email.trim()}. It lasts 10 minutes.` : lede}</AppText>
-      </View>
+      <View style={{ marginTop: space[3] }}><Title>{stage === "code" ? "Check your email" : title}</Title></View>
+      <Lede>{stage === "code" ? `We’ve sent a six-digit code to ${email.trim()}. It lasts 10 minutes.` : lede}</Lede>
 
       {error ? <Banner tone="rose">{error}</Banner> : null}
 
       {stage === "choose" ? (
         <View style={{ gap: space[3] }}>
           {apple ? <AppleButton onPress={withApple} disabled={busy} /> : null}
-          <Button label="Continue with email" variant={apple ? "secondary" : "primary"} block disabled={busy} onPress={() => { setError(undefined); setStage("email"); }} />
-          <ToggleRow title="Email me new guides" sub="Two short guides a week and a Sunday digest. Unsubscribe any time." value={emails} onChange={setEmails} />
-          <ToggleRow title="Email me a weekly recap" sub="Sunday evening: your check-ins, sessions and steady score, and a tip for next week. No weight in safe mode." value={recap} onChange={setRecap} />
-          {fromSettings ? null : <Button label={existing ? "Start a new plan instead" : "Not now"} variant="quiet" onPress={carryOn} style={{ alignSelf: "center" }} />}
-          <AppText variant="caption" color="inkMuted">Your backup is private to you: kept encrypted on our servers in London, never sold and never used for ads. You can withdraw it, sign out or delete it any time in Settings. {existing || fromSettings ? "" : "Without an account, your plan stays on this phone only and is lost if the phone is."}</AppText>
+          <Button label="Continue with email" variant={apple ? "secondary" : "brand"} block disabled={busy} onPress={() => { setError(undefined); setStage("email"); }} />
+          <View style={{ gap: space[2], marginTop: space[2] }}>
+            <View style={{ backgroundColor: c.surfaceRaised, borderRadius: 18, padding: 14, paddingHorizontal: space[4] }}>
+              <ToggleRow title="Email me new guides" sub="Two short guides a week and a Sunday digest. Unsubscribe any time." value={emails} onChange={setEmails} />
+            </View>
+            <View style={{ backgroundColor: c.surfaceRaised, borderRadius: 18, padding: 14, paddingHorizontal: space[4] }}>
+              <ToggleRow title="Email me a weekly recap" sub="Sunday evening: your week and a tip. No weight in safe mode." value={recap} onChange={setRecap} />
+            </View>
+          </View>
+          <AppText variant="caption" color="inkMuted" style={{ fontSize: 14, lineHeight: 20 }}>Encrypted and kept in London. Never sold, never used for ads. {existing || fromSettings ? "" : "Without an account, your plan stays on this phone only and is lost if the phone is."}</AppText>
         </View>
       ) : null}
 
@@ -102,7 +108,7 @@ export default function AccountStep() {
         <View style={{ gap: space[3] }}>
           <AppText weight="800" accessibilityRole="header">You have two plans</AppText>
           <AppText color="inkMuted">Your backup{twoPlans.backupDate ? ` (last changed ${fmt.dayMonth(twoPlans.backupDate.slice(0, 10))})` : ""} has {twoPlans.backup}. This phone has {twoPlans.phone}. The one you don&apos;t keep is replaced.</AppText>
-          <Button label={busy ? "One moment…" : "Keep my backup"} block disabled={busy} onPress={() => keep("backup")} />
+          <Button label={busy ? "One moment…" : "Keep my backup"} variant="brand" block disabled={busy} onPress={() => keep("backup")} />
           <Button label="Keep this phone's plan" variant="secondary" block disabled={busy} onPress={() => keep("phone")} />
         </View>
       ) : null}
@@ -111,7 +117,7 @@ export default function AccountStep() {
         <View style={{ gap: space[4] }}>
           <Field label="Your email" value={email} onChangeText={setEmail} placeholder="you@example.com" keyboardType="email-address" autoCapitalize="none" autoCorrect={false}
             autoComplete="email" textContentType="emailAddress" returnKeyType="send" onSubmitEditing={send} autoFocus />
-          <Button label={busy ? "Sending…" : "Send me a code"} block disabled={busy} onPress={send} />
+          <Button label={busy ? "Sending…" : "Send me a code"} variant="brand" block disabled={busy} onPress={send} />
           <AppText variant="caption" color="inkMuted">No password to remember: we email a code each time you sign in on a new phone.</AppText>
         </View>
       ) : null}
@@ -120,11 +126,11 @@ export default function AccountStep() {
         <View style={{ gap: space[4] }}>
           <Field label="Six-digit code" value={code} maxLength={6} keyboardType="number-pad" autoComplete="one-time-code" textContentType="oneTimeCode" autoFocus
             onChangeText={(v) => { const d = v.replace(/\D/g, ""); setCode(d); if (d.length === 6 && !busy) verify(d); }} />
-          <Button label={busy ? "Checking…" : "Sign in"} block disabled={busy} onPress={() => verify()} />
+          <Button label={busy ? "Checking…" : "Sign in"} variant="brand" block disabled={busy} onPress={() => verify()} />
           <Button label="Send a new code" variant="quiet" disabled={busy} onPress={send} style={{ alignSelf: "center" }} />
         </View>
       ) : null}
-    </Screen>
+    </OnbScreen>
   );
 }
 

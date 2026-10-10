@@ -30,7 +30,7 @@ export default function Consent() {
     router.replace(s.onboarded ? "/" : "/onboarding/health");
   }
   return (
-    <Screen header={s.onboarded ? undefined : <Header fallback="/onboarding/start" title="Your health information" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
+    <Screen header={s.onboarded ? undefined : <Header fallback="/onboarding" title="Your health information" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
       <View style={{ gap: space[2] }}>
         <AppText variant="title" accessibilityRole="header">Your health information</AppText>
         <AppText variant="bodyLg" color="inkMuted">Steadie needs your agreement to keep health information. Here&apos;s exactly what that means.</AppText>

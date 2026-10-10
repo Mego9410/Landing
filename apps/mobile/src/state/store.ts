@@ -71,7 +71,7 @@ export interface AppState {
   demos: { who: string; still: boolean; ghost: boolean };
   lessonsRead: Record<number, boolean>;
   coach: { messages: { from: "you" | "coach"; text: string; redirect?: boolean }[] };
-  settings: { safeMode: boolean; units: Units; reminders: Reminders; appleHealth: boolean };
+  settings: { safeMode: boolean; units: Units; reminders: Reminders; appleHealth: boolean; /** The reminder two days before a free trial ends; on unless turned off on the paywall. */ trialReminder?: boolean };
   journal: { questions: string[]; entries: Record<string, JournalEntry> };
   /** When the person accepted the health information at the start, and which wording they saw. */
   disclaimer: { acceptedAt: string; version: number } | null;
@@ -85,11 +85,35 @@ export interface AppState {
   /** The last known subscription status, so the app opens offline. Only used when billing is on. `until` is when the
    *  trial ends or the plan renews (or ends, if `willRenew` is false). */
   subscription: { active: boolean; checkedAt: string; plan?: "yearly" | "monthly" | null; trial?: boolean; until?: string | null; willRenew?: boolean; /** Had the plan before and it has ended (not just never subscribed). */ ended?: boolean } | null;
+  /** Onboarding answers that shape the plan's wording and later nudges (src/state/onboarding.ts). */
+  story: Story;
   /** The phase whose start has been celebrated on Today (or that someone started in), so each change shows once. */
   phaseSeen?: "land" | "settle" | "steady" | null;
   /** When this copy last changed, so the newer of two copies wins when a backup and a phone disagree. */
   savedAt?: string;
 }
+
+/** Where someone is with the jab, from onboarding. Sets `ob.status` too. */
+export type Where = "on" | "tapering" | "recent" | "while" | "break";
+export interface Story {
+  where: Where | null;
+  /** What brought them here, how they feel, and what they most want to hold on to: option ids, up to three for `matters`. */
+  why: string[];
+  feel: string[];
+  matters: string[];
+  /** When food noise gets loud, and the first thing they'll try then (an if-then plan). */
+  foodNoise: string[];
+  ifThen: string | null;
+  /** How weight shows: as numbers, as a trend only, or not at all (which is safe mode). */
+  weightView: "show" | "trend" | "hide";
+  strengthAt: "home" | "gym";
+  /** Their answer to the first check-in, "how are you feeling this morning?". */
+  mood: string | null;
+  /** Which welcome screen they saw (A/B test), and when they made their promise, if they did. */
+  welcome: "A" | "B" | "C" | null;
+  promisedAt: string | null;
+}
+export const STORY_DEFAULTS: Story = { where: null, why: [], feel: [], matters: [], foodNoise: [], ifThen: null, weightView: "show", strengthAt: "home", mood: null, welcome: null, promisedAt: null };
 
 export const HEALTH_DEFAULTS: AppState["health"] = { answers: {}, checkedAt: null, version: 0, gpCleared: false, referAgreed: null };
 
@@ -186,6 +210,7 @@ export function demoState(): AppState {
     health: { ...HEALTH_DEFAULTS, checkedAt: addDays(t, -35), version: 1 },
     consent: { healthDataAt: addDays(t, -35) },
     subscription: null,
+    story: { ...STORY_DEFAULTS },
   };
 }
 
@@ -206,6 +231,7 @@ export function freshState(): AppState {
     health: { ...HEALTH_DEFAULTS },
     consent: null,
     subscription: null,
+    story: { ...STORY_DEFAULTS },
   };
 }
 
@@ -249,7 +275,7 @@ export function migrate(saved: Record<string, unknown>): AppState | null {
   const base = freshState();
   if (saved.v === 3) {
     const s = saved as unknown as AppState;
-    return { ...base, ...s, food: { ...FOOD_DEFAULTS, ...s.food }, settings: { ...base.settings, ...s.settings }, health: { ...HEALTH_DEFAULTS, ...s.health } };
+    return { ...base, ...s, food: { ...FOOD_DEFAULTS, ...s.food }, settings: { ...base.settings, ...s.settings }, health: { ...HEALTH_DEFAULTS, ...s.health }, story: { ...STORY_DEFAULTS, ...s.story } };
   }
   if (saved.v === 2) {
     const old = saved as Record<string, any>;

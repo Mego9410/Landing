@@ -97,6 +97,9 @@ function RootLayout() {
         <Stack.Screen name="quick-log" options={SHEET} />
         <Stack.Screen name="swap-habit" options={SHEET} />
         <Stack.Screen name="journal/index" options={SHEET} />
+        {/* These move on by themselves, so swiping back would only land somewhere half-done. */}
+        <Stack.Screen name="onboarding/building" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="onboarding/thanks" options={{ gestureEnabled: false }} />
       </Stack>
       </Sentry.ErrorBoundary>
       <Toast />

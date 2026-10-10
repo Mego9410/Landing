@@ -9,7 +9,7 @@ import { period } from "@/data/period";
 import { track } from "./events";
 import { install, updateInstall } from "./install";
 import { trialReminder } from "./reminders";
-import { set } from "./store";
+import { get, set } from "./store";
 
 const KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? "";
 /** The RevenueCat entitlement that unlocks the plan. */
@@ -29,7 +29,8 @@ function remember(info: CustomerInfo, askForReminder = false) {
   const plan = !e ? null : /annual|year/i.test(e.productIdentifier) ? "yearly" : "monthly";
   const ended = !e && !!info.entitlements.all[ENTITLEMENT];
   set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false, ended }; });
-  trialReminder(e && trial && e.willRenew ? e.expirationDate : null, e?.latestPurchaseDate ?? null, askForReminder).catch(() => {});
+  const wanted = get().settings.trialReminder !== false;
+  trialReminder(e && trial && e.willRenew && wanted ? e.expirationDate : null, e?.latestPurchaseDate ?? null, askForReminder).catch(() => {});
   // The first time this install sees a paid (not trial) subscription: after a trial converts, or bought outright.
   if (e && !trial) install().then((i) => { if (!i.paidSent) { updateInstall({ paidSent: true }); track("subscription_paid", { plan: plan ?? "unknown" }); } }).catch(() => {});
 }

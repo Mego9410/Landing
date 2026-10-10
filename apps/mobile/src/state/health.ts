@@ -45,5 +45,7 @@ export function applyHealth(st: AppState, answers: Record<string, boolean>) {
   }
   st.food.conditions = conditions;
   if (answers.pregnant) st.settings.safeMode = true;
+  // A yes about eating disorders hides weight by default (they can turn it back on in Settings); only a new yes does it.
+  if (answers.eating && !before.eating) { st.settings.safeMode = true; st.story.weightView = "hide"; }
   st.food.plan = null;
 }

@@ -1,150 +1,90 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { View } from "react-native";
+import { Linking, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
-import { Card } from "@/components/Card";
-import { YesNo } from "@/components/Journal";
-import { Step } from "@/components/Onboarding";
-import { Screen } from "@/components/Screen";
-import { Choices, Field, Header, List, Tick } from "@/components/ui";
+import { Chip, Lede, OnbCard, OnbScreen, TickOpt, Title } from "@/components/Onboarding";
 import { HEALTH_QUESTIONS, HEALTH_VERSION, NOTES, REFER } from "@/data/health";
-import { kgFromStLb } from "@/data/units";
-import { today } from "@/data/dates";
 import { applyHealth } from "@/state/health";
-import { set, useApp, type Units } from "@/state/store";
+import { set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { space, useColors } from "@/theme";
 
-/** O2 A quick health check (movement plan §4.2) and, if they like, a starting weight (consent comes just before, in
- *  app/consent.tsx). Also the 12-weekly re-check from Today or Settings (`?recheck=1`). */
+/** 11 · A quick health check (movement plan §4.2): every question answered yes or no. A GP question pauses strength
+ *  sessions until they've checked; pregnancy or kidney disease shows a referral note to tick through; gentle answers
+ *  adjust sessions; an eating disorder hides weight. Also the 12-weekly re-check from Today or Settings (`?recheck=1`). */
 export default function HealthCheck() {
   const s = useApp(), c = useColors();
   const recheck = useLocalSearchParams<{ recheck?: string }>().recheck === "1";
-  const [answers, setAnswers] = useState<Record<string, boolean | undefined>>(() => (recheck ? { ...s.health.answers } : {}));
+  const [answers, setAnswers] = useState<Record<string, boolean | undefined>>(() => (recheck || s.health.checkedAt ? { ...s.health.answers } : {}));
   const [gpChecked, setGpChecked] = useState(s.health.gpCleared);
   const [referAgreed, setReferAgreed] = useState(!!s.health.referAgreed && s.health.referAgreed.version >= HEALTH_VERSION);
-  const [units, setUnits] = useState<Units>(s.settings.units);
-  const [kg, setKg] = useState(""), [st, setSt] = useState(""), [lb, setLb] = useState("");
-  const [lowest, setLowest] = useState(""), [lowSt, setLowSt] = useState(""), [lowLb, setLowLb] = useState("");
   const [error, setError] = useState("");
 
   const unanswered = HEALTH_QUESTIONS.filter((q) => answers[q.id] == null).length;
   const gp = HEALTH_QUESTIONS.some((q) => q.kind === "gp" && answers[q.id]);
   const refer = (["pregnant", "kidney"] as const).filter((id) => answers[id]);
-  const notes = HEALTH_QUESTIONS.filter((q) => q.kind === "gentle" && answers[q.id]).map((q) => NOTES[q.id]).filter(Boolean);
-  const safe = s.settings.safeMode || !!answers.pregnant;
-
-  function parseWeight(): { now: number | null; low: number | null } | string {
-    const read = (v: string) => (v.trim() === "" ? null : parseFloat(v.replace(",", ".")));
-    let now: number | null = null;
-    if (units === "kg") now = read(kg);
-    else if (st.trim() !== "" || lb.trim() !== "") now = kgFromStLb(read(st) ?? 0, read(lb) ?? 0);
-    let lowKg: number | null = null;
-    if (units === "kg") lowKg = read(lowest);
-    else if (lowSt.trim() !== "" || lowLb.trim() !== "") lowKg = kgFromStLb(read(lowSt) ?? 0, read(lowLb) ?? 0);
-    if (now != null && !(now >= 30 && now <= 300)) return "That weight doesn't look right. Check the number, or leave it blank.";
-    if (lowKg != null && !(lowKg >= 30 && lowKg <= 300)) return "That lowest weight doesn't look right. Check the number, or leave it blank.";
-    return { now: now == null ? null : Math.round(now * 10) / 10, low: lowKg == null ? null : Math.round(lowKg * 10) / 10 };
-  }
+  const notes = HEALTH_QUESTIONS.filter((q) => q.kind === "gentle" && answers[q.id]).map((q) => NOTES[q.id]).filter((n): n is string => !!n);
 
   function save() {
     if (unanswered) { setError(`Answer each question with yes or no. ${unanswered} to go.`); return; }
-    if (refer.length && !referAgreed) { setError("Tick the box under the note to carry on, or close the app and come back after you've checked."); return; }
-    if (!s.consent) { router.push("/consent"); return; }
-    const w = safe || recheck ? { now: null, low: null } : parseWeight();
-    if (typeof w === "string") { setError(w); return; }
-    set((st2) => {
-      applyHealth(st2, answers as Record<string, boolean>);
-      if (gp) st2.health.gpCleared = gpChecked;
-      if (refer.length) st2.health.referAgreed = { at: new Date().toISOString(), version: HEALTH_VERSION };
-      st2.settings.units = units;
-      if (w.now != null) { const t = today(); st2.weights = [{ date: t, kg: w.now, source: "Logged by you" }, ...st2.weights.filter((x) => x.date !== t)]; }
-      if (w.low != null) st2.ob.lowestWeight = w.low;
+    if (refer.length && !referAgreed) { setError("Tick the box under the note to carry on, or come back after you’ve checked."); return; }
+    if (!s.consent) { router.push("/onboarding/consent"); return; }
+    set((st) => {
+      applyHealth(st, answers as Record<string, boolean>);
+      if (gp) st.health.gpCleared = gpChecked;
+      if (refer.length) st.health.referAgreed = { at: new Date().toISOString(), version: HEALTH_VERSION };
     });
     if (recheck) { toast("Thanks. Your plan is up to date."); router.back(); }
-    else router.push("/onboarding/food");
+    else router.push("/onboarding/numbers");
   }
 
-  const body = (
-    <>
-      <List>
-        {HEALTH_QUESTIONS.map((q, i) => (
-          <View key={q.id} style={i ? { borderTopWidth: 1, borderTopColor: c.line } : undefined}>
-            <YesNo ask={q.ask} detail={q.detail} value={answers[q.id]} onChange={(v) => { setError(""); setAnswers((a) => ({ ...a, [q.id]: v })); }} />
+  return (
+    <OnbScreen route={recheck ? undefined : "health"} footer={<>
+      {error ? <AppText variant="caption" color="roseInk" style={{ textAlign: "center" }}>{error}</AppText> : null}
+      <Button label={recheck ? "Save" : "Continue"} variant="brand" block onPress={save} />
+      {recheck ? <Button label="Cancel" variant="quiet" onPress={() => router.back()} style={{ alignSelf: "center" }} /> : null}
+    </>}>
+      <Title>A quick health check</Title>
+      <Lede>{recheck ? "Every 12 weeks we check nothing has changed, so your plan still fits. Private to you." : "So your plan fits you. Private to you."}</Lede>
+      <View style={{ gap: 18, marginTop: space[3] }}>
+        {HEALTH_QUESTIONS.map((q) => (
+          <View key={q.id} style={{ gap: space[2] }}>
+            <AppText weight="800" style={{ fontSize: 16, lineHeight: 22 }}>{q.ask}</AppText>
+            <View accessibilityRole="radiogroup" accessibilityLabel={q.ask} style={{ flexDirection: "row", gap: space[2] }}>
+              <Chip label="Yes" on={answers[q.id] === true} onPress={() => { setError(""); setAnswers((a) => ({ ...a, [q.id]: true })); }} style={{ flex: 1 }} />
+              <Chip label="No" on={answers[q.id] === false} onPress={() => { setError(""); setAnswers((a) => ({ ...a, [q.id]: false })); }} style={{ flex: 1 }} />
+            </View>
+            {q.detail ? <AppText variant="caption" color="inkMuted" style={{ fontSize: 14, lineHeight: 20 }}>{q.detail}</AppText> : null}
           </View>
         ))}
-      </List>
+      </View>
 
       {gp ? (
-        <Card tone="butter" style={{ gap: space[3] }}>
+        <OnbCard style={{ marginTop: space[3], gap: space[3], backgroundColor: c.butter }}>
           <AppText weight="800" color="onPastel">Check with your GP before strength sessions</AppText>
-          <AppText color="onPastel">Your food plan and habits start straight away. Strength sessions will wait until you tell us you&apos;ve checked, from the Workouts screen or here.</AppText>
-          <Tick label="I've already checked with my GP and they're happy for me to do strength exercise" checked={gpChecked} onChange={setGpChecked} />
-        </Card>
+          <AppText color="onPastel">Your food plan and habits start straight away. Strength sessions wait until you tell us you’ve checked, here or from the Workouts screen.</AppText>
+          <TickOpt label="My GP is happy for me to do strength exercise" checked={gpChecked} onChange={setGpChecked} />
+        </OnbCard>
       ) : null}
 
       {refer.map((id) => (
-        <Card key={id} tone="sky" style={{ gap: space[2] }}>
+        <OnbCard key={id} style={{ marginTop: space[3], gap: space[2], backgroundColor: c.sky }}>
           <AppText weight="800" color="onPastel">Talk to your {REFER[id].who} first</AppText>
           <AppText color="onPastel">{REFER[id].note}</AppText>
-        </Card>
+        </OnbCard>
       ))}
       {refer.length ? (
-        <Tick label={`I've read this. I'll check with my ${refer.map((id) => REFER[id].who).join(" and ")}, and I agree to the terms of use and health information.`} checked={referAgreed} onChange={(v) => { setError(""); setReferAgreed(v); }} />
+        <TickOpt label={`I’ve read this. I’ll check with my ${refer.map((id) => REFER[id].who).join(" and ")}, and I agree to the terms of use and health information.`} checked={referAgreed} onChange={(v) => { setError(""); setReferAgreed(v); }} />
       ) : null}
 
       {notes.length ? (
-        <Card tone="sunk" style={{ gap: space[2] }}>
-          <AppText weight="800">We&apos;ll adjust your sessions</AppText>
+        <OnbCard style={{ marginTop: space[3], gap: space[2] }}>
+          <AppText weight="800">We’ll adjust your plan</AppText>
           {notes.map((n) => <AppText key={n} color="inkMuted">{n}</AppText>)}
-        </Card>
+          {answers.eating ? <Button label="Call Beat’s helpline" variant="secondary" onPress={() => Linking.openURL("tel:08088010677")} /> : null}
+        </OnbCard>
       ) : null}
-
-      {!safe && !recheck ? (
-        <Card style={{ gap: space[3] }}>
-          <AppText weight="800">Your weight (optional)</AppText>
-          <AppText variant="caption" color="inkMuted">It starts your trend and your steady zone. You can skip this, or switch on safe mode later to hide weight altogether.</AppText>
-          <Choices label="Units" value={units} onChange={(v) => setUnits(v as Units)} options={[{ id: "kg", label: "Kilograms" }, { id: "stlb", label: "Stones and pounds" }]} />
-          {units === "kg" ? (
-            <Field label="Today" value={kg} onChangeText={setKg} keyboardType="decimal-pad" placeholder="78.4" suffix="kg" />
-          ) : (
-            <View style={{ flexDirection: "row", gap: space[3] }}>
-              <Field label="Today" value={st} onChangeText={setSt} keyboardType="number-pad" placeholder="12" suffix="st" />
-              <Field label=" " accessibilityLabel="Pounds" value={lb} onChangeText={setLb} keyboardType="number-pad" placeholder="5" suffix="lb" />
-            </View>
-          )}
-          {units === "kg" ? (
-            <Field label="Your lowest weight on the jab" value={lowest} onChangeText={setLowest} keyboardType="decimal-pad" placeholder="76.0" suffix="kg" />
-          ) : (
-            <View style={{ flexDirection: "row", gap: space[3] }}>
-              <Field label="Your lowest weight on the jab" value={lowSt} onChangeText={setLowSt} keyboardType="number-pad" placeholder="12" suffix="st" />
-              <Field label=" " accessibilityLabel="Pounds, lowest weight" value={lowLb} onChangeText={setLowLb} keyboardType="number-pad" placeholder="0" suffix="lb" />
-            </View>
-          )}
-          <AppText variant="caption" color="inkMuted">Your steady zone starts from your lowest weight. If you leave it blank, we&apos;ll use today&apos;s.</AppText>
-        </Card>
-      ) : null}
-
-      {error ? <AppText variant="caption" color="roseInk">{error}</AppText> : null}
-    </>
-  );
-
-  if (recheck) {
-    return (
-      <Screen header={<Header close fallback="/settings" title="A quick health check" />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
-        <View style={{ gap: space[2] }}>
-          <AppText variant="title" accessibilityRole="header">A quick health check</AppText>
-          <AppText color="inkMuted">Every 12 weeks we check nothing has changed, so your plan still fits. Your answers stay private to you.</AppText>
-        </View>
-        {body}
-        <Button label="Save" block onPress={save} />
-      </Screen>
-    );
-  }
-  return (
-    <Step n={2} title="A quick health check" lede="So your plan fits you. Your answers are private to you." next={save}>
-      {body}
-    </Step>
+    </OnbScreen>
   );
 }

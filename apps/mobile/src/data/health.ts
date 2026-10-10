@@ -26,6 +26,7 @@ export const HEALTH_QUESTIONS: HealthQuestion[] = [
   { id: "falls", kind: "gentle", ask: "Have you had a fall in the last year?" },
   { id: "floor", kind: "gentle", ask: "Is it hard for you to get down to the floor and back up?" },
   { id: "fatigue", kind: "gentle", ask: "Do you feel much worse for days after activity, or have ME/CFS?" },
+  { id: "eating", kind: "gentle", ask: "Have you ever had an eating disorder, or think you might have one now?", detail: "If yes, we’ll hide weight by default and point you to support. You can still use everything else." },
 ];
 
 /** Who to talk to, by referral. */
@@ -40,5 +41,6 @@ export const NOTES: Partial<Record<string, string>> = {
   bones: "Sessions start with the easier version of each move, and avoid bending forward under load.",
   falls: "Do standing moves next to a wall or a sturdy chair, and start with the easier versions.",
   floor: "Sessions start with the easier versions. Swap any floor move for its easier version.",
+  eating: "We’ll hide weight and numbers (safe mode), and you can change that in Settings. If food feels hard, Beat, the UK’s eating disorder charity, is there to talk to: 0808 801 0677, or beateatingdisorders.org.uk.",
   fatigue: "Go at your own pace. Sessions won't step up on their own, and it's fine to stop early.",
 };

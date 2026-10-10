@@ -173,7 +173,7 @@
 .fanMiddle { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
 .fanDots { display: flex; align-items: center; }
 .fanDot { width: 22px; height: 28px; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
-.fanDot span { display: block; width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--line); transition: width .25s ease-out, background .25s ease-out; }
+.fanDot span { display: block; width: 8px; height: 8px; border-radius: var(--radius-full); background: color-mix(in srgb, var(--ink-muted) 45%, transparent); transition: width .25s ease-out, background .25s ease-out; }
 .fanDot[aria-current] { width: 34px; }
 .fanDot[aria-current] span { width: 24px; background: var(--apricot-ink); }
 .fanHint { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 800; color: var(--ink-muted); transition: opacity .3s ease-out; }

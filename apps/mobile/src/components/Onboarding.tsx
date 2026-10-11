@@ -3,9 +3,10 @@
 // that answer back, chips, Steadie's speech bubble and tick boxes.
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Pressable, ScrollView, View, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { track } from "@/state/events";
 import { stepOf } from "@/state/onboarding";
 import { radius, space, useColors, type Colors } from "@/theme";
 import { AppText } from "./AppText";
@@ -15,6 +16,9 @@ import { readable } from "./Screen";
 
 const tap = () => Haptics.selectionAsync().catch(() => {});
 
+// Screens already counted this run, so going back and forth sends each one once. Only the screen's name is sent.
+const seen = new Set<string>();
+
 /** A whole onboarding screen. `route` (a FLOW route) shows the back button, act and progress bar; `ground` and `accent`
  *  recolour a screen with its own background (the lilac biology screen, the sky nudge screen). The footer sits at the
  *  bottom, or below the content when that's taller than the screen. */
@@ -23,6 +27,7 @@ export function OnbScreen({ route, ground, accent, children, footer, onBack, bac
 }) {
   const c = useColors(), insets = useSafeAreaInsets();
   const step = route ? stepOf(route) : null;
+  useEffect(() => { if (route && !seen.has(route)) { seen.add(route); track("onboarding_step", { step: route }); } }, [route]);
   const ink = accent ? c[accent] : c.apricotInk;
   return (
     <View style={{ flex: 1, backgroundColor: ground ? c[ground] : c.surface }}>

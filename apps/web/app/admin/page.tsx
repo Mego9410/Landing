@@ -113,6 +113,17 @@ export default async function Admin() {
                   <div key={r.label} className={styles.stat}><strong>{pctText(r.pct)}</strong><span>{r.label} check-in retention ({n(r.kept)} of {n(r.eligible)})</span></div>
                 ))}
               </div>
+              {funnel.data.screens.length ? (
+                <div className={styles.scroll}>
+                  <p className={styles.muted} style={{ marginBottom: 8 }}>Onboarding screens reached, last 30 days</p>
+                  <table className={styles.table}>
+                    <thead><tr><th>Screen</th><th className={styles.num}>Installs</th><th className={styles.num}>Of screen before</th></tr></thead>
+                    <tbody>{funnel.data.screens.map((sc) => (
+                      <tr key={sc.step}><td>{sc.step}</td><td className={styles.num}>{n(sc.n)}</td><td className={styles.num}>{pctText(sc.ofPrev)}</td></tr>
+                    ))}</tbody>
+                  </table>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </section>

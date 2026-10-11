@@ -76,6 +76,9 @@ export const loadMembers = () => load(async () => {
 /* ---------- funnel (our own events table) ---------- */
 export const FUNNEL_STEPS = [
   { name: "app_first_open", label: "Opened the app" },
+  { name: "onboarding_started", label: "Started onboarding" },
+  { name: "quiz_completed", label: "Answered the questions" },
+  { name: "plan_viewed", label: "Saw their plan" },
   { name: "onboarding_completed", label: "Finished onboarding" },
   { name: "paywall_viewed", label: "Saw the plans" },
   { name: "trial_started", label: "Started a trial" },
@@ -94,7 +97,7 @@ export const loadFunnel = () => load(async () => {
       count(distinct install_id) filter (where created_at > now() - interval '7 days') as d7,
       count(distinct install_id) filter (where created_at > now() - interval '30 days') as d30
     from events where created_at > now() - interval '30 days'
-      and name in ('app_first_open', 'onboarding_completed', 'paywall_viewed', 'trial_started', 'subscription_paid', 'purchase_completed')
+      and name in ('app_first_open', 'onboarding_started', 'quiz_completed', 'plan_viewed', 'onboarding_completed', 'paywall_viewed', 'trial_started', 'subscription_paid', 'purchase_completed')
     group by name`);
   const get = (name: string, k: "d7" | "d30") => num(counts.find((r) => r.name === name)?.[k]);
   const pct = (a: number, b: number) => (b ? Math.round((a / b) * 1000) / 10 : null);
@@ -114,8 +117,15 @@ export const loadFunnel = () => load(async () => {
       from first`);
     retention.push({ label: `${d}-day`, eligible: num(r?.eligible), kept: num(r?.kept), pct: pct(num(r?.kept), num(r?.eligible)) });
   }
+  // Each onboarding screen reached (onboarding_step, prop "step" = the screen's route), most-reached first: so the
+  // list reads in flow order and the biggest drops stand out. Only the screen name is sent, never an answer.
+  const screenRows = await rows(sql`
+    select props->>'step' as step, count(distinct install_id) as n from events
+    where name = 'onboarding_step' and created_at > now() - interval '30 days' and props ? 'step'
+    group by 1 order by 2 desc, 1 limit 40`);
+  const screens = screenRows.map((r, i) => ({ step: String(r.step), n: num(r.n), ofPrev: i ? pct(num(r.n), num(screenRows[i - 1].n)) : null }));
   const [{ total, installs }] = await rows(sql`select count(*) as total, count(distinct install_id) as installs from events where created_at > now() - interval '30 days'`);
-  return { windows, retention, total: num(total), installs: num(installs) };
+  return { windows, retention, screens, total: num(total), installs: num(installs) };
 }, "funnel");
 
 /* ---------- why people cancel (lapse_feedback) ---------- */

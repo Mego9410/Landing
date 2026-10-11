@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Bubble, OnbScreen, Title } from "@/components/Onboarding";
 import { Button } from "@/components/Button";
+import { track } from "@/state/events";
 import { useApp } from "@/state/store";
 import { space, useColors } from "@/theme";
 
@@ -15,7 +16,7 @@ export default function Helps() {
     { n: 3, title: "Notice changes early", sub: "Small wobbles are easy to steady.", tone: c.sage },
   ];
   return (
-    <OnbScreen route="helps" footer={<Button label="Continue" variant="brand" block onPress={() => router.push("/onboarding/nudge")} />}>
+    <OnbScreen route="helps" footer={<Button label="Continue" variant="brand" block onPress={() => { track("quiz_completed"); router.push("/onboarding/nudge"); }} />}>
       <Title>People who keep it off tend to say the same three things</Title>
       <View style={{ gap: 10, marginTop: space[4] }}>
         {pillars.map((p) => (

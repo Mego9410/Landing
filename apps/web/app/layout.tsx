@@ -21,6 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: "Steadie",
     // Safari shows a banner offering the app (App Store Connect app ID), once it's live.
     ...(live ? { itunes: { appId: "6820083153" } } : {}),
+    // Google Search Console's HTML-tag check, only if GOOGLE_SITE_VERIFICATION is set (a DNS record works instead).
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION.trim() } } : {}),
     keywords: ["coming off weight loss injections", "life after GLP-1", "keep weight off after stopping weight loss jab", "weight maintenance after GLP-1", "protein and strength after weight loss injections"],
     category: "health",
     description,

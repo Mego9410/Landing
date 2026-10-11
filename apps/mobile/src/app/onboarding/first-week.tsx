@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
@@ -23,6 +24,7 @@ const DAY = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
  *  was built around. "Make it mine" finishes onboarding: the plan starts today. */
 export default function FirstWeek() {
   const s = useApp(), c = useColors();
+  useEffect(() => { track("plan_viewed"); }, []);
   const name = s.name.trim(), t = today(), day = weekdayIndex(t), week = weekOf(s), phase = phaseOf(week);
   const plan = thisWeek(s), strength = s.settings.reminders.sessions.days;
   const meal = (slot: "breakfast" | "dinner") => {

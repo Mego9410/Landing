@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import Constants from "expo-constants";
 import * as Updates from "expo-updates";
-import { Pressable, View } from "react-native";
+import { Linking, Pressable, View } from "react-native";
 import { LABELS } from "@landing/engine";
 import { castById } from "@landing/motion";
 import { AppText } from "@/components/AppText";
@@ -174,7 +174,8 @@ export default function Settings() {
       </Section>
       <Section title="ABOUT">
         <List>
-          <Row first title="Rate Steadie" sub="Leave a rating or review on the App Store" onPress={() => openWriteReview().catch(() => toast("Couldn't open the App Store."))} />
+          <Row first title="Get help" sub="Something not right? Email hello@getsteadieapp.com and we'll get back to you" onPress={() => Linking.openURL(`mailto:hello@getsteadieapp.com?subject=${encodeURIComponent("Steadie help")}`).catch(() => toast("No email app found. Write to hello@getsteadieapp.com."))} />
+          <Row title="Rate Steadie" sub="Leave a rating or review on the App Store" onPress={() => openWriteReview().catch(() => toast("Couldn't open the App Store."))} />
           <Row title="Privacy policy" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />
           <Row title="Terms of use" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "terms" } })} />
         </List>

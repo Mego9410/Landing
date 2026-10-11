@@ -201,7 +201,7 @@ test("trial reminder: 9am two days before a week's trial ends, scaled for sandbo
 });
 
 test("rating prompt: only after a week of having the app, never within 120 days, milestones and hard days", async () => {
-  const { mayAsk, checkInMilestone, hardDay, streak } = await import("@/data/review");
+  const { mayAsk, checkInMilestone, hardDay, streak, weightHeld } = await import("@/data/review");
   const now = new Date("2026-10-09T12:00:00Z");
   assert.equal(mayAsk("2026-10-05T12:00:00Z", null, now), false);
   assert.equal(mayAsk("2026-10-01T12:00:00Z", null, now), true);
@@ -212,6 +212,12 @@ test("rating prompt: only after a week of having the app, never within 120 days,
   assert.equal(checkInMilestone({ journal: { questions: [], entries: entries(8, "2026-10-08") } }, "2026-10-08"), null);
   assert.equal(streak({ journal: { questions: [], entries: entries(28, "2026-10-08") } }, "2026-10-08"), 28);
   assert.equal(checkInMilestone({ journal: { questions: [], entries: entries(28, "2026-10-08") } }, "2026-10-08"), "four-week-streak");
+  // Weight held: three weigh-ins over 3+ weeks within 2 kg counts; a 2.5 kg spread or too short a span doesn't.
+  const wt = (date: string, kg: number) => ({ date, kg, source: "x" });
+  assert.equal(weightHeld({ weights: [wt("2026-09-14", 80), wt("2026-09-28", 81.2), wt("2026-10-08", 80.6)] }, "2026-10-08"), true);
+  assert.equal(weightHeld({ weights: [wt("2026-09-14", 80), wt("2026-09-28", 82.5), wt("2026-10-08", 80.6)] }, "2026-10-08"), false);
+  assert.equal(weightHeld({ weights: [wt("2026-09-25", 80), wt("2026-09-30", 80.2), wt("2026-10-08", 80.1)] }, "2026-10-08"), false);
+  assert.equal(checkInMilestone({ journal: { questions: [], entries: entries(3, "2026-10-08") }, weights: [wt("2026-09-14", 80), wt("2026-09-28", 81), wt("2026-10-08", 80.5)] }, "2026-10-08"), "weight-held");
   assert.equal(hardDay({ weights: [] }, "2026-10-08", { yes: {}, energy: 2 }), true);
   assert.equal(hardDay({ weights: [] }, "2026-10-08", { yes: {}, energy: 4, fullness: 3 }), false);
   assert.equal(hardDay({ weights: [{ date: "2026-10-09", kg: 80.4, source: "x" }, { date: "2026-10-08", kg: 80, source: "x" }] }, "2026-10-08", { yes: {} }), true);

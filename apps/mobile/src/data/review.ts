@@ -5,7 +5,9 @@ import type { AppState, JournalEntry } from "@/state/store";
 
 export const REVIEW_GAP_DAYS = 120;
 export const REVIEW_MIN_DAYS = 7;
-export type Milestone = "first-week" | "four-week-streak" | "phase";
+export type Milestone = "first-week" | "weight-held" | "four-week-streak" | "phase";
+/** How far apart a month of weigh-ins can be and still count as held steady. */
+export const HELD_KG = 2;
 
 /** Days in a row with a check-in, counting back from `day`. */
 export function streak(s: Pick<AppState, "journal">, day: string): number {
@@ -22,11 +24,22 @@ export function hardDay(s: Pick<AppState, "weights">, day: string, e: JournalEnt
   return !!latest && !!before && daysBetween(day, latest.date) <= 2 && latest.kg > before.kg;
 }
 
-/** The milestone a just-saved check-in reaches, if any: the seventh check-in, or the 28th day in a row. */
-export function checkInMilestone(s: Pick<AppState, "journal">, day: string): Milestone | null {
-  const count = Object.keys(s.journal.entries).length;
-  if (count === 7) return "first-week";
-  if (streak(s, day) === 28) return "four-week-streak";
+/** Weight held for four weeks: at least three weigh-ins in the 28 days up to `day`, the first of them three or more
+ *  weeks back, all within HELD_KG of each other, and none on or just before `day` up on the one before it. */
+export function weightHeld(s: Partial<Pick<AppState, "weights">>, day: string): boolean {
+  const inWindow = (s.weights ?? []).filter((w) => w.date <= day && daysBetween(w.date, day) < 28).sort((a, b) => a.date.localeCompare(b.date));
+  if (inWindow.length < 3 || daysBetween(inWindow[0].date, day) < 21) return false;
+  const kgs = inWindow.map((w) => w.kg);
+  return Math.max(...kgs) - Math.min(...kgs) <= HELD_KG;
+}
+
+/** The milestone a just-saved check-in reaches, if any, in the playbook's order: a first full week in a row, weight
+ *  held for four weeks, then 28 days in a row. (Phase milestones are asked from Today, when a new phase starts.) */
+export function checkInMilestone(s: Pick<AppState, "journal"> & Partial<Pick<AppState, "weights">>, day: string): Milestone | null {
+  const run = streak(s, day);
+  if (run === 7) return "first-week";
+  if (weightHeld(s, day)) return "weight-held";
+  if (run === 28) return "four-week-streak";
   return null;
 }
 

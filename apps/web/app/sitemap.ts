@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { liveGuides } from "@/content/guides";
 import { abs } from "./site";
+import { TOOLS } from "./tools/list";
 
 export const revalidate = 3600;
 
@@ -11,6 +12,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: abs("/"), changeFrequency: "monthly", priority: 1 },
     { url: abs("/guides"), lastModified: latest, changeFrequency: "weekly", priority: 0.9 },
     ...GUIDES.map((g) => ({ url: abs(`/guides/${g.slug}`), lastModified: g.updated, changeFrequency: "monthly" as const, priority: g.pillar ? 0.8 : 0.7 })),
+    { url: abs("/tools"), changeFrequency: "monthly", priority: 0.8 },
+    ...TOOLS.map((t) => ({ url: abs(`/tools/${t.slug}`), lastModified: t.updated, changeFrequency: "monthly" as const, priority: 0.8 })),
     { url: abs("/about"), changeFrequency: "yearly", priority: 0.4 },
     { url: abs("/support"), changeFrequency: "monthly", priority: 0.5 },
     { url: abs("/whats-new"), changeFrequency: "monthly", priority: 0.4 },

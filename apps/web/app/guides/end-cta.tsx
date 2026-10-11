@@ -1,5 +1,8 @@
 import type { Guide } from "@/content/guides";
-import { appLive, appStoreLink, campaign, PRICE } from "../site";
+import { appLive, appStoreLink, campaign, PRICE, type ProductPage } from "../site";
+
+/** Which Custom Product Page a guide or tool sends people to: the tapering one for tapering pages, else after-the-jab. */
+export const productPageFor = (slug: string): ProductPage => (/taper/.test(slug) ? "taper" : "after");
 import styles from "./guides.module.css";
 
 // The card at the end of every guide: a one-line hook that fits what the guide was about, then the App Store link.
@@ -40,7 +43,7 @@ export async function GuideEndCta({ guide }: { guide: Pick<Guide, "slug" | "cate
       <p className={styles.endHook}>{HOOKS[guideTopic(guide)]}</p>
       {live ? (
         <>
-          <a className={styles.ctaButton} href={appStoreLink(campaign("guide-end", guide.slug))}>Try Steadie free for 7 days</a>
+          <a className={styles.ctaButton} href={appStoreLink(campaign("guide-end", guide.slug), productPageFor(guide.slug))}>Try Steadie free for 7 days</a>
           <span className={styles.endSmall}>On iPhone. Then {PRICE.yearly} a year or {PRICE.monthly} a month; cancel any time in your iPhone settings.</span>
         </>
       ) : (

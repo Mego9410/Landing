@@ -7,7 +7,8 @@ import { SiteFooter, SiteHeader } from "../../site-chrome";
 import { abs, appLive, appStoreLink, campaign, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
 import styles from "../guides.module.css";
 import { GuideArt } from "../art";
-import { GuideEndCta } from "../end-cta";
+import { GuideEndCta, productPageFor } from "../end-cta";
+import { GuideNextSteps } from "../next-steps";
 import { anchor, Blocks, plain } from "../rich";
 
 // Guides published so far are built ahead; scheduled ones appear on their day (refreshed hourly, and by the daily cron).
@@ -111,6 +112,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                   </div>
                 </section>
               ) : null}
+              <GuideNextSteps guide={g} />
               <GuideEndCta guide={g} />
               <section aria-labelledby="sources">
                 <h2 id="sources">Sources</h2>
@@ -136,7 +138,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               <div className={styles.cta}>
                 <strong>A 12-month plan for the year after</strong>
                 <span>Small habits, short strength sessions and easy meals, on your side. {live ? "On iPhone, with 7 days free." : "Coming soon to iPhone."}</span>
-                {live ? <a className={styles.ctaButton} href={appStoreLink(campaign("guide", g.slug))}>Download Steadie</a> : null}
+                {live ? <a className={styles.ctaButton} href={appStoreLink(campaign("guide", g.slug), productPageFor(g.slug))}>Download Steadie</a> : null}
               </div>
             </aside>
           </div>

@@ -26,11 +26,26 @@ export async function appLive(): Promise<boolean> {
 }
 /** An App Store link that tells App Store Connect's App Analytics which page sent the download (Apple campaign links:
  *  pt = provider token from NEXT_PUBLIC_APPLE_PROVIDER_TOKEN, ct = campaign of 40 characters or fewer, mt = 8). */
-export function appStoreLink(campaign: string) {
+export function appStoreLink(campaign: string, page?: ProductPage) {
   const pt = process.env.NEXT_PUBLIC_APPLE_PROVIDER_TOKEN;
-  if (!pt) return APP_STORE_URL;
-  const ct = campaign.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "site";
-  return `${APP_STORE_URL}?pt=${encodeURIComponent(pt)}&ct=${ct}&mt=8`;
+  const ppid = page ? productPageId(page) : undefined;
+  const q = new URLSearchParams();
+  if (pt) {
+    q.set("pt", pt);
+    q.set("ct", campaign.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "site");
+    q.set("mt", "8");
+  }
+  if (ppid) q.set("ppid", ppid);
+  const qs = q.toString();
+  return qs ? `${APP_STORE_URL}?${qs}` : APP_STORE_URL;
+}
+/** App Store Custom Product Pages (growth playbook): "after" for the after-the-jab guides and tools, "taper" for the
+ *  tapering pages. Each is on only once its ID (from App Store Connect › Custom Product Pages) is set:
+ *  NEXT_PUBLIC_CPP_AFTER and NEXT_PUBLIC_CPP_TAPER. Unset, links go to the default product page. */
+export type ProductPage = "after" | "taper";
+function productPageId(page: ProductPage) {
+  const id = (page === "taper" ? process.env.NEXT_PUBLIC_CPP_TAPER : process.env.NEXT_PUBLIC_CPP_AFTER)?.trim();
+  return id && /^[0-9a-f-]{36}$/i.test(id) ? id.toLowerCase() : undefined;
 }
 /** A campaign name of `prefix-slug` that fits Apple's 40 characters by dropping whole words off the end of the slug
  *  (so "guide-end-questions-to-ask-before-stopping" rather than a word cut in half). */

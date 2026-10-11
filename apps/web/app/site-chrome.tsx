@@ -14,6 +14,8 @@ const GUIDE_LINKS = [
   ["/guides/protein-after-glp-1", "Protein after a GLP-1"],
   ["/guides/strength-training-after-glp-1", "Strength training"],
   ["/guides/weight-loss-jab-price-rise-uk", "Jab prices"],
+  ["/tools/maintenance-calories", "Maintenance calorie calculator"],
+  ["/tools/weight-regain", "Weight regain calculator"],
   ["/guides", "All guides"],
 ] as const;
 

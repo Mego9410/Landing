@@ -5,6 +5,7 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
 import { Chip, Chips, Lede, OnbScreen, Opt, Title, toggle } from "@/components/Onboarding";
+import { track } from "@/state/events";
 import { sessionsPaused } from "@/state/health";
 import { set, useApp } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
@@ -18,7 +19,7 @@ export default function Strength() {
   const days = s.settings.reminders.sessions.days, at = s.story.strengthAt;
   const toggleDay = (d: number) => set((st) => { const r = st.settings.reminders.sessions; r.days = r.days.includes(d) ? r.days.filter((x) => x !== d) : [...r.days, d].sort(); });
   return (
-    <OnbScreen route="strength" footer={<Button label="Continue" variant="brand" block onPress={() => router.push("/onboarding/helps")} />}>
+    <OnbScreen route="strength" footer={<Button label="Continue" variant="brand" block onPress={() => { track("quiz_completed"); router.push("/onboarding/building"); }} />}>
       <Title>Which days could you fit in 20 minutes of strength?</Title>
       <Lede>{sessionsPaused(s) ? "Two a week is the aim, once your GP is happy. Pick days now and we’ll be ready." : "Two a week is the aim. Strength helps protect muscle while your appetite settles."}</Lede>
       <View style={{ flexDirection: "row", gap: 6, marginTop: space[3] }}>

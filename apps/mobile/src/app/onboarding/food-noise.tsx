@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Chip, Chips, Lede, OnbCard, OnbScreen, Title, toggle } from "@/components/Onboarding";
-import { FOOD_NOISE, NOT_REALLY } from "@/state/onboarding";
+import { FOOD_NOISE, IF_THEN, NOT_REALLY } from "@/state/onboarding";
 import { set, useApp } from "@/state/store";
 import { space, useColors } from "@/theme";
 
@@ -21,7 +21,11 @@ export default function FoodNoise() {
     st.ob.hungryTimes = FOOD_NOISE.filter((f) => next.includes(f.id) && f.hungry).map((f) => f.hungry!);
   });
   return (
-    <OnbScreen route="food-noise" footer={<Button label="Continue" variant="brand" block onPress={() => router.push(picked.includes(NOT_REALLY) || !picked.length ? "/onboarding/eat" : "/onboarding/if-then")} />}>
+    <OnbScreen route="food-noise" footer={<Button label="Continue" variant="brand" block onPress={() => {
+      // Onboarding v2 skips the if-then screen: anyone with food noise starts on the first plan (changeable later).
+      set((st) => { if (st.story.foodNoise.length && !st.story.foodNoise.includes(NOT_REALLY) && !st.story.ifThen) st.story.ifThen = IF_THEN[0].id; });
+      router.push("/onboarding/eat");
+    }} />}>
       <Title>When does food noise tend to get loud?</Title>
       <Lede>Pick any. We’ll plan around those moments.</Lede>
       <OnbCard style={{ marginTop: space[3], paddingHorizontal: space[4] }}>

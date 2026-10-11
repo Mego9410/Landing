@@ -68,7 +68,7 @@ function WelcomeA({ start, signIn, demo }: Props) {
         </Svg>
       </Pressable>
       <View style={[{ flex: 1, gap: 14, paddingHorizontal: space[6], paddingBottom: insets.bottom + space[6] }, readable]}>
-        <AppText variant="display" accessibilityRole="header" style={{ fontSize: 40, lineHeight: 44 }}>Wobbles are normal. Let’s keep you steady.</AppText>
+        <AppText variant="display" accessibilityRole="header" style={{ fontSize: 40, lineHeight: 44 }}>Coming off the jab? Let’s keep your results.</AppText>
         <AppText variant="bodyLg" color="inkMuted">A calm 12-month plan for the year after your jab: protein, strength and small daily habits, at your pace.</AppText>
         <Footer start={start} signIn={signIn} label="Find my steady" variant="ink" />
       </View>

@@ -8,26 +8,20 @@ export type Act = "Hello" | "Your story" | "The practical bits" | "Your plan";
 
 /** The screens with a progress bar, in order. The welcome, building, paywall, thank-you and account screens sit outside. */
 export const FLOW: { route: string; act: Act }[] = [
+  // Onboarding v2 (growth playbook): welcome, a short quiz, the plan, then reminders and the plans. The why, feel,
+  // biology, matters, if-then, helps, promise and first check-in screens are out of the flow (kept, not deleted).
   { route: "name", act: "Hello" },
   { route: "before", act: "Hello" },
   { route: "where", act: "Your story" },
   { route: "last-jab", act: "Your story" },
-  { route: "why", act: "Your story" },
-  { route: "feel", act: "Your story" },
-  { route: "biology", act: "Your story" },
-  { route: "matters", act: "Your story" },
   { route: "consent", act: "The practical bits" },
   { route: "health", act: "The practical bits" },
   { route: "numbers", act: "The practical bits" },
   { route: "food-noise", act: "The practical bits" },
-  { route: "if-then", act: "The practical bits" },
   { route: "eat", act: "The practical bits" },
   { route: "strength", act: "The practical bits" },
-  { route: "helps", act: "The practical bits" },
-  { route: "nudge", act: "Your plan" },
   { route: "first-week", act: "Your plan" },
-  { route: "promise", act: "Your plan" },
-  { route: "first-checkin", act: "Your plan" },
+  { route: "nudge", act: "Your plan" },
 ];
 
 export const stepOf = (route: string) => {

@@ -5,19 +5,24 @@ import { AppText } from "@/components/AppText";
 import { Button, useBrand } from "@/components/Button";
 import { Chip, Chips, Lede, OnbScreen, Title } from "@/components/Onboarding";
 import { Mark } from "@/components/Mark";
+import { accountsAvailable, useAccount } from "@/state/account";
 import { track } from "@/state/events";
-import { ensurePermission } from "@/state/reminders";
-import { set, useApp } from "@/state/store";
+import { afterPlan } from "@/state/onboarding";
+import { ensurePermission, refreshReminders } from "@/state/reminders";
+import { billingEnabled } from "@/state/subscription";
+import { get, set, useApp } from "@/state/store";
 import { radius, space, useColors } from "@/theme";
 
 const TIMES = [[7, 0], [7, 30], [8, 0]] as const;
 const LATER = [[8, 30], [9, 0], [10, 0]] as const;
 const label = (h: number, m: number) => `${h}:${String(m).padStart(2, "0")}`;
 
-/** 18 · Want a gentle nudge each morning? The one moment the app asks to send notifications: granted, the check-in
- *  reminder is on at that time; not now, or refused, onboarding carries on and Settings explains how to turn it on. */
+/** Want a gentle nudge each morning? The one moment the app asks to send notifications, right after the plan (onboarding
+ *  v2), framed as the check-in reminder: granted, it's on at that time; not now, or refused, onboarding carries on to
+ *  the plans (or account, or home) and Settings explains how to turn it on. */
 export default function Nudge() {
-  const s = useApp(), c = useColors(), brand = useBrand();
+  const s = useApp(), c = useColors(), brand = useBrand(), { account } = useAccount();
+  const next = afterPlan({ billing: billingEnabled() && !s.demo, subscribed: !!s.subscription?.active, accounts: accountsAvailable(), signedIn: !!account });
   const r = s.settings.reminders.checkIn;
   const [time, setTime] = useState<[number, number]>([r.hour === 8 && r.minute === 0 ? 7 : r.hour, r.hour === 8 && r.minute === 0 ? 30 : r.minute]);
   const [later, setLater] = useState(LATER.some(([h, m]) => h === time[0] && m === time[1]));
@@ -28,14 +33,15 @@ export default function Nudge() {
     const ok = await ensurePermission().catch(() => false);
     track(ok ? "notification_permission_granted" : "notification_permission_denied", { where: "onboarding" });
     set((st) => { st.settings.reminders.checkIn = { on: ok, hour: time[0], minute: time[1] }; });
+    refreshReminders(get()); // the check-in reminder, if turned on, starts tomorrow
     setBusy(false);
-    router.push("/onboarding/building");
+    router.push(next);
   }
   const chip = ([h, m]: readonly [number, number]) => <Chip key={label(h, m)} label={label(h, m)} on={time[0] === h && time[1] === m} onPress={() => setTime([h, m])} />;
   return (
     <OnbScreen route="nudge" ground="sky" accent="skyInk" footer={<>
       <Button label={busy ? "One moment…" : `Remind me at ${label(...time)}`} variant="ink" block disabled={busy} onPress={remind} />
-      <Button label="Not now" variant="quiet" onPress={() => router.push("/onboarding/building")} style={{ alignSelf: "center" }} />
+      <Button label="Not now" variant="quiet" onPress={() => router.push(next)} style={{ alignSelf: "center" }} />
     </>}>
       <View accessible accessibilityLabel={`Example reminder: Morning${name ? `, ${name}` : ""}. Two minutes to check in?`}
         style={{ backgroundColor: c.surfaceRaised, borderRadius: 22, padding: space[3], paddingHorizontal: 14, flexDirection: "row", gap: space[3], alignItems: "center", shadowColor: "#285E7E", shadowOpacity: 0.15, shadowRadius: 24, shadowOffset: { width: 0, height: 8 }, elevation: 2 }}>

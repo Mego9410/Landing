@@ -54,7 +54,7 @@ export default function FirstWeek() {
     });
     refreshReminders(get()); // the check-in reminder, if turned on, starts tomorrow
     track("onboarding_completed", { week });
-    router.push("/onboarding/promise");
+    router.push("/onboarding/nudge");
   }
 
   return (

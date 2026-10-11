@@ -22,7 +22,7 @@ export default function LastJab() {
   const pickedAgo = !ahead && daysAway <= 0 ? AGO.find((a) => a.week === week) : undefined;
   const chosen = ahead ? !!pickedAhead : !!pickedAgo;
   return (
-    <OnbScreen route="last-jab" footer={<Button label="Continue" variant="brand" block disabled={!chosen} onPress={() => router.push("/onboarding/why")} />}>
+    <OnbScreen route="last-jab" footer={<Button label="Continue" variant="brand" block disabled={!chosen} onPress={() => router.push("/onboarding/consent")} />}>
       <Title>{ahead ? "When are you planning your last jab?" : "When was your last jab?"}</Title>
       <Lede>So we start you at the right point in the 12 months. A rough guess is fine.</Lede>
       <View style={{ marginTop: space[3] }}>

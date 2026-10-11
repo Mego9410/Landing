@@ -36,6 +36,29 @@
 .chartBar:hover { opacity: .75; }
 .chartAxis { fill: var(--ink-muted); font-size: 11px; font-family: var(--font-body); }
 .chartBase { stroke: var(--line); stroke-width: 1; }
+/* growth scorecard */
+.lead { font-size: 16px; line-height: 24px; font-weight: 700; max-width: 70ch; }
+.miss { color: var(--rose-ink); }
+.up { color: var(--sage-ink, var(--ink)); font-weight: 700; }
+.down { color: var(--rose-ink); font-weight: 700; }
+.details { background: var(--surface); border-radius: var(--radius-lg); padding: 14px 16px; }
+.details > summary { cursor: pointer; font-weight: 800; font-size: 15px; }
+.details[open] > summary { margin-bottom: 14px; }
+.form { display: flex; flex-direction: column; gap: 14px; }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 700; color: var(--ink-muted); min-width: 0; }
+.field small { font-weight: 500; font-size: 12px; }
+.field .input { height: 42px; font-size: 15px; color: var(--ink); width: 100%; min-width: 0; }
+.wide { grid-column: span 2; }
+@media (max-width: 420px) { .wide { grid-column: auto; } }
+.formEnd { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.ok { color: var(--ink); font-size: 14px; font-weight: 700; }
+.inline { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.inline .input { height: 36px; font-size: 14px; flex: 1 1 160px; min-width: 0; }
+.inline .button { height: 36px; padding: 0 12px; }
+.linkButton { background: none; border: 0; padding: 0; font: inherit; font-size: 13px; font-weight: 800; color: var(--apricot-ink); cursor: pointer; text-decoration: underline; }
+.button:disabled { opacity: .6; cursor: default; }
+.button:focus-visible, .linkButton:focus-visible, .input:focus-visible, .details > summary:focus-visible { outline: 2px solid var(--apricot-ink); outline-offset: 2px; }
 /* sign-in */
 .login { max-width: 400px; margin: 10vh auto 0; background: var(--surface-raised); border-radius: var(--radius-xl); padding: 28px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 14px; }
 .input { height: 48px; border-radius: var(--radius-full); border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); padding: 0 18px; font: inherit; font-size: 16px; }

@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { adminFrom, guideSchedule, loadDownloads, loadEmails, loadCrashes, loadFunnel, loadLapses, loadMembers, loadRevenue, setupChecks, type Loaded, type RcMetric } from "@/lib/admin";
 import { getAuth } from "@/lib/auth";
+import { londonToday } from "@/content/guides";
+import { CHECKPOINTS, FUNNEL, HEADLINE, KPIS, lastWeekStart, loadScorecard, RULES, type Kpi, type KpiKey, type Week } from "@/lib/growth";
 import styles from "./admin.module.css";
 import { DailyBars } from "./chart";
 import { AdminLogin, SignOut } from "./login";
+import { ChangeLog, WeekForm } from "./scorecard";
 
 // The owner's dashboard: members, subscriptions, downloads, emails and guides in one place. Only ADMIN_EMAILS can
 // open it; everything is read live on each visit. The data comes from lib/admin.ts.
@@ -24,6 +27,30 @@ function Tile({ label, value, note }: { label: string; value: string; note?: str
 function Notice<T>({ loaded }: { loaded: Loaded<T> }) {
   return loaded.ok ? null : <p className={styles.notice}>{loaded.reason}</p>;
 }
+/** A scorecard figure as it reads: 1,234 · 4.2% · £300 · 4.7. */
+const kpiText = (k: Kpi, v: number | null | undefined) => v == null ? "–"
+  : k.kind === "pct" ? `${v.toLocaleString("en-GB", { maximumFractionDigits: 1 })}%`
+  : k.kind === "gbp" ? `£${Math.round(v).toLocaleString("en-GB")}`
+  : k.kind === "stars" ? v.toFixed(1) : n(v);
+const KPI_BY = Object.fromEntries(KPIS.map((k) => [k.key, k])) as Record<KpiKey, Kpi>;
+const plusDays = (d: string, days: number) => { const x = new Date(`${d}T12:00:00Z`); x.setUTCDate(x.getUTCDate() + days); return x.toISOString().slice(0, 10); };
+
+function KpiCard({ k, latest, prev }: { k: Kpi; latest?: Week; prev?: Week }) {
+  const v = latest?.[k.key] ?? null, before = prev?.[k.key] ?? null;
+  const change = v != null && before != null ? Math.round((v - before) * 10) / 10 : null;
+  const miss = v != null && k.goal != null && v < k.goal;
+  return (
+    <div className={styles.tile}>
+      <span className={styles.tileLabel}>{k.label}</span>
+      <span className={`${styles.tileValue} ${miss ? styles.miss : ""}`}>{kpiText(k, v)}</span>
+      <span className={`${styles.tileNote} ${change ? (change > 0 ? styles.up : styles.down) : ""}`}>
+        {change == null ? (latest ? "No week before to compare" : "No weeks yet") : `${change > 0 ? "+" : change < 0 ? "−" : "±"}${kpiText(k, Math.abs(change))} on the week before`}
+      </span>
+      <span className={styles.tileNote}>Target by month 6: <strong>{k.target}</strong></span>
+    </div>
+  );
+}
+
 const metric = (list: RcMetric[], id: string) => list.find((m) => m.id === id);
 const rcValue = (m?: RcMetric) => (!m ? "–" : m.unit === "$" || m.unit === "£" || /revenue|mrr/i.test(m.id) ? `£${n(Math.round(m.value))}` : n(m.value));
 
@@ -35,11 +62,24 @@ export default async function Admin() {
     return <main className={styles.page}><AdminLogin signedInAs={session?.user.email} /></main>;
   }
 
-  const [members, emails, revenue, downloads, funnel, lapses, crashes] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads(), loadFunnel(), loadLapses(), loadCrashes()]);
+  const [members, emails, revenue, downloads, funnel, lapses, crashes, scorecard] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads(), loadFunnel(), loadLapses(), loadCrashes(),
+    loadScorecard().then((data) => ({ ok: true as const, data })).catch((e: Error) => { console.error("admin: scorecard", e); return { ok: false as const, reason: `Couldn't load the scorecard: ${e.message}` }; })]);
   const guides = guideSchedule();
   const rc = revenue.ok ? revenue.data : [];
   const dl = downloads.ok ? downloads.data : [];
   const dlTotal = dl.reduce((s, p) => s + (p.n ?? 0), 0);
+
+  // Growth scorecard: the latest two weeks, the weakest funnel step against target, and what the form can fill in.
+  const today = londonToday(), reviewWeek = lastWeekStart(today);
+  const weeks = scorecard.ok ? scorecard.data.weeks : [];
+  const latest = weeks[weeks.length - 1], prev = weeks[weeks.length - 2];
+  const leak = latest ? FUNNEL.map((key) => ({ k: KPI_BY[key], ratio: (latest[key] ?? NaN) / (KPI_BY[key].goal ?? NaN) })).filter((x) => Number.isFinite(x.ratio)).sort((a, b) => a.ratio - b.ratio)[0] : undefined;
+  const weekDays = dl.filter((p) => p.day >= reviewWeek && p.day <= plusDays(reviewWeek, 6));
+  const suggested: Partial<Record<KpiKey, number>> = {};
+  if (weekDays.length === 7 && weekDays.every((p) => p.n != null)) suggested.downloads = weekDays.reduce((s, p) => s + (p.n ?? 0), 0);
+  const payers = metric(rc, "active_subscriptions"), mrr = metric(rc, "mrr");
+  if (payers) suggested.active_payers = Math.round(payers.value);
+  if (mrr) suggested.net_mrr_gbp = Math.round(mrr.value * 0.85); // after Apple's 15% (Small Business Programme)
 
   return (
     <main className={styles.page}>
@@ -62,6 +102,74 @@ export default async function Admin() {
           <Tile label="Crash-free sessions" value={crashes.ok && crashes.data.crashFree?.rate != null ? `${(crashes.data.crashFree.rate * 100).toFixed(1)}%` : "–"} note={crashes.ok ? `${n(crashes.data.issues.length)} open issues · 14 days` : "From Sentry"} />
           <Tile label="Guides live" value={n(guides.live)} note={`${guides.scheduled} scheduled`} />
         </div>
+
+        <section className={styles.section} aria-labelledby="growth">
+          <div className={styles.sectionHead}>
+            <h2 id="growth" className={styles.h2}>Growth scorecard</h2>
+            <span className={styles.muted}>{latest ? `Week of ${day(latest.week_start)}, against the month-6 targets` : "From the Organic Growth Playbook · filled in at the Monday review"}</span>
+          </div>
+          {scorecard.ok ? null : <p className={styles.notice}>{scorecard.reason}</p>}
+          <p className={styles.lead}>
+            {!latest ? "No weeks logged yet. Fill in the first row at the Monday review after Steadie is live on the App Store."
+              : !leak ? "Fill in the funnel figures to see this week's leak."
+              : leak.ratio < 1 ? `The leak to fix this week: ${leak.k.label.toLowerCase()}, furthest below its target. Pick at most two changes from the rules below.`
+              : "Every funnel step is at or above target. Keep shipping the content cadence and leave the listing alone."}
+          </p>
+          <div className={styles.tiles}>{HEADLINE.map((key) => <KpiCard key={key} k={KPI_BY[key]} latest={latest} prev={prev} />)}</div>
+
+          <details className={styles.details} open={!weeks.length || latest?.week_start !== reviewWeek}>
+            <summary>Fill in a week</summary>
+            <WeekForm kpis={KPIS} weeks={weeks} start={reviewWeek} suggested={suggested} />
+          </details>
+
+          <div className={styles.scroll}>
+            <p className={styles.muted} style={{ marginBottom: 8 }}>Every week, newest first</p>
+            <table className={styles.table}>
+              <thead><tr><th>Week of</th>{KPIS.map((k) => <th key={k.key} className={styles.num} title={k.definition}>{k.short}</th>)}</tr></thead>
+              <tbody>
+                {[...weeks].reverse().map((w) => (
+                  <tr key={w.week_start}><td style={{ whiteSpace: "nowrap" }}>{day(w.week_start)}</td>{KPIS.map((k) => {
+                    const v = w[k.key], miss = v != null && k.goal != null && v < k.goal;
+                    return <td key={k.key} className={`${styles.num} ${miss ? styles.miss : ""}`}>{kpiText(k, v)}</td>;
+                  })}</tr>
+                ))}
+                {weeks.length ? null : <tr><td colSpan={KPIS.length + 1} className={styles.muted}>No weeks yet.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+
+          <div className={styles.grid2}>
+            <div className={styles.scroll}>
+              <p className={styles.muted} style={{ marginBottom: 8 }}>Decision rules · at most two changes a week, one thing at a time</p>
+              <table className={styles.table}>
+                <thead><tr><th>Signal</th><th>Threshold</th><th>Action this week</th></tr></thead>
+                <tbody>{RULES.map((r) => <tr key={r.signal}><td><strong>{r.signal}</strong></td><td>{r.threshold}</td><td>{r.action}</td></tr>)}</tbody>
+              </table>
+            </div>
+            <div className={styles.scroll}>
+              <p className={styles.muted} style={{ marginBottom: 8 }}>Scenario checkpoints · the US move triggers at £5k net MRR</p>
+              <table className={styles.table}>
+                <thead><tr><th>When</th><th>On target</th><th>Behind if</th><th>If behind</th></tr></thead>
+                <tbody>{CHECKPOINTS.map((c) => <tr key={c.when}><td style={{ whiteSpace: "nowrap" }}><strong>{c.when}</strong></td><td>{c.onTarget}</td><td>{c.behind}</td><td>{c.ifBehind}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <p className={styles.muted} style={{ marginBottom: 8 }}>Change log · every change, the signal behind it, and what it did two weeks later</p>
+            <ChangeLog changes={scorecard.ok ? scorecard.data.changes : []} today={today} />
+          </div>
+
+          <details className={styles.details}>
+            <summary>What each figure means</summary>
+            <div className={styles.scroll}>
+              <table className={styles.table}>
+                <thead><tr><th>KPI</th><th>Definition</th><th>Source</th><th>Month-6 target</th></tr></thead>
+                <tbody>{KPIS.map((k) => <tr key={k.key}><td><strong>{k.label}</strong></td><td>{k.definition}</td><td>{k.source}</td><td>{k.target}</td></tr>)}</tbody>
+              </table>
+            </div>
+          </details>
+        </section>
 
         <section className={styles.section} aria-labelledby="crashes">
           <div className={styles.sectionHead}><h2 id="crashes" className={styles.h2}>Crashes and errors</h2><span className={styles.muted}>Sentry, last 14 days{crashes.ok ? <> · <a href={crashes.data.link} target="_blank" rel="noreferrer" style={{ color: "inherit" }}>open in Sentry</a></> : null}</span></div>

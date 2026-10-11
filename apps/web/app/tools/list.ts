@@ -1,3 +1,4 @@
+// Free tools: see app/tools/page.tsx for the index.
 // Steadie's free tools (growth playbook, "Web SEO": pages that do something, which AI summaries can't replace). Each is
 // a page at /tools/<slug> with a calculator, a plain-English explanation, FAQs and sources. Guides link to them.
 export interface Tool {

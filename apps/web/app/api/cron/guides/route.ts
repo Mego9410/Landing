@@ -56,7 +56,7 @@ export async function GET(request: Request) {
   if (!url.searchParams.has("dry")) await pruneOld().catch((e) => console.error("guides cron: couldn't prune old events", e));
 
   const since = new Date(Date.parse(today + "T12:00:00Z") - CATCH_UP_DAYS * 86400000).toISOString().slice(0, 10);
-  const emails: Email[] = ALL_GUIDES.filter((g) => g.published > since && g.published <= today).map(guideEmail);
+  const emails: Email[] = ALL_GUIDES.filter((g) => g.email !== false && g.published > since && g.published <= today).map(guideEmail);
   const sunday = new Date(today + "T12:00:00Z").getUTCDay() === 0;
   if (sunday) emails.push(digestEmail(today));
 

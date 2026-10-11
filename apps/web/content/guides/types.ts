@@ -40,4 +40,7 @@ export interface Guide {
   related: string[];
   /** A pillar guide heads its topic and is shown first. */
   pillar?: boolean;
+  /** false: goes live without an email of its own (search pages), so subscribers keep to two guides a week. The Sunday
+   *  digest can still include it. */
+  email?: false;
 }

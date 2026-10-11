@@ -119,7 +119,7 @@ export const COMING_OFF: Guide[] = [
     description: "Coming off Wegovy (semaglutide)? What happens to hunger and weight, the NHS two-year limit, and the habits that help you hold steady.",
     category: "Coming off",
     keywords: ["stopping wegovy", "coming off wegovy", "life after wegovy", "wegovy weight regain", "wegovy 2 year limit nhs"],
-    published: D, updated: D,
+    published: D, updated: "2026-10-11",
     summary: [
       "Wegovy is semaglutide for weight management. Your prescriber will tell you how and when to stop.",
       "Hunger usually returns over the weeks after your last dose; semaglutide takes several weeks to leave your body.",
@@ -146,6 +146,14 @@ export const COMING_OFF: Guide[] = [
           "Use a 7-day average, not single weigh-ins, to [keep an eye on weight](/guides/weight-after-stopping-glp-1).",
         ], ordered: true },
       ] },
+      { heading: "Life after Wegovy: start here", blocks: [
+        "Everything we've written for the months after Wegovy, in the order most people need it:",
+        { list: [
+          "Thinking about how to come off: [tapering off Wegovy or Mounjaro](/guides/tapering-off-wegovy-and-mounjaro), including the UK dose steps, and [tapering vs stopping all at once](/guides/tapering-vs-stopping-weight-loss-injections).",
+          "The weeks after your last dose: [the first month after stopping](/guides/first-month-after-stopping-glp-1).",
+          "Free tools: the [maintenance calorie calculator](/tools/maintenance-calories) and the [weight regain calculator](/tools/weight-regain).",
+        ] },
+      ] },
     ],
     faqs: [
       { q: "How long can I take Wegovy on the NHS?", a: "NICE recommends semaglutide for weight management for up to two years, through specialist weight management services. Check with your prescriber what applies to you." },
@@ -162,7 +170,7 @@ export const COMING_OFF: Guide[] = [
     description: "Stopping Mounjaro (tirzepatide)? What the SURMOUNT-4 trial found, how appetite changes, and practical habits for the months after.",
     category: "Coming off",
     keywords: ["coming off mounjaro", "stopping mounjaro", "life after mounjaro", "mounjaro weight regain", "what happens when you stop mounjaro"],
-    published: D, updated: D,
+    published: D, updated: "2026-10-11",
     summary: [
       "Mounjaro is tirzepatide. Your prescriber will tell you how and when to stop.",
       "Appetite usually returns within a few weeks of your last dose.",
@@ -188,6 +196,14 @@ export const COMING_OFF: Guide[] = [
           "Regular meals, with fibre, so hunger is easier to predict.",
           "A plan for evenings and weekends, when [cravings](/guides/cravings-after-stopping-glp-1) are often strongest.",
           "A calm way to [watch your weight](/guides/weight-after-stopping-glp-1): a 7-day average and a small steady zone.",
+        ] },
+      ] },
+      { heading: "Life after Mounjaro: start here", blocks: [
+        "Everything we've written for the months after Mounjaro, in the order most people need it:",
+        { list: [
+          "Thinking about how to come off: [tapering off Wegovy or Mounjaro](/guides/tapering-off-wegovy-and-mounjaro) and [tapering vs stopping all at once](/guides/tapering-vs-stopping-weight-loss-injections).",
+          "Week by week after your last dose: [week 1](/guides/stopping-mounjaro-week-1), [week 2](/guides/stopping-mounjaro-week-2), [week 3](/guides/stopping-mounjaro-week-3) and [week 4](/guides/stopping-mounjaro-week-4).",
+          "Free tools: the [maintenance calorie calculator](/tools/maintenance-calories) and the [weight regain calculator](/tools/weight-regain).",
         ] },
       ] },
     ],

@@ -6,6 +6,7 @@ import { BASICS } from "./basics";
 import { COMING_OFF } from "./coming-off";
 import { COSTS } from "./costs";
 import { FOOD_MOVE } from "./food-move";
+import { GROWTH } from "./growth";
 import { KEEPING } from "./keeping";
 import { SCHEDULED_1 } from "./scheduled-1";
 import { SCHEDULED_2 } from "./scheduled-2";
@@ -16,7 +17,7 @@ import type { Category, Guide } from "./types";
 export type { Block, Category, Faq, Guide, Section, Source } from "./types";
 
 /** Every guide, live or scheduled. Pages should use liveGuides(). */
-export const ALL_GUIDES: Guide[] = [...COMING_OFF, ...COSTS, ...KEEPING, ...FOOD_MOVE, ...BASICS,
+export const ALL_GUIDES: Guide[] = [...COMING_OFF, ...GROWTH, ...COSTS, ...KEEPING, ...FOOD_MOVE, ...BASICS,
   ...[...SCHEDULED_1, ...SCHEDULED_2, ...SCHEDULED_3, ...SCHEDULED_4].sort((a, b) => (a.published < b.published ? -1 : 1))];
 
 /** Today's date in London as YYYY-MM-DD, the day guides go live and emails go out. */

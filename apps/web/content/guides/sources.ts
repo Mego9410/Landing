@@ -22,6 +22,7 @@ export const S = {
   lundgren: { label: "Lundgren et al. Healthy weight loss maintenance with exercise, liraglutide, or both combined. New England Journal of Medicine, 2021", url: "https://pubmed.ncbi.nlm.nih.gov/33951361/" },
   nhsFibre: { label: "NHS: how to get more fibre into your diet", url: "https://www.nhs.uk/live-well/eat-well/digestive-health/how-to-get-more-fibre-into-your-diet/" },
   nhsSemaglutide: { label: "NHS: semaglutide (Wegovy, Ozempic)", url: "https://www.nhs.uk/medicines/semaglutide/" },
+  mhraWegovy72: { label: "MHRA: medicines regulator approves up to 7.2 mg dose of semaglutide (Wegovy) for patients with obesity only (January 2026)", url: "https://www.gov.uk/government/news/medicines-regulator-approves-up-to-72mg-dose-of-semaglutidewegovy-for-patients-with-obesity-only" },
   nhsTirzepatide: { label: "NHS: tirzepatide (Mounjaro)", url: "https://www.nhs.uk/medicines/tirzepatide/" },
   nhsSleep: { label: "NHS Every Mind Matters: how to fall asleep faster and sleep better", url: "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/how-to-fall-asleep-faster-and-sleep-better/" },
   beat: { label: "Beat, the UK's eating disorder charity", url: "https://www.beateatingdisorders.org.uk/" },

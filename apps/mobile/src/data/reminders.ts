@@ -54,10 +54,10 @@ const planName = (plan: Chosen["plan"]) => (plan === "yearly" ? "yearly plan" : 
 const per = (plan: Chosen["plan"]) => (plan === "yearly" ? " a year" : plan === "monthly" ? " a month" : "");
 
 /** The trial reminder's wording: what happens, when, and the price of the plan they chose when it's known. */
-export function trialMessage(until: string, chosen: Chosen = {}) {
+export function trialMessage(until: string, chosen: Chosen = {}, store: { account: string; settings: string } = { account: "Apple ID", settings: "your Apple settings" }) {
   const day = longDay(until);
-  const starts = chosen.price ? `your Steadie ${planName(chosen.plan)} starts at ${chosen.price}${per(chosen.plan)}, charged to your Apple ID` : "your Steadie plan starts and your Apple ID is charged";
-  return { title: "Your free week ends in 2 days", body: `On ${day} ${starts}. If you’d rather not carry on, cancel in your Apple settings before then.` };
+  const starts = chosen.price ? `your Steadie ${planName(chosen.plan)} starts at ${chosen.price}${per(chosen.plan)}, charged to your ${store.account}` : `your Steadie plan starts and your ${store.account} is charged`;
+  return { title: "Your free week ends in 2 days", body: `On ${day} ${starts}. If you’d rather not carry on, cancel in ${store.settings} before then.` };
 }
 
 /** The note a week before a yearly plan renews, so nobody is charged for a year by surprise. */

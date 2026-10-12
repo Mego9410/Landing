@@ -1,5 +1,6 @@
-// Subscriptions through Apple's in-app purchase, via RevenueCat. Off until EXPO_PUBLIC_REVENUECAT_IOS_KEY is set (in
-// the EAS environment or apps/mobile/.env), so previews and a free TestFlight beta need nothing. When on, the paywall
+// Subscriptions through Apple's in-app purchase on iPhone and Google Play Billing on Android, via RevenueCat. Each
+// platform is off until its key is set (EXPO_PUBLIC_REVENUECAT_IOS_KEY, EXPO_PUBLIC_REVENUECAT_ANDROID_KEY, in the EAS
+// environment or apps/mobile/.env), so previews and free test builds need nothing. When on, the paywall
 // follows onboarding, and if a subscription lapses the person keeps Settings, export and delete: their data is
 // always theirs. Two plans, monthly and yearly, each with a 7-day free trial for new subscribers. Products, prices
 // and the trials live in App Store Connect and RevenueCat (see docs/payments.md), not here.
@@ -11,12 +12,14 @@ import { install, updateInstall } from "./install";
 import { lockRemindersWhen, refreshReminders, renewalReminder, trialReminder } from "./reminders";
 import { get, set, type AppState } from "./store";
 
-const KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? "";
+const KEY = (Platform.OS === "ios" ? process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY : Platform.OS === "android" ? process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY : "") ?? "";
+const ANDROID = Platform.OS === "android";
+export { STORE_WORDS } from "./storeWords";
 /** The RevenueCat entitlement that unlocks the plan. */
 export const ENTITLEMENT = "plan";
 
-/** Billing is on only with a key, and only on iPhone for now. */
-export const billingEnabled = () => !!KEY && Platform.OS === "ios";
+/** Billing is on with a key, on iPhone and Android. */
+export const billingEnabled = () => !!KEY && (Platform.OS === "ios" || ANDROID);
 
 /** With billing on, once onboarding is done the plan needs an active subscription. The demo never asks. Without it,
  *  Settings, export, delete, the legal pages and the health check stay open; everything else goes to the paywall. */
@@ -96,17 +99,21 @@ export async function plans(): Promise<Plan[]> {
   const monthlyPkg = current?.monthly ?? undefined;
   const pkgs = [current?.annual, current?.monthly].filter((p): p is PurchasesPackage => !!p);
   if (!pkgs.length) throw Object.assign(new Error("The current offering has no annual or monthly package."), { code: "none" });
-  const eligible = await Purchases.checkTrialOrIntroductoryPriceEligibility(pkgs.map((p) => p.product.identifier)).catch(() => ({} as Record<string, { status: INTRO_ELIGIBILITY_STATUS }>));
+  // iPhone: ask RevenueCat who can have the trial. Android: Google Play only offers the free phase to people eligible
+  // for it, so a free phase on the default offer is the answer.
+  const eligible = ANDROID ? {} as Record<string, { status: INTRO_ELIGIBILITY_STATUS }>
+    : await Purchases.checkTrialOrIntroductoryPriceEligibility(pkgs.map((p) => p.product.identifier)).catch(() => ({} as Record<string, { status: INTRO_ELIGIBILITY_STATUS }>));
   return pkgs.map((pkg) => {
       const pr = pkg.product, intro = pr.introPrice;
       const yearly = pkg.packageType === "ANNUAL";
       const saving = yearly && monthlyPkg ? Math.round((1 - pr.price / (monthlyPkg.product.price * 12)) * 100) : 0;
-      const canTrial = !!intro && intro.price === 0 && eligible[pr.identifier]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
+      const free = ANDROID ? pr.defaultOption?.freePhase?.billingPeriod?.iso8601 ?? null : null;
+      const canTrial = ANDROID ? !!free : !!intro && intro.price === 0 && eligible[pr.identifier]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
       return {
         pkg, title: yearly ? "Steadie Yearly" : "Steadie Monthly", price: pr.priceString, per: yearly ? "a year" : "a month",
         billing: yearly ? "Billed once a year" : "Billed monthly",
         weekly: yearly && pr.pricePerWeekString ? `${pr.pricePerWeekString} a week` : null,
-        trial: canTrial ? period(intro!.period) : null,
+        trial: canTrial ? period(ANDROID ? free : intro!.period) : null,
         saving: saving > 0 ? `Save ${saving}%` : undefined,
       };
     });
@@ -121,7 +128,7 @@ export function plansProblem(e: unknown): { text: string; detail: string } {
     return { text: "Check your connection and try again.", detail };
   }
   if (code === PURCHASES_ERROR_CODE.CONFIGURATION_ERROR || code === "none" || code === PURCHASES_ERROR_CODE.STORE_PROBLEM_ERROR) {
-    return { text: "The App Store isn't offering the plans just now. Try again in a little while.", detail };
+    return { text: `${ANDROID ? "Google Play" : "The App Store"} isn't offering the plans just now. Try again in a little while.`, detail };
   }
   return { text: "Something went wrong loading the plans. Try again in a moment.", detail };
 }
@@ -147,8 +154,14 @@ export async function restore(): Promise<boolean> {
   return active(info);
 }
 
-/** Apple's own screen for changing plan or cancelling. Falls back to the App Store's subscriptions page. */
+/** The store's own screen for changing plan or cancelling: Apple's sheet on iPhone, Google Play's subscriptions page
+ *  for Steadie on Android. */
 export async function manageSubscription() {
+  if (ANDROID) {
+    const url = (await Purchases.getCustomerInfo().catch(() => null))?.managementURL;
+    await Linking.openURL(url || "https://play.google.com/store/account/subscriptions?package=com.getsteadieapp.app");
+    return;
+  }
   try { await Purchases.showManageSubscriptions(); }
   catch { await Linking.openURL("https://apps.apple.com/account/subscriptions"); }
 }

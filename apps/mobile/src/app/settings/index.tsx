@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import Constants from "expo-constants";
 import * as Updates from "expo-updates";
-import { Linking, Pressable, View } from "react-native";
+import { Linking, Platform, Pressable, View } from "react-native";
 import { LABELS } from "@landing/engine";
 import { castById } from "@landing/motion";
 import { AppText } from "@/components/AppText";
@@ -19,7 +19,7 @@ import { AccountError, accountsAvailable, backUpNow, deleteAccount, guideEmails,
 import { deleteEverything, shareExport } from "@/state/data";
 import { openWriteReview } from "@/state/review";
 import { sendTestError, sentryOn } from "@/state/sentry";
-import { billingEnabled, manageSubscription, planLocked, plans, restore } from "@/state/subscription";
+import { billingEnabled, manageSubscription, planLocked, plans, restore, STORE_WORDS } from "@/state/subscription";
 import { space } from "@/theme";
 
 /** S1 Settings, with the demo controls the prototype keeps in its test panel. */
@@ -114,7 +114,7 @@ export default function Settings() {
         <View style={{ gap: space[3] }}>
           <List>
             <Row first title="Reminders" value={on} onPress={() => router.push("/settings/reminders")} />
-            <Row title="Apple Health" sub={healthSub} onPress={toggleHealth} chevron={false} right={<AppText weight="800" color="apricotInk">{s.settings.appleHealth ? "Disconnect" : available() ? "Connect" : ""}</AppText>} />
+            {Platform.OS === "ios" ? <Row title="Apple Health" sub={healthSub} onPress={toggleHealth} chevron={false} right={<AppText weight="800" color="apricotInk">{s.settings.appleHealth ? "Disconnect" : available() ? "Connect" : ""}</AppText>} /> : null}
           </List>
           <AppText weight="700">Appearance</AppText>
           <Choices label="Appearance" value={s.settings.theme ?? "system"} onChange={(v) => set((st) => { st.settings.theme = v as Theme; })} options={[{ id: "system", label: "Match my phone" }, { id: "light", label: "Light" }, { id: "dark", label: "Dark" }]} />
@@ -125,8 +125,8 @@ export default function Settings() {
       {billingEnabled() && !s.demo ? <Section title="SUBSCRIPTION">
         <List>
           <Row first title={sub?.active ? (sub.plan === "yearly" ? "Yearly plan" : sub.plan === "monthly" ? "Monthly plan" : "Your plan") : "Not subscribed"} sub={subLine} chevron={false} />
-          <Row title="Manage subscription" sub="Change plan or cancel, in your Apple account" onPress={() => manageSubscription().catch(() => toast("Couldn't open your Apple subscriptions."))} />
-          <Row title="Restore purchases" onPress={() => restore().then((ok) => toast(ok ? "Your subscription is back." : "We couldn't find a subscription for this Apple ID."), () => toast("Couldn't restore just now. Try again in a moment."))} />
+          <Row title="Manage subscription" sub={`Change plan or cancel, in ${Platform.OS === "android" ? "Google Play" : "your Apple account"}`} onPress={() => manageSubscription().catch(() => toast(`Couldn't open your ${Platform.OS === "android" ? "Google Play" : "Apple"} subscriptions.`))} />
+          <Row title="Restore purchases" onPress={() => restore().then((ok) => toast(ok ? "Your subscription is back." : `We couldn't find a subscription for this ${STORE_WORDS.account}.`), () => toast("Couldn't restore just now. Try again in a moment."))} />
           {sub?.active ? null : <Row title="See plans" sub={trial ? `${trial} free, then monthly or yearly` : "Monthly or yearly"} onPress={() => router.push("/paywall")} />}
         </List>
         {renewal ? (
@@ -175,7 +175,7 @@ export default function Settings() {
       <Section title="ABOUT">
         <List>
           <Row first title="Get help" sub="Something not right? Email hello@getsteadieapp.com and we'll get back to you" onPress={() => Linking.openURL(`mailto:hello@getsteadieapp.com?subject=${encodeURIComponent("Steadie help")}`).catch(() => toast("No email app found. Write to hello@getsteadieapp.com."))} />
-          <Row title="Rate Steadie" sub="Leave a rating or review on the App Store" onPress={() => openWriteReview().catch(() => toast("Couldn't open the App Store."))} />
+          <Row title="Rate Steadie" sub={`Leave a rating or review on ${STORE_WORDS.store}`} onPress={() => openWriteReview().catch(() => toast("Couldn't open the App Store."))} />
           <Row title="Privacy policy" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />
           <Row title="Terms of use" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "terms" } })} />
         </List>

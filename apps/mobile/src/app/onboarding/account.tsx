@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { useColorScheme, View } from "react-native";
+import { Platform, useColorScheme, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
@@ -74,7 +74,7 @@ export default function AccountStep() {
   };
   const showBack = stage !== "pick" && (stage !== "choose" || !atEnd);
   const title = existing ? "Welcome back" : fromSettings ? "Back up your plan" : "Keep your plan safe";
-  const lede = existing ? "Sign in with the same Apple ID or email as before, and your plan, logs and check-ins come to this phone."
+  const lede = existing ? `Sign in with the same ${Platform.OS === "ios" ? "Apple ID or email" : "email"} as before, and your plan, logs and check-ins come to this phone.`
     : "Sign in and Steadie backs up your plan, logs and check-ins as you go, so they come with you to a new phone.";
 
   return (

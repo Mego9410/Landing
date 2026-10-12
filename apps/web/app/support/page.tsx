@@ -43,6 +43,8 @@ export default function Support() {
             </ol>
             <p>Or go to <a href="https://apps.apple.com/account/subscriptions" rel="noopener">apps.apple.com/account/subscriptions</a>. In Steadie, <strong>Settings → Subscription → Manage subscription</strong> opens the same page. Cancel at least 24 hours before your free trial ends or your plan renews. Refunds are handled by Apple at <a href="https://reportaproblem.apple.com" rel="noopener">reportaproblem.apple.com</a>.</p>
 
+            <p><strong>On Android</strong>, subscriptions are handled by Google Play: open the <strong>Play Store</strong> app, tap your profile picture, then <strong>Payments &amp; subscriptions → Subscriptions → Steadie</strong>. In Steadie, <strong>Settings → Subscription → Manage subscription</strong> opens the same page.</p>
+
             <h2>Restore purchases</h2>
             <p>New phone, or reinstalled the app? Open Steadie, go to <strong>Settings → Subscription</strong> and tap <strong>Restore purchases</strong> (it&apos;s also on the subscription screen). Use the Apple ID you subscribed with.</p>
 
@@ -52,13 +54,14 @@ export default function Support() {
             <h2>Export your data</h2>
             <p>Go to <strong>Settings → Your data → Export my data</strong> for a file of everything the app keeps.</p>
 
-            <h2>Delete your account and data</h2>
+            <h2 id="delete">Delete your account and data</h2>
             <ul>
               <li><strong>Signed in:</strong> <strong>Settings → Account → Delete my account</strong> deletes your account and backup on our servers, then clears your phone.</li>
               <li><strong>Not signed in:</strong> <strong>Settings → Account → Sign out and delete my data</strong> clears everything from your phone.</li>
               <li>To keep using the app but stop backing up your health information, use <strong>Settings → Account → Withdraw health consent</strong>.</li>
             </ul>
-            <p>Deleting your data doesn&apos;t cancel a subscription: cancel that in your Apple account, as above.</p>
+            <p><strong>Can&apos;t open the app?</strong> Email <a href={`mailto:${CONTACT_EMAIL}?subject=Delete%20my%20Steadie%20account`}>{CONTACT_EMAIL}</a> from the address you signed in with, with the subject &ldquo;Delete my Steadie account&rdquo;. We&apos;ll delete your account, your backup and the funnel events linked to it within 30 days and confirm by email. Anything kept only on your phone is removed when you delete the app.</p>
+            <p>Deleting your data doesn&apos;t cancel a subscription: cancel that in your Apple account or Google Play, as above.</p>
 
             <h2>More</h2>
             <p>See the <Link href="/#faqs">FAQs</Link>, our <Link href="/app-privacy">app privacy policy</Link>, the <Link href="/privacy">website privacy notice</Link> and the <Link href="/terms">terms of use</Link>.</p>

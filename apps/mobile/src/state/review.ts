@@ -8,7 +8,11 @@ import { install, updateInstall } from "./install";
 import { get as getState, type JournalEntry } from "./store";
 
 export const APP_STORE_ID = "6820083153";
-export const WRITE_REVIEW_URL = `https://apps.apple.com/app/id${APP_STORE_ID}?action=write-review`;
+export const PLAY_PACKAGE = "com.getsteadieapp.app";
+/** The store's write-a-review page: the App Store on iPhone, Steadie's Google Play page on Android. */
+export const WRITE_REVIEW_URL = Platform.OS === "android"
+  ? `https://play.google.com/store/apps/details?id=${PLAY_PACKAGE}&showAllReviews=true`
+  : `https://apps.apple.com/app/id${APP_STORE_ID}?action=write-review`;
 
 type StoreReview = { isAvailableAsync(): Promise<boolean>; requestReview(): Promise<void> };
 function storeReview(): StoreReview | null {
@@ -18,7 +22,8 @@ function storeReview(): StoreReview | null {
 
 /** Asks for a rating after a milestone, if the timing rules allow. `delay` lets the celebration be seen first. */
 export async function askForReview(_why: Milestone, delay = 1800) {
-  if (Platform.OS !== "ios") return;
+  // Apple's prompt on iPhone, Google Play's in-app review on Android (expo-store-review does both).
+  if (Platform.OS !== "ios" && Platform.OS !== "android") return;
   const s = getState();
   const inst = await install(s.startedOn);
   if (s.demo || !mayAsk(inst.firstOpenAt, inst.reviewAskedAt)) return;
@@ -37,5 +42,5 @@ export function afterCheckIn(day: string, entry: JournalEntry) {
   askForReview(m).catch(() => {});
 }
 
-/** The App Store's write-a-review page, from Settings. */
+/** The store's write-a-review page, from Settings. */
 export const openWriteReview = () => Linking.openURL(WRITE_REVIEW_URL);

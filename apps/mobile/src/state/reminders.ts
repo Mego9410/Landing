@@ -8,9 +8,11 @@ import { Platform } from "react-native";
 import { sessionsPaused } from "./health";
 import type { AppState } from "./store";
 import { trialReminderAt } from "@/data/trial";
-import { checkInSchedule, renewalMessage, renewalReminderAt, trialMessage, type Chosen } from "@/data/reminders";
+import { checkInSchedule, renewalMessage, renewalReminderAt, trialMessage as trialMessageFor, type Chosen } from "@/data/reminders";
 export type { Reminders } from "@/data/reminders";
-export { trialMessage } from "@/data/reminders";
+import { STORE_WORDS } from "./storeWords";
+/** The trial reminder's wording in this phone's store's words. */
+export const trialMessage = (until: string, chosen: Chosen = {}) => trialMessageFor(until, chosen, STORE_WORDS);
 
 const supported = Platform.OS === "ios" || Platform.OS === "android";
 // expo-notifications counts weekdays from Sunday = 1; ours start at Monday = 0.

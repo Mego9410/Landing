@@ -8,7 +8,7 @@ import { Mark } from "@/components/Mark";
 import { OnbCard, OnbScreen } from "@/components/Onboarding";
 import { addDays, fmt, today } from "@/data/dates";
 import { track } from "@/state/events";
-import { buy, plans, plansProblem, restore, type Plan } from "@/state/subscription";
+import { buy, plans, plansProblem, restore, STORE_WORDS, type Plan } from "@/state/subscription";
 import { set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
@@ -56,7 +56,7 @@ export default function Paywall() {
   }
   async function onRestore() {
     setBusy(true);
-    try { toast((await restore()) ? "Your subscription is back." : "We couldn’t find a subscription for this Apple ID."); }
+    try { toast((await restore()) ? "Your subscription is back." : `We couldn’t find a subscription for this ${STORE_WORDS.account}.`); }
     catch { toast("Couldn’t restore just now. Try again in a moment."); }
     finally { setBusy(false); }
   }
@@ -73,8 +73,8 @@ export default function Paywall() {
       <Button label={busy ? "One moment…" : chosen?.trial ? `Start my ${days} free days` : "Subscribe"} variant="ink" block disabled={busy || !options?.length} onPress={subscribe} />
       <AppText variant="caption" color="inkMuted" style={{ textAlign: "center", fontSize: 12, lineHeight: 17 }}>
         {chosen?.trial
-          ? `${chosen.trial} free, then ${chosen.price} ${chosen.per}. Renews automatically until you cancel in Settings › your name › Subscriptions, at least 24 hours before the trial ends or it renews.`
-          : "Renews automatically until you cancel in Settings › your name › Subscriptions, at least 24 hours before it renews."}
+          ? `${chosen.trial} free, then ${chosen.price} ${chosen.per}. Renews automatically until you cancel in ${STORE_WORDS.cancelPath}, at least 24 hours before the trial ends or it renews.`
+          : `Renews automatically until you cancel in ${STORE_WORDS.cancelPath}, at least 24 hours before it renews.`}
       </AppText>
       <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
         <Button label="Restore" variant="quiet" onPress={onRestore} />

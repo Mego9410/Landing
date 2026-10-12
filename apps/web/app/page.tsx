@@ -241,7 +241,7 @@ export default async function Home() {
         <section id="film" className={styles.filmSection} aria-labelledby="film-title">
           <div className={styles.wrap}>
             <div className={styles.head}>
-              <p className={styles.eyebrow}>Steadie in under a minute</p>
+              <p className={styles.eyebrow}>Steadie in about a minute</p>
               <h2 id="film-title" className={styles.h2Light}>See how it works</h2>
             </div>
             <FilmPlayer src="/film/steadie-intro-v3.mp4" poster="/film/steadie-intro-poster.webp" title="Meet Steadie" length="71 sec" />

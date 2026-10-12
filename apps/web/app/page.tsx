@@ -179,11 +179,11 @@ const homeLd = (live: boolean, FAQS: ReturnType<typeof faqs>) => ({
       "@type": "VideoObject",
       "@id": `${abs("/")}#film`,
       name: "Meet Steadie",
-      description: "A 53-second introduction to Steadie: a 12-month plan for the year after you stop a weight-loss jab, with strength sessions, easy meals, a morning check-in and a weekly steady score.",
+      description: "A 71-second introduction to Steadie: a 12-month plan for the year after you stop a weight-loss jab, with strength sessions, easy meals, a morning check-in and a weekly steady score.",
       thumbnailUrl: [abs("/film/steadie-intro-poster.webp")],
-      contentUrl: abs("/film/steadie-intro.mp4"),
-      uploadDate: "2026-10-10",
-      duration: "PT53S",
+      contentUrl: abs("/film/steadie-intro-v3.mp4"),
+      uploadDate: "2026-10-12",
+      duration: "PT1M11S",
       inLanguage: "en-GB",
       publisher: { "@id": ORGANIZATION["@id"] },
     },
@@ -244,7 +244,7 @@ export default async function Home() {
               <p className={styles.eyebrow}>Steadie in under a minute</p>
               <h2 id="film-title" className={styles.h2Light}>See how it works</h2>
             </div>
-            <FilmPlayer src="/film/steadie-intro.mp4" poster="/film/steadie-intro-poster.webp" title="Meet Steadie" length="53 sec" />
+            <FilmPlayer src="/film/steadie-intro-v3.mp4" poster="/film/steadie-intro-poster.webp" title="Meet Steadie" length="71 sec" />
           </div>
         </section>
         <section className={styles.newsBand} aria-labelledby="prices-title">

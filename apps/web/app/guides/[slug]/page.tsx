@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { liveGuide, liveGuides, relatedGuides } from "@/content/guides";
 import home from "../../page.module.css";
 import { SiteFooter, SiteHeader } from "../../site-chrome";
-import { abs, appLive, appStoreLink, campaign, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
+import { abs, appLive, appStoreLink, availability, campaign, ldJson, ORGANIZATION, SITE_NAME } from "../../site";
 import styles from "../guides.module.css";
 import { GuideArt } from "../art";
 import { GuideEndCta, productPageFor } from "../end-cta";
@@ -137,7 +137,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
               </nav>
               <div className={styles.cta}>
                 <strong>A 12-month plan for the year after</strong>
-                <span>Small habits, short strength sessions and easy meals, on your side. {live ? "On iPhone, with 7 days free." : "Coming soon to iPhone."}</span>
+                <span>Small habits, short strength sessions and easy meals, on your side. {live ? `On iPhone, with 7 days free.${availability(live).soonAndroid}` : "Coming soon to iPhone and Android."}</span>
                 {live ? <a className={styles.ctaButton} href={appStoreLink(campaign("guide", g.slug), productPageFor(g.slug))}>Download Steadie</a> : null}
               </div>
             </aside>

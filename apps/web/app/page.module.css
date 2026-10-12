@@ -477,6 +477,7 @@
 .storeBtnSoon:active { transform: none; }
 .navSoon { flex: none; font-weight: 800; font-size: 15px; color: var(--ink-muted); padding: 11px 20px; border-radius: var(--radius-full); box-shadow: inset 0 0 0 1.5px var(--line); }
 .storeBtn:focus-visible { box-shadow: var(--focus-ring); }
+.storeRow { display: flex; flex-wrap: wrap; gap: 12px; }
 .storeNote { font-size: 15px; line-height: 22px; color: var(--ink-muted); }
 .cta .storeNote { color: var(--on-pastel); opacity: .8; }
 
@@ -544,6 +545,8 @@
   .newsLinks { align-items: stretch; text-align: center; }
   .heroCopy { gap: 18px; }
   .heroCta, .heroCta .storeBtn { align-self: stretch; align-items: stretch; text-align: center; }
+  .heroCta .storeRow { align-self: stretch; }
+  .heroCta .storeRow .storeBtn { flex: 1 1 0; }
   .heroCta .storeNote { text-align: center; }
   .heroArt { height: 520px; }
   .phone, .tour { width: 210px; top: 52px; }

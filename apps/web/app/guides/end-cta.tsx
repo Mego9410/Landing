@@ -1,12 +1,12 @@
 import type { Guide } from "@/content/guides";
-import { appLive, appStoreLink, campaign, PRICE, type ProductPage } from "../site";
+import { appLive, appStoreLink, availability, campaign, PRICE, type ProductPage } from "../site";
 
 /** Which Custom Product Page a guide or tool sends people to: the tapering one for tapering pages, else after-the-jab. */
 export const productPageFor = (slug: string): ProductPage => (/taper/.test(slug) ? "taper" : "after");
 import styles from "./guides.module.css";
 
 // The card at the end of every guide: a one-line hook that fits what the guide was about, then the App Store link.
-// Before launch (appLive() false) it keeps the hook and says "Coming soon to iPhone", with no link, like the aside and
+// Before launch (appLive() false) it keeps the hook and says "Coming soon to iPhone and Android", with no link, like the aside and
 // AppStoreButton. Hooks describe the app only: nothing about medicines, doses or stopping, and no promises about weight.
 
 type Topic = "cost" | "comingOff" | "food" | "strength" | "appetite" | "habits" | "occasions" | "keeping" | "basics";
@@ -44,10 +44,10 @@ export async function GuideEndCta({ guide }: { guide: Pick<Guide, "slug" | "cate
       {live ? (
         <>
           <a className={styles.ctaButton} href={appStoreLink(campaign("guide-end", guide.slug), productPageFor(guide.slug))}>Try Steadie free for 7 days</a>
-          <span className={styles.endSmall}>On iPhone. Then {PRICE.yearly} a year or {PRICE.monthly} a month; cancel any time in your iPhone settings.</span>
+          <span className={styles.endSmall}>On iPhone. Then {PRICE.yearly} a year or {PRICE.monthly} a month; cancel any time in your iPhone settings.{availability(live).soonAndroid}</span>
         </>
       ) : (
-        <span className={styles.endSoon}>Coming soon to iPhone</span>
+        <span className={styles.endSoon}>Coming soon to iPhone and Android</span>
       )}
     </aside>
   );

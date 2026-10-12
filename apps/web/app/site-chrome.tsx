@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Lockup } from "./lockup";
-import { appLive, appStoreLink, campaign, ORG_NAME } from "./site";
+import { appLive, appStoreLink, availability, campaign, ORG_NAME } from "./site";
 import styles from "./page.module.css";
 
 // The header and footer for every page. On the home page the section links are in-page anchors; elsewhere they point
@@ -26,7 +26,7 @@ export async function SiteHeader({ home = false, page = home ? "home" : "site" }
   return (
     <>
       <aside className={styles.announce} aria-label="Announcement">
-        {live ? <><span>Now on iPhone.</span> <a href={appStoreLink(campaign("top-bar", page))}>Try it free for 7 days</a></> : <span>Coming soon to iPhone.</span>}
+        {live ? <><span>{availability(live).headline}.</span> <a href={appStoreLink(campaign("top-bar", page))}>Try it free for 7 days</a></> : <span>Coming soon to iPhone and Android.</span>}
       </aside>
       <header className={styles.header}>
         <div className={`${styles.wrap} ${styles.headerInner}`}>

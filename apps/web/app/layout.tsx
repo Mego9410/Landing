@@ -10,8 +10,8 @@ const nunito = Nunito({ subsets: ["latin"], weight: ["400", "500", "600", "700",
 const siteUrl = SITE_URL; // the live domain on Vercel production even if NEXT_PUBLIC_SITE_URL is missing
 // The launch switch (see app/site.ts): the description and Safari's app banner follow appLive().
 const describe = (live: boolean) => live
-  ? "A 12-month plan for the year after you stop a GLP-1 weight-loss jab. Protein, short strength sessions, easy meals and steady habits. Free for 7 days on iPhone."
-  : "A 12-month plan for the year after you stop a GLP-1 weight-loss jab: protein, short strength sessions, easy meals and steady habits to keep the weight off. Coming soon to iPhone.";
+  ? "A 12-month plan for the year after you stop a GLP-1 weight-loss jab. Protein, short strength sessions, easy meals and steady habits. Free for 7 days on iPhone, and coming soon to Android."
+  : "A 12-month plan for the year after you stop a GLP-1 weight-loss jab: protein, short strength sessions, easy meals and steady habits to keep the weight off. Coming soon to iPhone and Android.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const live = await appLive(), description = describe(live);

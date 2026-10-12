@@ -7,9 +7,9 @@ import { CareList } from "./care-list";
 import { ExerciseLoop } from "./exercise-loop";
 import { latestGuides, liveGuide, liveGuides } from "@/content/guides";
 import { SiteFooter, SiteHeader } from "./site-chrome";
-import { abs, appLive, APP_STORE_URL, ldJson, ORGANIZATION, PRICE, PRICE_GBP, SITE_NAME } from "./site";
+import { abs, appLive, APP_STORE_URL, availability, ldJson, ORGANIZATION, PRICE, PRICE_GBP, SITE_NAME } from "./site";
 import { PrototypeLink } from "./prototype-link";
-import { AppStoreButton } from "./app-store";
+import { StoreButtons } from "./app-store";
 import { GuideArt } from "./guides/art";
 import { PhoneTour, type Screen } from "./phone-tour";
 import { ScreenFan, type FanScreen } from "./screen-fan";
@@ -73,7 +73,7 @@ const trust = (live: boolean): { icon: IconName; text: string }[] => [
   { icon: "heart", text: "A health check before you start" },
   { icon: "shield", text: "Works alongside your prescriber" },
   { icon: "lock", text: "Private backup, never sold" },
-  { icon: "phone", text: live ? "On iPhone" : "Coming soon to iPhone" },
+  { icon: "phone", text: availability(live).short },
 ];
 
 const STEPS = [
@@ -119,7 +119,7 @@ const faqs = (live: boolean) => [
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
   { q: "Where is my data kept?", a: "On your phone. If you sign in, Steadie also keeps a private, encrypted backup so your plan moves with you to a new phone. It's never sold or used for ads, and you can export everything or delete your account from Settings. If you connect Apple Health, that information is only used for your own plan, and never for advertising." },
-  { q: "When can I use it, and what will it cost?", a: `${live ? "Now, on iPhone: download Steadie from the App Store." : "Steadie is coming soon to iPhone."} Both plans start with a 7-day free trial: then ${PRICE.yearly} a year, or ${PRICE.monthly} a month. Cancel any time in your iPhone settings.` },
+  { q: "When can I use it, and what will it cost?", a: `${live ? `Now, on iPhone: download Steadie from the App Store.${availability(live).soonAndroid}` : "Steadie is coming soon to iPhone and Android."} Both plans start with a 7-day free trial: then ${PRICE.yearly} a year, or ${PRICE.monthly} a month. Cancel any time in your iPhone settings.` },
 ];
 
 // STEP 1 trial extension (reference 1): mean change in body weight from the start of treatment.
@@ -202,12 +202,12 @@ export default async function Home() {
       <section className={styles.hero} aria-labelledby="hero-title">
         <div className={`${styles.wrap} ${styles.heroGrid}`}>
           <div className={styles.heroCopy}>
-            <p className={styles.pill}><span className={styles.pillDot} aria-hidden="true" />{live ? "Now on iPhone" : "Coming soon to iPhone"}</p>
+            <p className={styles.pill}><span className={styles.pillDot} aria-hidden="true" />{availability(live).headline}</p>
             <h1 id="hero-title" className={styles.display}>Keep what you&apos;ve worked&nbsp;for.</h1>
             <p className={styles.lede}>The 12-month plan for the year after you stop a weight-loss jab. Strength, protein and steady habits to keep the weight off, with support on your side.</p>
             <div id="download" className={styles.heroCta}>
-              <AppStoreButton campaign="home-hero" />
-              <p className={styles.storeNote}>7 days free, then {PRICE.yearly} a year or {PRICE.monthly} a month. For iPhone.</p>
+              <StoreButtons campaign="home-hero" />
+              <p className={styles.storeNote}>7 days free, then {PRICE.yearly} a year or {PRICE.monthly} a month. For iPhone, and soon Android.</p>
             </div>
           </div>
           <div className={styles.heroArt} aria-hidden="true">
@@ -468,7 +468,7 @@ export default async function Home() {
                   <li key={x}><Icon name="check" size={18} />{x}</li>
                 ))}
               </ul>
-              <AppStoreButton campaign="home-pricing" />
+              <StoreButtons campaign="home-pricing" />
               <p className={styles.fine}>Prices in the UK, including VAT. Charged through your Apple account.</p>
             </div>
           </div>
@@ -508,7 +508,7 @@ export default async function Home() {
           <div className={`${styles.wrap} ${styles.ctaInner}`}>
             <h2 id="cta-title" className={styles.display}>Make this year your steady one</h2>
             <p className={styles.lede}>Try the full plan free for 7 days, on either plan.</p>
-            <AppStoreButton campaign="home-signoff" />
+            <StoreButtons campaign="home-signoff" />
             <p className={styles.storeNote}>Then {PRICE.yearly} a year or {PRICE.monthly} a month. Cancel any time in your iPhone settings.</p>
           </div>
         </section>

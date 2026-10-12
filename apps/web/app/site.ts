@@ -24,6 +24,17 @@ export async function appLive(): Promise<boolean> {
     return false;
   }
 }
+/** Google Play. Not automatic like the App Store: set NEXT_PUBLIC_PLAY_LIVE=true once the listing is public, and every
+ *  Google Play button becomes a link and the "coming soon to Android" wording goes. */
+export const PLAY_URL = "https://play.google.com/store/apps/details?id=com.getsteadieapp.app";
+export const playLive = () => (process.env.NEXT_PUBLIC_PLAY_LIVE ?? "").trim().toLowerCase() === "true";
+/** Where Steadie is, in words, for the pill, top bar, trust row and coming-soon lines. `ios` is appLive(). */
+export function availability(ios: boolean, play = playLive()) {
+  if (ios && play) return { headline: "Now on iPhone and Android", short: "On iPhone and Android", soonAndroid: "" };
+  if (ios) return { headline: "Now on iPhone · coming soon to Android", short: "On iPhone, Android soon", soonAndroid: " Coming soon to Android." };
+  if (play) return { headline: "Now on Android · coming soon to iPhone", short: "On Android, iPhone soon", soonAndroid: "" };
+  return { headline: "Coming soon to iPhone and Android", short: "Coming soon to iPhone and Android", soonAndroid: "" };
+}
 /** An App Store link that tells App Store Connect's App Analytics which page sent the download (Apple campaign links:
  *  pt = provider token from NEXT_PUBLIC_APPLE_PROVIDER_TOKEN, ct = campaign of 40 characters or fewer, mt = 8). */
 export function appStoreLink(campaign: string, page?: ProductPage) {

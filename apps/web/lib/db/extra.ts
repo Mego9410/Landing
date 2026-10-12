@@ -18,6 +18,8 @@ const STATEMENTS = [
     ('2026-10-11'::date, 'Sitemap submitted in Search Console for the getsteadieapp.com domain property', 'Week 0: get guides indexed', 'Check indexed pages in two weeks'),
     ('2026-10-11'::date, 'Listing baseline recorded; new title, subtitle and keywords held for 1.0.1', '1.0 is waiting for App Review; changing it would lose the queue spot', 'Submit 1.0.1 straight after approval')
   ) AS seed WHERE NOT EXISTS (SELECT 1 FROM "growth_changes")`,
+  // Mail received at getsteadieapp.com and whether it was forwarded (lib/inbound.ts). Kept 90 days.
+  sql`CREATE TABLE IF NOT EXISTS "inbound_emails" ("email_id" text PRIMARY KEY NOT NULL, "received_at" timestamp with time zone NOT NULL, "from_addr" text, "subject" text, "status" text NOT NULL, "attempts" integer DEFAULT 0 NOT NULL, "last_error" text, "forwarded_at" timestamp with time zone, "alerted_at" timestamp with time zone, "updated_at" timestamp with time zone DEFAULT now() NOT NULL)`,
   sql`CREATE INDEX IF NOT EXISTS "events_name_created_idx" ON "events" USING btree ("name","created_at")`,
   sql`CREATE INDEX IF NOT EXISTS "events_install_idx" ON "events" USING btree ("install_id")`,
 ];

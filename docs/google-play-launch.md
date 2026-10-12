@@ -52,7 +52,7 @@ The App Store equivalent is `docs/app-store-privacy.md`; keep the two in step wh
 Google's metadata policy is strict about brand names, so the title uses GLP-1 rather than Mounjaro or Wegovy.
 
 Graphics: ready in `marketing/play-store/listing/` (512 × 512 icon, 1024 × 500 feature graphic, eight 1440 × 2560 phone screenshots; see its README). Same story
-as the App Store: the fear, the plan, the proof).
+as the App Store: the fear, the plan, the proof.
 
 ## App content forms
 

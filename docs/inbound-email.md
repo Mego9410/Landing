@@ -8,12 +8,12 @@ to the sender, because the forward's Reply-To is theirs. Code: `apps/web/lib/inb
 
 - **On failure:** the webhook answers with an error so Resend retries, and an alert email goes to `INBOUND_ALERT_TO`
   (once per email). When a held email gets through later, a "Resolved" email follows.
-- **Daily check (07:40 UTC):** `/api/cron/inbound` lists the last 7 days of received mail in Resend and forwards
+- **Hourly check (10 past each hour):** `/api/cron/inbound` lists the last 7 days of received mail in Resend and forwards
   anything that never reached the inbox. It emails an alert if it had to step in (the webhook isn't working), if an
   email is still stuck, or if a setting is missing.
 - **If Resend itself is down or the API key is wrong,** alerts can't be emailed either: the cron run shows as failed in
   Vercel (Logs, and Settings → Cron Jobs) and the error is logged. Nothing is lost: received mail stays in Resend
-  (Emails → Receiving) and the daily check catches up for 7 days.
+  (Emails → Receiving) and the hourly check catches up for 7 days.
 - Each email's sender, subject and outcome are kept in the `inbound_emails` table for 90 days, then deleted.
 
 ## Setup

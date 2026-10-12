@@ -2,14 +2,14 @@
 // /api/inbound with an `email.received` webhook. This file fetches that email from Resend and forwards it, with its
 // attachments, to a real inbox. Replying from that inbox goes straight back to the sender (Reply-To is theirs).
 //
-// If a forward fails, Resend retries the webhook and an alert email goes to INBOUND_ALERT_TO (once per email). A
-// daily watchdog (/api/cron/inbound) also lists what Resend received in the last week and forwards anything that
+// If a forward fails, Resend retries the webhook and an alert email goes to INBOUND_ALERT_TO (once per email). 
+// hourly watchdog (/api/cron/inbound) also lists what Resend received in the last week and forwards anything that
 // never arrived, so a broken or disabled webhook can't lose mail quietly. Setup: docs/inbound-email.md.
 //
 // Env: RESEND_API_KEY (already set), RESEND_INBOUND_SECRET (the webhook's signing secret, whsec_…),
 // INBOUND_FORWARD_TO (the inbox), and optionally INBOUND_FROM (default inbox@getsteadieapp.com) and INBOUND_ALERT_TO
 // (default INBOUND_FORWARD_TO). The inbox address lives only in Vercel, never in this public repo.
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { sql } from "drizzle-orm";
 import { getDb } from "./db";
 import { ensureExtraTables } from "./db/extra";
@@ -209,7 +209,7 @@ export async function forwardAndRecord(emailId: string, meta: Meta = {}, source:
     await alertOnce(emailId, "An email to getsteadieapp.com couldn't be forwarded", [
       `From ${meta.from ?? "unknown"}: "${meta.subject ?? "(no subject)"}".`,
       `What went wrong: ${message}`,
-      `It's safe in Resend (Emails → Receiving) and will keep being retried: Resend retries the webhook for a while, and the daily check tries again for 7 days. You'll get another email when it gets through.`,
+      `It's safe in Resend (Emails → Receiving) and will keep being retried: Resend retries the webhook for a while, and the hourly check tries again for 7 days. You'll get another email when it gets through.`,
     ]);
     throw e;
   }
@@ -223,7 +223,7 @@ async function alertOnce(emailId: string, subject: string, lines: string[]) {
   if (!sent) await db.execute(sql`UPDATE inbound_emails SET alerted_at = NULL WHERE email_id = ${emailId}`);
 }
 
-// ---- Daily watchdog ----
+// ---- Hourly watchdog ----
 
 const WATCH_DAYS = 7;
 /** Leave the webhook this long to do its job before the watchdog steps in. */
@@ -234,7 +234,7 @@ const GRACE_MINUTES = 15;
 export async function watchdog() {
   const problems: string[] = [];
   if (!forwardTo()) problems.push("INBOUND_FORWARD_TO isn't set in Vercel, so incoming mail can't be forwarded.");
-  if (!env("RESEND_INBOUND_SECRET")) problems.push("RESEND_INBOUND_SECRET isn't set in Vercel, so the webhook rejects every email (they're still in Resend, and this check forwards them daily).");
+  if (!env("RESEND_INBOUND_SECRET")) problems.push("RESEND_INBOUND_SECRET isn't set in Vercel, so the webhook rejects every email (they're still in Resend, and the hourly check forwards them).");
 
   const since = Date.now() - WATCH_DAYS * 86400000;
   const received: { id: string; from: string; subject: string | null; created_at: string }[] = [];
@@ -266,14 +266,16 @@ export async function watchdog() {
   }
   // Anything the webhook had never recorded at all means the webhook isn't reaching us: worth knowing even if the
   // watchdog then forwarded it fine.
-  if (failed.length) problems.push(`${failed.length} email${failed.length === 1 ? " is" : "s are"} still stuck and will be retried tomorrow:`, ...failed);
-  if (forwarded) problems.push(`${forwarded} email${forwarded === 1 ? "" : "s"} hadn't been forwarded by the webhook and ${forwarded === 1 ? "was" : "were"} forwarded by the daily check instead. If this keeps happening, check the webhook in Resend → Webhooks (it should point at /api/inbound and be enabled).`);
+  if (failed.length) problems.push(`${failed.length} email${failed.length === 1 ? " is" : "s are"} still stuck and will be retried within the hour:`, ...failed);
+  if (forwarded) problems.push(`${forwarded} email${forwarded === 1 ? "" : "s"} hadn't been forwarded by the webhook and ${forwarded === 1 ? "was" : "were"} forwarded by the hourly check instead. If this keeps happening, check the webhook in Resend → Webhooks (it should point at /api/inbound and be enabled).`);
 
   await db.execute(sql`DELETE FROM inbound_emails WHERE received_at < now() - interval '90 days'`);
 
   if (problems.length) {
+    // At most one alert a day for the same problem; a different problem alerts straight away.
     const day = new Date().toISOString().slice(0, 10);
-    await sendAlert("Steadie inbox: the daily check found a problem", problems, `steadie-inbound-watchdog-${day}`);
+    const digest = createHash("sha256").update(problems.join("|")).digest("hex").slice(0, 16);
+    await sendAlert("Steadie inbox: the mail check found a problem", problems, `steadie-inbound-watchdog-${day}-${digest}`);
   }
   return { checked: received.length, due: due.length, forwarded, failed, problems };
 }

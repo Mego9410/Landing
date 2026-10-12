@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const secret = process.env.RESEND_INBOUND_SECRET?.trim();
   const body = await request.text();
   if (!secret) {
-    console.error("inbound: RESEND_INBOUND_SECRET isn't set, so the webhook can't be checked (the daily check still forwards mail)");
+    console.error("inbound: RESEND_INBOUND_SECRET isn't set, so the webhook can't be checked (the hourly check still forwards mail)");
     return Response.json({ error: "Not configured." }, { status: 503 });
   }
   if (!verifyWebhook(body, request.headers, secret)) return Response.json({ error: "Bad signature." }, { status: 401 });

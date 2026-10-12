@@ -1,6 +1,6 @@
 import { watchdog } from "@/lib/inbound";
 
-// The daily mail check, run by Vercel Cron (vercel.json). It forwards anything received at getsteadieapp.com in the
+// The hourly mail check, run by Vercel Cron (vercel.json). It forwards anything received at getsteadieapp.com in the
 // last week that never reached the inbox, and emails an alert if something's wrong (lib/inbound.ts). Vercel calls it
 // with "Authorization: Bearer $CRON_SECRET"; with the same header you can run it by hand.
 export const runtime = "nodejs";

@@ -66,8 +66,9 @@ The app talks to it at `EXPO_PUBLIC_API_URL`. Without that variable, sign-in is 
 ## Before launch
 
 - [x] Company details in `packages/content/src/legal.ts`: Oliver Acton, trading as Steadie, hello@getsteadieapp.com.
-- [ ] Make hello@getsteadieapp.com receive mail (forward it to a real inbox, for example with Cloudflare Email Routing
-      or ImprovMX). The policies give it as the contact for privacy requests.
+- [ ] Make hello@getsteadieapp.com receive mail: Resend receives it and `/api/inbound` forwards it to a real inbox,
+      with failure alerts and a daily check ([inbound-email.md](inbound-email.md)). The code is in; the Resend, DNS and
+      Vercel steps there finish it. The policies give this address as the contact for privacy requests.
 - [ ] Add a contact address (`ADDRESS` in `legal.ts`; a virtual office address is fine) and, once registered, the ICO
       number (`ICO_NUMBER`). Both then appear in each policy's Contact section.
 - [ ] Register with the ICO (£52 a year at ico.org.uk) and note that you hold health data.

@@ -146,43 +146,61 @@ about **51 seconds before** the trial converts. To test:
 
 Sandbox renewals repeat up to 12 times a day, then stop.
 
-## Offer codes and free access
+## Discount codes, offer codes and free access
 
-Apple's guideline 3.1.1 doesn't allow an app to unlock anything with codes of its own, so Steadie has no code box of
-its own. Codes are made in App Store Connect (iPhone) and the Play Console (Android), and typed into the store's own
-screen. A redeemed code arrives in RevenueCat like any purchase and unlocks the `plan` entitlement.
+Apple (guideline 3.1.1) and Google only allow subscriptions to be sold through their own billing. So no code in Steadie
+unlocks anything by itself. There are three ways to give a discount:
 
-**In the app:**
-- **Have a code?** on the paywall at the end of onboarding opens Apple's redemption sheet (Google Play's redeem page
-  on Android).
-- **Settings → Subscription → Redeem a code** does the same at any time.
-- **Settings → Subscription → Send my Steadie ID** shares this phone's RevenueCat ID, for support and for free access.
-- Opening the code screen sends the `offer_code_opened` event.
+| Way | Made in | Typed where | Good for |
+| --- | --- | --- | --- |
+| **Steadie discount codes** | /admin → Discount codes | The paywall's "Have a discount code?" | Launch prices, partners, creators: any number of codes, limits and dates, counted per code |
+| **App Store / Play offer codes** | App Store Connect, Play Console | Apple's or Google's own sheet (linked from the paywall and Settings) | Free months, and one-off codes Apple or Google hand out |
+| **Free access** | /admin → Free access | Nowhere: given to a Steadie ID | Testers, friends and family (100% off) |
 
-### Making an offer code (App Store Connect)
+### Steadie discount codes
 
-1. Go to **Monetisation → Subscriptions → Steadie**, open Steadie Yearly or Steadie Monthly, then go to
-   **Subscription Prices → Offer Codes → Create**.
-2. Choose who can redeem the code: new, active or lapsed subscribers. Then choose the countries and the offer type:
-   - **Free** for a set time.
-   - **Pay as you go** at a lower price for a number of periods.
-   - **Pay up front** for one period.
-3. Add codes to the offer:
-   - **Custom code:** one word everyone uses, such as `FOUNDING`, with a redemption limit and an end date.
-   - **One-time codes:** a batch of single-use codes, downloaded as a file.
-4. Apple sends redeemers back to full price when the offer ends unless they cancel, and says so on its sheet.
+A code points the paywall at a RevenueCat **offering**: the same two plans, using discounted store products. The
+server (`apps/web/lib/codes.ts`, `POST /api/codes`) checks it; the app (`src/state/codes.ts`) remembers it and the paywall
+shows that offering's prices with the code's line ("Founding member price"). The purchase goes through Apple or Google
+as usual.
 
-Google Play: in the Play Console, go to **Monetize → Promo codes** for free periods, or use a subscription offer with
-eligibility set to developer-determined.
+**Setting up a discount once (for example "founding", £49.99 a year):**
+1. App Store Connect → Subscriptions → the **Steadie** group: add `steadie_yearly_founding` (1 year, £49.99) and, if you
+   want, `steadie_monthly_founding`. Keep them in the same group so nobody can hold two plans. Give each a free 1-week
+   introductory offer if the discount should keep the trial. Add them to the app version for review like the others.
+   - This price renews at £49.99 every year. For "£49.99 for the first year, then £69.99", use the usual product with
+     a **pay up front** introductory offer instead. But only one introductory offer is allowed per product, and the
+     product already has the free week. So a price that's discounted for good is usually the simpler choice.
+2. Google Play: add the same products, or a developer-determined offer on the existing ones.
+3. RevenueCat → Products: import them and attach them to the `plan` entitlement. Then go to **Offerings → New**,
+   identifier `founding`, with `$rc_annual` → `steadie_yearly_founding` and `$rc_monthly` → `steadie_monthly_founding`.
+   Don't make it the current offering.
+4. /admin → Discount codes: code `FOUNDING`, what people see "Founding member price", offering `founding`, and
+   optionally dates and a limit.
 
-### Free access for testers, friends and family
+Any number of codes can share one offering, for example one per partner, to see which partner brings people in. Codes
+are 3 to 24 letters, numbers or dashes, and aren't case sensitive. One install counts once against a limit. Turning a
+code off stops new people using it. If RevenueCat doesn't have the offering, the app says so and shows the usual prices.
+Guessing is limited to 10 tries a minute. Each use is recorded in `discount_code_uses`, and the app sends a
+`code_applied` event.
+
+### App Store and Google Play offer codes
+
+Made in App Store Connect (a subscription's **Subscription Prices → Offer Codes**: free, pay as you go or pay up front;
+a custom code or one-time codes) or the Play Console (**Monetize → Promo codes**). On the paywall, the discount code box
+links to Apple's or Google's own redemption sheet; Settings → Subscription has it too. A redeemed code arrives through
+RevenueCat like any purchase. Opening the sheet sends `offer_code_opened`.
+
+### Free access (100% off)
 
 - **TestFlight testers** never pay: purchases there use the sandbox.
-- **Friends and family:**
-  1. They tap **Send my Steadie ID** and send it to you.
-  2. In RevenueCat, go to **Customers**, search for that ID, and use **Grant promotional entitlement**. Choose `plan`
-     and a duration, up to Lifetime.
-  3. Nothing is charged. Settings shows "Free access".
-  4. The grant belongs to that ID. If they delete the app, they need to send their new ID.
-- **Several people at once:** make a free offer code instead. For example, `STEADIEFAMILY`: free for 1 year, Yearly
-  plan, limited to 50 redemptions. They'd need to cancel before the year ends if they don't want to carry on.
+- **Anyone else** (friends, family, partners):
+  1. They tap **Settings → Subscription → Send my Steadie ID** and send it to you.
+  2. In /admin → Free access, paste it, choose how long (1, 3, 6 or 12 months, or for good) and give it.
+  3. The server grants the `plan` entitlement through RevenueCat's API and notes it in `free_access_grants`. Nothing is
+     charged, and the app shows "Free access" in Settings.
+  4. The grant belongs to that ID. If they delete the app, they send their new one.
+- This needs `REVENUECAT_SECRET_KEY` (a v2 secret key) with **customer information read and write** and **project
+  configuration (entitlements) read**, plus `REVENUECAT_PROJECT_ID`. The same key powers the dashboard's subscription
+  figures, so add these permissions to it, or make a new key with both sets.
+- You can also do the same by hand in RevenueCat → Customers → Grant promotional entitlement.

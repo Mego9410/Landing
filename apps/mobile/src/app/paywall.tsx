@@ -6,7 +6,9 @@ import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
 import { Mark } from "@/components/Mark";
 import { OnbCard, OnbScreen } from "@/components/Onboarding";
+import { Field } from "@/components/ui";
 import { addDays, fmt, today } from "@/data/dates";
+import { applyCode, codesAvailable, removeCode } from "@/state/codes";
 import { track } from "@/state/events";
 import { buy, plans, plansProblem, redeemCode, restore, STORE_WORDS, type Plan } from "@/state/subscription";
 import { set, useApp } from "@/state/store";
@@ -37,9 +39,25 @@ export default function Paywall() {
   const name = s.name.trim();
   const remind = s.settings.trialReminder !== false;
 
-  const fetchPlans = () => plans().then(setOptions).catch((e) => setFailed(plansProblem(e)));
+  // A discount code (state/codes.ts) shows its offering's prices; without one, or if RevenueCat doesn't have it, the usual.
+  const discount = s.discount ?? null;
+  const [codeOpen, setCodeOpen] = useState(false);
+  const [codeText, setCodeText] = useState("");
+  const [codeError, setCodeError] = useState<string | undefined>();
+  const [codeBusy, setCodeBusy] = useState(false);
+  const fetchPlans = () => plans(discount?.offering).then((o) => { setOptions(o); setPick(0); }).catch((e) => setFailed(plansProblem(e)));
   const load = () => { setFailed(null); setOptions(null); fetchPlans(); };
-  useEffect(() => { fetchPlans(); track("paywall_viewed", { lapsed, from: fromOnboarding ? "onboarding" : "app" }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { track("paywall_viewed", { lapsed, from: fromOnboarding ? "onboarding" : "app" }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchPlans(); }, [discount?.offering]); // eslint-disable-line react-hooks/exhaustive-deps
+  async function apply() {
+    setCodeBusy(true); setCodeError(undefined);
+    const r = await applyCode(codeText);
+    setCodeBusy(false);
+    if (!r.ok) { setCodeError(r.error); return; }
+    setOptions(null); setCodeOpen(false); setCodeText("");
+  }
+  const dropCode = () => { setOptions(null); removeCode(); };
+  const storeCode = () => redeemCode().catch(() => toast("Couldn’t open the code screen just now. Try again in a moment."));
   useEffect(() => {
     if (!s.subscription?.active) return;
     if (fromOnboarding) router.replace("/onboarding/thanks");
@@ -77,7 +95,6 @@ export default function Paywall() {
           : `Renews automatically until you cancel in ${STORE_WORDS.cancelPath}, at least 24 hours before it renews.`}
       </AppText>
       <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
-        <Button label="Have a code?" variant="quiet" onPress={() => redeemCode().catch(() => toast("Couldn’t open the code screen just now. Try again in a moment."))} />
         <Button label="Restore" variant="quiet" onPress={onRestore} />
         <Button label="Terms" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "terms" } })} />
         <Button label="Privacy" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />
@@ -140,6 +157,23 @@ export default function Paywall() {
             );
           })}
         </View>
+      )}
+
+      {discount && options ? (
+        <OnbCard style={{ gap: 4 }}>
+          <AppText variant="label" color="sageInk">CODE {discount.code}{options[0]?.discounted ? " APPLIED" : ""}</AppText>
+          <AppText weight="800">{options[0]?.discounted ? discount.label : "These prices aren’t available just now, so you’re seeing the usual ones."}</AppText>
+          <Button label="Remove code" variant="quiet" onPress={dropCode} style={{ alignSelf: "flex-start" }} />
+        </OnbCard>
+      ) : codeOpen ? (
+        <OnbCard style={{ gap: space[3] }}>
+          <Field label="Discount code" value={codeText} onChangeText={(t) => { setCodeText(t); setCodeError(undefined); }} autoCapitalize="characters" autoCorrect={false}
+            placeholder="FOUNDING" returnKeyType="done" onSubmitEditing={apply} error={codeError} maxLength={24} />
+          <Button label={codeBusy ? "Checking…" : "Apply code"} variant="secondary" disabled={codeBusy || !codeText.trim()} onPress={apply} />
+          <Button label={`Have ${STORE_WORDS.account === "Google account" ? "a Google Play" : "an App Store"} offer code? Redeem it here`} variant="quiet" onPress={storeCode} />
+        </OnbCard>
+      ) : (
+        <Button label="Have a discount code?" variant="quiet" onPress={() => (codesAvailable() ? setCodeOpen(true) : storeCode())} style={{ alignSelf: "center" }} />
       )}
 
       {chosen?.trial ? (

@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { adminFrom, guideSchedule, loadDownloads, loadEmails, loadCrashes, loadFunnel, loadLapses, loadMembers, loadRevenue, setupChecks, type Loaded, type RcMetric } from "@/lib/admin";
 import { getAuth } from "@/lib/auth";
+import { DURATIONS, listCodes, listGrants } from "@/lib/codes";
 import { londonToday } from "@/content/guides";
 import { CHECKPOINTS, FUNNEL, HEADLINE, KPIS, lastWeekStart, loadScorecard, RULES, type Kpi, type KpiKey, type Week } from "@/lib/growth";
 import styles from "./admin.module.css";
 import { DailyBars } from "./chart";
 import { AdminLogin, SignOut } from "./login";
 import { ChangeLog, WeekForm } from "./scorecard";
+import { Codes, FreeAccess } from "./codes";
 
 // The owner's dashboard: members, subscriptions, downloads, emails and guides in one place. Only ADMIN_EMAILS can
 // open it; everything is read live on each visit. The data comes from lib/admin.ts.
@@ -64,6 +66,7 @@ export default async function Admin() {
 
   const [members, emails, revenue, downloads, funnel, lapses, crashes, scorecard] = await Promise.all([loadMembers(), loadEmails(), loadRevenue(), loadDownloads(), loadFunnel(), loadLapses(), loadCrashes(),
     loadScorecard().then((data) => ({ ok: true as const, data })).catch((e: Error) => { console.error("admin: scorecard", e); return { ok: false as const, reason: `Couldn't load the scorecard: ${e.message}` }; })]);
+  const [codes, grants] = await Promise.all([listCodes(), listGrants()].map((p) => p.then((data) => ({ ok: true as const, data })).catch((e: Error) => { console.error("admin: codes", e); return { ok: false as const, reason: `Couldn't load codes: ${e.message}` }; }))) as [Loaded<Awaited<ReturnType<typeof listCodes>>>, Loaded<Awaited<ReturnType<typeof listGrants>>>];
   const guides = guideSchedule();
   const rc = revenue.ok ? revenue.data : [];
   const dl = downloads.ok ? downloads.data : [];
@@ -234,6 +237,18 @@ export default async function Admin() {
               ) : null}
             </div>
           ) : null}
+        </section>
+
+        <section className={styles.section} aria-labelledby="codes">
+          <div className={styles.sectionHead}><h2 id="codes" className={styles.h2}>Discount codes</h2><span className={styles.muted}>Typed on the app&apos;s paywall · each shows a RevenueCat offering&apos;s discounted store prices</span></div>
+          <Notice loaded={codes} />
+          {codes.ok ? <Codes codes={codes.data} /> : null}
+        </section>
+
+        <section className={styles.section} aria-labelledby="free">
+          <div className={styles.sectionHead}><h2 id="free" className={styles.h2}>Free access</h2><span className={styles.muted}>100% off for testers, friends and family · given in RevenueCat, nothing charged</span></div>
+          <Notice loaded={grants} />
+          {grants.ok ? <FreeAccess grants={grants.data} durations={DURATIONS} /> : null}
         </section>
 
         <section className={styles.section} aria-labelledby="lapses">

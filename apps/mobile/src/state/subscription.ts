@@ -90,14 +90,20 @@ export interface Plan {
   /** "7 days", when this person can have a free trial on this plan; null otherwise. */
   trial: string | null;
   saving?: string;
+  /** From a discount code's offering rather than the usual one. */
+  discounted: boolean;
 }
 
 /** The plans on offer, yearly first. A trial is only offered to people Apple will give it to (one per Apple ID, per
- *  subscription group); when RevenueCat can't tell, the plain price is shown, as Apple and RevenueCat advise. */
-export async function plans(): Promise<Plan[]> {
-  // The current offering ("default" in RevenueCat): its annual and monthly packages, picked by type rather than by the
-  // order the dashboard lists them in, with yearly first.
-  const current = (await Purchases.getOfferings()).current;
+ *  subscription group); when RevenueCat can't tell, the plain price is shown, as Apple and RevenueCat advise. With a
+ *  discount code's offering (`offering`), its discounted plans if RevenueCat has them, otherwise the usual ones. */
+export async function plans(offering?: string | null): Promise<Plan[]> {
+  // The current offering ("default" in RevenueCat), or the code's: its annual and monthly packages, picked by type
+  // rather than by the order the dashboard lists them in, with yearly first.
+  const all = await Purchases.getOfferings();
+  const coded = offering ? all.all[offering] : undefined;
+  const discounted = !!coded && !!(coded.annual || coded.monthly);
+  const current = discounted ? coded : all.current;
   const monthlyPkg = current?.monthly ?? undefined;
   const pkgs = [current?.annual, current?.monthly].filter((p): p is PurchasesPackage => !!p);
   if (!pkgs.length) throw Object.assign(new Error("The current offering has no annual or monthly package."), { code: "none" });
@@ -117,6 +123,7 @@ export async function plans(): Promise<Plan[]> {
         weekly: yearly && pr.pricePerWeekString ? `${pr.pricePerWeekString} a week` : null,
         trial: canTrial ? period(ANDROID ? free : intro!.period) : null,
         saving: saving > 0 ? `Save ${saving}%` : undefined,
+        discounted,
       };
     });
 }

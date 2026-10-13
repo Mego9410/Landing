@@ -101,6 +101,8 @@ export interface AppState {
   /** The last known subscription status, so the app opens offline. Only used when billing is on. `until` is when the
    *  trial ends or the plan renews (or ends, if `willRenew` is false). */
   subscription: { active: boolean; checkedAt: string; plan?: "yearly" | "monthly" | null; trial?: boolean; /** Free access given in RevenueCat (friends, family, testers), not bought. */ gift?: boolean; until?: string | null; willRenew?: boolean; /** Had the plan before and it has ended (not just never subscribed). */ ended?: boolean } | null;
+  /** A discount code applied on the paywall: which RevenueCat offering's prices it shows (state/codes.ts). */
+  discount?: { code: string; label: string; offering: string } | null;
   /** Onboarding answers that shape the plan's wording and later nudges (src/state/onboarding.ts). */
   story: Story;
   /** Their own strength programme: built from their answers and seed, a block per eight weeks, saved so it's backed up

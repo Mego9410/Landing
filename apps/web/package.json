@@ -14,7 +14,8 @@
     "test:auth": "tsx --tsconfig tsconfig.json scripts/test-auth.mts",
     "test:sync": "tsx --tsconfig tsconfig.json scripts/test-sync.mts",
     "test:events": "tsx --tsconfig tsconfig.json scripts/test-events.mts",
-    "test:recap": "tsx --tsconfig tsconfig.json scripts/test-recap.mts"
+    "test:recap": "tsx --tsconfig tsconfig.json scripts/test-recap.mts",
+    "test:codes": "tsx --tsconfig tsconfig.json scripts/test-codes.mts"
   },
   "dependencies": {
     "@better-auth/expo": "1.7.7",

@@ -9,7 +9,7 @@ import { HabitCheck, Tick } from "@/components/HabitCheck";
 import { QuoteCard } from "@/components/QuoteCard";
 import { Icon, type IconName } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
-import { Avatar, Choices, Field } from "@/components/ui";
+import { Avatar, Choices, Field, RowCard } from "@/components/ui";
 import { HABITS, PHASES, READY, type Phase } from "@/data/content";
 import { fmt, partOfDay, today } from "@/data/dates";
 import { habitDetail, isWeekly, toggleHabit } from "@/state/habits";
@@ -102,24 +102,22 @@ function PhaseCelebration({ phase, week }: { phase: Phase; week: number }) {
   );
 }
 
-/** This week's lesson, as a row in the day's list until it's been opened that week. */
-function LessonRow() {
-  const s = useApp(), c = useColors(), pick = lessonNow(s);
-  if (lessonRead(s, pick.key)) return null;
-  const title = pick.refresher ? "A refresher" : "This week's lesson";
+/** This week's lesson, on Today all week: a card under the day's list, marked read once opened and still there to read
+ *  again. */
+function LessonCard() {
+  const s = useApp(), c = useColors(), pick = lessonNow(s), read = lessonRead(s, pick.key);
+  const title = pick.refresher ? "A REFRESHER" : "THIS WEEK'S LESSON";
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${title}: ${pick.lesson.title}`}
-      onPress={() => { set((st) => markLessonRead(st, pick.key)); router.push({ pathname: "/lesson", params: { key: pick.key } }); }}
-      style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], minHeight: 56, paddingVertical: space[2], paddingHorizontal: space[4], opacity: pressed ? 0.7 : 1 })}>
-      <View style={{ width: 30, height: 30, borderRadius: radius.full, alignItems: "center", justifyContent: "center", backgroundColor: c.sky }}>
-        <Icon name="book" size={16} color={c.onPastel} />
+    <RowCard tone="sky" accessibilityLabel={`${pick.refresher ? "A refresher" : "This week's lesson"}${read ? ", read" : ""}: ${pick.lesson.title}`}
+      onPress={() => { if (!read) set((st) => markLessonRead(st, pick.key)); router.push({ pathname: "/lesson", params: { key: pick.key } }); }}>
+      <View style={{ width: 44, height: 44, borderRadius: radius.md, alignItems: "center", justifyContent: "center", backgroundColor: c.surfaceRaised }}>
+        <Icon name={read ? "check" : "book"} size={22} color={c.ink} />
       </View>
-      <View style={{ flex: 1 }}>
-        <AppText weight="700">{title}</AppText>
-        <AppText variant="caption" color="inkMuted" numberOfLines={1}>{pick.lesson.title}</AppText>
+      <View style={{ flex: 1, gap: 2 }}>
+        <AppText variant="label" color="onPastel">{title}{read ? " · READ" : ""}</AppText>
+        <AppText weight="800" color="onPastel" style={{ fontSize: 16 }}>{pick.lesson.title}</AppText>
       </View>
-      <Icon name="chevron" size={18} color={c.inkMuted} />
-    </Pressable>
+    </RowCard>
   );
 }
 
@@ -262,10 +260,11 @@ export default function Today() {
         <Card style={{ padding: 0, paddingVertical: space[1], gap: 0, borderRadius: radius.lg }}>
           {rest.map((i) => row(i))}
           {weekly.map((i) => row(i, true))}
-          <LessonRow />
         </Card>
         <Button label="Swap a habit" variant="quiet" onPress={() => router.push("/swap-habit")} style={{ alignSelf: "center" }} />
       </View>
+
+      <LessonCard />
     </Screen>
   );
 }

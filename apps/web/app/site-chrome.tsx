@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Lockup } from "./lockup";
-import { appLive, appStoreLink, availability, campaign, ORG_NAME } from "./site";
+import { appLive, appStoreLink, availability, campaign, HOME, ORG_NAME, type Region } from "./site";
 import styles from "./page.module.css";
 
 // The header and footer for every page. On the home page the section links are in-page anchors; elsewhere they point
@@ -19,32 +19,34 @@ const GUIDE_LINKS = [
   ["/guides", "All guides"],
 ] as const;
 
-/** `page` names the page in App Store analytics (top-bar-<page>, header-<page>), so each page's links are told apart. */
-export async function SiteHeader({ home = false, page = home ? "home" : "site" }: { home?: boolean; page?: string }) {
+/** `page` names the page in App Store analytics (top-bar-<page>, header-<page>), so each page's links are told apart.
+ *  `region` picks the App Store storefront and which home page the logo and section links go back to. */
+export async function SiteHeader({ home = false, page = home ? "home" : "site", region = "uk" }: { home?: boolean; page?: string; region?: Region }) {
   const live = await appLive();
-  const at = (id: string) => (home ? `#${id}` : `/#${id}`);
+  const at = (id: string) => (home ? `#${id}` : `${HOME[region]}#${id}`);
   return (
     <>
       <aside className={styles.announce} aria-label="Announcement">
-        {live ? <><span>{availability(live).headline}.</span> <a href={appStoreLink(campaign("top-bar", page))}>Try it free for 7 days</a></> : <span>Coming soon to iPhone and Android.</span>}
+        {live ? <><span>{availability(live).headline}.</span> <a href={appStoreLink(campaign("top-bar", page), undefined, region)}>Try it free for 7 days</a></> : <span>Coming soon to iPhone and Android.</span>}
       </aside>
       <header className={styles.header}>
         <div className={`${styles.wrap} ${styles.headerInner}`}>
-          <Link href="/" aria-label="Steadie home" className={styles.logo}><Lockup /></Link>
+          <Link href={HOME[region]} aria-label="Steadie home" className={styles.logo}><Lockup /></Link>
           <nav className={styles.navLinks} aria-label="Main">
             {SECTIONS.slice(0, 2).map(([id, label]) => <a key={id} href={at(id)}>{label}</a>)}
             <Link href="/guides">Guides</Link>
             {SECTIONS.slice(2).map(([id, label]) => <a key={id} href={at(id)}>{label}</a>)}
           </nav>
-          {live ? <a className={styles.navCta} href={appStoreLink(campaign("header", page))}>Download</a> : <span className={styles.navSoon}>Coming soon</span>}
+          {live ? <a className={styles.navCta} href={appStoreLink(campaign("header", page), undefined, region)}>Download</a> : <span className={styles.navSoon}>Coming soon</span>}
         </div>
       </header>
     </>
   );
 }
 
-export function SiteFooter({ home = false }: { home?: boolean }) {
-  const at = (id: string) => (home ? `#${id}` : `/#${id}`);
+/** `region` is set on the two home pages: it marks which version is showing in the switcher. */
+export function SiteFooter({ home = false, region }: { home?: boolean; region?: Region }) {
+  const at = (id: string) => (home ? `#${id}` : `${HOME[region ?? "uk"]}#${id}`);
   return (
     <footer className={styles.footer}>
       <div className={`${styles.wrap} ${styles.footerGrid}`}>
@@ -69,13 +71,24 @@ export function SiteFooter({ home = false }: { home?: boolean }) {
           <Link href="/privacy">Website privacy notice</Link>
           <Link href="/app-privacy">App privacy policy</Link>
           <Link href="/terms">Terms of use</Link>
+          <Link href="/us/consumer-health-data">US consumer health data notice</Link>
         </nav>
       </div>
       <div className={`${styles.wrap} ${styles.footerSmall}`}>
-        <p>Steadie is a general wellness app. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment. Wegovy and Ozempic are trademarks of Novo Nordisk, and Mounjaro of Eli Lilly; Steadie isn&apos;t connected with either company.</p>
+        <p>Steadie is a general wellness app. It does not diagnose, treat or monitor any medical condition, and it does not give advice about medication, doses or stopping treatment. Wegovy and Ozempic are trademarks of Novo Nordisk, and Mounjaro and Zepbound of Eli Lilly; Steadie isn&apos;t connected with either company.</p>
         {home ? <p id="ref-1">1. Wilding JPH, et al. Weight regain and cardiometabolic effects after withdrawal of semaglutide: the STEP 1 trial extension. Diabetes, Obesity and Metabolism. 2022;24(8):1553–1564.</p> : null}
         <p>© {new Date().getFullYear()} {ORG_NAME}</p>
+        <RegionSwitch current={region} />
       </div>
     </footer>
   );
+}
+
+/** "UK · US": a plain link to /region, which remembers the choice and opens that home page. Nofollow, so search engines
+ *  don't set it; robots.txt keeps them off /region too. */
+function RegionSwitch({ current }: { current?: Region }) {
+  const opt = (r: Region, label: string) => current === r
+    ? <strong aria-current="page">{label}</strong>
+    : <a href={`/region?to=${r}`} rel="nofollow">{label}</a>;
+  return <p className={styles.regionSwitch} aria-label="Choose your country">Showing: {opt("uk", "UK")} · {opt("us", "US")}</p>;
 }

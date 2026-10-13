@@ -9,7 +9,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const GUIDES = liveGuides();
   const latest = GUIDES.map((g) => g.updated).sort().at(-1);
   return [
-    { url: abs("/"), changeFrequency: "monthly", priority: 1 },
+    // The UK and US home pages, each naming the other (hreflang), so Google shows each country its own.
+    { url: abs("/"), changeFrequency: "monthly", priority: 1, alternates: { languages: { "en-GB": abs("/"), "en-US": abs("/us") } } },
+    { url: abs("/us"), changeFrequency: "monthly", priority: 1, alternates: { languages: { "en-GB": abs("/"), "en-US": abs("/us") } } },
+    { url: abs("/us/consumer-health-data"), changeFrequency: "yearly", priority: 0.2 },
     { url: abs("/guides"), lastModified: latest, changeFrequency: "weekly", priority: 0.9 },
     ...GUIDES.map((g) => ({ url: abs(`/guides/${g.slug}`), lastModified: g.updated, changeFrequency: "monthly" as const, priority: g.pillar ? 0.8 : 0.7 })),
     { url: abs("/tools"), changeFrequency: "monthly", priority: 0.8 },

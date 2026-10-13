@@ -9,7 +9,7 @@ const COMPANY = "Oliver Acton, trading as Steadie";
 const CONTACT = "hello@getsteadieapp.com";
 const PRIVACY_CONTACT = "hello@getsteadieapp.com";
 
-const UPDATED = "9 October 2026";
+const UPDATED = "13 October 2026";
 // Add these when there are some: they then appear in each document's Contact section.
 const ADDRESS = "";
 const ICO_NUMBER = "";
@@ -110,7 +110,10 @@ export const SITE_PRIVACY: LegalDoc = {
   intro: `This notice covers the Steadie website. ${COMPANY} ("we") is responsible for it. The app has its own privacy policy.`,
   sections: [
     { heading: "Browsing the website", paras: [
-      "The website doesn't use cookies, analytics or advertising trackers, and doesn't ask you for any details. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
+      "The website doesn't use analytics or advertising trackers, and doesn't ask you for any details. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
+      "There's a UK and a US version of the home page. When you first arrive, Vercel works out roughly which country you're in from your IP address, only to show you the right one; we don't keep it.",
+      "The website sets one cookie, and only if you choose UK or US at the bottom of a page: it holds just \"uk\" or \"us\", so we keep showing you the version you picked, and lasts a year. It's needed for the choice you asked for, so we don't ask for consent first. You can delete it in your browser at any time. There are no other cookies.",
+      "The calculators on the website work in your browser. What you type into them isn't sent to us or anyone else.",
       "Download links take you to Apple's App Store, which has its own privacy policy.",
     ] },
     { heading: "If you joined our waitlist", paras: [
@@ -124,19 +127,55 @@ export const SITE_PRIVACY: LegalDoc = {
   ],
 };
 
+/** The consumer health data privacy policy that Washington State's My Health My Data Act asks for (linked from the home
+ *  pages), which also serves the similar laws in Nevada and Connecticut. It covers the same data as the app privacy
+ *  policy: keep them in step. */
+export const US_HEALTH_PRIVACY: LegalDoc = {
+  title: "Consumer health data privacy notice (US)",
+  updated: UPDATED,
+  intro: `This notice is for people in the United States, and is the consumer health data privacy policy required by Washington State's My Health My Data Act and similar state laws. It explains what health information the Steadie app collects, why, where it comes from, who handles it and how to use your rights. ${COMPANY} ("we") is responsible for it. The app privacy policy has the full detail, and we give everyone in the US the rights below, wherever they live.`,
+  sections: [
+    { heading: "The health information we collect", paras: [
+      "Only through the app, never through this website. It is: your answers to the health check (for example heart or joint problems, pregnancy, kidney disease or recent surgery) and whether you've checked with your doctor; whether you've stopped, are stopping or are still taking a weight-loss medicine, and roughly when your last injection was; your weigh-ins and the morning check-ins you log (sleep, hunger, energy, drinking and similar); protein, habits and strength sessions you log; food preferences that can relate to health, such as allergies and health conditions that affect food; the messages you send to the in-app coach; and, only if you switch it on, weight and steps from Apple Health.",
+      "We also keep when you gave your consent and which wording you agreed to.",
+    ] },
+    { heading: "Why we collect it", paras: [
+      "To build and adjust your plan (for example, pausing strength sessions until you've checked with your doctor), to show your progress, and, if you sign in, to back it up so it moves with you to a new phone. If you turn on the weekly recap email, it's built from your backup.",
+      "We don't use it for advertising, profiling, or to train AI models, and we never sell it.",
+    ] },
+    { heading: "Where it comes from", paras: [
+      "From you, when you answer questions and log things in the app, and from Apple Health if you connect it.",
+    ] },
+    { heading: "Your consent", paras: [
+      "The app asks for your consent to collect your health information before it keeps any, on its own screen, separate from the terms of use. You can withdraw it at any time in Settings → Account → Withdraw health consent.",
+      "We don't share or sell your health information. If that ever changed, we would ask for your separate consent first.",
+    ] },
+    { heading: "Who handles it for us", paras: [
+      "We don't share your health information with third parties or affiliates (we have none). These service providers (processors) handle it only on our instructions, under contract: Vercel, which runs our server, and Neon, which stores your backup, both in London, UK; and Resend, which sends the weekly recap email if you turn it on.",
+      "We'll only disclose it to anyone else if the law requires it, for example a court order.",
+    ] },
+    { heading: "Your rights", paras: [
+      "You can ask us to confirm whether we collect, share or sell your health information; to see it and get a list of everyone it has been shared with; to delete it, including from our service providers; and you can withdraw your consent at any time. We won't treat you differently for using these rights.",
+      "Most of this is in the app: Settings → Export my data gives you a copy, and Settings → Delete my account deletes everything we hold. For anything else, email " + PRIVACY_CONTACT + " from the email address on your account, or tell us which phone the app is on. We'll reply within 45 days, or tell you within that time if we need up to 45 more and why.",
+      "If we turn down your request, you can appeal by replying with \"Appeal\" in the subject line. We'll answer your appeal within 45 days. If we still say no, you can contact the Washington State Attorney General at atg.wa.gov/file-complaint, or the attorney general in your state.",
+    ] },
+    { heading: "Contact", paras: [`${CONTACT_LINE} Email ${PRIVACY_CONTACT}.`] },
+  ],
+};
+
 export const TERMS: LegalDoc = {
   title: "Terms of use",
   updated: UPDATED,
   intro: `These terms are the agreement between you and ${COMPANY} for using the Steadie app. Please read them with the health information the app shows when you start.`,
   sections: [
-    { heading: "Who it's for", paras: ["You need to be 18 or over and live in the UK to use Steadie."] },
+    { heading: "Who it's for", paras: ["You need to be 18 or over and live in the UK or the United States to use Steadie."] },
     { heading: "What Steadie is", paras: [
       "Steadie is a general wellness app. Its meal plans, strength sessions, lessons and tips follow general healthy-eating and activity guidance. They aren't medical advice and aren't tailored to your health by a clinician.",
       "Steadie never gives advice about weight-loss medicines, doses or stopping them. Those decisions are for your prescriber.",
     ] },
     { heading: "Looking after yourself", paras: [
       "Answer the health check honestly, and check with your GP, midwife or specialist where the app suggests it. If you choose to carry on after a referral, the app keeps its adjustments on for you, and you agree that you've been told to seek advice first.",
-      "Stop any exercise that causes pain, dizziness, chest pain or breathlessness that worries you, and get medical help. In an emergency, call 999.",
+      "Stop any exercise that causes pain, dizziness, chest pain or breathlessness that worries you, and get medical help. In an emergency, call 999 in the UK or 911 in the US.",
       "Recipes, nutrition and allergen information are a guide. Always check food labels, especially if you have an allergy.",
     ] },
     { heading: "Subscriptions", paras: [

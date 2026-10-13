@@ -9,6 +9,13 @@ export const CONTACT_EMAIL = "hello@getsteadieapp.com";
 /** The app on the App Store (App Store Connect app ID 6820083153). */
 export const APP_STORE_ID = "6820083153";
 export const APP_STORE_URL = `https://apps.apple.com/gb/app/steadie/id${APP_STORE_ID}`;
+/** The two versions of the site: the UK one at / and the US one at /us. proxy.ts sends a first-time visitor to theirs by
+ *  country; the footer switcher (app/region/route.ts) lets anyone pick and remembers it in REGION_COOKIE. */
+export type Region = "uk" | "us";
+export const REGION_COOKIE = "steadie_region";
+export const HOME: Record<Region, string> = { uk: "/", us: "/us" };
+/** The App Store listing for each storefront, so a US visitor sees US prices on Apple's web page. */
+export const appStoreUrl = (region: Region = "uk") => `https://apps.apple.com/${region === "us" ? "us" : "gb"}/app/steadie/id${APP_STORE_ID}`;
 /** The launch switch, automatic: the site goes live by itself once Apple's public lookup lists the app on the UK App
  *  Store (checked at most every 15 minutes; pages refresh on the same schedule). Until then every download button
  *  reads "Coming soon", no App Store link is shown and there's no Safari app banner. NEXT_PUBLIC_APP_LIVE=true forces
@@ -37,7 +44,7 @@ export function availability(ios: boolean, play = playLive()) {
 }
 /** An App Store link that tells App Store Connect's App Analytics which page sent the download (Apple campaign links:
  *  pt = provider token from NEXT_PUBLIC_APPLE_PROVIDER_TOKEN, ct = campaign of 40 characters or fewer, mt = 8). */
-export function appStoreLink(campaign: string, page?: ProductPage) {
+export function appStoreLink(campaign: string, page?: ProductPage, region: Region = "uk") {
   const pt = process.env.NEXT_PUBLIC_APPLE_PROVIDER_TOKEN;
   const ppid = page ? productPageId(page) : undefined;
   const q = new URLSearchParams();
@@ -48,7 +55,8 @@ export function appStoreLink(campaign: string, page?: ProductPage) {
   }
   if (ppid) q.set("ppid", ppid);
   const qs = q.toString();
-  return qs ? `${APP_STORE_URL}?${qs}` : APP_STORE_URL;
+  const url = appStoreUrl(region);
+  return qs ? `${url}?${qs}` : url;
 }
 /** App Store Custom Product Pages (growth playbook): "after" for the after-the-jab guides and tools, "taper" for the
  *  tapering pages. Each is on only once its ID (from App Store Connect › Custom Product Pages) is set:
@@ -68,6 +76,9 @@ export function campaign(prefix: string, slug: string) {
 /** Pricing from the paywall design (App Store Connect). Confirm before launch. ≈ £1.35 a week on the yearly plan. */
 export const PRICE = { yearly: "£69.99", weekly: "£1.35", monthly: "£12.99" };
 export const PRICE_GBP = { yearly: "69.99", monthly: "12.99" };
+/** US App Store prices (set in App Store Connect, October 2026). US prices exclude sales tax. ≈ $1.54 a week yearly. */
+export const PRICE_US = { yearly: "$79.99", weekly: "$1.54", monthly: "$14.99" };
+export const PRICE_USD = { yearly: "79.99", monthly: "14.99" };
 export const abs = (path: string) => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 
 /** Metadata for a plain page: its own <title>, description, canonical and share card. Next replaces nested fields

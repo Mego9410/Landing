@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
 import * as Notifications from "expo-notifications";
 import { useSyncExternalStore } from "react";
 import { Platform, Vibration } from "react-native";
+import { localise } from "@/data/region";
 import { ensurePermission } from "./reminders";
 
 export interface Timer {
@@ -50,7 +51,7 @@ async function schedule(t: Timer) {
   await Notifications.cancelScheduledNotificationAsync(t.id).catch(() => {});
   await Notifications.scheduleNotificationAsync({
     identifier: t.id,
-    content: { title: `${t.label}: time’s up`, body: t.recipeName, sound: "default", data: { url: `/meals/cook?id=${encodeURIComponent(t.recipeId)}&step=${t.step}`, kind: "timer" } },
+    content: { title: localise(`${t.label}: time’s up`), body: localise(t.recipeName), sound: "default", data: { url: `/meals/cook?id=${encodeURIComponent(t.recipeId)}&step=${t.step}`, kind: "timer" } },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(t.endsAt) },
   }).catch(() => {});
 }

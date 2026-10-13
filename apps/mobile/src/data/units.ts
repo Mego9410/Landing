@@ -1,11 +1,13 @@
 // Weights are always stored in kilograms; these show them in the person's chosen units. Stones and pounds round to
-// the nearest pound, which is the precision people use day to day.
+// the nearest pound, which is the precision people use day to day; pounds alone (the US way) show one decimal, as
+// scales do.
 import type { Units } from "@/state/store";
 
-const LB_PER_KG = 2.20462;
+export const LB_PER_KG = 2.20462;
 
 export function weight(kg: number, units: Units): string {
   if (units === "kg") return `${kg.toFixed(1)} kg`;
+  if (units === "lb") return `${(kg * LB_PER_KG).toFixed(1)} lb`;
   const lb = Math.round(kg * LB_PER_KG), st = Math.floor(lb / 14);
   return `${st} st ${lb - st * 14} lb`;
 }
@@ -19,3 +21,5 @@ export function change(kg: number, units: Units): string {
 
 /** Kilograms from what someone typed in their units. Stones and pounds as two numbers. */
 export const kgFromStLb = (st: number, lb: number) => (st * 14 + lb) / LB_PER_KG;
+/** Kilograms from pounds alone. */
+export const kgFromLb = (lb: number) => lb / LB_PER_KG;

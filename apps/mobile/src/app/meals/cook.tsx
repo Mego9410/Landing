@@ -15,6 +15,7 @@ import { readable } from "@/components/Screen";
 import { TimerCard, useNow } from "@/components/Timers";
 import { IconButton, Stepper } from "@/components/ui";
 import { chipLabel, clock, ingredientsIn, timersIn } from "@/data/cook";
+import { amount } from "@/data/region";
 import { markHad, profileFor, px, SLOT_NAME } from "@/state/food";
 import { logProtein } from "@/state/habits";
 import { startTimer, useTimers } from "@/state/timers";
@@ -42,7 +43,7 @@ export default function Cook() {
 
   const lines = [...x.lines, ...(x.topUp ? [{ i: x.topUp.i, g: x.topUp.g, optional: false }] : [])];
   const ids = lines.map((l) => l.i);
-  const qty = (id: string) => { const l = lines.find((x2) => x2.i === id); return l ? quantity(id, l.g * portions) : ""; };
+  const qty = (id: string) => { const l = lines.find((x2) => x2.i === id); return l ? amount(quantity(id, l.g * portions)) : ""; };
   const go = (n: number) => { Haptics.selectionAsync().catch(() => {}); setPage(Math.max(0, Math.min(last, n))); };
   const protein = Math.round(x.nutrition.protein);
 

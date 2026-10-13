@@ -10,7 +10,7 @@ import { Avatar, List, Row } from "@/components/ui";
 import { HABITS } from "@/data/content";
 import { addDays, daysBetween, fmt, today, weekDates, weekStart } from "@/data/dates";
 import { sessionsByMonth, strengthYear } from "@/data/sessions";
-import { change, weight } from "@/data/units";
+import { change, LB_PER_KG, weight } from "@/data/units";
 import { habitWeekGrid, sessionTarget } from "@/state/habits";
 import { sharePrescriberPack } from "@/state/prescriber";
 import { habitSlots, recentScores, scoreHistory, weekHabits } from "@/state/score";
@@ -20,7 +20,7 @@ import { avg7, sessionsInWeek, stageCaption, steadyZone, useApp, type AppState, 
 import { radius, space, useColors, useLargeText } from "@/theme";
 
 /** A short axis label in their units: "78" or "12st 5". */
-const axisLabel = (kg: number, units: Units) => (units === "kg" ? kg.toFixed(0) : weight(kg, units).replace(" st ", "st ").replace(" lb", ""));
+const axisLabel = (kg: number, units: Units) => (units === "kg" ? kg.toFixed(0) : units === "lb" ? (kg * LB_PER_KG).toFixed(0) : weight(kg, units).replace(" st ", "st ").replace(" lb", ""));
 
 /** The 7-day average for each of the last 28 days, with the steady zone behind it. With `bare` (just the trend), the
  *  line and the zone only: no numbers on the axis or in the description. */

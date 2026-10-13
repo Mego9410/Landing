@@ -6,7 +6,7 @@ import { Button } from "@/components/Button";
 import { Screen } from "@/components/Screen";
 import { Choices, Field, Header } from "@/components/ui";
 import { today } from "@/data/dates";
-import { kgFromStLb } from "@/data/units";
+import { kgFromStLb, LB_PER_KG } from "@/data/units";
 import { saveWeight } from "@/state/appleHealth";
 import { logMeal, logProtein } from "@/state/habits";
 import { dayLog, set, useApp } from "@/state/store";
@@ -14,18 +14,18 @@ import { toast } from "@/state/toast";
 import { space } from "@/theme";
 
 const MEALS = ["Breakfast", "Lunch", "Dinner", "Snack"] as const;
-const LB_PER_KG = 2.20462;
 
 /** T2 Quick log: protein for a meal and today's weight, in one go. Weight is in the person's chosen units. */
 export default function QuickLog() {
   const s = useApp();
-  const stlb = s.settings.units === "stlb";
+  const stlb = s.settings.units === "stlb", lbOnly = s.settings.units === "lb";
   const existing = s.weights.find((w) => w.date === today() && w.source === "Logged by you")?.kg;
   const safe = s.settings.safeMode, log = dayLog(s);
   const [meal, setMeal] = useState<string>(MEALS.find((m) => log.protein?.[m] == null && !log.meals?.includes(m)) ?? "Snack");
   const already = log.protein?.[meal];
   const [protein, setProtein] = useState("");
-  const [kgText, setKgText] = useState(existing != null && !stlb ? String(existing) : "");
+  // One field for kilograms, or for pounds alone (the US way); two for stones and pounds.
+  const [kgText, setKgText] = useState(existing != null && !stlb ? (lbOnly ? (existing * LB_PER_KG).toFixed(1) : String(existing)) : "");
   const lbTotal = existing != null ? Math.round(existing * LB_PER_KG) : null;
   const [stText, setStText] = useState(lbTotal != null && stlb ? String(Math.floor(lbTotal / 14)) : "");
   const [lbText, setLbText] = useState(lbTotal != null && stlb ? String(lbTotal % 14) : "");
@@ -37,9 +37,9 @@ export default function QuickLog() {
     const g = protein.trim() === "" ? null : num(protein);
     let kg: number | null = null;
     if (stlb) { if (stText.trim() !== "" || lbText.trim() !== "") kg = kgFromStLb(num(stText || "0"), num(lbText || "0")); }
-    else if (kgText.trim() !== "") kg = num(kgText);
+    else if (kgText.trim() !== "") kg = lbOnly ? num(kgText) / LB_PER_KG : num(kgText);
     if (g != null && !(g >= 0 && g <= 150)) e.protein = "That looks high for one meal. Check the number and try again.";
-    if (kg != null && !(kg >= 30 && kg <= 300)) e.weight = stlb ? "Enter your weight in stones and pounds, like 12 st 5 lb." : "Enter your weight in kilograms, like 78.4.";
+    if (kg != null && !(kg >= 30 && kg <= 300)) e.weight = stlb ? "Enter your weight in stones and pounds, like 12 st 5 lb." : lbOnly ? "Enter your weight in pounds, like 172.8." : "Enter your weight in kilograms, like 78.4.";
     setErrors(e);
     if (Object.keys(e).length) return;
     // In Habit Only mode a meal can be logged without grams: it still counts as protein at that meal.
@@ -73,7 +73,7 @@ export default function QuickLog() {
           {errors.weight ? <AppText variant="caption" color="roseInk">{errors.weight}</AppText> : null}
         </View>
       ) : (
-        <Field label="Today's weight (optional)" value={kgText} onChangeText={setKgText} keyboardType="decimal-pad" suffix="kg" placeholder="78.4" error={errors.weight} />
+        <Field label="Today's weight (optional)" value={kgText} onChangeText={setKgText} keyboardType="decimal-pad" suffix={lbOnly ? "lb" : "kg"} placeholder={lbOnly ? "172.8" : "78.4"} error={errors.weight} />
       )}
       <Button label="Save" block onPress={save} />
     </Screen>

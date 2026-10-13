@@ -5,6 +5,7 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Chip, Lede, OnbCard, OnbScreen, TickOpt, Title } from "@/components/Onboarding";
 import { HEALTH_QUESTIONS, HEALTH_VERSION, NOTES, REFER } from "@/data/health";
+import { HELPLINE, useRegion } from "@/data/region";
 import { applyHealth } from "@/state/health";
 import { set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
@@ -14,7 +15,7 @@ import { space, useColors } from "@/theme";
  *  sessions until they've checked; pregnancy or kidney disease shows a referral note to tick through; gentle answers
  *  adjust sessions; an eating disorder hides weight. Also the 12-weekly re-check from Today or Settings (`?recheck=1`). */
 export default function HealthCheck() {
-  const s = useApp(), c = useColors();
+  const s = useApp(), c = useColors(), region = useRegion();
   const recheck = useLocalSearchParams<{ recheck?: string }>().recheck === "1";
   const [answers, setAnswers] = useState<Record<string, boolean | undefined>>(() => (recheck || s.health.checkedAt ? { ...s.health.answers } : {}));
   const [gpChecked, setGpChecked] = useState(s.health.gpCleared);
@@ -82,7 +83,7 @@ export default function HealthCheck() {
         <OnbCard style={{ marginTop: space[3], gap: space[2] }}>
           <AppText weight="800">We’ll adjust your plan</AppText>
           {notes.map((n) => <AppText key={n} color="inkMuted">{n}</AppText>)}
-          {answers.eating ? <Button label="Call Beat’s helpline" variant="secondary" onPress={() => Linking.openURL("tel:08088010677")} /> : null}
+          {answers.eating ? <Button label={`Call ${HELPLINE[region].name}’s helpline`} variant="secondary" onPress={() => Linking.openURL(HELPLINE[region].tel)} /> : null}
         </OnbCard>
       ) : null}
     </OnbScreen>

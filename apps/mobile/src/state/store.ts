@@ -7,6 +7,7 @@ import type { Week } from "@landing/engine";
 import { habitsForWeek, OWN_HABITS, phaseOf, type Phase, type PhaseKey } from "@/data/content";
 import { addDays, daysBetween, today, weekDates, weekdayIndex, weekStart } from "@/data/dates";
 import { STARTER } from "@/data/journal";
+import type { Region } from "@/data/region";
 import { REMINDER_DEFAULTS, type Reminders } from "@/data/reminders";
 import type { Program } from "@/data/program";
 
@@ -62,7 +63,7 @@ export interface DayLog {
   meals?: string[];
 }
 
-export type Units = "kg" | "stlb";
+export type Units = "kg" | "stlb" | "lb";
 
 export type Theme = "system" | "light" | "dark";
 
@@ -86,7 +87,7 @@ export interface AppState {
   demos: { who: string; still: boolean; ghost: boolean };
   lessonsRead: Record<number, boolean>;
   coach: { messages: { from: "you" | "coach"; text: string; redirect?: boolean }[] };
-  settings: { safeMode: boolean; /** Light, dark, or follow the phone (the default). */ theme?: Theme; units: Units; reminders: Reminders; appleHealth: boolean; /** The reminder two days before a free trial ends; on unless turned off on the paywall. */ trialReminder?: boolean };
+  settings: { safeMode: boolean; /** Light, dark, or follow the phone (the default). */ theme?: Theme; /** UK or US words, measures and helpline; follows the phone's region until chosen (data/region.ts). */ region?: Region; units: Units; reminders: Reminders; appleHealth: boolean; /** The reminder two days before a free trial ends; on unless turned off on the paywall. */ trialReminder?: boolean };
   journal: { questions: string[]; entries: Record<string, JournalEntry> };
   /** When the person accepted the health information at the start, and which wording they saw. */
   disclaimer: { acceptedAt: string; version: number } | null;

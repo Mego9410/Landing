@@ -6,6 +6,7 @@ import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
 import { LOCKUP_SVG } from "@/data/brand";
 import { addDays, fmt, today, weekDates, weekStart } from "@/data/dates";
+import { localise } from "@/data/region";
 import { weight } from "@/data/units";
 import { habitSlots } from "./score";
 import { avg7, jabStopped, sessionsInWeek, stageLabel, type AppState } from "./store";
@@ -59,7 +60,8 @@ export function prescriberHtml(s: AppState): string {
 
 /** Makes the PDF and opens the share sheet (or the print dialog on the web). */
 export async function sharePrescriberPack(s: AppState) {
-  const html = prescriberHtml(s);
+  // In the person's country's words ("doctor", "shot"); weights are already in their units.
+  const html = localise(prescriberHtml(s));
   if (Platform.OS === "web") {
     // expo-print on the web prints the current page, so open the summary in its own window and print that.
     const w = window.open("", "_blank");

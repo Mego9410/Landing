@@ -9,10 +9,14 @@ import { sessionsPaused } from "./health";
 import type { AppState } from "./store";
 import { trialReminderAt } from "@/data/trial";
 import { checkInSchedule, renewalMessage, renewalReminderAt, trialMessage as trialMessageFor, type Chosen } from "@/data/reminders";
-export type { Reminders } from "@/data/reminders";
+import { localise } from "@/data/region";
 import { STORE_WORDS } from "./storeWords";
+export type { Reminders } from "@/data/reminders";
 /** The trial reminder's wording in this phone's store's words. */
 export const trialMessage = (until: string, chosen: Chosen = {}) => trialMessageFor(until, chosen, STORE_WORDS);
+
+/** A notification's words for the person's country (data/region.ts). */
+const words = (m: { title: string; body: string }) => ({ title: localise(m.title), body: localise(m.body) });
 
 const supported = Platform.OS === "ios" || Platform.OS === "android";
 // expo-notifications counts weekdays from Sunday = 1; ours start at Monday = 0.
@@ -67,7 +71,7 @@ export async function trialReminder(until: string | null, started: string | null
   if (!allowed) return;
   await Notifications.scheduleNotificationAsync({
     identifier: TRIAL_ID,
-    content: { ...trialMessage(until, chosen), data: { url: "/settings" } },
+    content: { ...words(trialMessage(until, chosen)), data: { url: "/settings" } },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when },
   });
 }
@@ -82,7 +86,7 @@ export async function renewalReminder(until: string | null, price: string | null
   if (!when || !(await notificationsAllowed())) return;
   await Notifications.scheduleNotificationAsync({
     identifier: RENEWAL_ID,
-    content: { ...renewalMessage(until, price), data: { url: "/settings" } },
+    content: { ...words(renewalMessage(until, price)), data: { url: "/settings" } },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: when },
   });
 }
@@ -114,7 +118,7 @@ export async function applyReminders(s: AppState) {
     for (const n of checkInSchedule(s, r.checkIn.hour, r.checkIn.minute, new Date())) {
       await Notifications.scheduleNotificationAsync({
         identifier: `check-in-${n.day}`,
-        content: { title: n.title, body: n.body, data: { url: "/journal" } },
+        content: { ...words(n), data: { url: "/journal" } },
         trigger: { type: DATE, date: n.at },
       });
     }
@@ -122,14 +126,14 @@ export async function applyReminders(s: AppState) {
   if (r.sessions.on && !sessionsPaused(s)) {
     for (const d of r.sessions.days) {
       await Notifications.scheduleNotificationAsync({
-        content: { title: "Strength session today", body: "About 25 minutes. The easier version of any move is a tap away." },
+        content: words({ title: "Strength session today", body: "About 25 minutes. The easier version of any move is a tap away." }),
         trigger: { type: WEEKLY, weekday: expoWeekday(d), hour: r.sessions.hour, minute: r.sessions.minute },
       });
     }
   }
   if (r.planning.on) {
     await Notifications.scheduleNotificationAsync({
-      content: { title: "Next week's meals", body: "Ten minutes to pick them, then one shopping list for the lot." },
+      content: words({ title: "Next week's meals", body: "Ten minutes to pick them, then one shopping list for the lot." }),
       trigger: { type: WEEKLY, weekday: expoWeekday(6), hour: 17, minute: 0 },
     });
   }

@@ -9,6 +9,7 @@ import { Card } from "@/components/Card";
 import { MadeForYou, MealVerdict } from "@/components/meals";
 import { Screen } from "@/components/Screen";
 import { DraftNote, Header, List, Pill, Stepper } from "@/components/ui";
+import { amount } from "@/data/region";
 import { dayName, mealAt, profileFor, px, saveWeekFor, SLOT_NAME, SLOT_TONE, weekFor, type Which } from "@/state/food";
 import { set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
@@ -97,7 +98,7 @@ export default function Recipe() {
                   {l.topUp && x.topUp ? <AppText variant="caption" color="sageInk">{x.topUp.label}, to keep the protein up</AppText> : null}
                   {ing.pantry ? <AppText variant="caption" color="inkMuted">From the cupboard</AppText> : null}
                 </View>
-                <AppText variant="caption" weight="700">{quantity(l.i, l.g * portions)}</AppText>
+                <AppText variant="caption" weight="700">{amount(quantity(l.i, l.g * portions))}</AppText>
               </View>
             );
           })}

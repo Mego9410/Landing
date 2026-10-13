@@ -22,6 +22,7 @@ import { loadTimers } from "@/state/timers";
 import { applyCriticalUpdate } from "@/state/updates";
 import { get, hydrate, useApp } from "@/state/store";
 import { applyTheme, loadTheme } from "@/state/theme";
+import { deviceRegion, setRegion } from "@/data/region";
 import { space, useColors } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -86,6 +87,13 @@ function ThemeSync() {
   return null;
 }
 
+/** Keeps the words, measures and helpline in line with the country setting (or the phone's region). */
+function RegionSync() {
+  const r = useApp().settings.region;
+  useEffect(() => { setRegion(r ?? deviceRegion()); }, [r]);
+  return null;
+}
+
 function RootLayout() {
   const c = useColors();
   const [loaded, error] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold, Nunito_400Regular, Nunito_500Medium, Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold });
@@ -120,6 +128,7 @@ function RootLayout() {
     <View style={{ flex: 1, backgroundColor: c.surface }}>
       {ready ? <>
       <ThemeSync />
+      <RegionSync />
       <PlanGate />
       <StatusBar style={intro ? "light" : "auto"} />
       <Sentry.ErrorBoundary fallback={({ resetError }) => <Fallback resetError={resetError} />}>

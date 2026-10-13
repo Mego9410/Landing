@@ -12,6 +12,7 @@ import { Screen } from "@/components/Screen";
 import { Choices, Header, List, Row, Section, ToggleRow } from "@/components/ui";
 import { fmt, isoDate, today } from "@/data/dates";
 import { renewalMessage, renewalSoon } from "@/data/reminders";
+import { deviceRegion, type Region } from "@/data/region";
 import { backupAllowed, demoState, freshState, replace, set, setWeek, stageLabel, stageOf, useApp, weekOf, type Theme, type Units } from "@/state/store";
 import { toast } from "@/state/toast";
 import { available, connect, disconnect } from "@/state/appleHealth";
@@ -118,8 +119,17 @@ export default function Settings() {
           </List>
           <AppText weight="700">Appearance</AppText>
           <Choices label="Appearance" value={s.settings.theme ?? "system"} onChange={(v) => set((st) => { st.settings.theme = v as Theme; })} options={[{ id: "system", label: "Match my phone" }, { id: "light", label: "Light" }, { id: "dark", label: "Dark" }]} />
+          <AppText weight="700">Country</AppText>
+          <Choices label="Country" value={s.settings.region ?? deviceRegion()} options={[{ id: "uk", label: "United Kingdom" }, { id: "us", label: "United States" }]}
+            onChange={(v) => set((st) => {
+              // Words, recipe measures and the helpline follow the country; weight units move with it unless already chosen otherwise.
+              st.settings.region = v as Region;
+              if (v === "us" && st.settings.units !== "lb") st.settings.units = "lb";
+              if (v === "uk" && st.settings.units === "lb") st.settings.units = "stlb";
+            })} />
+          <AppText variant="caption" color="inkMuted">Sets the words, recipe measures and helpline you see.</AppText>
           <AppText weight="700">Units</AppText>
-          <Choices label="Units" value={s.settings.units} onChange={(v) => set((st) => { st.settings.units = v as Units; })} options={[{ id: "kg", label: "Kilograms" }, { id: "stlb", label: "Stones and pounds" }]} />
+          <Choices label="Units" value={s.settings.units} onChange={(v) => set((st) => { st.settings.units = v as Units; })} options={[{ id: "kg", label: "Kilograms" }, { id: "stlb", label: "Stones and pounds" }, { id: "lb", label: "Pounds" }]} />
         </View>
       </Section>
       {billingEnabled() && !s.demo ? <Section title="SUBSCRIPTION">

@@ -7,6 +7,7 @@ import { Card } from "@/components/Card";
 import { Icon } from "@/components/Icon";
 import { Screen } from "@/components/Screen";
 import { Header, List } from "@/components/ui";
+import { amount } from "@/data/region";
 import { dayName, nextDate, profileFor, weekFor, type Which } from "@/state/food";
 import { set, useApp } from "@/state/store";
 import { space, useColors } from "@/theme";
@@ -52,7 +53,7 @@ export default function Shopping() {
             {a.items.map((it, i) => {
               const on = !!ticked[it.id];
               return (
-                <Pressable key={it.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={`${it.total} ${it.name}, buy ${it.label}`} onPress={() => tick(it.id)}
+                <Pressable key={it.id} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={`${amount(it.total)} ${it.name}, buy ${amount(it.label)}`} onPress={() => tick(it.id)}
                   style={{ flexDirection: "row", gap: space[3], paddingVertical: space[3], paddingHorizontal: space[4], borderTopWidth: i ? 1 : 0, borderTopColor: c.line }}>
                   <View style={{ width: 26, height: 26, borderRadius: 8, marginTop: 1, alignItems: "center", justifyContent: "center", backgroundColor: on ? c.sageInk : "transparent", borderWidth: on ? 0 : 2, borderColor: c.inkMuted }}>
                     {on ? <Icon name="check" size={16} color={c.surfaceRaised} strokeWidth={2.6} /> : null}
@@ -60,12 +61,12 @@ export default function Shopping() {
                   <View style={{ flex: 1, gap: 3, opacity: on ? 0.55 : 1 }}>
                     <View style={{ flexDirection: "row", justifyContent: "space-between", gap: space[2] }}>
                       <AppText weight="800" style={{ flex: 1, textDecorationLine: on ? "line-through" : "none" }}>{it.name}</AppText>
-                      <AppText weight="800">{it.total}</AppText>
+                      <AppText weight="800">{amount(it.total)}</AppText>
                     </View>
                     {it.uses.length > 1
-                      ? it.uses.map((u, k) => <AppText key={k} variant="caption" color="inkMuted">{u.amount} · {u.name}, {dayName(u.day).slice(0, 3)}</AppText>)
+                      ? it.uses.map((u, k) => <AppText key={k} variant="caption" color="inkMuted">{amount(u.amount)} · {u.name}, {dayName(u.day).slice(0, 3)}</AppText>)
                       : <AppText variant="caption" color="inkMuted">{it.uses[0].name}, {dayName(it.uses[0].day).slice(0, 3)}</AppText>}
-                    <AppText variant="caption">Buy {it.label}</AppText>
+                    <AppText variant="caption">Buy {amount(it.label)}</AppText>
                   </View>
                 </Pressable>
               );

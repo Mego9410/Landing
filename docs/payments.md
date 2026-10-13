@@ -145,3 +145,44 @@ about **51 seconds before** the trial converts. To test:
 5. Cancelling in Settings → Manage subscription before then removes the reminder.
 
 Sandbox renewals repeat up to 12 times a day, then stop.
+
+## Offer codes and free access
+
+Apple's guideline 3.1.1 doesn't allow an app to unlock anything with codes of its own, so Steadie has no code box of
+its own. Codes are made in App Store Connect (iPhone) and the Play Console (Android), and typed into the store's own
+screen. A redeemed code arrives in RevenueCat like any purchase and unlocks the `plan` entitlement.
+
+**In the app:**
+- **Have a code?** on the paywall at the end of onboarding opens Apple's redemption sheet (Google Play's redeem page
+  on Android).
+- **Settings → Subscription → Redeem a code** does the same at any time.
+- **Settings → Subscription → Send my Steadie ID** shares this phone's RevenueCat ID, for support and for free access.
+- Opening the code screen sends the `offer_code_opened` event.
+
+### Making an offer code (App Store Connect)
+
+1. Go to **Monetisation → Subscriptions → Steadie**, open Steadie Yearly or Steadie Monthly, then go to
+   **Subscription Prices → Offer Codes → Create**.
+2. Choose who can redeem the code: new, active or lapsed subscribers. Then choose the countries and the offer type:
+   - **Free** for a set time.
+   - **Pay as you go** at a lower price for a number of periods.
+   - **Pay up front** for one period.
+3. Add codes to the offer:
+   - **Custom code:** one word everyone uses, such as `FOUNDING`, with a redemption limit and an end date.
+   - **One-time codes:** a batch of single-use codes, downloaded as a file.
+4. Apple sends redeemers back to full price when the offer ends unless they cancel, and says so on its sheet.
+
+Google Play: in the Play Console, go to **Monetize → Promo codes** for free periods, or use a subscription offer with
+eligibility set to developer-determined.
+
+### Free access for testers, friends and family
+
+- **TestFlight testers** never pay: purchases there use the sandbox.
+- **Friends and family:**
+  1. They tap **Send my Steadie ID** and send it to you.
+  2. In RevenueCat, go to **Customers**, search for that ID, and use **Grant promotional entitlement**. Choose `plan`
+     and a duration, up to Lifetime.
+  3. Nothing is charged. Settings shows "Free access".
+  4. The grant belongs to that ID. If they delete the app, they need to send their new ID.
+- **Several people at once:** make a free offer code instead. For example, `STEADIEFAMILY`: free for 1 year, Yearly
+  plan, limited to 50 redemptions. They'd need to cancel before the year ends if they don't want to carry on.

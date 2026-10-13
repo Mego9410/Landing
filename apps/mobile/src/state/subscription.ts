@@ -45,10 +45,12 @@ async function priceOf(productId: string): Promise<string | null> {
 function remember(info: CustomerInfo, askForReminder = false) {
   const e = info.entitlements.active[ENTITLEMENT];
   const trial = e?.periodType?.toUpperCase() === "TRIAL";
-  const plan = !e ? null : /annual|year/i.test(e.productIdentifier) ? "yearly" : "monthly";
+  // Free access granted in RevenueCat's dashboard: no store product, nothing to renew and nothing paid.
+  const gift = e?.periodType?.toUpperCase() === "PROMOTIONAL" || e?.store === "PROMOTIONAL";
+  const plan = !e || gift ? null : /annual|year/i.test(e.productIdentifier) ? "yearly" : "monthly";
   const ended = !e && !!info.entitlements.all[ENTITLEMENT];
   const before = get().subscription;
-  set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false, ended }; }, { quiet: true });
+  set((s) => { s.subscription = { active: !!e, checkedAt: new Date().toISOString(), plan, trial, gift, until: e?.expirationDate ?? null, willRenew: e?.willRenew ?? false, ended }; }, { quiet: true });
   const wanted = get().settings.trialReminder !== false;
   const trialUntil = e && trial && e.willRenew && wanted ? e.expirationDate : null;
   const renewUntil = e && !trial && plan === "yearly" && e.willRenew ? e.expirationDate : null;
@@ -59,9 +61,9 @@ function remember(info: CustomerInfo, askForReminder = false) {
   // Plan reminders stop while the subscription isn't active and come back when it is.
   if (!!before?.active !== !!e) refreshReminders(get());
   // The first time this install sees a paid (not trial) subscription: after a trial converts, or bought outright.
-  if (e && !trial) install().then((i) => { if (!i.paidSent) { updateInstall({ paidSent: true }); track("subscription_paid", { plan: plan ?? "unknown" }); } }).catch(() => {});
+  if (e && !trial && !gift) install().then((i) => { if (!i.paidSent) { updateInstall({ paidSent: true }); track("subscription_paid", { plan: plan ?? "unknown" }); } }).catch(() => {});
   // Funnel: a paid period rolling on to the next, and a subscription that has ended. Seen as changes on this phone.
-  if (e && !trial && before?.active && !before.trial && before.until && e.expirationDate && e.expirationDate > before.until) track("subscription_renewed", { plan: plan ?? "unknown" });
+  if (e && !trial && !gift && before?.active && !before.trial && before.until && e.expirationDate && e.expirationDate > before.until) track("subscription_renewed", { plan: plan ?? "unknown" });
   if (!e && ended && before?.active) track("subscription_ended", { plan: before.plan ?? "unknown", trial: !!before.trial });
 }
 
@@ -153,6 +155,19 @@ export async function restore(): Promise<boolean> {
   if (active(info)) track("restore_completed");
   return active(info);
 }
+
+/** Offer codes, made in App Store Connect or the Play Console (see docs/payments.md). Apple doesn't let apps unlock
+ *  anything with codes of their own, so the code is typed into the store's own screen: Apple's redemption sheet on
+ *  iPhone, Google Play's redeem page on Android. A redeemed code arrives like any purchase, through the customer info
+ *  listener (on Android when the app comes back to the front), and unlocks the plan. */
+export async function redeemCode() {
+  track("offer_code_opened");
+  if (ANDROID) { await Linking.openURL("https://play.google.com/redeem"); return; }
+  await Purchases.presentCodeRedemptionSheet();
+}
+
+/** This phone's subscription ID in RevenueCat, so support can find it or give someone free access. */
+export const subscriberId = () => Purchases.getAppUserID();
 
 /** The store's own screen for changing plan or cancelling: Apple's sheet on iPhone, Google Play's subscriptions page
  *  for Steadie on Android. */

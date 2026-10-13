@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import Constants from "expo-constants";
 import * as Updates from "expo-updates";
-import { Linking, Platform, Pressable, View } from "react-native";
+import { Linking, Platform, Pressable, Share, View } from "react-native";
 import { LABELS } from "@landing/engine";
 import { castById } from "@landing/motion";
 import { AppText } from "@/components/AppText";
@@ -20,7 +20,7 @@ import { AccountError, accountsAvailable, backUpNow, deleteAccount, guideEmails,
 import { deleteEverything, shareExport } from "@/state/data";
 import { openWriteReview } from "@/state/review";
 import { sendTestError, sentryOn } from "@/state/sentry";
-import { billingEnabled, manageSubscription, planLocked, plans, restore, STORE_WORDS } from "@/state/subscription";
+import { billingEnabled, manageSubscription, planLocked, plans, redeemCode, restore, STORE_WORDS, subscriberId } from "@/state/subscription";
 import { space } from "@/theme";
 
 /** S1 Settings, with the demo controls the prototype keeps in its test panel. */
@@ -40,7 +40,7 @@ export default function Settings() {
   const [asking, setAsking] = useState<Asking | null>(null);
   const sub = s.subscription;
   const until = sub?.until ? fmt.dayMonth(isoDate(new Date(sub.until))) : null;
-  const subLine = !sub?.active ? "Your logs stay yours either way" : sub.trial ? (sub.willRenew ? `Free trial ends ${until}` : `Free trial ends ${until}, then stops`) : sub.willRenew ? `Renews ${until}` : `Ends ${until}`;
+  const subLine = !sub?.active ? "Your logs stay yours either way" : sub.gift ? (until ? `Free until ${until}` : "Free, from Steadie") : sub.trial ? (sub.willRenew ? `Free trial ends ${until}` : `Free trial ends ${until}, then stops`) : sub.willRenew ? `Renews ${until}` : `Ends ${until}`;
   const showAccount = accountsAvailable() && !s.demo;
   const locked = planLocked(s);
   const pregnant = !!s.health.answers.pregnant;
@@ -134,9 +134,11 @@ export default function Settings() {
       </Section>
       {billingEnabled() && !s.demo ? <Section title="SUBSCRIPTION">
         <List>
-          <Row first title={sub?.active ? (sub.plan === "yearly" ? "Yearly plan" : sub.plan === "monthly" ? "Monthly plan" : "Your plan") : "Not subscribed"} sub={subLine} chevron={false} />
+          <Row first title={sub?.active ? (sub.gift ? "Free access" : sub.plan === "yearly" ? "Yearly plan" : sub.plan === "monthly" ? "Monthly plan" : "Your plan") : "Not subscribed"} sub={subLine} chevron={false} />
           <Row title="Manage subscription" sub={`Change plan or cancel, in ${Platform.OS === "android" ? "Google Play" : "your Apple account"}`} onPress={() => manageSubscription().catch(() => toast(`Couldn't open your ${Platform.OS === "android" ? "Google Play" : "Apple"} subscriptions.`))} />
           <Row title="Restore purchases" onPress={() => restore().then((ok) => toast(ok ? "Your subscription is back." : `We couldn't find a subscription for this ${STORE_WORDS.account}.`), () => toast("Couldn't restore just now. Try again in a moment."))} />
+          <Row title="Redeem a code" sub={`An offer code from Steadie, entered in ${Platform.OS === "android" ? "Google Play" : "the App Store"}`} onPress={() => redeemCode().catch(() => toast("Couldn't open the code screen just now. Try again in a moment."))} />
+          <Row title="Send my Steadie ID" sub="For help with your subscription, or free access from us" onPress={() => subscriberId().then((id) => Share.share({ message: `My Steadie ID: ${id}` })).catch(() => toast("Couldn't get your Steadie ID just now. Try again in a moment."))} />
           {sub?.active ? null : <Row title="See plans" sub={trial ? `${trial} free, then monthly or yearly` : "Monthly or yearly"} onPress={() => router.push("/paywall")} />}
         </List>
         {renewal ? (

@@ -8,7 +8,7 @@ import { Mark } from "@/components/Mark";
 import { OnbCard, OnbScreen } from "@/components/Onboarding";
 import { addDays, fmt, today } from "@/data/dates";
 import { track } from "@/state/events";
-import { buy, plans, plansProblem, restore, STORE_WORDS, type Plan } from "@/state/subscription";
+import { buy, plans, plansProblem, redeemCode, restore, STORE_WORDS, type Plan } from "@/state/subscription";
 import { set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
@@ -77,6 +77,7 @@ export default function Paywall() {
           : `Renews automatically until you cancel in ${STORE_WORDS.cancelPath}, at least 24 hours before it renews.`}
       </AppText>
       <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
+        <Button label="Have a code?" variant="quiet" onPress={() => redeemCode().catch(() => toast("Couldn’t open the code screen just now. Try again in a moment."))} />
         <Button label="Restore" variant="quiet" onPress={onRestore} />
         <Button label="Terms" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "terms" } })} />
         <Button label="Privacy" variant="quiet" onPress={() => router.push({ pathname: "/legal/[doc]", params: { doc: "privacy" } })} />

@@ -1,15 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
-import Script from "next/script";
 import "@landing/design-system/tokens.css";
 import "./globals.css";
+import { Consent } from "./consent";
 import { appLive, SITE_URL } from "./site";
 
 const fredoka = Fredoka({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-fredoka", display: "swap" });
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-nunito", display: "swap" });
-
-// Google Analytics (gtag.js) measurement ID.
-const GA_ID = "G-T1W38JH2EF";
 
 const siteUrl = SITE_URL; // the live domain on Vercel production even if NEXT_PUBLIC_SITE_URL is missing
 // The launch switch (see app/site.ts): the description and Safari's app banner follow appLive().
@@ -49,13 +46,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en-GB" className={`${fredoka.variable} ${nunito.variable}`}>
       <body>
         {children}
-        <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${GA_ID}');`}
-        </Script>
+        {/* The cookie banner, and Google Analytics once someone accepts it. */}
+        <Consent />
       </body>
     </html>
   );

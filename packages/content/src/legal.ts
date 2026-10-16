@@ -106,15 +106,20 @@ export const APP_PRIVACY: LegalDoc = {
 /** The website's own notice: what the site does and doesn't collect, and the pre-launch waitlist. */
 export const SITE_PRIVACY: LegalDoc = {
   title: "Privacy notice for this website",
-  updated: UPDATED,
+  updated: "16 October 2026",
   intro: `This notice covers the Steadie website. ${COMPANY} ("we") is responsible for it. The app has its own privacy policy.`,
   sections: [
     { heading: "Browsing the website", paras: [
-      "The website doesn't use analytics or advertising trackers, and doesn't ask you for any details. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
+      "The website doesn't use advertising trackers, and doesn't ask you for any details. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
       "There's a UK and a US version of the home page. When you first arrive, Vercel works out roughly which country you're in from your IP address, only to show you the right one; we don't keep it.",
-      "The website sets one cookie, and only if you choose UK or US at the bottom of a page: it holds just \"uk\" or \"us\", so we keep showing you the version you picked, and lasts a year. It's needed for the choice you asked for, so we don't ask for consent first. You can delete it in your browser at any time. There are no other cookies.",
+      "If you choose UK or US at the bottom of a page, the website sets one cookie: it holds just \"uk\" or \"us\", so we keep showing you the version you picked, and lasts a year. It's needed for the choice you asked for, so we don't ask for consent first. You can delete it in your browser at any time.",
       "The calculators on the website work in your browser. What you type into them isn't sent to us or anyone else.",
       "Download links take you to Apple's App Store, which has its own privacy policy.",
+    ] },
+    { heading: "Analytics cookies, only if you agree", paras: [
+      "We'd like to use Google Analytics to understand how people find and use the website, such as which pages they visit, how long they stay and roughly where they are, so we can make it better. It only runs if you press Accept on the cookie banner. Until then, nothing from Google loads and no analytics cookies are set.",
+      "If you accept, Google Analytics sets cookies named _ga and _ga_T1W38JH2EF, which last up to two years, and collects your IP address, device and browser details and the pages you view. Google LLC handles this for us; it may process it in the US, with the UK's approved safeguards. We don't use it for advertising, and we don't send Google anything you type into the website. Google keeps it for no more than 14 months.",
+      "We remember your answer in your browser's storage (not a cookie), so we don't ask on every page. To change your mind, choose Cookie settings at the bottom of any page. If you withdraw, we delete the Google Analytics cookies and stop using it.",
     ] },
     { heading: "If you joined our waitlist", paras: [
       "Before launch, people could join a waitlist with their email address, the date they gave consent and, if they chose, where they were with their weight-loss medicine (stopped, stopping soon or still on it). That last answer is health information, kept only with explicit consent.",

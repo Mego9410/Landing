@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { LegalDoc } from "@landing/content/legal";
+import { CookieSettingsButton } from "./consent";
 import styles from "./page.module.css";
 
 /** A legal page (app privacy policy or terms), from the text shared with the app. */
@@ -17,6 +18,8 @@ export function LegalPage({ doc }: { doc: LegalDoc }) {
             {s.paras.map((p) => <p key={p}>{p}</p>)}
           </section>
         ))}
+        {/* These pages have no site footer, so the cookie choice can be changed here too. */}
+        <p><CookieSettingsButton /></p>
       </div>
     </main>
   );

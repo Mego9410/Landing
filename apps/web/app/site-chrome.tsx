@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookieSettingsButton } from "./consent";
 import { Lockup } from "./lockup";
 import { appLive, appStoreLink, availability, campaign, HOME, ORG_NAME, type Region } from "./site";
 import styles from "./page.module.css";
@@ -69,6 +70,7 @@ export function SiteFooter({ home = false, region }: { home?: boolean; region?: 
           <p className={styles.footerHead}>Legal</p>
           <Link href="/editorial-policy">Editorial policy</Link>
           <Link href="/privacy">Website privacy notice</Link>
+          <CookieSettingsButton />
           <Link href="/app-privacy">App privacy policy</Link>
           <Link href="/terms">Terms of use</Link>
           <Link href="/us/consumer-health-data">US consumer health data notice</Link>

@@ -6,7 +6,7 @@
 // and the trials live in App Store Connect and RevenueCat (see docs/payments.md), not here.
 import { Linking, Platform } from "react-native";
 import Purchases, { INTRO_ELIGIBILITY_STATUS, LOG_LEVEL, PURCHASES_ERROR_CODE, type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
-import { period } from "@/data/period";
+import { introPhrase, period } from "@/data/period";
 import { track } from "./events";
 import { install, updateInstall } from "./install";
 import { lockRemindersWhen, refreshReminders, renewalReminder, trialReminder } from "./reminders";
@@ -87,8 +87,10 @@ export interface Plan {
   billing: string;
   /** "£1.35 a week", for the yearly plan, from the App Store's own per-week price. */
   weekly: string | null;
-  /** "7 days", when this person can have a free trial on this plan; null otherwise. */
+  /** "7 days" or "1 month", when this person can have a free trial on this plan; null otherwise. */
   trial: string | null;
+  /** A paid introductory price this person can have, as a phrase: "£55.99 for your first year". Null otherwise. */
+  intro: string | null;
   saving?: string;
   /** From a discount code's offering rather than the usual one. */
   discounted: boolean;
@@ -116,12 +118,18 @@ export async function plans(offering?: string | null): Promise<Plan[]> {
       const yearly = pkg.packageType === "ANNUAL";
       const saving = yearly && monthlyPkg ? Math.round((1 - pr.price / (monthlyPkg.product.price * 12)) * 100) : 0;
       const free = ANDROID ? pr.defaultOption?.freePhase?.billingPeriod?.iso8601 ?? null : null;
-      const canTrial = ANDROID ? !!free : !!intro && intro.price === 0 && eligible[pr.identifier]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
+      const introOk = eligible[pr.identifier]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
+      const canTrial = ANDROID ? !!free : !!intro && intro.price === 0 && introOk;
+      // A paid introductory price (a discount code's offer): Google Play's intro phase, or Apple's when this person can have it.
+      const phase = ANDROID ? pr.defaultOption?.introPhase : null;
+      const introText = phase ? introPhrase(phase.price.formatted, phase.billingPeriod.iso8601, phase.billingCycleCount ?? 1)
+        : !ANDROID && intro && intro.price > 0 && introOk ? introPhrase(intro.priceString, intro.period, intro.cycles) : null;
       return {
         pkg, title: yearly ? "Steadie Yearly" : "Steadie Monthly", price: pr.priceString, per: yearly ? "a year" : "a month",
         billing: yearly ? "Billed once a year" : "Billed monthly",
         weekly: yearly && pr.pricePerWeekString ? `${pr.pricePerWeekString} a week` : null,
         trial: canTrial ? period(ANDROID ? free : intro!.period) : null,
+        intro: introText,
         saving: saving > 0 ? `Save ${saving}%` : undefined,
         discounted,
       };

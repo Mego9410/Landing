@@ -155,7 +155,7 @@ unlocks anything by itself. There are three ways to give a discount:
 | --- | --- | --- | --- |
 | **Steadie discount codes** | /admin → Discount codes | The paywall's "Have a discount code?" | Launch prices, partners, creators: any number of codes, limits and dates, counted per code |
 | **App Store / Play offer codes** | App Store Connect, Play Console | Apple's or Google's own sheet (linked from the paywall and Settings) | Free months, and one-off codes Apple or Google hand out |
-| **Free access** | /admin → Free access | Nowhere: given to a Steadie ID | Testers, friends and family (100% off) |
+| **Free access** | /admin → Free access, or a free-access code you approve | Nowhere, or the paywall's code box | Testers, friends and family (100% off) |
 
 ### Steadie discount codes
 
@@ -183,6 +183,48 @@ are 3 to 24 letters, numbers or dashes, and aren't case sensitive. One install c
 code off stops new people using it. If RevenueCat doesn't have the offering, the app says so and shows the usual prices.
 Guessing is limited to 10 tries a minute. Each use is recorded in `discount_code_uses`, and the app sends a
 `code_applied` event.
+
+### The launch offers
+
+Two offers are already in the database, **off** until their store products exist. Both are for new members only: the
+app won't apply them for someone who has had the plan, and Apple and Google only give an introductory offer once per
+person per subscription group, so the stores check it again at purchase.
+
+**`WELCOME20`: first timers, 20% off to start** (offering `welcome20`)
+1. App Store Connect → the **Steadie** group: add `steadie_yearly_welcome20` (1 year, £69.99) and
+   `steadie_monthly_welcome20` (1 month, £12.99). These are the usual prices.
+2. Give each an **introductory offer**, for new subscribers, in all countries:
+   - Yearly: **pay up front**, 1 year, £55.99.
+   - Monthly: **pay as you go**, 3 months, £10.39, or the nearest price point Apple offers.
+
+   The paywall then shows "£55.99 for your first year" under the plan, and the renewal wording reads "£55.99 for your
+   first year, then £69.99 a year".
+3. These products have no free week, so this offer replaces the trial.
+
+**`FREEMONTH`: a free month** (offering `freemonth`)
+1. Add `steadie_yearly_freemonth` (£69.99) and `steadie_monthly_freemonth` (£12.99) to the same group.
+2. Give each an introductory offer: **free**, **1 month**, new subscribers. The paywall then says "Start my free month",
+   and its timeline counts a month.
+
+**For both:**
+1. Add the same subscriptions in Google Play, each with a base plan and an offer for new customers: a free month, or a
+   20% intro phase.
+2. In RevenueCat, import the products and attach them to `plan`. Make offerings `welcome20` and `freemonth`, each with
+   `$rc_annual` and `$rc_monthly`.
+3. Add the products to the app version for review.
+4. Turn the codes on in /admin. Change the wording or limits there at any time.
+
+**Admin code: 100% off**
+
+In /admin → Discount codes, add a code with **Gives: Free access (you approve)**. Choose how long the access lasts,
+set a limit (for example 20), and pick a code that's hard to guess, for example `STEADIE-TEAM-7Q4K`. Don't put it in
+the repo. When someone types it on the paywall:
+- the app sends their Steadie ID
+- the request appears under **Free access → Waiting for you**
+- **Approve** gives the access through RevenueCat
+
+The code never unlocks anything by itself, as Apple's rules require. On their phone, the paywall says their access is
+on its way, and moves on once it's on (or they tap Restore).
 
 ### App Store and Google Play offer codes
 

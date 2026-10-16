@@ -7,7 +7,7 @@ import path from "node:path";
 
 process.env.PGLITE_DIR = path.join(mkdtempSync(path.join(tmpdir(), "steadie-codes-")), "db");
 delete process.env.DATABASE_URL;
-const { checkCode, saveCode, setCodeActive, listCodes, grantFreeAccess, listGrants, normaliseCode, accessEnds } = await import("../lib/codes.ts");
+const { checkCode, saveCode, setCodeActive, listCodes, grantFreeAccess, listGrants, listRequests, decideRequest, normaliseCode, accessEnds } = await import("../lib/codes.ts");
 const route = await import("../app/api/codes/route.ts");
 let failures = 0;
 const check = (ok: boolean, label: string) => { console.log(ok ? "PASS" : "FAIL", label); if (!ok) failures++; };
@@ -23,7 +23,7 @@ check(!(await saveCode({ code: "LATER", label: "Later", offering: "founding", st
 check(!(await saveCode({ code: "OLD", label: "Old", offering: "founding", ends_at: "2020-01-01T00:00:00Z" })).error, "ended code saved");
 
 const r1 = await checkCode({ installId: A, code: "Founding" });
-check(r1.ok && r1.applied.offering === "founding" && r1.applied.label === "Founding member price", "good code applies with its offering and label");
+check(r1.ok && r1.applied.kind === "offering" && r1.applied.offering === "founding" && r1.applied.label === "Founding member price", "good code applies with its offering and label");
 check((await checkCode({ installId: A, code: "FOUNDING" })).ok, "same install can apply it again");
 check((await listCodes()).find((c) => c.code === "FOUNDING")?.uses === 1, "one install counts once");
 check((await checkCode({ installId: B, code: "FOUNDING" })).ok, "second install takes the last place");
@@ -66,6 +66,38 @@ check(/RevenueCat doesn't know/.test((await grantFreeAccess({ appUserId: "$RCAno
 const gs = await listGrants();
 check(gs.length === 1 && gs[0].note === "Sam" && gs[0].granted_by === "me@x.com", "grant noted for the admin page");
 check(accessEnds("lifetime") === null && accessEnds("month", new Date("2026-01-31T00:00:00Z"))!.toISOString().startsWith("2026-03"), "durations");
+
+// The launch offers are there, off until their offerings exist, and for new members only.
+const seeded = await listCodes();
+check(["WELCOME20", "FREEMONTH"].every((c) => seeded.find((x) => x.code === c && !x.active && x.new_only && x.kind === "offering")), "launch offers seeded, off and new members only");
+check(!(await checkCode({ installId: A, code: "WELCOME20" })).ok, "seeded offers not usable until turned on");
+await setCodeActive({ code: "WELCOME20", active: true });
+const had = await checkCode({ installId: C, code: "welcome20", hadPlan: true });
+check(!had.ok && had.status === 403 && /new to Steadie/.test(had.error), "new-members code refused after a plan");
+const w = await checkCode({ installId: C, code: "welcome20", hadPlan: false });
+check(w.ok && w.applied.kind === "offering" && w.applied.offering === "welcome20", "new member gets the welcome offer");
+
+// A free-access code files a request; nothing is granted until approved.
+check(!!(await saveCode({ code: "TEAM-FREE", code_kind: "free", label: "Free access", free_duration: "forever" })).error, "free code needs a real duration");
+check(!(await saveCode({ code: "TEAM-FREE", code_kind: "free", label: "Free access from the Steadie team", free_duration: "lifetime", max_uses: "20" })).error, "free-access code saved");
+const nf = await checkCode({ installId: A, code: "team-free" });
+check(!nf.ok && /can’t be used/.test(nf.error), "free code needs the Steadie ID");
+const f1 = await checkCode({ installId: A, code: "team-free", appUserId: "$RCAnonymousID:friend1" });
+check(f1.ok && f1.applied.kind === "free" && !("offering" in f1.applied), "free code answers with a request, not an offering");
+await checkCode({ installId: A, code: "team-free", appUserId: "$RCAnonymousID:friend1" });
+let reqs = await listRequests();
+check(reqs.length === 1 && reqs[0].status === "pending" && reqs[0].app_user_id === "$RCAnonymousID:friend1" && reqs[0].free_duration === "lifetime", "one pending request, however many times it's typed");
+const before = calls.length;
+check(!(await decideRequest({ id: reqs[0].id, approve: true }, "me@x.com", fake)).error, "approved");
+const approveCall = calls.slice(before).find((c) => c.url.includes("grant_entitlement"));
+check(!!approveCall && approveCall.url.includes(encodeURIComponent("$RCAnonymousID:friend1")), "approving grants in RevenueCat");
+check(/already been answered/.test((await decideRequest({ id: reqs[0].id, approve: true }, "me@x.com", fake)).error ?? ""), "can't approve twice");
+await checkCode({ installId: B, code: "team-free", appUserId: "$RCAnonymousID:friend2" });
+reqs = await listRequests();
+const r2 = reqs.find((r) => r.app_user_id.endsWith("friend2"))!;
+const n2 = calls.length;
+check(!(await decideRequest({ id: r2.id, approve: false }, "me@x.com", fake)).error && calls.length === n2 && (await listRequests()).find((r) => r.id === r2.id)?.status === "declined", "declining grants nothing");
+check((await listGrants()).some((g) => g.app_user_id === "$RCAnonymousID:friend1" && g.note === "Code TEAM-FREE"), "approved grant noted");
 
 console.log(failures ? `\n${failures} failed` : "\nAll passed");
 process.exit(failures ? 1 : 0);

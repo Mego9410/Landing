@@ -9,3 +9,12 @@ export function period(iso: string | null | undefined): string {
   if (unit === "week") { n *= 7; unit = "day"; }
   return `${n} ${unit}${n === 1 ? "" : "s"}`;
 }
+
+/** A paid introductory price as people read it: "£55.99 for your first year", "£10.39 a month for your first 3 months". */
+export function introPhrase(price: string, iso: string, cycles: number): string | null {
+  const p = period(iso);
+  if (!p) return null;
+  const one = p.replace(/^1 /, ""); // "1 year" → "year"; "3 months" stays
+  if (cycles <= 1) return `${price} for your first ${one}`;
+  return `${price} a ${one} for your first ${cycles} ${one}s`;
+}

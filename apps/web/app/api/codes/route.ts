@@ -2,7 +2,7 @@ import { checkCode } from "@/lib/codes";
 import { tooMany } from "@/lib/events";
 
 // Discount codes from the app's paywall (see lib/codes.ts).
-//   POST { installId, code } → 200 { code, label, offering } | 400/404/410 { error } with a sentence the app shows as
+//   POST { installId, code, appUserId?, hadPlan? } → 200 { kind, code, label, offering? } | 400/404/410 { error } with a sentence the app shows as
 //   it is. Limited per IP and per install, so codes can't be guessed by trying many.
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

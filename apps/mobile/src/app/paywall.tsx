@@ -7,7 +7,7 @@ import { Icon } from "@/components/Icon";
 import { Mark } from "@/components/Mark";
 import { OnbCard, OnbScreen } from "@/components/Onboarding";
 import { Field } from "@/components/ui";
-import { addDays, fmt, today } from "@/data/dates";
+import { addDays, daysBetween, fmt, today } from "@/data/dates";
 import { applyCode, codesAvailable, removeCode } from "@/state/codes";
 import { track } from "@/state/events";
 import { buy, plans, plansProblem, redeemCode, restore, STORE_WORDS, type Plan } from "@/state/subscription";
@@ -15,8 +15,15 @@ import { set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
 
-/** "7 days" (or "1 week") to 7. */
-const trialDays = (trial: string | null) => { const n = parseInt(trial ?? "", 10) || 7; return /week/i.test(trial ?? "") ? n * 7 : n; };
+/** How many days a trial lasts from today: "7 days" is 7, "1 week" is 7, "1 month" is the days to this date next month. */
+function trialDays(trial: string | null, from: string) {
+  const n = parseInt(trial ?? "", 10) || 7;
+  if (!/month/i.test(trial ?? "")) return /week/i.test(trial ?? "") ? n * 7 : n;
+  const end = new Date(`${from}T12:00:00Z`);
+  end.setUTCMonth(end.getUTCMonth() + n);
+  return daysBetween(from, end.toISOString().slice(0, 10));
+}
+const firstUpper = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 /** "About £5.83 a month", from the yearly price in the person's own currency. */
 function perMonth(p: Plan) {
   const pr = p.pkg.product;
@@ -79,7 +86,8 @@ export default function Paywall() {
     finally { setBusy(false); }
   }
 
-  const days = trialDays(chosen?.trial ?? null), t = today();
+  const t = today(), days = trialDays(chosen?.trial ?? null, t);
+  const month = /month/i.test(chosen?.trial ?? "");
   const steps = [
     { when: "Today", what: "Your full plan unlocks: meals, strength and morning check-ins.", tone: "#E07A52", icon: "check" as const },
     { when: `Day ${days - 2} · ${fmt.short(addDays(t, days - 2))}`, what: remind ? `We’ll remind you that your trial ends in 2 days.` : "Your trial ends in 2 days. (You’ve turned the reminder off.)", tone: c.butter, icon: "bell" as const },
@@ -88,10 +96,12 @@ export default function Paywall() {
 
   return (
     <OnbScreen footer={<>
-      <Button label={busy ? "One moment…" : chosen?.trial ? `Start my ${days} free days` : "Subscribe"} variant="ink" block disabled={busy || !options?.length} onPress={subscribe} />
+      <Button label={busy ? "One moment…" : chosen?.trial ? (month ? "Start my free month" : `Start my ${days} free days`) : "Subscribe"} variant="ink" block disabled={busy || !options?.length} onPress={subscribe} />
       <AppText variant="caption" color="inkMuted" style={{ textAlign: "center", fontSize: 12, lineHeight: 17 }}>
         {chosen?.trial
           ? `${chosen.trial} free, then ${chosen.price} ${chosen.per}. Renews automatically until you cancel in ${STORE_WORDS.cancelPath}, at least 24 hours before the trial ends or it renews.`
+          : chosen?.intro
+          ? `${firstUpper(chosen.intro)}, then ${chosen.price} ${chosen.per}. Renews automatically until you cancel in ${STORE_WORDS.cancelPath}, at least 24 hours before it renews.`
           : `Renews automatically until you cancel in ${STORE_WORDS.cancelPath}, at least 24 hours before it renews.`}
       </AppText>
       <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap" }}>
@@ -108,7 +118,7 @@ export default function Paywall() {
         </AppText>
       </View>
       <AppText color="inkMuted" style={{ fontSize: 16, lineHeight: 23 }}>
-        {lapsed ? "Your subscription has ended. Everything you logged is still here." : chosen?.trial ? `Start with ${days} days free.${remind ? " We’ll remind you before it ends." : ""}` : "Your plan, check-ins and meals, all in one place."}
+        {lapsed ? "Your subscription has ended. Everything you logged is still here." : chosen?.trial ? `Start with ${month ? "a month" : `${days} days`} free.${remind ? " We’ll remind you before it ends." : ""}` : "Your plan, check-ins and meals, all in one place."}
       </AppText>
 
       {chosen?.trial ? (
@@ -147,19 +157,26 @@ export default function Paywall() {
             const on = i === pick, yearly = o.pkg.packageType === "ANNUAL";
             return (
               <Pressable key={o.pkg.identifier} accessibilityRole="radio" accessibilityState={{ selected: on }} onPress={() => setPick(i)}
-                accessibilityLabel={`${o.title}, ${o.price} ${o.per}${o.trial ? `, ${o.trial} free` : ""}`}
+                accessibilityLabel={`${o.title}, ${o.price} ${o.per}${o.trial ? `, ${o.trial} free` : ""}${o.intro ? `, ${o.intro}` : ""}`}
                 style={{ flex: 1, gap: 3, padding: 14, borderRadius: 20, backgroundColor: on ? c.apricot : c.surfaceRaised, borderWidth: on ? 2 : 1.5, borderColor: on ? c.apricotInk : c.line }}>
                 <AppText weight="800" color={on ? "onPastel" : "apricotInk"} style={{ fontSize: 13 }}>{yearly ? "Matches your 12 months" : "Flexible"}</AppText>
                 <AppText weight="800" color={on ? "onPastel" : "ink"} style={{ fontSize: 18 }}>{yearly ? "Yearly" : "Monthly"}</AppText>
                 <AppText weight="800" color={on ? "onPastel" : "ink"} style={{ fontSize: 16 }}>{o.price} {o.per}</AppText>
-                <AppText variant="caption" weight="700" color={on ? "onPastel" : "inkMuted"} style={{ fontSize: 13 }}>{yearly ? perMonth(o) : "Cancel any month"}</AppText>
+                <AppText variant="caption" weight="700" color={on ? "onPastel" : "inkMuted"} style={{ fontSize: 13 }}>{o.intro ? firstUpper(o.intro) : yearly ? perMonth(o) : "Cancel any month"}</AppText>
               </Pressable>
             );
           })}
         </View>
       )}
 
-      {discount && options ? (
+      {s.freeRequest && !s.subscription?.active ? (
+        <OnbCard style={{ gap: 4 }}>
+          <AppText variant="label" color="sageInk">CODE {s.freeRequest.code} SENT</AppText>
+          <AppText weight="800">Your free access is on its way</AppText>
+          <AppText color="inkMuted">The Steadie team turns it on, usually within a day. This screen moves on by itself once it’s on. If it doesn’t, tap Restore.</AppText>
+          <Button label="Use a different code" variant="quiet" onPress={() => set((st) => { st.freeRequest = null; })} style={{ alignSelf: "flex-start" }} />
+        </OnbCard>
+      ) : discount && options ? (
         <OnbCard style={{ gap: 4 }}>
           <AppText variant="label" color="sageInk">CODE {discount.code}{options[0]?.discounted ? " APPLIED" : ""}</AppText>
           <AppText weight="800">{options[0]?.discounted ? discount.label : "These prices aren’t available just now, so you’re seeing the usual ones."}</AppText>

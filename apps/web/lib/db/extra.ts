@@ -23,6 +23,16 @@ const STATEMENTS = [
   // Discount codes (lib/codes.ts): each points the app's paywall at a RevenueCat offering with discounted store prices.
   sql`CREATE TABLE IF NOT EXISTS "discount_codes" ("code" text PRIMARY KEY NOT NULL, "label" text NOT NULL, "offering" text NOT NULL, "active" boolean DEFAULT true NOT NULL, "starts_at" timestamp with time zone, "ends_at" timestamp with time zone, "max_uses" integer, "uses" integer DEFAULT 0 NOT NULL, "note" text, "created_at" timestamp with time zone DEFAULT now() NOT NULL, "updated_at" timestamp with time zone DEFAULT now() NOT NULL)`,
   sql`CREATE TABLE IF NOT EXISTS "discount_code_uses" ("code" text NOT NULL REFERENCES "discount_codes"("code") ON DELETE cascade, "install_id" text NOT NULL, "created_at" timestamp with time zone DEFAULT now() NOT NULL, CONSTRAINT "discount_code_uses_pk" PRIMARY KEY("code","install_id"))`,
+  // Kinds of code: "offering" shows discounted prices; "free" asks for free access, which an admin approves.
+  sql`ALTER TABLE "discount_codes" ADD COLUMN IF NOT EXISTS "kind" text DEFAULT 'offering' NOT NULL`,
+  sql`ALTER TABLE "discount_codes" ADD COLUMN IF NOT EXISTS "free_duration" text`,
+  sql`ALTER TABLE "discount_codes" ADD COLUMN IF NOT EXISTS "new_only" boolean DEFAULT false NOT NULL`,
+  sql`CREATE TABLE IF NOT EXISTS "free_access_requests" ("id" bigserial PRIMARY KEY NOT NULL, "code" text NOT NULL REFERENCES "discount_codes"("code") ON DELETE cascade, "install_id" text NOT NULL, "app_user_id" text NOT NULL, "status" text DEFAULT 'pending' NOT NULL, "created_at" timestamp with time zone DEFAULT now() NOT NULL, "decided_at" timestamp with time zone, "decided_by" text, CONSTRAINT "free_access_requests_code_user" UNIQUE("code","app_user_id"))`,
+  // The launch offers, off until their RevenueCat offerings exist (docs/payments.md). Turn them on in /admin.
+  sql`INSERT INTO "discount_codes" ("code", "label", "offering", "active", "new_only", "note") VALUES
+    ('WELCOME20', 'Welcome offer: 20% off to start', 'welcome20', false, true, 'First timers: 20% off the first year, or the first 3 months on monthly'),
+    ('FREEMONTH', 'Your first month free', 'freemonth', false, true, 'A month''s free trial instead of a week')
+    ON CONFLICT ("code") DO NOTHING`,
   // Free access given from /admin, for the record: who, for how long, by whom.
   sql`CREATE TABLE IF NOT EXISTS "free_access_grants" ("id" bigserial PRIMARY KEY NOT NULL, "app_user_id" text NOT NULL, "duration" text NOT NULL, "note" text, "granted_by" text NOT NULL, "created_at" timestamp with time zone DEFAULT now() NOT NULL)`,
   sql`CREATE INDEX IF NOT EXISTS "events_name_created_idx" ON "events" USING btree ("name","created_at")`,

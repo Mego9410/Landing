@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 import "@landing/design-system/tokens.css";
 import "./globals.css";
+import { Consent } from "./consent";
 import { appLive, SITE_URL } from "./site";
 
 const fredoka = Fredoka({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-fredoka", display: "swap" });
@@ -43,7 +44,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB" className={`${fredoka.variable} ${nunito.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* The cookie banner, and Google Analytics once someone accepts it. */}
+        <Consent />
+      </body>
     </html>
   );
 }

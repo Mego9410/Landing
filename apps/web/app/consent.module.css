@@ -1,0 +1,44 @@
+.banner {
+  position: fixed;
+  z-index: 50;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: var(--gutter);
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--surface-raised);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  font-size: 15px;
+  line-height: 22px;
+}
+.actions { display: flex; gap: var(--space-3); justify-content: flex-end; flex-wrap: wrap; }
+.primary, .secondary {
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+/* Both choices are the same size and weight, so saying no is as easy as saying yes. */
+.primary { background: var(--ink); color: var(--surface); border: 1px solid var(--ink); }
+.secondary { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+/* Looks like the footer's links (page.module.css .footerGrid nav a). */
+.link {
+  font: inherit;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 3px 0;
+  text-align: left;
+  cursor: pointer;
+  text-underline-offset: 3px;
+}
+.link:hover { text-decoration: underline; }
+@media (max-width: 560px) { .actions > * { flex: 1; } }

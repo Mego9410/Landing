@@ -16,7 +16,7 @@ import { radius, space, useColors } from "@/theme";
 
 const BODY = "M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z";
 
-/** The first screen: a silent loop of the app tour, cut from the intro film, then the headline and the way in. Holding the
+/** The first screen: a silent loop of the real app in a phone (film/welcome-loop), then the headline and the way in. Holding the
  *  film (or the picture, on the earlier versions) for three seconds opens the demo, for previews and App Review.
  *  Versions A, B and C were the earlier welcome test; everyone now sees the film ("F" in the onboarding_started event),
  *  so its start rate can be compared with theirs. They're kept here in case the film doesn't do better. */
@@ -46,7 +46,7 @@ function Footer({ start, signIn, label, variant }: Pick<Props, "start" | "signIn
   );
 }
 
-/** F: the app-tour loop full width at the top, faded into the oat page, then the headline and the way in. */
+/** F: the welcome loop full width at the top, on the page's own ground, then the headline and the way in. */
 function WelcomeF({ start, signIn, demo }: Props) {
   const c = useColors(), insets = useSafeAreaInsets(), { width: W, height: H } = useWindowDimensions();
   // 4:5 like the film, as tall as the screen allows once the words and buttons (about 350 points) have their room.

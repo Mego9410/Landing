@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- The welcome screen's loop: the real app (demo mode) in a phone on the page's own ground, a habit ticked, then a
+     strength session, the meal plan and progress, back to Today. Everything is a function of t (0..T) and t = T draws
+     exactly what t = 0 does, so the video loops without a seam. ?scheme=light|dark -->
+<style>
+@font-face { font-family: N; src: url(fonts/Nunito_800ExtraBold.ttf); font-weight: 800; }
+@font-face { font-family: N; src: url(fonts/Nunito_700Bold.ttf); font-weight: 700; }
+html, body { margin: 0; padding: 0; }
+body { width: 720px; height: 900px; overflow: hidden; position: relative; font-family: N, sans-serif; }
+.abs { position: absolute; left: 0; top: 0; }
+#phone { width: 444px; height: 933px; border-radius: 68px; transform-origin: 50% 30%; }
+#screen { position: absolute; left: 12px; top: 12px; width: 390px; height: 844px; border-radius: 56px; overflow: hidden;
+  transform-origin: 0 0; transform: scale(1.0769); }
+.layer { position: absolute; left: 0; top: 0; width: 390px; height: 844px; overflow: hidden; }
+.layer img.shot { position: absolute; left: 0; top: 44px; width: 390px; height: 1000px; }
+.layer img.tabs { position: absolute; left: 0; top: -156px; width: 390px; height: 1000px; z-index: 4; }
+.status { position: absolute; left: 0; top: 0; width: 390px; height: 44px; z-index: 5; }
+.status b { position: absolute; left: 34px; top: 14px; font-weight: 700; font-size: 15px; letter-spacing: -.2px; }
+.island { position: absolute; left: 140px; top: 10px; width: 110px; height: 32px; border-radius: 16px; background: #0B0A0D; z-index: 6; }
+.chip { position: absolute; display: flex; align-items: center; gap: 12px; padding: 14px 22px 14px 14px; border-radius: 999px;
+  font-weight: 800; font-size: 25px; letter-spacing: -.3px; white-space: nowrap; transform-origin: 50% 50%; }
+.chip i { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.ripple { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; z-index: 8; }
+.blob { position: absolute; border-radius: 999px; }
+</style>
+</head>
+<body>
+<div id="bg" class="abs" style="width:720px;height:900px"></div>
+<div id="glow" class="abs" style="width:720px;height:900px"></div>
+<div id="blobs" class="abs"></div>
+<div id="shadow" class="abs" style="width:400px;height:60px;border-radius:50%;filter:blur(30px)"></div>
+<div id="phone" class="abs">
+  <div id="screen">
+    <div class="island"></div>
+    <div class="status"><b>9:41</b><svg style="position:absolute;right:30px;top:17px" width="68" height="13" viewBox="0 0 68 13"></svg></div>
+    <div id="L_today" class="layer"><img class="tabs" id="tabs_today"><img class="shot" id="img_today"><div id="ov_today" style="position:absolute;left:0;top:0;width:390px;height:844px"></div></div>
+    <div id="L_session" class="layer"><img class="shot" id="img_session"></div>
+    <div id="L_plan" class="layer"><img class="tabs" id="tabs_plan"><img class="shot" id="img_plan"></div>
+    <div id="L_progress" class="layer"><img class="tabs" id="tabs_progress"><img class="shot" id="img_progress"></div>
+    <div id="rip" class="ripple"></div>
+  </div>
+</div>
+<div id="chips" class="abs"></div>
+<script>
+const Q = new URLSearchParams(location.search), DARK = Q.get("scheme") === "dark";
+const K = DARK ? {
+  ground: "#1F1C23", raised: "#2A262F", ink: "#F3EEF4", muted: "#B6AEBC", bezel: "#0F0E12", rim: "#4A4452",
+  apricot: "#EBB394", sage: "#A3C7AD", sky: "#A3C6DB", butter: "#E3C97F", lilac: "#BAADE0", brand: "#F2A27A",
+  glowA: .16, blobA: .14, shadow: "rgba(0,0,0,.55)", chipShadow: "0 10px 30px rgba(0,0,0,.45)", tickFill: "#F3EEF4", tickMark: "#1F1C23",
+} : {
+  ground: "#FBF8F4", raised: "#FFFFFF", ink: "#2E2A33", muted: "#6A6371", bezel: "#2E2A33", rim: "#46404D",
+  apricot: "#F8C8AC", sage: "#CDE3D2", sky: "#CCE2EF", butter: "#F6E5AC", lilac: "#DDD5F2", brand: "#DE6F44",
+  glowA: .55, blobA: .5, shadow: "rgba(110,74,48,.28)", chipShadow: "0 12px 30px rgba(107,74,48,.16)", tickFill: "#2E2A33", tickMark: "#FFFFFF",
+};
+const T = 12;
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const tw = (t, a, b) => clamp((t - a) / (b - a));
+const E = {
+  inOut: (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2,
+  out: (x) => 1 - Math.pow(1 - x, 3),
+  back: (x) => { const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); },
+};
+const mix = (a, b, p) => a + (b - a) * p;
+function hex(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+function mixc(a, b, p) { const x = hex(a), y = hex(b); return `rgb(${x.map((v, i) => Math.round(mix(v, y[i], p))).join(",")})`; }
+
+document.body.style.background = K.ground;
+$("bg").style.background = K.ground;
+const S = DARK ? "dark" : "light";
+["today", "session", "plan", "progress"].forEach((n) => { $("img_" + n).src = `screens/${n}_${S}.png`; });
+["today", "plan", "progress"].forEach((n) => { $("tabs_" + n).src = `screens/tabs-${n}_${S}.png`; });
+$("phone").style.background = K.bezel;
+$("phone").style.boxShadow = `inset 0 0 0 3px ${K.rim}`;
+$("screen").style.background = K.ground;
+document.querySelectorAll(".status").forEach((s) => { s.style.background = K.ground; s.style.color = K.ink; });
+document.querySelector(".status svg").innerHTML = `<g fill="${K.ink}"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3.5" width="3" height="8.5" rx="1"/><rect x="15" y="1" width="3" height="11" rx="1"/>
+  <path d="M30 4.2a8 8 0 0 1 10.8 0l-1.2 1.3a6.2 6.2 0 0 0-8.4 0zM32.3 6.7a4.6 4.6 0 0 1 6.2 0l-1.2 1.3a2.9 2.9 0 0 0-3.8 0zM35.4 9.3l1.4 1.5-1.4 1.4-1.4-1.4z"/>
+  <rect x="44" y="1" width="21" height="11" rx="3.2" fill="none" stroke="${K.ink}" stroke-opacity=".45"/><rect x="46" y="3" width="15" height="7" rx="1.6"/><rect x="66" y="4.5" width="1.6" height="4" rx=".8" fill-opacity=".45"/></g>`;
+$("rip").style.background = DARK ? "rgba(243,238,244,.35)" : "rgba(46,42,51,.18)";
+
+// The tick on "Protein at breakfast" (Today, compact row): circle at (51, 522) on the 390-wide screen, label from x 78 at
+// y 514, detail at y 532. The "2 of 5 done today" pill sits at about (227..344, 303).
+const ov = $("ov_today");
+ov.innerHTML = `
+  <div id="tickCircle" style="position:absolute;left:${51 - 16}px;top:${44 + 522 - 16}px;width:32px;height:32px;border-radius:50%;background:${K.tickFill};display:grid;place-items:center">
+    <svg width="18" height="18" viewBox="0 0 24 24"><path id="tickPath" d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="${K.tickMark}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="22" stroke-dashoffset="22"/></svg></div>
+  <div id="detailHide" style="position:absolute;left:76px;top:${44 + 524}px;width:200px;height:20px;background:${K.raised}"></div>
+  <div id="labelTint" style="position:absolute;left:76px;top:${44 + 501}px;width:150px;height:24px;background:${K.raised}"></div>
+  <div id="strike" style="position:absolute;left:78px;top:${44 + 514}px;height:2px;background:${K.muted};width:0"></div>
+  <canvas id="pill" style="position:absolute;left:220px;top:${44 + 288}px;width:132px;height:30px"></canvas>`;
+// the ticked screenshot's pill ("3 of 5 done today"), pasted over the same spot
+const pillImg = new Image(); pillImg.src = `screens/today_ticked_${S}.png`;
+pillImg.onload = () => { const c = $("pill"); c.width = 396; c.height = 90; c.getContext("2d").drawImage(pillImg, 660, (288) * 3, 396, 90, 0, 0, 396, 90); };
+// the label redrawn muted, so the strike-through reads like the app's own done rows
+const lab = document.createElement("div");
+lab.id = "labelMuted";
+Object.assign(lab.style, { position: "absolute", left: "78px", top: `${44 + 502}px`, font: "700 16px N", color: K.muted, letterSpacing: "-.1px" });
+lab.textContent = "Protein at breakfast";
+ov.appendChild(lab);
+
+// Chips beside the phone.
+const CH = [
+  { id: "c1", text: "Protein at breakfast", dot: K.sage, icon: "check", x: 392, y: 528, t0: 1.35, t1: 3.15, right: true },
+  { id: "c2", text: "25 minutes at home", dot: K.sky, icon: "bar", x: 24, y: 560, t0: 4.15, t1: 6.05 },
+  { id: "c3", text: "Dinner, planned", dot: K.butter, icon: "fork", x: 34, y: 420, t0: 7.1, t1: 8.95 },
+  { id: "c4", text: "A steady week", dot: K.sage, icon: "ring", x: 430, y: 660, t0: 9.85, t1: 11.3, right: true },
+];
+const ICON = {
+  check: `<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="${K.ink === "#2E2A33" ? "#2F6142" : "#1F1C23"}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
+  bar: `<g stroke="${DARK ? "#1F1C23" : "#285E7E"}" stroke-width="2.6" stroke-linecap="round"><path d="M7 12h10"/><path d="M5 8.5v7M19 8.5v7"/><path d="M2.8 10.5v3M21.2 10.5v3"/></g>`,
+  fork: `<g stroke="${DARK ? "#1F1C23" : "#755810"}" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M8 3v18M5 3v5a3 3 0 0 0 6 0V3"/><path d="M17 21V3c-2.5 1.5-3.5 4-3.5 8h3.5"/></g>`,
+  ring: `<circle cx="12" cy="12" r="7.5" fill="none" stroke="${DARK ? "#1F1C23" : "#2F6142"}" stroke-opacity=".3" stroke-width="3"/><path d="M12 4.5a7.5 7.5 0 1 1-7.1 5" fill="none" stroke="${DARK ? "#1F1C23" : "#2F6142"}" stroke-width="3" stroke-linecap="round"/>`,
+};
+CH.forEach((c) => {
+  const d = document.createElement("div");
+  d.className = "chip"; d.id = c.id;
+  Object.assign(d.style, { background: K.raised, color: K.ink, boxShadow: K.chipShadow, top: c.y + "px" });
+  d.innerHTML = `<i style="background:${c.dot}"><svg width="24" height="24" viewBox="0 0 24 24">${ICON[c.icon]}</svg></i>${c.text}`;
+  $("chips").appendChild(d);
+  c.el = d;
+});
+
+// Drifting brand shapes, on paths that repeat every T seconds.
+const BL = [
+  { c: K.apricot, w: 70, h: 30, x: 70, y: 150, r: -28, ax: 14, ay: 18, ph: 0 },
+  { c: K.lilac, w: 40, h: 40, x: 640, y: 120, r: 0, ax: 10, ay: 14, ph: 1.3 },
+  { c: K.sage, w: 86, h: 34, x: 610, y: 690, r: 32, ax: 16, ay: 12, ph: 2.1 },
+  { c: K.butter, w: 30, h: 30, x: 90, y: 760, r: 0, ax: 12, ay: 16, ph: 3.4 },
+  { c: K.sky, w: 58, h: 24, x: 600, y: 470, r: -18, ax: 10, ay: 18, ph: 4.2 },
+  { c: K.apricot, w: 24, h: 24, x: 120, y: 420, r: 0, ax: 8, ay: 12, ph: 5.0 },
+];
+BL.forEach((b) => { const d = document.createElement("div"); d.className = "blob"; Object.assign(d.style, { width: b.w + "px", height: b.h + "px", background: b.c, opacity: K.blobA }); $("blobs").appendChild(d); b.el = d; });
+
+// The timeline. Screens: today -> session (pushed in from the right, after tapping Start) -> plan -> progress -> today.
+const SC = [
+  { id: "today", glow: K.apricot },
+  { id: "session", glow: K.sky },
+  { id: "plan", glow: K.butter },
+  { id: "progress", glow: K.sage },
+];
+// [from, to, start, end, kind]
+const TR = [[0, 1, 3.25, 3.85, "push"], [1, 2, 6.2, 6.8, "slide"], [2, 3, 9.05, 9.65, "slide"], [3, 0, 11.4, 12.0, "slide"]];
+
+function render(t) {
+  t = ((t % T) + T) % T;
+  const TAU = Math.PI * 2;
+  // which screens are showing, and where
+  const pos = { today: null, session: null, plan: null, progress: null };
+  let glowFrom = SC[0].glow, glowTo = SC[0].glow, gp = 0, cur = 0;
+  // the screen that's settled
+  const starts = [0, 3.85, 6.8, 9.65];
+  for (let i = 0; i < 4; i++) if (t >= starts[i]) cur = i;
+  if (t >= 11.4) cur = 3;
+  Object.keys(pos).forEach((k) => pos[k] = null);
+  pos[SC[cur].id] = { x: 0, o: 1, s: 1 };
+  glowFrom = glowTo = SC[cur].glow;
+  for (const [a, b, s0, s1, kind] of TR) {
+    if (t >= s0 && t < s1 || (s1 === 12 && t >= s0)) {
+      const p = E.inOut(tw(t, s0, s1));
+      if (kind === "push") { pos[SC[a].id] = { x: -110 * p, o: 1, s: 1, dim: p * .25 }; pos[SC[b].id] = { x: 390 * (1 - p), o: 1, s: 1, shadow: true }; }
+      else { pos[SC[a].id] = { x: -390 * p, o: 1, s: 1 }; pos[SC[b].id] = { x: 390 * (1 - p), o: 1, s: 1 }; }
+      glowFrom = SC[a].glow; glowTo = SC[b].glow; gp = p;
+    }
+  }
+  // scroll inside each screen
+  const todayScroll = 110 * E.inOut(tw(t, 0.05, 0.75)) * (t < 11 ? 1 : 0);
+  const scroll = { today: todayScroll, session: 70 * E.inOut(tw(t, 4.0, 6.4)), plan: 150 * E.inOut(tw(t, 7.0, 9.2)), progress: 36 * E.inOut(tw(t, 9.8, 11.5)) };
+  for (const id of Object.keys(pos)) {
+    const L = $("L_" + id), p = pos[id];
+    if (!p) { L.style.display = "none"; continue; }
+    L.style.display = "block";
+    L.style.zIndex = p.shadow ? 3 : 2;
+    L.style.opacity = p.o;
+    L.style.transform = `translateX(${p.x}px) scale(${p.s})`;
+    L.style.boxShadow = p.shadow ? "-20px 0 40px rgba(0,0,0,.18)" : "none";
+    L.style.filter = p.dim ? `brightness(${1 - p.dim})` : "none";
+    L.style.background = K.ground;
+    $("img_" + id).style.transform = `translateY(${-scroll[id]}px)`;
+    if (id === "today") $("ov_today").style.transform = `translateY(${-scroll[id]}px)`;
+  }
+
+  // the tick (today): tap at 0.85, circle fills 1.0, check draws, label strikes, pill changes; undone during the
+  // return to Today at the very end is never seen, because the overlay resets only after Today is fully off screen.
+  const tick = t < 3.9 ? 1 : 0;
+  const pc = E.back(tw(t, 1.0, 1.32)) * tick;
+  $("tickCircle").style.transform = `scale(${pc})`;
+  $("tickCircle").style.opacity = tw(t, 1.0, 1.08) * tick;
+  $("tickPath").setAttribute("stroke-dashoffset", 22 * (1 - E.out(tw(t, 1.15, 1.45))));
+  const st = E.inOut(tw(t, 1.3, 1.65)) * tick;
+  $("strike").style.width = 140 * st + "px";
+  $("labelTint").style.opacity = tw(t, 1.25, 1.4) * tick;
+  $("labelMuted").style.opacity = tw(t, 1.25, 1.4) * tick;
+  $("detailHide").style.opacity = tw(t, 1.3, 1.55) * tick;
+  $("pill").style.opacity = tw(t, 1.35, 1.6) * tick;
+
+  // taps: the habit's circle, then Start Strength A
+  const taps = [[.82, 51, 44 + 522], [2.85, 195, 44 + 328]];
+  let rv = 0, rx = 0, ry = 0, rs = 1;
+  for (const [t0, x, y] of taps) { const q = tw(t, t0, t0 + .45); if (q > 0 && q < 1) { rv = (1 - q) * Math.min(1, q * 6); rx = x; ry = y - todayScroll; rs = .6 + q * 1.1; } }
+  Object.assign($("rip").style, { left: rx + "px", top: ry + "px", opacity: rv, transform: `scale(${rs})` });
+
+  // the phone: rises in place with a gentle bob and sway (periods divide T)
+  const bob = Math.sin(TAU * t / 6) * 6, sway = Math.sin(TAU * t / 12) * 1.1;
+  const px = 138, py = 92 + bob;
+  $("phone").style.transform = `translate(${px}px, ${py}px) rotate(${sway}deg)`;
+  Object.assign($("shadow").style, { background: K.shadow, transform: `translate(${160 + sway * 4}px, ${860 + bob * .3}px)`, opacity: .9 });
+
+  // the glow behind the phone takes each screen's colour
+  const g = gp ? mixc(glowFrom, glowTo, gp) : glowFrom;
+  $("glow").style.background = `radial-gradient(circle at ${360 + sway * 6}px ${470 + bob}px, ${g} 0, ${g} 250px, transparent 340px)`;
+  $("glow").style.opacity = K.glowA;
+
+  BL.forEach((b) => {
+    const a = TAU * t / T + b.ph;
+    b.el.style.transform = `translate(${b.x + Math.cos(a) * b.ax}px, ${b.y + Math.sin(a * 2) * b.ay}px) rotate(${b.r + Math.sin(a) * 10}deg)`;
+  });
+
+  CH.forEach((c) => {
+    const i = E.back(tw(t, c.t0, c.t0 + .42)), o = E.inOut(tw(t, c.t1, c.t1 + .3));
+    const v = t < c.t0 ? 0 : i * (1 - o);
+    const dx = (c.right ? 1 : -1) * 24 * (1 - Math.min(1, i));
+    c.el.style.left = (c.right ? c.x : c.x) + "px";
+    c.el.style.opacity = clamp(tw(t, c.t0, c.t0 + .18)) * (1 - o);
+    c.el.style.transform = `translate(${dx}px, ${Math.sin(TAU * t / 6 + 1) * 4 - o * 10}px) scale(${.6 + .4 * Math.max(0, v)})`;
+  });
+}
+window.T = T;
+window.render = render;
+Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.decode().catch(() => {})), new Promise((r) => pillImg.complete ? r() : pillImg.addEventListener("load", r))])
+  .then(() => { render(0); window.READY = true; });
+</script>
+</body>
+</html>

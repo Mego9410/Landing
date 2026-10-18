@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import { Pressable, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, G, Path, Rect } from "react-native-svg";
@@ -7,9 +6,9 @@ import { AppText } from "@/components/AppText";
 import { Button, useBrand } from "@/components/Button";
 import { Mark } from "@/components/Mark";
 import { readable } from "@/components/Screen";
+import { WelcomeFilm } from "@/components/WelcomeFilm";
 import { accountsAvailable } from "@/state/account";
 import { track } from "@/state/events";
-import { welcomeVariant } from "@/state/onboarding";
 import { seedPlans } from "@/state/plans";
 import { demoState, replace, set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
@@ -17,24 +16,24 @@ import { radius, space, useColors } from "@/theme";
 
 const BODY = "M50 24 C66 24 74 44 74 59 C74 72 63 80 50 80 C37 80 26 72 26 59 C26 44 34 24 50 24 Z";
 
-/** The first screen, in three versions to compare (A: wobble then steady, B: hello I'm Steadie, C: proud and nervous),
- *  one per install. Holding the picture (or the mark) for three seconds opens the demo, for previews and App Review. */
+/** The first screen: a silent loop of the app tour, cut from the intro film, then the headline and the way in. Holding the
+ *  film (or the picture, on the earlier versions) for three seconds opens the demo, for previews and App Review.
+ *  Versions A, B and C were the earlier welcome test; everyone now sees the film ("F" in the onboarding_started event),
+ *  so its start rate can be compared with theirs. They're kept here in case the film doesn't do better. */
 export default function Welcome() {
   const s = useApp();
-  const [variant, setVariant] = useState<"A" | "B" | "C" | null>(s.story.welcome);
-  useEffect(() => { if (!variant) welcomeVariant().then(setVariant, () => setVariant("A")); }, [variant]);
   const demo = () => { replace({ ...demoState(), disclaimer: s.disclaimer }); toast("Demo mode: Hannah, six weeks in."); router.replace("/"); };
   const start = () => {
-    set((st) => { st.story.welcome = variant; seedPlans(st); });
-    track("onboarding_started", { welcome: variant ?? "A" });
+    set((st) => { st.story.welcome = "F"; seedPlans(st); });
+    track("onboarding_started", { welcome: "F" });
     router.push("/onboarding/name");
   };
   const signIn = accountsAvailable() ? () => router.push({ pathname: "/onboarding/account", params: { existing: "1" } }) : null;
-  if (!variant) return null;
-  if (variant === "B") return <WelcomeB start={start} signIn={signIn} demo={demo} />;
-  if (variant === "C") return <WelcomeC start={start} signIn={signIn} demo={demo} />;
-  return <WelcomeA start={start} signIn={signIn} demo={demo} />;
+  return <WelcomeF start={start} signIn={signIn} demo={demo} />;
 }
+
+/** The test's earlier versions, by letter, if one is wanted again. */
+export const EARLIER_WELCOMES = { A: WelcomeA, B: WelcomeB, C: WelcomeC };
 
 type Props = { start: () => void; signIn: (() => void) | null; demo: () => void };
 
@@ -43,6 +42,25 @@ function Footer({ start, signIn, label, variant }: Pick<Props, "start" | "signIn
     <View style={{ gap: space[2], marginTop: "auto", paddingTop: space[4] }}>
       <Button label={label} variant={variant} block onPress={start} />
       {signIn ? <Button label="I already have an account" variant="quiet" onPress={signIn} style={{ alignSelf: "center" }} /> : null}
+    </View>
+  );
+}
+
+/** F: the app-tour loop full width at the top, faded into the oat page, then the headline and the way in. */
+function WelcomeF({ start, signIn, demo }: Props) {
+  const c = useColors(), insets = useSafeAreaInsets(), { width: W, height: H } = useWindowDimensions();
+  // 4:5 like the film, as tall as the screen allows once the words and buttons (about 350 points) have their room.
+  const filmH = Math.round(Math.min(W * 1.25, Math.max((H - insets.top) * 0.46, H - insets.top - insets.bottom - 350)));
+  return (
+    <View style={{ flex: 1, backgroundColor: c.surface, paddingTop: insets.top }}>
+      <Pressable accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" delayLongPress={3000} onLongPress={demo}>
+        <WelcomeFilm width={W} height={filmH} ground={c.surface} />
+      </Pressable>
+      <View style={[{ flex: 1, gap: 12, marginTop: -space[4], paddingHorizontal: space[6], paddingBottom: insets.bottom + space[6] }, readable]}>
+        <AppText variant="display" accessibilityRole="header" style={{ fontSize: 34, lineHeight: 39 }}>Coming off the jab? Let’s keep your results.</AppText>
+        <AppText variant="bodyLg" color="inkMuted">A calm 12-month plan for the year after your jab: protein, strength and small daily habits, at your pace.</AppText>
+        <Footer start={start} signIn={signIn} label="Find my steady" variant="ink" />
+      </View>
     </View>
   );
 }

@@ -140,8 +140,8 @@ export interface Story {
   kit?: string[];
   /** Their answer to the first check-in, "how are you feeling this morning?". */
   mood: string | null;
-  /** Which welcome screen they saw (A/B test), and when they made their promise, if they did. */
-  welcome: "A" | "B" | "C" | null;
+  /** Which welcome screen they saw (A/B/C were the first test; F is the film), and when they made their promise, if they did. */
+  welcome: "A" | "B" | "C" | "F" | null;
   promisedAt: string | null;
 }
 export const STORY_DEFAULTS: Story = { where: null, why: [], feel: [], matters: [], foodNoise: [], ifThen: null, weightView: "show", strengthAt: "home", mood: null, welcome: null, promisedAt: null };

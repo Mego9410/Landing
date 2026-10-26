@@ -44,6 +44,23 @@ capture each screen at 430 × 878 points at 3x, and add a 162 px status bar on t
 
 ## iPad
 
-The app supports iPad in any orientation (full screen; iPhone stays portrait), so App Store Connect needs an **iPad 13" Display** set. `source/ipad-13/`
-has raw screens at 2064 × 2752, captured from the web build at 1032 × 1376 points at 2x in demo mode. On iPad the
-content sits in a centred column (680 points) with the tab bar centred below.
+The app supports iPad in any orientation (full screen; iPhone stays portrait), so App Store Connect needs an **iPad 13"
+Display** set. `listing/ipad-13/` has ten screens at 2064 × 2752, ready to upload in this order:
+
+| # | File | Screen |
+| --- | --- | --- |
+| 1 | `ipad-01-today.png` | Today: today's thought, up next, the day's list, the lesson and today's tip |
+| 2 | `ipad-02-plan.png` | Plan: the week's days, tonight's dinner, meals and strength |
+| 3 | `ipad-03-progress.png` | Progress: steady score, habit week, your year, strength, trend |
+| 4 | `ipad-04-cook-along.png` | Cook-along with a timer running |
+| 5 | `ipad-05-strength.png` | A strength session, mid-exercise |
+| 6 | `ipad-06-recipes.png` | Recipes and collections |
+| 7 | `ipad-07-your-month.png` | Your month, the four-weekly look back |
+| 8 | `ipad-08-welcome.png` | The welcome screen (the film's first frame) |
+| 9 | `ipad-09-today-dark.png` | Today in dark mode |
+| 10 | `ipad-10-plan-dark.png` | Plan in dark mode |
+
+They were captured from the web build at 1032 × 1352 points at 2x, in UK English, with the app's own demo (hold the
+welcome film for three seconds: Hannah, six weeks in). The browser clock was set to Thursday 29 October, 9:41, so the
+week has some ticks in it. A 24-point iPad status bar (9:41, Thu 29 Oct, Wi-Fi, 100%) was then added on top in each
+screen's own background colour. On iPad the content sits in a centred column (680 points) with the tab bar centred below.

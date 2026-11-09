@@ -10,10 +10,11 @@ export type Act = "Hello" | "Your story" | "The practical bits" | "Your plan";
 export const FLOW: { route: string; act: Act }[] = [
   // Onboarding v2 (growth playbook): welcome, a short quiz, the plan, then reminders and the plans. The why, feel,
   // biology, matters, if-then, helps, promise and first check-in screens are out of the flow (kept, not deleted).
+  // The health and safety tick ("before") comes after the jab questions, so people are invested before the legal bits.
   { route: "name", act: "Hello" },
-  { route: "before", act: "Hello" },
   { route: "where", act: "Your story" },
   { route: "last-jab", act: "Your story" },
+  { route: "before", act: "The practical bits" },
   { route: "consent", act: "The practical bits" },
   { route: "health", act: "The practical bits" },
   { route: "numbers", act: "The practical bits" },

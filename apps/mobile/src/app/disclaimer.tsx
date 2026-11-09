@@ -35,7 +35,7 @@ export default function Disclaimer() {
     if (!understood || !adult) { setError("Tick both boxes to carry on."); return; }
     set((st) => { st.disclaimer = { acceptedAt: new Date().toISOString(), version: DISCLAIMER_VERSION }; });
     // During onboarding this sits just before consent and the health check; for someone already set up (new wording), back to Today.
-    router.replace(s.onboarded ? "/" : "/onboarding/where");
+    router.replace(s.onboarded ? "/" : "/onboarding/consent");
   }
 
   return (
@@ -53,7 +53,8 @@ export default function Disclaimer() {
         ))}
       </Card>
       {review ? (
-        <AppText variant="caption" color="inkMuted">You accepted this on {fmt.long(s.disclaimer!.acceptedAt.slice(0, 10))}.</AppText>
+        // Opened from onboarding ("in full"), nothing has been accepted yet, so there's no date to show.
+        s.disclaimer ? <AppText variant="caption" color="inkMuted">You accepted this on {fmt.long(s.disclaimer.acceptedAt.slice(0, 10))}.</AppText> : null
       ) : (
         <View style={{ gap: space[3] }}>
           <Tick label="I understand Steadie gives general guidance, not medical advice, and I'll check with my GP if I'm unsure" checked={understood} onChange={(v) => { setError(""); setUnderstood(v); }} />

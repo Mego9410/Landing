@@ -11,7 +11,7 @@ import { space, textStyle, useColors } from "@/theme";
 export default function Name() {
   const s = useApp(), c = useColors();
   const name = s.name.trim();
-  const next = () => router.push("/onboarding/before");
+  const next = () => router.push("/onboarding/where");
   return (
     <OnbScreen route="name" footer={<>
       <Button label="Continue" variant="brand" block onPress={next} />

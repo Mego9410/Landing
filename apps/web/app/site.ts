@@ -79,6 +79,11 @@ export const PRICE_GBP = { yearly: "69.99", monthly: "12.99" };
 /** US App Store prices (set in App Store Connect, October 2026). US prices exclude sales tax. ≈ $1.54 a week yearly. */
 export const PRICE_US = { yearly: "$79.99", weekly: "$1.54", monthly: "$14.99" };
 export const PRICE_USD = { yearly: "79.99", monthly: "14.99" };
+/** The launch price for new members: £1.99 / $1.99 a month, kept for as long as they stay subscribed, after the 7-day
+ *  free trial. Shown only while LAUNCH_OFFER is "on" in Vercel: turn it on once the launch subscription and the
+ *  RevenueCat "launch" offering are live (docs/payments.md), and off again when the offer ends (a redeploy applies it). */
+export const LAUNCH_OFFER = process.env.LAUNCH_OFFER === "on";
+export const LAUNCH_PRICE = { uk: "£1.99", us: "$1.99", raw: "1.99" } as const;
 export const abs = (path: string) => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 
 /** Metadata for a plain page: its own <title>, description, canonical and share card. Next replaces nested fields

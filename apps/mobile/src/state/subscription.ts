@@ -5,7 +5,7 @@
 // always theirs. Two plans, monthly and yearly, each with a 7-day free trial for new subscribers. Products, prices
 // and the trials live in App Store Connect and RevenueCat (see docs/payments.md), not here.
 import { Linking, Platform } from "react-native";
-import Purchases, { INTRO_ELIGIBILITY_STATUS, LOG_LEVEL, PURCHASES_ERROR_CODE, type CustomerInfo, type PurchasesPackage } from "react-native-purchases";
+import Purchases, { INTRO_ELIGIBILITY_STATUS, LOG_LEVEL, PURCHASES_ERROR_CODE, type CustomerInfo, type PurchasesOffering, type PurchasesPackage } from "react-native-purchases";
 import { introPhrase, period } from "@/data/period";
 import { track } from "./events";
 import { install, updateInstall } from "./install";
@@ -94,18 +94,29 @@ export interface Plan {
   saving?: string;
   /** From a discount code's offering rather than the usual one. */
   discounted: boolean;
+  /** The launch price for new members (the "launch" offering): theirs for as long as they stay subscribed. */
+  launch: boolean;
 }
+
+/** The RevenueCat offering with the launch price for new members (£1.99 / $1.99 a month, kept for as long as they stay
+ *  subscribed). While it exists, people who have never had the plan see it; deleting it in RevenueCat ends the offer
+ *  with no app update. See docs/payments.md. */
+export const LAUNCH_OFFERING = "launch";
 
 /** The plans on offer, yearly first. A trial is only offered to people Apple will give it to (one per Apple ID, per
  *  subscription group); when RevenueCat can't tell, the plain price is shown, as Apple and RevenueCat advise. With a
- *  discount code's offering (`offering`), its discounted plans if RevenueCat has them, otherwise the usual ones. */
-export async function plans(offering?: string | null): Promise<Plan[]> {
-  // The current offering ("default" in RevenueCat), or the code's: its annual and monthly packages, picked by type
-  // rather than by the order the dashboard lists them in, with yearly first.
+ *  discount code's offering (`offering`), its discounted plans if RevenueCat has them; otherwise, for someone who has
+ *  never had the plan (`newMember`), the launch offering while there is one; otherwise the usual ones. */
+export async function plans(offering?: string | null, newMember = false): Promise<Plan[]> {
+  // The current offering ("default" in RevenueCat), the code's or the launch one: its annual and monthly packages,
+  // picked by type rather than by the order the dashboard lists them in, with yearly first.
   const all = await Purchases.getOfferings();
+  const has = (o?: PurchasesOffering) => !!o && !!(o.annual || o.monthly);
   const coded = offering ? all.all[offering] : undefined;
-  const discounted = !!coded && !!(coded.annual || coded.monthly);
-  const current = discounted ? coded : all.current;
+  const discounted = has(coded);
+  const launchOffer = !discounted && newMember ? all.all[LAUNCH_OFFERING] : undefined;
+  const launch = has(launchOffer);
+  const current = discounted ? coded : launch ? launchOffer : all.current;
   const monthlyPkg = current?.monthly ?? undefined;
   const pkgs = [current?.annual, current?.monthly].filter((p): p is PurchasesPackage => !!p);
   if (!pkgs.length) throw Object.assign(new Error("The current offering has no annual or monthly package."), { code: "none" });
@@ -132,6 +143,7 @@ export async function plans(offering?: string | null): Promise<Plan[]> {
         intro: introText,
         saving: saving > 0 ? `Save ${saving}%` : undefined,
         discounted,
+        launch,
       };
     });
 }

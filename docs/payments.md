@@ -146,6 +146,41 @@ about **51 seconds before** the trial converts. To test:
 
 Sandbox renewals repeat up to 12 times a day, then stop.
 
+## Launch price: £1.99 a month for new members
+
+New members see one plan: **7 days free, then £1.99 a month** ($1.99 in the US), theirs for as long as they stay
+subscribed. People who have had the plan before see the usual plans. It's a separate subscription, not an
+introductory offer: Apple's introductory offers last a year at most, and this price is kept for good.
+
+**How the app picks it** (`apps/mobile/src/state/subscription.ts`, `LAUNCH_OFFERING`): for someone who has never had
+the plan, it shows RevenueCat's `launch` offering whenever that exists, and the usual `default` offering otherwise. A
+discount code still wins over both. The paywall labels it "Launch price: yours for as long as you stay".
+
+**Setting it up (once):**
+1. App Store Connect → Monetisation → Subscriptions: make a **new subscription group**, "Steadie Launch". A separate
+   group means people on £12.99 can't switch themselves down to £1.99 from their Apple subscription settings.
+2. In it, add **Steadie Monthly (Launch price)**, product ID `steadie_monthly_launch`, 1 month.
+   - Price: **£1.99** in the UK. In the US, set **$1.99** by hand, not Apple's converted price. Let Apple fill in the
+     other countries from the UK price.
+   - Introductory offer: **free, 1 week**, new subscribers, all countries.
+   - Add a display name, description and review screenshot, and add it to the app version for review.
+3. Google Play (when Android is live): add `steadie_monthly_launch` with a base plan at £1.99 / $1.99 and a 7-day
+   free-trial offer.
+4. RevenueCat:
+   1. Products → import `steadie_monthly_launch` and attach it to the `plan` entitlement.
+   2. Offerings → **New**, identifier `launch`, with a `$rc_monthly` package → `steadie_monthly_launch`.
+   3. Leave `default` as the current offering.
+5. Website: in Vercel, set **`LAUNCH_OFFER`** to `on` for Production and redeploy. The home page, pricing card, FAQ,
+   top bar and guide footers then show the launch price. Do this only once steps 1 to 4 are live, so the site never
+   shows a price the App Store doesn't.
+
+**Ending the offer:**
+1. In RevenueCat, delete the `launch` offering. New members then see the usual plans, with no app update.
+2. Set `LAUNCH_OFFER` to `off` in Vercel and redeploy.
+3. Leave `steadie_monthly_launch` on sale in App Store Connect. Removing it from sale doesn't end existing
+   subscriptions, but keeping it on sale is simplest. Members who joined at £1.99 keep that price for as long as they
+   stay subscribed, as the terms promise. Don't raise its price later.
+
 ## Discount codes, offer codes and free access
 
 Apple (guideline 3.1.1) and Google only allow subscriptions to be sold through their own billing. So no code in Steadie

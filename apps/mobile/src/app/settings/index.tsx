@@ -47,14 +47,19 @@ export default function Settings() {
   // A week before a yearly plan renews: a calm note with the date and the way to change it.
   const renewal = renewalSoon(sub) && sub?.until ? renewalMessage(sub.until) : null;
   // A second free trial isn't on offer (one per Apple ID), so "See plans" only promises one when the App Store says so.
-  const [trial, setTrial] = useState<string | null>(null);
+  const [planLine, setPlanLine] = useState<string | null>(null);
   const subActive = !!sub?.active;
   useEffect(() => {
     if (!billingEnabled() || s.demo || subActive) return;
     let live = true;
-    plans().then((p) => { if (live) setTrial(p.find((x) => x.trial)?.trial ?? null); }, () => {});
+    // What "See plans" offers: the launch price for someone new, otherwise the trial (when Apple will give one) and the plans.
+    plans(null, !sub?.ended).then((p) => {
+      if (!live) return;
+      const trial = p.find((x) => x.trial)?.trial, launch = p.find((x) => x.launch);
+      setPlanLine(launch ? `${trial ? `${trial} free, then ` : ""}${launch.price} a month, the launch price` : trial ? `${trial} free, then monthly or yearly` : null);
+    }, () => {});
     return () => { live = false; };
-  }, [s.demo, subActive]);
+  }, [s.demo, subActive, sub?.ended]);
   const backedUp = status === "saving" ? "Backing up…" : status === "offline" ? "Couldn't reach Steadie. It'll try again." : account?.syncedAt ? `Backed up ${when(account.syncedAt)}` : "Backs up once your plan is set up";
   const fail = (e: unknown) => toast(e instanceof AccountError ? e.message : "Something went wrong. Try again.");
   // Without an account, signing out means deleting: there's no backup to come back to, so the warning says so plainly
@@ -139,7 +144,7 @@ export default function Settings() {
           <Row title="Restore purchases" onPress={() => restore().then((ok) => toast(ok ? "Your subscription is back." : `We couldn't find a subscription for this ${STORE_WORDS.account}.`), () => toast("Couldn't restore just now. Try again in a moment."))} />
           <Row title={`Redeem ${Platform.OS === "android" ? "a Google Play" : "an App Store"} code`} sub="An offer code from Steadie, entered with the store" onPress={() => redeemCode().catch(() => toast("Couldn't open the code screen just now. Try again in a moment."))} />
           <Row title="Send my Steadie ID" sub="For help with your subscription, or free access from us" onPress={() => subscriberId().then((id) => Share.share({ message: `My Steadie ID: ${id}` })).catch(() => toast("Couldn't get your Steadie ID just now. Try again in a moment."))} />
-          {sub?.active ? null : <Row title="See plans" sub={trial ? `${trial} free, then monthly or yearly` : "Monthly or yearly"} onPress={() => router.push("/paywall")} />}
+          {sub?.active ? null : <Row title="See plans" sub={planLine ?? "Monthly or yearly"} onPress={() => router.push("/paywall")} />}
         </List>
         {renewal ? (
           <Card style={{ gap: 6, marginTop: space[3] }}>

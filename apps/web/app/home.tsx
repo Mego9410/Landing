@@ -7,7 +7,7 @@ import { CareList } from "./care-list";
 import { ExerciseLoop } from "./exercise-loop";
 import { latestGuides, liveGuide, liveGuides } from "@/content/guides";
 import { SiteFooter, SiteHeader } from "./site-chrome";
-import { abs, appLive, appStoreUrl, availability, HOME, ldJson, ORGANIZATION, PRICE, PRICE_GBP, PRICE_US, PRICE_USD, SITE_NAME, type Region } from "./site";
+import { abs, appLive, appStoreUrl, availability, HOME, LAUNCH_OFFER, LAUNCH_PRICE, ldJson, ORGANIZATION, PRICE, PRICE_GBP, PRICE_US, PRICE_USD, SITE_NAME, type Region } from "./site";
 import { PrototypeLink } from "./prototype-link";
 import { StoreButtons } from "./app-store";
 import { GuideArt } from "./guides/art";
@@ -18,9 +18,9 @@ import { FilmPlayer } from "./film";
 // The home page, in two versions: the UK one at / (app/page.tsx) and the US one at /us (app/us/page.tsx). They share
 // everything except the words below: "jab" or "shot", GP or doctor, the brand names people know, and prices.
 const WORDS = {
-  uk: { jab: "jab", gp: "GP", brands: "Wegovy or Mounjaro", price: PRICE, raw: PRICE_GBP, currency: "GBP", lang: "en-GB",
+  uk: { jab: "jab", gp: "GP", brands: "Wegovy or Mounjaro", price: PRICE, raw: PRICE_GBP, launch: LAUNCH_PRICE.uk, currency: "GBP", lang: "en-GB",
     priceNote: "Prices in the UK, including VAT. Charged through your Apple account." },
-  us: { jab: "shot", gp: "doctor", brands: "Wegovy or Zepbound", price: PRICE_US, raw: PRICE_USD, currency: "USD", lang: "en-US",
+  us: { jab: "shot", gp: "doctor", brands: "Wegovy or Zepbound", price: PRICE_US, raw: PRICE_USD, launch: LAUNCH_PRICE.us, currency: "USD", lang: "en-US",
     priceNote: "Prices in US dollars. Sales tax is added where it applies. Charged through your Apple account." },
 } as const;
 type Words = (typeof WORDS)[Region];
@@ -127,7 +127,7 @@ const faqs = (live: boolean, w: Words) => [
   { q: "What do I need for the exercises?", a: "Nothing but a chair and a bit of space at home to start. Most moves have an easier version, and sessions step up gently over the weeks as you get stronger." },
   { q: "Does it work with my diet?", a: "Every meal has swaps for vegetarian, vegan, gluten-free, dairy-free, halal and kosher eating, allergies and a microwave-only kitchen." },
   { q: "Where is my data kept?", a: "On your phone. If you sign in, Steadie also keeps a private, encrypted backup so your plan moves with you to a new phone. It's never sold or used for ads, and you can export everything or delete your account from Settings. If you connect Apple Health, that information is only used for your own plan, and never for advertising." },
-  { q: "When can I use it, and what will it cost?", a: `${live ? `Now, on iPhone: download Steadie from the App Store.${availability(live).soonAndroid}` : "Steadie is coming soon to iPhone and Android."} Both plans start with a 7-day free trial: then ${w.price.yearly} a year, or ${w.price.monthly} a month. Cancel any time in your iPhone settings.` },
+  { q: "When can I use it, and what will it cost?", a: `${live ? `Now, on iPhone: download Steadie from the App Store.${availability(live).soonAndroid}` : "Steadie is coming soon to iPhone and Android."} ${LAUNCH_OFFER ? `It starts with a 7-day free trial, then ${w.launch} a month. That's our launch price for new members, and it stays yours for as long as you stay subscribed.` : `Both plans start with a 7-day free trial: then ${w.price.yearly} a year, or ${w.price.monthly} a month.`} Cancel any time in your iPhone settings.` },
 ];
 
 // STEP 1 trial extension (reference 1): mean change in body weight from the start of treatment.
@@ -180,7 +180,9 @@ const homeLd = (live: boolean, FAQS: ReturnType<typeof faqs>, region: Region) =>
       inLanguage: w.lang,
       publisher: { "@id": ORGANIZATION["@id"] },
       ...(live ? { url: store, downloadUrl: store } : {}),
-      offers: [
+      offers: LAUNCH_OFFER ? [
+        { "@type": "Offer", name: "Monthly, launch price", price: LAUNCH_PRICE.raw, priceCurrency: w.currency, description: "7 days free, then billed monthly at the launch price for as long as you stay subscribed." },
+      ] : [
         { "@type": "Offer", name: "Monthly", price: w.raw.monthly, priceCurrency: w.currency, description: "7 days free, then billed monthly." },
         { "@type": "Offer", name: "Yearly", price: w.raw.yearly, priceCurrency: w.currency, description: "7 days free, then billed yearly." },
       ],
@@ -219,7 +221,7 @@ export async function HomePage({ region }: { region: Region }) {
             <p className={styles.lede}>The 12-month plan for the year after you stop a weight-loss {w.jab}. Strength, protein and steady habits to keep the weight off, with support on your side.</p>
             <div id="download" className={styles.heroCta}>
               <StoreButtons campaign={`${page}-hero`} region={region} />
-              <p className={styles.storeNote}>7 days free, then {w.price.yearly} a year or {w.price.monthly} a month. For iPhone, and soon Android.</p>
+              <p className={styles.storeNote}>{LAUNCH_OFFER ? <>7 days free, then {w.launch} a month: our launch price, yours for as long as you stay.</> : <>7 days free, then {w.price.yearly} a year or {w.price.monthly} a month.</>} For iPhone, and soon Android.</p>
             </div>
           </div>
           <div className={styles.heroArt} aria-hidden="true">
@@ -468,13 +470,19 @@ export async function HomePage({ region }: { region: Region }) {
             <div className={styles.splitCopy}>
               <p className={styles.eyebrow}>Pricing</p>
               <h2 id="price-title" className={styles.h2Light}>One membership, everything included</h2>
-              <p className={styles.sectionLede}>Try everything free for 7 days, on either plan. We remind you before the trial ends, and you can cancel any time in your iPhone settings.</p>
+              <p className={styles.sectionLede}>{LAUNCH_OFFER ? <>Our launch price for new members: {w.launch} a month, for as long as you stay subscribed. Try everything free for 7 days first.</> : <>Try everything free for 7 days, on either plan.</>} We remind you before the trial ends, and you can cancel any time in your iPhone settings.</p>
             </div>
             <div className={styles.priceCard}>
-              <span className={styles.badge}>7 days free</span>
-              <p className={styles.priceName}>Yearly</p>
-              <p className={styles.price}>{w.price.yearly}<span> a year</span></p>
-              <p className={styles.muted}>About {w.price.weekly} a week. Or {w.price.monthly} a month. Both start with 7 days free.</p>
+              <span className={styles.badge}>{LAUNCH_OFFER ? "Launch price" : "7 days free"}</span>
+              {LAUNCH_OFFER ? <>
+                <p className={styles.priceName}>Monthly</p>
+                <p className={styles.price}>{w.launch}<span> a month</span></p>
+                <p className={styles.muted}>After 7 days free. The price stays yours for as long as you stay subscribed.</p>
+              </> : <>
+                <p className={styles.priceName}>Yearly</p>
+                <p className={styles.price}>{w.price.yearly}<span> a year</span></p>
+                <p className={styles.muted}>About {w.price.weekly} a week. Or {w.price.monthly} a month. Both start with 7 days free.</p>
+              </>}
               <ul className={styles.priceList}>
                 {["Your 12-month plan, with a lesson each week", "Strength sessions that step up as you do", "Easy meals, swaps and shopping lists", "A morning check-in and your weekly steady score", "A look back at your month, every four weeks", "A coach for tricky days", "A summary for your prescriber", "Reminders and Apple Health"].map((x) => (
                   <li key={x}><Icon name="check" size={18} />{x}</li>
@@ -519,9 +527,9 @@ export async function HomePage({ region }: { region: Region }) {
         <section className={styles.cta} aria-labelledby="cta-title">
           <div className={`${styles.wrap} ${styles.ctaInner}`}>
             <h2 id="cta-title" className={styles.display}>Make this year your steady one</h2>
-            <p className={styles.lede}>Try the full plan free for 7 days, on either plan.</p>
+            <p className={styles.lede}>Try the full plan free for 7 days{LAUNCH_OFFER ? "" : ", on either plan"}.</p>
             <StoreButtons campaign={`${page}-signoff`} region={region} />
-            <p className={styles.storeNote}>Then {w.price.yearly} a year or {w.price.monthly} a month. Cancel any time in your iPhone settings.</p>
+            <p className={styles.storeNote}>{LAUNCH_OFFER ? <>Then {w.launch} a month, our launch price.</> : <>Then {w.price.yearly} a year or {w.price.monthly} a month.</>} Cancel any time in your iPhone settings.</p>
           </div>
         </section>
       </main>

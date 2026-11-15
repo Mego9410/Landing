@@ -4,7 +4,7 @@ import home from "../page.module.css";
 import guides from "../guides/guides.module.css";
 import { productPageFor } from "../guides/end-cta";
 import { SiteFooter, SiteHeader } from "../site-chrome";
-import { abs, appLive, appStoreLink, availability, campaign, ldJson, ORGANIZATION, PRICE } from "../site";
+import { abs, appLive, appStoreLink, availability, campaign, LAUNCH_OFFER, LAUNCH_PRICE, ldJson, ORGANIZATION, PRICE } from "../site";
 import { TOOLS, type Tool } from "./list";
 import styles from "./tools.module.css";
 
@@ -61,7 +61,7 @@ export async function ToolShell({ tool, answer, children, body, faqs, sources }:
               {live ? (
                 <>
                   <a className={guides.ctaButton} href={appStoreLink(campaign("tool-end", tool.slug), productPageFor(tool.slug))}>Try Steadie free for 7 days</a>
-                  <span className={guides.endSmall}>On iPhone. Then {PRICE.yearly} a year or {PRICE.monthly} a month; cancel any time in your iPhone settings.{availability(live).soonAndroid}</span>
+                  <span className={guides.endSmall}>On iPhone. Then {LAUNCH_OFFER ? `${LAUNCH_PRICE.uk} a month, our launch price` : `${PRICE.yearly} a year or ${PRICE.monthly} a month`}; cancel any time in your iPhone settings.{availability(live).soonAndroid}</span>
                 </>
               ) : <span className={guides.endSoon}>Coming soon to iPhone and Android</span>}
             </aside>

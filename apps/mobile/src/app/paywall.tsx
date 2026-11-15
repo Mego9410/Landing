@@ -52,7 +52,8 @@ export default function Paywall() {
   const [codeText, setCodeText] = useState("");
   const [codeError, setCodeError] = useState<string | undefined>();
   const [codeBusy, setCodeBusy] = useState(false);
-  const fetchPlans = () => plans(discount?.offering).then((o) => { setOptions(o); setPick(0); }).catch((e) => setFailed(plansProblem(e)));
+  const newMember = !s.subscription?.active && !s.subscription?.ended;
+  const fetchPlans = () => plans(discount?.offering, newMember).then((o) => { setOptions(o); setPick(0); }).catch((e) => setFailed(plansProblem(e)));
   const load = () => { setFailed(null); setOptions(null); fetchPlans(); };
   useEffect(() => { track("paywall_viewed", { lapsed, from: fromOnboarding ? "onboarding" : "app" }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { fetchPlans(); }, [discount?.offering]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -159,10 +160,10 @@ export default function Paywall() {
               <Pressable key={o.pkg.identifier} accessibilityRole="radio" accessibilityState={{ selected: on }} onPress={() => setPick(i)}
                 accessibilityLabel={`${o.title}, ${o.price} ${o.per}${o.trial ? `, ${o.trial} free` : ""}${o.intro ? `, ${o.intro}` : ""}`}
                 style={{ flex: 1, gap: 3, padding: 14, borderRadius: 20, backgroundColor: on ? c.apricot : c.surfaceRaised, borderWidth: on ? 2 : 1.5, borderColor: on ? c.apricotInk : c.line }}>
-                <AppText weight="800" color={on ? "onPastel" : "apricotInk"} style={{ fontSize: 13 }}>{yearly ? "Matches your 12 months" : "Flexible"}</AppText>
+                <AppText weight="800" color={on ? "onPastel" : "apricotInk"} style={{ fontSize: 13 }}>{o.launch ? "Launch price" : yearly ? "Matches your 12 months" : "Flexible"}</AppText>
                 <AppText weight="800" color={on ? "onPastel" : "ink"} style={{ fontSize: 18 }}>{yearly ? "Yearly" : "Monthly"}</AppText>
                 <AppText weight="800" color={on ? "onPastel" : "ink"} style={{ fontSize: 16 }}>{o.price} {o.per}</AppText>
-                <AppText variant="caption" weight="700" color={on ? "onPastel" : "inkMuted"} style={{ fontSize: 13 }}>{o.intro ? firstUpper(o.intro) : yearly ? perMonth(o) : "Cancel any month"}</AppText>
+                <AppText variant="caption" weight="700" color={on ? "onPastel" : "inkMuted"} style={{ fontSize: 13 }}>{o.intro ? firstUpper(o.intro) : o.launch ? "Yours for as long as you stay. Cancel any month" : yearly ? perMonth(o) : "Cancel any month"}</AppText>
               </Pressable>
             );
           })}

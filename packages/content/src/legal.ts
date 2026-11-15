@@ -170,7 +170,7 @@ export const US_HEALTH_PRIVACY: LegalDoc = {
 
 export const TERMS: LegalDoc = {
   title: "Terms of use",
-  updated: UPDATED,
+  updated: "15 November 2026",
   intro: `These terms are the agreement between you and ${COMPANY} for using the Steadie app. Please read them with the health information the app shows when you start.`,
   sections: [
     { heading: "Who it's for", paras: ["You need to be 18 or over and live in the UK or the United States to use Steadie."] },
@@ -185,7 +185,8 @@ export const TERMS: LegalDoc = {
     ] },
     { heading: "Subscriptions", paras: [
       "Steadie needs a subscription, bought through the App Store: monthly or yearly. Prices are shown before you buy and are charged to your Apple account.",
-      "Both plans start with a 7-day free trial for new subscribers. If you don't cancel at least 24 hours before the trial ends, the subscription starts and you're charged. The app reminds you two days before, if you allow notifications. You can have one free trial per Apple ID.",
+      "Plans start with a 7-day free trial for new subscribers. If you don't cancel at least 24 hours before the trial ends, the subscription starts and you're charged. The app reminds you two days before, if you allow notifications. You can have one free trial per Apple ID.",
+      "We sometimes offer new members a launch price, shown before you buy. A launch price stays the same for as long as that subscription carries on without a break. If it ends and you subscribe again later, the price shown then applies.",
       "A subscription renews automatically at the same price and length until you cancel it in your Apple account settings, at least 24 hours before it renews. Refunds are handled by Apple.",
       "If your subscription ends, what you've logged stays on your phone and in your backup, and you can still export it.",
     ] },

@@ -27,10 +27,17 @@ Upload in this order. Apple requires the **iPhone 6.9" Display** set; the 6.3" s
 
 All files are saved without an alpha channel: App Store Connect rejects screenshots and icons with transparency.
 
+### Launch price (November 2026)
+
+Slide 1 has a "Launch price · £1.99 a month" pill under the subtitle, and slide 10's pill reads "7 days free, then
+£1.99 a month". `listing/us/` is the same set with $1.99, for the **English (U.S.)** listing; `listing/6.9` and
+`listing/6.3` are for **English (U.K.)**. Upload them only once the launch subscription is live (see
+`docs/payments.md`). When the offer ends, go back to the slides from before (git history).
+
 ### Check before uploading
 
-- **Slide 10, "Try it free for 7 days":** true once both subscriptions have their 1-week free introductory offer in
-  App Store Connect (see `docs/payments.md`).
+- **Slides 1 and 10, the launch price:** true once `steadie_monthly_launch` is on sale with its 1-week free trial and
+  the RevenueCat `launch` offering exists (see `docs/payments.md`).
 - **Slide 10, "Your data stays yours: Kept on your phone":** since accounts, people who sign in also have a private
   backup. Consider "Kept private. Never sold, never used for ads." so it matches the privacy policy.
 

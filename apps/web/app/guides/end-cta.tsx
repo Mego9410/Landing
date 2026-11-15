@@ -1,5 +1,5 @@
 import type { Guide } from "@/content/guides";
-import { appLive, appStoreLink, availability, campaign, PRICE, type ProductPage } from "../site";
+import { appLive, appStoreLink, availability, campaign, LAUNCH_OFFER, LAUNCH_PRICE, PRICE, type ProductPage } from "../site";
 
 /** Which Custom Product Page a guide or tool sends people to: the tapering one for tapering pages, else after-the-jab. */
 export const productPageFor = (slug: string): ProductPage => (/taper/.test(slug) ? "taper" : "after");
@@ -12,7 +12,7 @@ import styles from "./guides.module.css";
 type Topic = "cost" | "comingOff" | "food" | "strength" | "appetite" | "habits" | "occasions" | "keeping" | "basics";
 
 const HOOKS: Record<Topic, string> = {
-  cost: `Stopping because of the price? Steadie is ${PRICE.weekly} a week and built for exactly this year.`,
+  cost: LAUNCH_OFFER ? `Stopping because of the price? Steadie is ${LAUNCH_PRICE.uk} a month at our launch price, and built for exactly this year.` : `Stopping because of the price? Steadie is ${PRICE.weekly} a week and built for exactly this year.`,
   comingOff: "Planning for life after your last jab? Steadie is a calm 12-month plan built for exactly this year.",
   food: "Want protein to feel easy? Steadie's meals take fifteen minutes hands-on, with a shopping list for your supermarket.",
   strength: "Not sure where to start with strength? Steadie's home sessions need only a chair and step up gently as you do.",
@@ -44,7 +44,7 @@ export async function GuideEndCta({ guide }: { guide: Pick<Guide, "slug" | "cate
       {live ? (
         <>
           <a className={styles.ctaButton} href={appStoreLink(campaign("guide-end", guide.slug), productPageFor(guide.slug))}>Try Steadie free for 7 days</a>
-          <span className={styles.endSmall}>On iPhone. Then {PRICE.yearly} a year or {PRICE.monthly} a month; cancel any time in your iPhone settings.{availability(live).soonAndroid}</span>
+          <span className={styles.endSmall}>On iPhone. Then {LAUNCH_OFFER ? `${LAUNCH_PRICE.uk} a month, our launch price` : `${PRICE.yearly} a year or ${PRICE.monthly} a month`}; cancel any time in your iPhone settings.{availability(live).soonAndroid}</span>
         </>
       ) : (
         <span className={styles.endSoon}>Coming soon to iPhone and Android</span>

@@ -170,13 +170,12 @@ discount code still wins over both. The paywall labels it "Launch price: yours f
    1. Products → import `steadie_monthly_launch` and attach it to the `plan` entitlement.
    2. Offerings → **New**, identifier `launch`, with a `$rc_monthly` package → `steadie_monthly_launch`.
    3. Leave `default` as the current offering.
-5. Website: in Vercel, set **`LAUNCH_OFFER`** to `on` for Production and redeploy. The home page, pricing card, FAQ,
-   top bar and guide footers then show the launch price. Do this only once steps 1 to 4 are live, so the site never
-   shows a price the App Store doesn't.
+5. Website: the home page, pricing card, FAQ, top bar and guide footers show the launch price. It has been on since
+   the price went live in the app (November 2026); `LAUNCH_OFFER` set to `off` in Vercel hides it.
 
 **Ending the offer:**
 1. In RevenueCat, delete the `launch` offering. New members then see the usual plans, with no app update.
-2. Set `LAUNCH_OFFER` to `off` in Vercel and redeploy.
+2. Set `LAUNCH_OFFER` to `off` in Vercel (Production) and redeploy.
 3. Leave `steadie_monthly_launch` on sale in App Store Connect. Removing it from sale doesn't end existing
    subscriptions, but keeping it on sale is simplest. Members who joined at £1.99 keep that price for as long as they
    stay subscribed, as the terms promise. Don't raise its price later.

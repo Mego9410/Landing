@@ -106,13 +106,14 @@ export const APP_PRIVACY: LegalDoc = {
 /** The website's own notice: what the site does and doesn't collect, and the pre-launch waitlist. */
 export const SITE_PRIVACY: LegalDoc = {
   title: "Privacy notice for this website",
-  updated: "16 October 2026",
+  updated: "16 November 2026",
   intro: `This notice covers the Steadie website. ${COMPANY} ("we") is responsible for it. The app has its own privacy policy.`,
   sections: [
     { heading: "Browsing the website", paras: [
       "The website doesn't use advertising trackers, and doesn't ask you for any details. Our hosting provider, Vercel, keeps standard server logs (such as IP address, browser and the page requested) for a short time to keep the site running and secure.",
       "There's a UK and a US version of the home page. When you first arrive, Vercel works out roughly which country you're in from your IP address, only to show you the right one; we don't keep it.",
       "If you choose UK or US at the bottom of a page, the website sets one cookie: it holds just \"uk\" or \"us\", so we keep showing you the version you picked, and lasts a year. It's needed for the choice you asked for, so we don't ask for consent first. You can delete it in your browser at any time.",
+      "We count visits with Vercel Web Analytics, which doesn't use cookies. For each page view it records the page, the site that sent you there, your country and region, and your device type, operating system and browser. You're told apart from other visitors only by a code made from your connection, which Vercel throws away after 24 hours, and we only ever see totals. It doesn't record your IP address, follow you to other websites or link visits to who you are. We remove anything in a page's address apart from campaign tags before it's recorded.",
       "The calculators on the website work in your browser. What you type into them isn't sent to us or anyone else.",
       "Download links take you to Apple's App Store, which has its own privacy policy.",
     ] },

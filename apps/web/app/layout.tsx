@@ -4,6 +4,7 @@ import "@landing/design-system/tokens.css";
 import "./globals.css";
 import { Consent } from "./consent";
 import { appLive, SITE_URL } from "./site";
+import { WebAnalytics } from "./web-analytics";
 
 const fredoka = Fredoka({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-fredoka", display: "swap" });
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-nunito", display: "swap" });
@@ -48,6 +49,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         {/* The cookie banner, and Google Analytics once someone accepts it. */}
         <Consent />
+        {/* Cookieless page counts for every visitor (Vercel Web Analytics). */}
+        <WebAnalytics />
       </body>
     </html>
   );

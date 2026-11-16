@@ -6,8 +6,8 @@ import { CastPicker, type CastPerson } from "./cast-picker";
 import { CareList } from "./care-list";
 import { ExerciseLoop } from "./exercise-loop";
 import { latestGuides, liveGuide, liveGuides } from "@/content/guides";
-import { SiteFooter, SiteHeader } from "./site-chrome";
-import { abs, appLive, appStoreUrl, availability, HOME, LAUNCH_OFFER, LAUNCH_PRICE, ldJson, ORGANIZATION, PRICE, PRICE_GBP, PRICE_US, PRICE_USD, SITE_NAME, type Region } from "./site";
+import { InstagramGlyph, SiteFooter, SiteHeader } from "./site-chrome";
+import { abs, appLive, appStoreUrl, availability, HOME, INSTAGRAM, LAUNCH_OFFER, LAUNCH_PRICE, ldJson, ORGANIZATION, PRICE, PRICE_GBP, PRICE_US, PRICE_USD, SITE_NAME, type Region } from "./site";
 import { PrototypeLink } from "./prototype-link";
 import { StoreButtons } from "./app-store";
 import { GuideArt } from "./guides/art";
@@ -530,6 +530,7 @@ export async function HomePage({ region }: { region: Region }) {
             <p className={styles.lede}>Try the full plan free for 7 days{LAUNCH_OFFER ? "" : ", on either plan"}.</p>
             <StoreButtons campaign={`${page}-signoff`} region={region} />
             <p className={styles.storeNote}>{LAUNCH_OFFER ? <>Then {w.launch} a month, our launch price.</> : <>Then {w.price.yearly} a year or {w.price.monthly} a month.</>} Cancel any time in your iPhone settings.</p>
+            <a className={styles.ctaSocial} href={INSTAGRAM.url} target="_blank" rel="noopener me"><InstagramGlyph size={16} />Follow along on Instagram, {INSTAGRAM.handle}</a>
           </div>
         </section>
       </main>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CookieSettingsButton } from "./consent";
 import { Lockup } from "./lockup";
-import { appLive, appStoreLink, availability, campaign, HOME, LAUNCH_OFFER, LAUNCH_PRICE, ORG_NAME, type Region } from "./site";
+import { appLive, appStoreLink, availability, campaign, HOME, INSTAGRAM, LAUNCH_OFFER, LAUNCH_PRICE, ORG_NAME, type Region } from "./site";
 import styles from "./page.module.css";
 
 // The header and footer for every page. On the home page the section links are in-page anchors; elsewhere they point
@@ -46,6 +46,27 @@ export async function SiteHeader({ home = false, page = home ? "home" : "site", 
 }
 
 /** `region` is set on the two home pages: it marks which version is showing in the switcher. */
+/** The Instagram glyph, drawn in the current colour. */
+export function InstagramGlyph({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5.5" />
+      <circle cx="12" cy="12" r="4.2" />
+      <circle cx="17.4" cy="6.6" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/** "Follow @steadieapp": a pill with the glyph on a small apricot-to-lilac badge, in Steadie's own colours. */
+export function InstagramLink() {
+  return (
+    <a className={styles.social} href={INSTAGRAM.url} target="_blank" rel="noopener me" aria-label={`Follow Steadie on Instagram, ${INSTAGRAM.handle}`}>
+      <span className={styles.socialBadge}><InstagramGlyph /></span>
+      <span>Follow <strong>{INSTAGRAM.handle}</strong></span>
+    </a>
+  );
+}
+
 export function SiteFooter({ home = false, region }: { home?: boolean; region?: Region }) {
   const at = (id: string) => (home ? `#${id}` : `${HOME[region ?? "uk"]}#${id}`);
   return (
@@ -54,6 +75,7 @@ export function SiteFooter({ home = false, region }: { home?: boolean; region?: 
         <div className={styles.footerBrand}>
           <Lockup />
           <p className={styles.muted}>Keep what you&apos;ve worked for.</p>
+          <InstagramLink />
         </div>
         <nav aria-label="Steadie">
           <p className={styles.footerHead}>Steadie</p>

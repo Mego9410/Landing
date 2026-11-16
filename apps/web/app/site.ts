@@ -103,6 +103,9 @@ export const pageMetadata = (title: string, description: string, path: string): 
 /** JSON-LD as a script tag's HTML, with "<" escaped so text can't close the tag. */
 export const ldJson = (data: unknown) => ({ __html: JSON.stringify(data).replace(/</g, "\\u003c") });
 
+/** Steadie on Instagram. */
+export const INSTAGRAM = { url: "https://www.instagram.com/steadieapp/", handle: "@steadieapp" } as const;
+
 export const ORGANIZATION = {
   "@type": "Organization",
   "@id": `${SITE_URL}/#organization`,
@@ -110,4 +113,5 @@ export const ORGANIZATION = {
   url: SITE_URL,
   logo: abs("/steadie-logo.png"),
   description: "Steadie is a general wellness app with a 12-month plan for the year after stopping a GLP-1 weight-loss medicine.",
+  sameAs: [INSTAGRAM.url],
 };

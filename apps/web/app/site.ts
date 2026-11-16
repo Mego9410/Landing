@@ -44,8 +44,11 @@ export function availability(ios: boolean, play = playLive()) {
 }
 /** An App Store link that tells App Store Connect's App Analytics which page sent the download (Apple campaign links:
  *  pt = provider token from NEXT_PUBLIC_APPLE_PROVIDER_TOKEN, ct = campaign of 40 characters or fewer, mt = 8). */
+/** Steadie's App Store Connect provider token, for campaign links (Analytics › Campaigns shows downloads by `ct`). */
+export const APPLE_PROVIDER_TOKEN = "128517295";
 export function appStoreLink(campaign: string, page?: ProductPage, region: Region = "uk") {
-  const pt = process.env.NEXT_PUBLIC_APPLE_PROVIDER_TOKEN;
+  // The provider token is public (it's in every App Store campaign link); the env var can still override it.
+  const pt = process.env.NEXT_PUBLIC_APPLE_PROVIDER_TOKEN?.trim() || APPLE_PROVIDER_TOKEN;
   const ppid = page ? productPageId(page) : undefined;
   const q = new URLSearchParams();
   if (pt) {

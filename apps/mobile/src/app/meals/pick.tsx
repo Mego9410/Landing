@@ -6,17 +6,18 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Screen } from "@/components/Screen";
+import { RecipeThumb } from "@/components/RecipePhoto";
 import { Disc, Header } from "@/components/ui";
 import { dayName, INCLUDE_DRAFTS, mealAt, minutes, planOptions, profileFor, proteinText, px, saveWeekFor, SLOT_NAME, SLOT_TONE, weekFor, type Which } from "@/state/food";
 import { set, useApp } from "@/state/store";
 import { toast } from "@/state/toast";
 import { radius, space, useColors } from "@/theme";
 
-function Option({ title, detail, onPress, tone }: { title: string; detail: string; onPress: () => void; tone?: "butter" | "sky" | "apricot" | "sage" }) {
+function Option({ title, detail, onPress, tone, recipe }: { title: string; detail: string; onPress: () => void; tone?: "butter" | "sky" | "apricot" | "sage"; recipe?: string }) {
   const c = useColors();
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: space[3], padding: space[4], borderRadius: radius.md, backgroundColor: pressed ? c.surfaceSunk : c.surfaceRaised })}>
-      {tone ? <Disc icon="meal" tone={tone} size={40} /> : null}
+      {recipe ? <RecipeThumb id={recipe} tone={tone} size={48} /> : tone ? <Disc icon="meal" tone={tone} size={40} /> : null}
       <View style={{ flex: 1, gap: 2 }}>
         <AppText weight="800">{title}</AppText>
         <AppText variant="caption" color="inkMuted">{detail}</AppText>
@@ -53,7 +54,7 @@ export default function Pick() {
       ) : null}
       <AppText variant="label" color="inkMuted">SUGGESTED FOR YOU</AppText>
       <View style={{ gap: space[2] }}>
-        {options.map((x) => <Option key={x.recipe.id} tone={SLOT_TONE[slot]} title={x.name} detail={`${minutes(x.recipe)} · ${proteinText(s, x.nutrition.protein)}`} onPress={() => choose({ recipe: x.recipe.id })} />)}
+        {options.map((x) => <Option key={x.recipe.id} tone={SLOT_TONE[slot]} recipe={x.recipe.id} title={x.name} detail={`${minutes(x.recipe)} · ${proteinText(s, x.nutrition.protein)}`} onPress={() => choose({ recipe: x.recipe.id })} />)}
       </View>
       <Button label={`See all ${SLOT_NAME[slot].toLowerCase()} recipes`} variant="secondary" block
         onPress={() => router.replace({ pathname: "/meals/recipes", params: { which, day: String(day), slot, index: String(index) } })} />

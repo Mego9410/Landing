@@ -7,6 +7,7 @@ import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { MadeForYou, MealVerdict } from "@/components/meals";
+import { RecipeHero } from "@/components/RecipePhoto";
 import { Screen } from "@/components/Screen";
 import { DraftNote, Header, List, Pill, Stepper } from "@/components/ui";
 import { amount } from "@/data/region";
@@ -44,6 +45,7 @@ export default function Recipe() {
 
   return (
     <Screen header={<Header fallback="/meals" middle={<Pill label={SLOT_NAME[r.slot]} tone={SLOT_TONE[r.slot]} />} title={x.name} />} contentContainerStyle={{ gap: space[5], paddingBottom: 48 }}>
+      <RecipeHero id={r.id} />
       <View style={{ gap: 6 }}>
         <AppText variant="title" accessibilityRole="header">{x.name}</AppText>
         <AppText variant="bodyLg" color="inkMuted">{r.blurb}</AppText>

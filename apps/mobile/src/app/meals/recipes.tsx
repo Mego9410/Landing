@@ -5,7 +5,8 @@ import type { Slot } from "@landing/content";
 import { library } from "@landing/engine";
 import { AppText } from "@/components/AppText";
 import { Screen } from "@/components/Screen";
-import { Choices, Disc, DraftNote, Header, RowCard, ToggleRow } from "@/components/ui";
+import { RecipeThumb } from "@/components/RecipePhoto";
+import { Choices, DraftNote, Header, RowCard, ToggleRow } from "@/components/ui";
 import { dayName, INCLUDE_DRAFTS, minutes, profileFor, proteinText, SLOT_NAME, SLOT_TONE, type Which } from "@/state/food";
 import { useApp } from "@/state/store";
 import { radius, space, textStyle, useColors } from "@/theme";
@@ -52,7 +53,7 @@ export default function Recipes() {
         {shown.length ? shown.map((x) => (
           <View key={x.recipe.id} style={{ opacity: x.ok ? 1 : 0.6 }}>
             <RowCard onPress={() => router.push({ pathname: "/meals/recipe", params: { id: x.recipe.id, which, ...(picking ? { day: q.day!, slot: q.slot!, index: q.index ?? "0", pick: "1" } : {}) } })}>
-              <Disc icon="meal" tone={SLOT_TONE[x.recipe.slot]} size={44} />
+              <RecipeThumb id={x.recipe.id} tone={SLOT_TONE[x.recipe.slot]} size={56} />
               <View style={{ flex: 1, gap: 2 }}>
                 <AppText weight="800">{x.name}</AppText>
                 <AppText variant="caption" color="inkMuted">{minutes(x.recipe)} · {proteinText(s, x.nutrition.protein)}{x.swaps.length ? " · adapted for you" : ""}</AppText>

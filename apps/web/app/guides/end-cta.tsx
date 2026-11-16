@@ -4,6 +4,7 @@ import { appLive, appStoreLink, availability, campaign, LAUNCH_OFFER, LAUNCH_PRI
 /** Which Custom Product Page a guide or tool sends people to: the tapering one for tapering pages, else after-the-jab. */
 export const productPageFor = (slug: string): ProductPage => (/taper/.test(slug) ? "taper" : "after");
 import styles from "./guides.module.css";
+import { MealPhotos, mealsForGuide } from "../meal-photos";
 
 // The card at the end of every guide: a one-line hook that fits what the guide was about, then the App Store link.
 // Before launch (appLive() false) it keeps the hook and says "Coming soon to iPhone and Android", with no link, like the aside and
@@ -38,9 +39,11 @@ export const guideTopic = (g: Pick<Guide, "slug" | "category">): Topic => BY_SLU
 
 export async function GuideEndCta({ guide }: { guide: Pick<Guide, "slug" | "category"> }) {
   const live = await appLive();
+  const topic = guideTopic(guide);
   return (
     <aside className={styles.endCta} aria-label="Steadie for iPhone">
-      <p className={styles.endHook}>{HOOKS[guideTopic(guide)]}</p>
+      {topic === "food" ? <MealPhotos ids={mealsForGuide(guide.slug)} /> : null}
+      <p className={styles.endHook}>{HOOKS[topic]}</p>
       {live ? (
         <>
           <a className={styles.ctaButton} href={appStoreLink(campaign("guide-end", guide.slug), productPageFor(guide.slug))}>Try Steadie free for 7 days</a>

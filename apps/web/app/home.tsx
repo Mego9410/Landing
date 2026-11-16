@@ -14,6 +14,7 @@ import { GuideArt } from "./guides/art";
 import { PhoneTour, type Screen } from "./phone-tour";
 import { ScreenFan, type FanScreen } from "./screen-fan";
 import { FilmPlayer } from "./film";
+import { HOME_MEALS } from "./meal-photos";
 
 // The home page, in two versions: the UK one at / (app/page.tsx) and the US one at /us (app/us/page.tsx). They share
 // everything except the words below: "jab" or "shot", GP or doctor, the brand names people know, and prices.
@@ -373,7 +374,11 @@ export async function HomePage({ region }: { region: Region }) {
                   <h3 className={styles.tileTitle}>Meals easier than a takeaway</h3>
                   <p className={styles.tileBody}>15 minutes hands-on, six ingredients, one pan, with timers that keep running.</p>
                 </div>
+                <div className={styles.tileDishes} aria-hidden="true">
+                  {HOME_MEALS.map((id) => <Image key={id} src={`/recipes/${id}.webp`} alt="" width={720} height={480} sizes="140px" />)}
+                </div>
                 <div className={styles.tileTimer} aria-hidden="true"><span>Simmer</span><strong>14:53</strong></div>
+                <span className={styles.tileNote}>Photos for illustrative purposes.</span>
               </li>
               <li className={`${styles.tile} ${styles.sage}`}>
                 <div className={styles.tileText}>

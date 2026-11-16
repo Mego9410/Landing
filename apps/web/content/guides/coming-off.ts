@@ -166,13 +166,13 @@ export const COMING_OFF: Guide[] = [
   {
     slug: "stopping-mounjaro",
     title: "Coming off Mounjaro: what to expect and how to hold steady",
-    metaTitle: "Coming off Mounjaro: what to expect (UK guide)",
-    description: "Stopping Mounjaro (tirzepatide)? What the SURMOUNT-4 trial found, how appetite changes, and practical habits for the months after.",
+    metaTitle: "Coming off Mounjaro: what happens when you stop (UK)",
+    description: "Stopping Mounjaro (tirzepatide)? What happens to appetite and weight, what the SURMOUNT-4 trial found, and habits that help in the months after.",
     category: "Coming off",
-    keywords: ["coming off mounjaro", "stopping mounjaro", "life after mounjaro", "mounjaro weight regain", "what happens when you stop mounjaro"],
-    published: D, updated: "2026-10-11",
+    keywords: ["coming off mounjaro", "stopping mounjaro", "what happens when you stop mounjaro", "what happens when you come off mounjaro", "how to come off mounjaro", "life after mounjaro", "mounjaro weight regain"],
+    published: D, updated: "2026-11-16",
     summary: [
-      "Mounjaro is tirzepatide. Your prescriber will tell you how and when to stop.",
+      "Mounjaro is tirzepatide. Your prescriber will tell you how and when to stop; the NHS advises not stopping suddenly.",
       "Appetite usually returns within a few weeks of your last dose.",
       "In SURMOUNT-4, people who stopped regained about 14% of their body weight over a year on average; about one in six regained much less.",
       "Protein, strength and steady routines give you the best chance of holding on to your progress.",
@@ -182,12 +182,21 @@ export const COMING_OFF: Guide[] = [
         "Tirzepatide acts on two gut hormone signals, GLP-1 and GIP, which reduce appetite. It stays in the body for about five days between doses and clears over a few weeks after the last one.",
         { note: "Mounjaro is a trademark of Eli Lilly. Steadie isn't connected with Eli Lilly and doesn't give advice about medication.", tone: "sky" },
       ] },
+      { heading: "What happens when you stop Mounjaro", blocks: [
+        "Most people notice three things over the first weeks and months:",
+        { list: [
+          "**Appetite comes back.** As tirzepatide clears over the weeks after your last dose, hunger and food noise usually return. The first week often feels much the same; many people notice hunger stirring in week 2, and old favourite foods calling in week 3.",
+          "**Weight tends to drift up.** In the SURMOUNT-4 trial, people who stopped regained about 14% of their body weight over a year, on average. It isn't the same for everyone: about one in six regained less than a quarter of what they'd lost.",
+          "**Blood sugar can change if you have type 2 diabetes.** The NHS notes stopping could affect it, so plan the change with your diabetes team.",
+        ] },
+        "Our week-by-week guides cover the first month in detail: [week 1](/guides/stopping-mounjaro-week-1), [week 2](/guides/stopping-mounjaro-week-2), [week 3](/guides/stopping-mounjaro-week-3) and [week 4](/guides/stopping-mounjaro-week-4).",
+      ] },
       { heading: "What SURMOUNT-4 found", blocks: [
         "After 36 weeks on tirzepatide, people were split into two groups. Those who carried on lost a further 5.5% of their weight over the next year. Those switched to a placebo regained about 14%. But about one in six of the people who stopped regained less than a quarter of what they'd lost, and their health markers stayed largely steady.",
         "That's the honest picture: regain is common, and it isn't inevitable.",
       ] },
       { heading: "Before you stop", blocks: [
-        "Agree the plan with your prescriber, including follow-up. Then use the weeks around your last dose, while appetite is still quiet, to set up routines. See [building habits before you stop](/guides/building-habits-before-you-stop) and [questions to ask your prescriber](/guides/questions-to-ask-before-stopping-weight-loss-injections).",
+        "The NHS advises talking to your doctor if you want to stop, rather than stopping suddenly, and says they may suggest reducing your dose gradually. Agree the plan with your prescriber, including follow-up. Then use the weeks around your last dose, while appetite is still quiet, to set up routines. See [building habits before you stop](/guides/building-habits-before-you-stop) and [questions to ask your prescriber](/guides/questions-to-ask-before-stopping-weight-loss-injections).",
       ] },
       { heading: "The months after", blocks: [
         { list: [
@@ -204,10 +213,13 @@ export const COMING_OFF: Guide[] = [
           "Thinking about how to come off: [tapering off Wegovy or Mounjaro](/guides/tapering-off-wegovy-and-mounjaro) and [tapering vs stopping all at once](/guides/tapering-vs-stopping-weight-loss-injections).",
           "Week by week after your last dose: [week 1](/guides/stopping-mounjaro-week-1), [week 2](/guides/stopping-mounjaro-week-2), [week 3](/guides/stopping-mounjaro-week-3) and [week 4](/guides/stopping-mounjaro-week-4).",
           "Free tools: the [maintenance calorie calculator](/tools/maintenance-calories) and the [weight regain calculator](/tools/weight-regain).",
+          "An app to help: [apps for after Mounjaro or Wegovy](/guides/apps-after-glp-1), free and paid.",
         ] },
       ] },
     ],
     faqs: [
+      { q: "What happens when you stop taking Mounjaro?", a: "Appetite usually returns over the weeks after your last dose, and weight often drifts up: in SURMOUNT-4 the average regain was about 14% of body weight over a year. If you have type 2 diabetes, your blood sugar may change too, so plan it with your diabetes team." },
+      { q: "How do I come off Mounjaro?", a: "Talk to your prescriber first. The NHS advises not stopping suddenly and says your doctor may suggest reducing the dose gradually. Steadie doesn't give advice about doses or stopping." },
       { q: "How quickly does appetite come back after Mounjaro?", a: "Usually within a few weeks of the last dose, as tirzepatide clears from the body." },
       { q: "Do you gain weight after stopping Mounjaro?", a: "Many people regain some weight. In SURMOUNT-4 the average was about 14% of body weight over a year, but about one in six people regained much less." },
       { q: "Should I reduce my Mounjaro dose before stopping?", a: "That's a question for your prescriber. Steadie doesn't give advice about doses or stopping medicines." },

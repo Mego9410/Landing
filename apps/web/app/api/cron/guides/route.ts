@@ -4,6 +4,7 @@ import { sql } from "drizzle-orm";
 import { getDb } from "@/lib/db";
 import { ensureExtraTables } from "@/lib/db/extra";
 import { broadcastNames, digestEmail, guideEmail, hasSubscribers, sendOnce, type Email } from "@/lib/newsletter";
+import { pingIndexNow } from "@/lib/indexnow";
 
 // The daily guides job, run by Vercel Cron (vercel.json) every morning. It refreshes the site so any guide due today
 // is live, emails each guide published in the last few days that hasn't gone out yet, and on Sundays sends the weekly
@@ -54,6 +55,11 @@ export async function GET(request: Request) {
   revalidatePath("/", "layout");
   // Funnel events and cancellation answers are kept for two years (privacy policy).
   if (!url.searchParams.has("dry")) await pruneOld().catch((e) => console.error("guides cron: couldn't prune old events", e));
+  // Guides that went live or changed today: tell Bing and the other IndexNow engines straight away.
+  if (!url.searchParams.has("dry")) {
+    const fresh = ALL_GUIDES.filter((g) => (g.published === today || g.updated === today) && g.published <= today).map((g) => `/guides/${g.slug}`);
+    if (fresh.length) await pingIndexNow([...fresh, "/guides", "/sitemap.xml"]);
+  }
 
   const since = new Date(Date.parse(today + "T12:00:00Z") - CATCH_UP_DAYS * 86400000).toISOString().slice(0, 10);
   const emails: Email[] = ALL_GUIDES.filter((g) => g.email !== false && g.published > since && g.published <= today).map(guideEmail);

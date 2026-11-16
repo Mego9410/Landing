@@ -32,4 +32,7 @@ export const S = {
   mhraFakePens: { label: "MHRA: warning about unsafe fake weight-loss pens", url: "https://www.gov.uk/government/news/mhra-warns-of-unsafe-fake-weight-loss-pens" },
   gphcRegister: { label: "General Pharmaceutical Council: check a pharmacy is registered", url: "https://www.pharmacyregulation.org/registers" },
   yellowCard: { label: "MHRA Yellow Card scheme: report a suspected fake medicine or side effect", url: "https://yellowcard.mhra.gov.uk/" },
+  nhsLoseWeight: { label: "NHS Better Health: lose weight, with the free NHS Weight Loss Plan app", url: "https://www.nhs.uk/better-health/lose-weight/" },
+  nhsWeightLossPlanApp: { label: "App Store: NHS Weight Loss Plan, a free 12-week diet and exercise plan", url: "https://apps.apple.com/gb/app/nhs-weight-loss-plan/id1519208548" },
+  orchaWeightApps: { label: "ORCHA app library for Cheshire and Merseyside: weight loss apps, including NHS Couch to 5K and Active 10", url: "https://cheshireandmerseyside.orchahealth.com/weight-loss" },
 } satisfies Record<string, Source>;

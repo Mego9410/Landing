@@ -242,4 +242,59 @@ export const KEEPING: Guide[] = [
     sources: [S.nesta, S.bdaResource],
     related: ["keep-weight-off-after-glp-1", "protein-after-glp-1", "cravings-after-stopping-glp-1"],
   },
+  {
+    slug: "apps-after-glp-1",
+    title: "Apps to help after stopping Mounjaro or Wegovy",
+    metaTitle: "Apps for after Mounjaro or Wegovy: what can help (UK)",
+    description: "Looking for an app to help after a weight-loss injection? Free NHS apps, food trackers and Steadie compared: what each is built for and who it suits.",
+    category: "Keeping it off",
+    keywords: ["app for after mounjaro", "app after stopping wegovy", "app for coming off mounjaro", "weight maintenance app", "glp-1 maintenance app", "best app after weight loss injections"],
+    published: "2026-11-16", updated: "2026-11-16",
+    email: false,
+    summary: [
+      "Most weight apps are built for losing weight. After a GLP-1, the job is usually holding steady while appetite returns.",
+      "The NHS has free apps: a 12-week Weight Loss Plan, plus Couch to 5K and Active 10 for movement.",
+      "Food trackers suit people who like numbers; skip them if counting makes eating feel harder.",
+      "Steadie, which we make, is a 12-month plan built for the year after the jab.",
+    ],
+    sections: [
+      { heading: "What to look for in an app after a GLP-1", blocks: [
+        "The habits with the best evidence after stopping are protein at every meal, strength exercise, regular meals and a calm way to notice drift. See [how to keep weight off after a GLP-1](/guides/keep-weight-off-after-glp-1). A good app makes those easier. It should also:",
+        { list: [
+          "Be built for keeping weight steady, not only for losing more.",
+          "Never give advice about your medicine, doses or stopping. That's for your prescriber.",
+          "Be kind: no shame, no streaks held against you, and no extreme restriction.",
+          "Keep your health data private, and let you delete it.",
+        ] },
+      ] },
+      { heading: "Free NHS apps", blocks: [
+        "**NHS Weight Loss Plan** is a free 12-week diet and exercise plan, with weekly guides, a BMI calculator and a food diary with a calorie target. It's built for losing weight, so it suits you if your prescriber wants you to lose more after stopping.",
+        "**NHS Couch to 5K** builds you up to running 5 km over nine weeks, and **NHS Active 10** encourages short, brisk daily walks. Both are free, and both help with the activity side of holding steady.",
+      ] },
+      { heading: "Food and calorie trackers", blocks: [
+        "Trackers with a barcode scanner make it quick to log meals and see protein. Some people find the numbers reassuring after a GLP-1, when hunger cues change. Others find counting makes food feel heavier.",
+        { note: "If eating feels difficult or controlling, skip trackers and talk to your GP. Beat, the UK's eating disorder charity, can help too.", tone: "butter" },
+      ] },
+      { heading: "Steadie", blocks: [
+        "We make Steadie, so read this part knowing that. It's a 12-month plan for the year after you stop a GLP-1, or for planning ahead while you're still on one. Each week brings three small habits and a short lesson, short strength sessions at home, high-protein meals with one shopping list, a one-minute morning check-in and a weekly steady score that rewards habits, not weight. You can share a one-page summary with your prescriber.",
+        "It's on iPhone, with 7 days free, and coming soon to Android. It never gives advice about medication.",
+      ] },
+      { heading: "Which one suits you", blocks: [
+        { list: [
+          "Want to lose more weight, for free: the NHS Weight Loss Plan.",
+          "Want to get moving: NHS Couch to 5K or Active 10.",
+          "Like numbers and logging: a food tracker, if counting feels OK for you.",
+          "Want a plan for the whole year after the jab, with protein, strength and habits together: Steadie.",
+        ] },
+        "Whichever you choose, the habits matter more than the app. Our [guides](/guides) cover them for free.",
+      ] },
+    ],
+    faqs: [
+      { q: "Is there an app for coming off Mounjaro or Wegovy?", a: "Yes. Steadie is built for the year after a GLP-1 weight-loss injection. The NHS's free apps (Weight Loss Plan, Couch to 5K and Active 10) also help, though the Weight Loss Plan is designed for losing weight rather than holding steady." },
+      { q: "Is there a free NHS app for weight maintenance?", a: "The NHS Weight Loss Plan is free but built for a 12-week weight-loss plan. For keeping active, NHS Couch to 5K and Active 10 are free." },
+      { q: "Will an app tell me how to stop my injection?", a: "It shouldn't. Decisions about stopping, tapering or doses are for your prescriber. Steadie never gives medication advice." },
+    ],
+    sources: [S.nhsLoseWeight, S.nhsWeightLossPlanApp, S.orchaWeightApps, S.beat],
+    related: ["keep-weight-off-after-glp-1", "stopping-mounjaro", "stopping-wegovy", "protein-after-glp-1"],
+  },
 ];

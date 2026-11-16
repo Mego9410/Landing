@@ -16,7 +16,8 @@ health content, how to add a guide and what to do at launch.
   and FAQPage on every guide; CollectionPage on the hub; AboutPage on About. Check with Google's
   [Rich Results Test](https://search.google.com/test/rich-results).
 - **Discovery:** `sitemap.xml` lists every page with last-updated dates; `robots.txt` allows production only;
-  `/guides/feed.xml` is an RSS feed of the guides.
+  `/guides/feed.xml` is an RSS feed of the guides. IndexNow (`lib/indexnow.ts`, key file in `public/`) tells Bing and
+  other engines about guides that go live or change, from the daily guides cron.
 - **Trust pages:** `/about` and `/editorial-policy` say who writes the guides, where the information comes from, that
   they aren't clinically reviewed, and how to report a mistake. Google weighs these heavily for health topics.
 - **Internal links:** the header and footer link to the guides on every page, the home page has a guides section, and
@@ -47,6 +48,7 @@ health content, how to add a guide and what to do at launch.
 | Walking | steps a day to keep weight off |
 | What are GLP-1 medicines | what is GLP-1, semaglutide vs tirzepatide |
 | Glossary | food noise meaning, lean mass |
+| Apps for after a GLP-1 | app for after mounjaro, weight maintenance app, glp-1 maintenance app |
 
 The home page targets the generic phrases (life after weight-loss jabs, keep weight off after a GLP-1) and doesn't name
 brands: naming prescription-only medicines on a marketing page edges towards advertising them, which UK rules restrict.

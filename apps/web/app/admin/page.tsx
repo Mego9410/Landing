@@ -242,7 +242,7 @@ export default async function Admin() {
         </section>
 
         <section className={styles.section} aria-labelledby="codes">
-          <div className={styles.sectionHead}><h2 id="codes" className={styles.h2}>Discount codes</h2><span className={styles.muted}>Typed on the app&apos;s paywall · each shows a RevenueCat offering&apos;s discounted store prices</span></div>
+          <div className={styles.sectionHead}><h2 id="codes" className={styles.h2}>Discount codes</h2><span className={styles.muted}>Not used by the app since App Review (guideline 3.1.1) · make offer codes in App Store Connect instead</span></div>
           <Notice loaded={codes} />
           {codes.ok ? <Codes codes={codes.data} durations={DURATIONS} /> : null}
         </section>

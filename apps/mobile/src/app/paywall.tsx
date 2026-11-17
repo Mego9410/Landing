@@ -6,9 +6,7 @@ import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
 import { Mark } from "@/components/Mark";
 import { OnbCard, OnbScreen } from "@/components/Onboarding";
-import { Field } from "@/components/ui";
 import { addDays, daysBetween, fmt, today } from "@/data/dates";
-import { applyCode, codesAvailable, removeCode } from "@/state/codes";
 import { track } from "@/state/events";
 import { buy, plans, plansProblem, redeemCode, restore, STORE_WORDS, type Plan } from "@/state/subscription";
 import { set, useApp } from "@/state/store";
@@ -46,25 +44,12 @@ export default function Paywall() {
   const name = s.name.trim();
   const remind = s.settings.trialReminder !== false;
 
-  // A discount code (state/codes.ts) shows its offering's prices; without one, or if RevenueCat doesn't have it, the usual.
-  const discount = s.discount ?? null;
-  const [codeOpen, setCodeOpen] = useState(false);
-  const [codeText, setCodeText] = useState("");
-  const [codeError, setCodeError] = useState<string | undefined>();
-  const [codeBusy, setCodeBusy] = useState(false);
   const newMember = !s.subscription?.active && !s.subscription?.ended;
-  const fetchPlans = () => plans(discount?.offering, newMember).then((o) => { setOptions(o); setPick(0); }).catch((e) => setFailed(plansProblem(e)));
+  const fetchPlans = () => plans(newMember).then((o) => { setOptions(o); setPick(0); }).catch((e) => setFailed(plansProblem(e)));
   const load = () => { setFailed(null); setOptions(null); fetchPlans(); };
-  useEffect(() => { track("paywall_viewed", { lapsed, from: fromOnboarding ? "onboarding" : "app" }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { fetchPlans(); }, [discount?.offering]); // eslint-disable-line react-hooks/exhaustive-deps
-  async function apply() {
-    setCodeBusy(true); setCodeError(undefined);
-    const r = await applyCode(codeText);
-    setCodeBusy(false);
-    if (!r.ok) { setCodeError(r.error); return; }
-    setOptions(null); setCodeOpen(false); setCodeText("");
-  }
-  const dropCode = () => { setOptions(null); removeCode(); };
+  useEffect(() => { fetchPlans(); track("paywall_viewed", { lapsed, from: fromOnboarding ? "onboarding" : "app" }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Offer codes are Apple's (or Google's) own, made in App Store Connect and typed into the store's redemption sheet:
+  // App Review requires that, rather than codes of our own (guideline 3.1.1).
   const storeCode = () => redeemCode().catch(() => toast("Couldn’t open the code screen just now. Try again in a moment."));
   useEffect(() => {
     if (!s.subscription?.active) return;
@@ -170,29 +155,7 @@ export default function Paywall() {
         </View>
       )}
 
-      {s.freeRequest && !s.subscription?.active ? (
-        <OnbCard style={{ gap: 4 }}>
-          <AppText variant="label" color="sageInk">CODE {s.freeRequest.code} SENT</AppText>
-          <AppText weight="800">Your free access is on its way</AppText>
-          <AppText color="inkMuted">The Steadie team turns it on, usually within a day. This screen moves on by itself once it’s on. If it doesn’t, tap Restore.</AppText>
-          <Button label="Use a different code" variant="quiet" onPress={() => set((st) => { st.freeRequest = null; })} style={{ alignSelf: "flex-start" }} />
-        </OnbCard>
-      ) : discount && options ? (
-        <OnbCard style={{ gap: 4 }}>
-          <AppText variant="label" color="sageInk">CODE {discount.code}{options[0]?.discounted ? " APPLIED" : ""}</AppText>
-          <AppText weight="800">{options[0]?.discounted ? discount.label : "These prices aren’t available just now, so you’re seeing the usual ones."}</AppText>
-          <Button label="Remove code" variant="quiet" onPress={dropCode} style={{ alignSelf: "flex-start" }} />
-        </OnbCard>
-      ) : codeOpen ? (
-        <OnbCard style={{ gap: space[3] }}>
-          <Field label="Discount code" value={codeText} onChangeText={(t) => { setCodeText(t); setCodeError(undefined); }} autoCapitalize="characters" autoCorrect={false}
-            placeholder="FOUNDING" returnKeyType="done" onSubmitEditing={apply} error={codeError} maxLength={24} />
-          <Button label={codeBusy ? "Checking…" : "Apply code"} variant="secondary" disabled={codeBusy || !codeText.trim()} onPress={apply} />
-          <Button label={`Have ${STORE_WORDS.account === "Google account" ? "a Google Play" : "an App Store"} offer code? Redeem it here`} variant="quiet" onPress={storeCode} />
-        </OnbCard>
-      ) : (
-        <Button label="Have a discount code?" variant="quiet" onPress={() => (codesAvailable() ? setCodeOpen(true) : storeCode())} style={{ alignSelf: "center" }} />
-      )}
+      <Button label="Have an offer code?" variant="quiet" onPress={storeCode} style={{ alignSelf: "center" }} />
 
       {chosen?.trial ? (
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: space[3], paddingHorizontal: 2, borderRadius: radius.md }}>

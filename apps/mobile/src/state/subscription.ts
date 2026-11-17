@@ -92,8 +92,6 @@ export interface Plan {
   /** A paid introductory price this person can have, as a phrase: "£55.99 for your first year". Null otherwise. */
   intro: string | null;
   saving?: string;
-  /** From a discount code's offering rather than the usual one. */
-  discounted: boolean;
   /** The launch price for new members (the "launch" offering): theirs for as long as they stay subscribed. */
   launch: boolean;
 }
@@ -104,19 +102,16 @@ export interface Plan {
 export const LAUNCH_OFFERING = "launch";
 
 /** The plans on offer, yearly first. A trial is only offered to people Apple will give it to (one per Apple ID, per
- *  subscription group); when RevenueCat can't tell, the plain price is shown, as Apple and RevenueCat advise. With a
- *  discount code's offering (`offering`), its discounted plans if RevenueCat has them; otherwise, for someone who has
- *  never had the plan (`newMember`), the launch offering while there is one; otherwise the usual ones. */
-export async function plans(offering?: string | null, newMember = false): Promise<Plan[]> {
-  // The current offering ("default" in RevenueCat), the code's or the launch one: its annual and monthly packages,
-  // picked by type rather than by the order the dashboard lists them in, with yearly first.
+ *  subscription group); when RevenueCat can't tell, the plain price is shown, as Apple and RevenueCat advise. For
+ *  someone who has never had the plan (`newMember`), the launch offering while there is one; otherwise the usual ones. */
+export async function plans(newMember = false): Promise<Plan[]> {
+  // The current offering ("default" in RevenueCat) or the launch one: its annual and monthly packages, picked by type
+  // rather than by the order the dashboard lists them in, with yearly first.
   const all = await Purchases.getOfferings();
   const has = (o?: PurchasesOffering) => !!o && !!(o.annual || o.monthly);
-  const coded = offering ? all.all[offering] : undefined;
-  const discounted = has(coded);
-  const launchOffer = !discounted && newMember ? all.all[LAUNCH_OFFERING] : undefined;
+  const launchOffer = newMember ? all.all[LAUNCH_OFFERING] : undefined;
   const launch = has(launchOffer);
-  const current = discounted ? coded : launch ? launchOffer : all.current;
+  const current = launch ? launchOffer : all.current;
   const monthlyPkg = current?.monthly ?? undefined;
   const pkgs = [current?.annual, current?.monthly].filter((p): p is PurchasesPackage => !!p);
   if (!pkgs.length) throw Object.assign(new Error("The current offering has no annual or monthly package."), { code: "none" });
@@ -131,7 +126,7 @@ export async function plans(offering?: string | null, newMember = false): Promis
       const free = ANDROID ? pr.defaultOption?.freePhase?.billingPeriod?.iso8601 ?? null : null;
       const introOk = eligible[pr.identifier]?.status === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
       const canTrial = ANDROID ? !!free : !!intro && intro.price === 0 && introOk;
-      // A paid introductory price (a discount code's offer): Google Play's intro phase, or Apple's when this person can have it.
+      // A paid introductory price: Google Play's intro phase, or Apple's when this person can have it.
       const phase = ANDROID ? pr.defaultOption?.introPhase : null;
       const introText = phase ? introPhrase(phase.price.formatted, phase.billingPeriod.iso8601, phase.billingCycleCount ?? 1)
         : !ANDROID && intro && intro.price > 0 && introOk ? introPhrase(intro.priceString, intro.period, intro.cycles) : null;
@@ -142,7 +137,6 @@ export async function plans(offering?: string | null, newMember = false): Promis
         trial: canTrial ? period(ANDROID ? free : intro!.period) : null,
         intro: introText,
         saving: saving > 0 ? `Save ${saving}%` : undefined,
-        discounted,
         launch,
       };
     });

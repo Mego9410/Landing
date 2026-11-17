@@ -53,7 +53,7 @@ export default function Settings() {
     if (!billingEnabled() || s.demo || subActive) return;
     let live = true;
     // What "See plans" offers: the launch price for someone new, otherwise the trial (when Apple will give one) and the plans.
-    plans(null, !sub?.ended).then((p) => {
+    plans(!sub?.ended).then((p) => {
       if (!live) return;
       const trial = p.find((x) => x.trial)?.trial, launch = p.find((x) => x.launch);
       setPlanLine(launch ? `${trial ? `${trial} free, then ` : ""}${launch.price} a month, the launch price` : trial ? `${trial} free, then monthly or yearly` : null);

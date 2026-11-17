@@ -182,6 +182,14 @@ discount code still wins over both. The paywall labels it "Launch price: yours f
 
 ## Discount codes, offer codes and free access
 
+> **November 2026: App Review rejected Steadie's own discount codes (guideline 3.1.1).** Apple said "the app uses
+> promo codes to unlock a discount", and asked for App Store offer codes instead. From 1.3 (build 14) the app has no
+> code box of its own: **"Have an offer code?"** on the paywall, and **Redeem an App Store code** in Settings, open
+> Apple's redemption sheet. For any discount or free period, make an **offer code in App Store Connect**. The
+> /admin codes and `POST /api/codes` described below are no longer used by the app. **Free access → Give it directly**
+> (a grant to a Steadie ID) is unaffected.
+
+
 Apple (guideline 3.1.1) and Google only allow subscriptions to be sold through their own billing. So no code in Steadie
 unlocks anything by itself. There are three ways to give a discount:
 
